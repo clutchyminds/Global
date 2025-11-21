@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Space Invaders Retro</title>
+  <meta name="viewport" content="width=800, initial-scale=1.0, user-scalable=no">
+  <style>
+    html,body { margin:0; background:#050512; height:100%; overflow: hidden;}
+    #gameCanvas { display: block; margin:auto; background:#181828; touch-action: none;}
+    #touchControls {
+      position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 14px; z-index:2; pointer-events: auto;
+    }
+    .btn {
+      width: 54px; height: 54px; border-radius: 50%; border: 2px solid #64a;
+      background:#292950;color:#fff; text-align:center;font-size:28px;line-height:54px;
+      user-select:none; touch-action: manipulation; box-shadow:0 3px 12px #0018;
+    }
+  </style>
+</head>
+<body>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+<div id="touchControls">
+  <div class="btn" id="leftBtn">&#8592;</div>
+  <div class="btn" id="fireBtn">&#128165;</div>
+  <div class="btn" id="rightBtn">&#8594;</div>
+</div>
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+let W = canvas.width, H = canvas.height;
+
+// Contrôles
+let keys = {left: false, right: false, fire: false};
+let touches = {left:false, right:false, fire:false};
+document.addEventListener("keydown", e => {
+  if(e.code==="ArrowLeft") keys.left=true;
+  if(e.code==="ArrowRight") keys.right=true;
+  if(e.code==="Space") keys.fire=true;
+  if(gameOver && e.code==="Enter") resetGame();
+});
+document.addEventListener("keyup", e => {
+  if(e.code==="ArrowLeft") keys.left=false;
+  if(e.code==="ArrowRight") keys.right=false;
+  if(e.code==="Space") keys.fire=false;
+});
+["leftBtn","rightBtn","fireBtn"].forEach(btnId=>{
+  const btn = document.getElementById(btnId);
+  let prop = btnId.replace("Btn","");
+  btn.addEventListener("touchstart", e=>{touches[prop]=true; e.preventDefault();});
+  btn.addEventListener("touchend", e=>{touches[prop]=false; e.preventDefault();});
+  btn.addEventListener("mousedown", e=>{touches[prop]=true;});
+  btn.addEventListener("mouseup", e=>{touches[prop]=false;});
+});
+
+// Variables du jeu
+let player, aliens, bullets, alienBullets, score, gameOver, level;
+function resetGame() {
+  player = {x:W/2, y:H-48, w:48, h:20, cooldown:0, lives:3};
+  aliens = [];
+  for(let r=0;r<5;r++)for(let c=0;c<10;c++) {
+    aliens.push({x:90+c*60,y:60+r*40,w:38,h:25,alive:true,row:r,col:c});
+  }
+  bullets=[], alienBullets=[]; score=0;level=1;gameOver=false;
+}
+resetGame();
+
+let moveDir = 1, moveTick = 0, moveDelay = 28, stepDown = false;
+
+function handleInput() {
+  // Gauche/droite
+  if(keys.left||touches.left) player.x -= 5.2;
+  if(keys.right||touches.right) player.x += 5.2;
+  player.x = Math.max(14,Math.min(W-14-player.w,player.x));
+  // Tir joueur
+  if((keys.fire||touches.fire) && player.cooldown<=0 && !gameOver) {
+    bullets.push({x:player.x+player.w/2, y:player.y-9, vy:-9});
+    player.cooldown = 18;
+  }
+  player.cooldown = Math.max(0, player.cooldown-1);
+}
+
+function moveAliens() {
+  moveTick++;
+  let speed = Math.max(9,moveDelay-2*level);
+  if(moveTick < speed) return;
+  moveTick=0;
+  let minX = Math.min(...aliens.filter(a=>a.alive).map(a=>a.x));
+  let maxX = Math.max(...aliens.filter(a=>a.alive).map(a=>a.x+a.w));
+  // Bords
+  if((moveDir>0 && maxX>W-24)||(moveDir<0 && minX<24)) { stepDown=true; moveDir*=-1; }
+  for(let a of aliens) {
+    if(!a.alive) continue;
+    a.x += moveDir*19;
+    if(stepDown) a.y+=27;
+  }
+  if(stepDown)stepDown=false;
+  // Tir aliens aléatoire
+  let bottomAliens = {};
+  for(let a of aliens) if(a.alive)
+    bottomAliens[a.col] = a; // le plus bas de chaque colonne
+  for(let c=0;c<10;c++) if(bottomAliens[c] && Math.random()<0.07/level)
+    alienBullets.push({x:bottomAliens[c].x+bottomAliens[c].w/2,y:bottomAliens[c].y+bottomAliens[c].h,vy:4+Math.random()*level});
+
+}
+
+function gameLoop() {
+  if(gameOver) return;
+  handleInput(); moveAliens();
+  // Mouvements des balles
+  for(let b of bullets) b.y += b.vy;
+  for(let b of alienBullets) b.y += b.vy;
+  // Collision joueur <-> tir alien
+  for(let b of alienBullets) {
+    if(b.y >= player.y && b.x>player.x && b.x<player.x+player.w && b.y<=player.y+player.h) {
+      player.lives--;
+      alienBullets.length=0; // Clear tir aliens pour l'effet
+      if(player.lives<=0) gameOver=true;
+      else player.x=W/2;
+      break;
+    }
+  }
+  // Collision balle joueur <-> alien
+  for(let a of aliens) if(a.alive)
+  for(let i=bullets.length-1;i>=0;i--){
+    let b=bullets[i];
+    if(b.x>a.x && b.x<a.x+a.w && b.y>a.y && b.y<a.y+a.h) {
+      a.alive=false; score += 40-(a.row*6); bullets.splice(i,1); break;
+    }
+  }
+  // Nettoyage
+  bullets = bullets.filter(b=>b.y>-50);
+  alienBullets = alienBullets.filter(b=>b.y<H+30);
+
+  // Win/Next Level
+  if(aliens.every(a=>!a.alive)) {
+    level++; moveDelay = Math.max(8,moveDelay-2);
+    for(let r=0;r<5;r++)for(let c=0;c<10;c++)
+      aliens.push({x:90+c*60, y:60+r*40, w:38, h:25, alive:true, row:r,col:c});
+    bullets=[];alienBullets=[];
+  }
+  // Game over si aliens arrivent en bas
+  if(aliens.some(a=>a.alive&&a.y+25>player.y)) gameOver=true;
+}
+
+// Affichage
+function drawPlayer(){
+  ctx.save();
+  ctx.fillStyle="#ace";
+  ctx.fillRect(player.x,player.y,player.w,player.h);
+  ctx.fillStyle="#5be";
+  ctx.fillRect(player.x+player.w/3,player.y-14,player.w/3,15);
+  ctx.restore();
+}
+function drawAlien(a){
+  ctx.save();
+  ctx.translate(a.x+a.w/2,a.y+a.h/2);
+  ctx.scale(1,1);
+  ctx.strokeStyle="#fff";
+  ctx.fillStyle=["#8df","#f88","#0fd","#fc6","#ae8"][a.row];
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.arc(0,0,12,Math.PI*0.15,Math.PI*1.85,false);
+  ctx.lineTo(-13,0); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle="#fff";
+  ctx.beginPath();
+  ctx.arc(-6,-4,2,0,Math.PI*2); ctx.arc(6,-4,2,0,Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+}
+function drawBullet(b,hostile){
+  ctx.save();
+  ctx.strokeStyle = hostile ? "#fa3" : "#6ef";
+  ctx.lineWidth=hostile?5:3;
+  ctx.beginPath();
+  ctx.moveTo(b.x,b.y); ctx.lineTo(b.x,b.y+(hostile?18:-18));
+  ctx.stroke(); ctx.restore();
+}
+function draw() {
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,W,H);
+  // étoiles BG
+  for(let s=0;s<40;s++){
+    ctx.globalAlpha=0.36+Math.random()*0.34;
+    ctx.fillStyle="#fff";
+    ctx.beginPath();
+    ctx.arc(Math.random()*W,Math.random()*H,Math.random()*1.7+0.3,0,2*Math.PI);
+    ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  drawPlayer();
+  for(let a of aliens) if(a.alive) drawAlien(a);
+  for(let b of bullets) drawBullet(b,false);
+  for(let b of alienBullets) drawBullet(b,true);
+  // UI
+  ctx.font="21px monospace"; ctx.fillStyle="#fff";
+  ctx.fillText("Score:"+score,20,32);
+  ctx.fillText("Vies:"+player.lives,20,58);
+  ctx.fillText("Niveau:"+level,20,84);
+  if(gameOver){
+    ctx.globalAlpha=0.82;
+    ctx.fillStyle="#000";
+    ctx.fillRect(W/2-120,H/2-58,240,110);
+    ctx.globalAlpha=1;
+    ctx.fillStyle="#fff"; ctx.textAlign="center";
+    ctx.font="32px monospace";
+    ctx.fillText("GAME OVER",W/2,H/2-10);
+    ctx.font="22px monospace";
+    ctx.fillText("Score final : "+score,W/2,H/2+26);
+    ctx.fillText("Appuie Entrée/touche pour rejouer",W/2,H/2+58);
+  }
+}
+// Boucle principale
+function mainLoop(){
+  gameLoop();
+  draw();
+  requestAnimationFrame(mainLoop);
+}
+mainLoop();
+</script>
+</body>
+</html>
