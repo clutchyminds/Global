@@ -40,6 +40,9 @@
       background: #1f2937;
       color: #fff;
       cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
     }
     #touch-controls button:active { background: #374151; }
   </style>
@@ -60,10 +63,10 @@
 
   <!-- Boutons tactiles -->
   <div id="touch-controls">
-    <button id="btn-left">⬅️</button>
-    <button id="btn-right">➡️</button>
-    <button id="btn-up">⬆️</button>
-    <button id="btn-fire">🔥</button>
+    <button id="btn-left" aria-label="Gauche">⬅️</button>
+    <button id="btn-right" aria-label="Droite">➡️</button>
+    <button id="btn-up" aria-label="Accélérer">⬆️</button>
+    <button id="btn-fire" aria-label="Tirer">🔥</button>
   </div>
 
   <footer>
@@ -76,8 +79,10 @@
     const ctx = canvas.getContext('2d');
     function resize() {
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = Math.floor(canvas.clientWidth * dpr);
-      canvas.height = Math.floor(canvas.clientHeight * dpr);
+      // utilise dimensions CSS pour calculer taille réelle
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.floor(rect.width * dpr);
+      canvas.height = Math.floor(rect.height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     window.addEventListener('resize', resize);
@@ -102,8 +107,13 @@
     function bindButton(id, code) {
       const btn = document.getElementById(id);
       if (!btn) return;
-      btn.addEventListener("touchstart", (e) => { e.preventDefault(); pressKey(code); });
-      btn.addEventListener("touchend", (e) => { e.preventDefault(); releaseKey(code); });
+      const start = (e) => { e.preventDefault(); pressKey(code); };
+      const end = (e) => { e.preventDefault(); releaseKey(code); };
+      btn.addEventListener("touchstart", start, { passive: false });
+      btn.addEventListener("touchend", end, { passive: false });
+      btn.addEventListener("mousedown", start);
+      btn.addEventListener("mouseup", end);
+      btn.addEventListener("mouseleave", end);
     }
     bindButton("btn-left", "ArrowLeft");
     bindButton("btn-right", "ArrowRight");
@@ -111,16 +121,25 @@
     bindButton("btn-fire", "Space");
 
     // ===== État du jeu =====
-    let scoreEl = document.getElementById('score');
-    let livesEl = document.getElementById('lives');
-    let levelEl = document.getElementById('level');
+    const scoreEl = document.getElementById('score');
+    const livesEl = document.getElementById('lives');
+    const levelEl = document.getElementById('level');
     let running = true;
     const state = { score:0, lives:3, level:1, ship:null, bullets:[], asteroids:[], particles:[], lastShot:0 };
 
     // ===== Entités =====
     function createShip() {
-      return { x:canvas.clientWidth/2, y:canvas.clientHeight/2, vx:0, vy:0, ang:-Math.PI/2,
-        thrust:0.08, maxSpeed:6, friction:0.995, radius:12, invincibleUntil:0 };
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: rect.width/2, y: rect.height/2,
+        vx: 0, vy: 0,
+        ang: -Math.PI/2,
+        thrust: 0.08,
+        maxSpeed: 6,
+        friction: 0.995,
+        radius: 12,
+        invincibleUntil: 0
+      };
     }
     function createAsteroid(x,y,size) {
       const speed = rand(0.5,2)*(size/24);
@@ -149,19 +168,216 @@
     }
 
     // ===== Gestion du niveau =====
-    function spawnWave(){ const n=3+state.level;
-      for(let i=0;i<n;i++){ let x,y;
-        do{ x=rand(0,canvas.clientWidth); y=rand(0,canvas.clientHeight); }
+    function spawnWave(){
+      const rect = canvas.getBoundingClientRect();
+      const n=3+state.level;
+      for(let i=0;i<n;i++){
+        let x,y;
+        // évite spawn trop près du vaisseau
+        do{ x=rand(0,rect.width); y=rand(0,rect.height); }
         while(dist2(x,y,state.ship?.x||0,state.ship?.y||0)<200*200);
-        state.asteroids.push(createAsteroid(x,y,rand(24,44))); }
+        state.asteroids.push(createAsteroid(x,y,rand(24,44)));
+      }
     }
-    function resetGame(){ resize(); state.score=0; state.lives=3; state.level=1;
+    function resetGame(){
+      resize();
+      state.score=0; state.lives=3; state.level=1;
       state.ship=createShip(); state.bullets=[]; state.asteroids=[]; state.particles=[];
-      running=true; spawnWave(); updateHud(); }
+      running=true; spawnWave(); updateHud();
+    }
     function nextLevel(){ state.level++; spawnWave(); updateHud(); }
     function updateHud(){ scoreEl.textContent=state.score; livesEl.textContent=state.lives; levelEl.textContent=state.level; }
 
     // ===== Update =====
     function update(dt){
       if(!running) return;
-      const w=canvas.clientWidth,h=canvas.clientHeight
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width, h = rect.height;
+
+      // Ship controls
+      if(keys.has('ArrowLeft')) state.ship.ang -= 0.08;
+      if(keys.has('ArrowRight')) state.ship.ang += 0.08;
+      if(keys.has('ArrowUp')) {
+        state.ship.vx += Math.cos(state.ship.ang) * state.ship.thrust;
+        state.ship.vy += Math.sin(state.ship.ang) * state.ship.thrust;
+      }
+      // Clamp max speed
+      const sp = Math.hypot(state.ship.vx, state.ship.vy);
+      if (sp > state.ship.maxSpeed) {
+        state.ship.vx *= state.ship.maxSpeed / sp;
+        state.ship.vy *= state.ship.maxSpeed / sp;
+      }
+      // Friction
+      state.ship.vx *= state.ship.friction;
+      state.ship.vy *= state.ship.friction;
+      // Move + wrap
+      state.ship.x = wrap(state.ship.x + state.ship.vx, w);
+      state.ship.y = wrap(state.ship.y + state.ship.vy, h);
+
+      // Shooting
+      if (keys.has('Space')) shootBullet();
+
+      // Bullets
+      for (let i=state.bullets.length-1; i>=0; i--) {
+        const b = state.bullets[i];
+        b.x = wrap(b.x + b.vx, w);
+        b.y = wrap(b.y + b.vy, h);
+        b.life -= dt;
+        if (b.life <= 0) state.bullets.splice(i,1);
+      }
+
+      // Asteroids
+      for (const a of state.asteroids) {
+        a.x = wrap(a.x + a.vx, w);
+        a.y = wrap(a.y + a.vy, h);
+        a.ang += a.spin;
+      }
+
+      // Collisions bullets/asteroids
+      for (let i=state.asteroids.length-1; i>=0; i--) {
+        const a = state.asteroids[i];
+        for (let j=state.bullets.length-1; j>=0; j--) {
+          const b = state.bullets[j];
+          if (dist2(a.x, a.y, b.x, b.y) < (a.size + b.radius) ** 2) {
+            // Hit
+            explode(a.x, a.y, Math.floor(a.size/2), 2);
+            state.score += Math.floor(50 + (44 - a.size) * 3);
+            state.bullets.splice(j,1);
+
+            // Split asteroid
+            if (a.size > 26) {
+              const childSize = a.size * 0.6;
+              state.asteroids.push(createAsteroid(a.x, a.y, childSize));
+              state.asteroids.push(createAsteroid(a.x, a.y, childSize));
+            }
+            state.asteroids.splice(i,1);
+            updateHud();
+            break;
+          }
+        }
+      }
+
+      // Collisions ship/asteroids
+      if (performance.now() > state.ship.invincibleUntil) {
+        for (let i=state.asteroids.length-1; i>=0; i--) {
+          const a = state.asteroids[i];
+          if (dist2(a.x, a.y, state.ship.x, state.ship.y) < (a.size + state.ship.radius) ** 2) {
+            explode(state.ship.x, state.ship.y, 18, 3);
+            state.lives--;
+            updateHud();
+            state.ship = createShip();
+            state.ship.invincibleUntil = performance.now() + 1500; // 1.5s invincibilité
+            if (state.lives <= 0) {
+              running = false;
+            }
+            break;
+          }
+        }
+      }
+
+      // Particules
+      for (let i=state.particles.length-1; i>=0; i--) {
+        const p = state.particles[i];
+        p.x = wrap(p.x + p.vx, w);
+        p.y = wrap(p.y + p.vy, h);
+        p.life -= dt;
+        if (p.life <= 0) state.particles.splice(i,1);
+      }
+
+      // Wave cleared?
+      if (running && state.asteroids.length === 0) nextLevel();
+    }
+
+    // ===== Render =====
+    function render(){
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width, h = rect.height;
+      ctx.clearRect(0, 0, w, h);
+
+      // Ship
+      ctx.save();
+      ctx.translate(state.ship.x, state.ship.y);
+      ctx.rotate(state.ship.ang);
+      ctx.strokeStyle = '#9dd7ff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(16, 0);
+      ctx.lineTo(-12, -10);
+      ctx.lineTo(-8, -6);
+      ctx.lineTo(-8, 6);
+      ctx.lineTo(-12, 10);
+      ctx.closePath();
+      ctx.stroke();
+      // Thruster flame
+      if (keys.has('ArrowUp')) {
+        ctx.strokeStyle = '#ffcc66';
+        ctx.beginPath();
+        ctx.moveTo(-12, 0);
+        ctx.lineTo(-22, 0);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Bullets
+      ctx.fillStyle = '#ffffff';
+      for (const b of state.bullets) {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.radius, 0, TWO_PI);
+        ctx.fill();
+      }
+
+      // Asteroids
+      ctx.strokeStyle = '#c9b7ff';
+      ctx.lineWidth = 2;
+      for (const a of state.asteroids) {
+        ctx.save();
+        ctx.translate(a.x, a.y);
+        ctx.rotate(a.ang);
+        ctx.beginPath();
+        const v = a.verts;
+        ctx.moveTo(v[0].x, v[0].y);
+        for (let i=1;i<v.length;i++) ctx.lineTo(v[i].x, v[i].y);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Particles
+      for (const p of state.particles) {
+        const alpha = Math.max(0, p.life / 800);
+        ctx.fillStyle = `rgba(255,200,120,${alpha})`;
+        ctx.fillRect(p.x, p.y, 2, 2);
+      }
+
+      // Game over overlay
+      if (!running) {
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = '#fff';
+        ctx.textAlign = 'center';
+        ctx.font = 'bold 28px system-ui';
+        ctx.fillText('Game Over', w/2, h/2 - 10);
+        ctx.font = '16px system-ui';
+        ctx.fillText('Clique sur Recommencer pour relancer', w/2, h/2 + 22);
+      }
+    }
+
+    // ===== Boucle =====
+    let last = performance.now();
+    function loop(now) {
+      const dt = now - last; last = now;
+      update(dt);
+      render();
+      requestAnimationFrame(loop);
+    }
+
+    // ===== Restart =====
+    document.getElementById('restart').addEventListener('click', resetGame);
+
+    // ===== Init =====
+    // Important: appelle resize AVANT de créer le vaisseau et la première vague
+    resetGame();
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>
