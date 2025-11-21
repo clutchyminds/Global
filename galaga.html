@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Galaga rétro HTML</title>
+  <meta name="viewport" content="width=800, initial-scale=1">
+  <style>
+    html,body {margin:0; background:#141225; height:100%; overflow: hidden;}
+    #gameCanvas {display:block; margin:auto; background:#1b1d2f; touch-action:none;}
+    #touchControls {
+      position: absolute; bottom:22px; left:50%; transform:translateX(-50%);
+      display: flex; gap: 16px; z-index:2; pointer-events: auto;
+    }
+    .btn {
+      width:54px; height:54px; border-radius:50%; border:2px solid #59b;
+      background:#273a55; color:#fff; text-align:center;font-size:28px;line-height:54px;
+      user-select:none; touch-action: manipulation; box-shadow:0 2px 10px #0038;
+    }
+  </style>
+</head>
+<body>
+<canvas id="gameCanvas" width="800" height="600"></canvas>
+<div id="touchControls">
+  <div class="btn" id="leftBtn">&#8592;</div>
+  <div class="btn" id="fireBtn">&#128165;</div>
+  <div class="btn" id="rightBtn">&#8594;</div>
+</div>
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+let W = canvas.width, H = canvas.height;
+
+// Contrôles clavier/tactile
+let keys={left:false,right:false,fire:false};
+let touches={left:false,right:false,fire:false};
+document.addEventListener("keydown", e => {
+  if(e.code=="ArrowLeft") keys.left=true;
+  if(e.code=="ArrowRight") keys.right=true;
+  if(e.code=="Space") keys.fire=true;
+  if(gameOver&&(e.code=="Enter"||e.code=="Space")) resetGame();
+});
+document.addEventListener("keyup", e => {
+  if(e.code=="ArrowLeft") keys.left=false;
+  if(e.code=="ArrowRight") keys.right=false;
+  if(e.code=="Space") keys.fire=false;
+});
+["leftBtn","rightBtn","fireBtn"].forEach(btnId=>{
+  const btn = document.getElementById(btnId);
+  let prop = btnId.replace("Btn","");
+  btn.addEventListener("touchstart", e=>{touches[prop]=true;e.preventDefault();});
+  btn.addEventListener("touchend", e=>{touches[prop]=false;e.preventDefault();});
+  btn.addEventListener("mousedown", e=>{touches[prop]=true;});
+  btn.addEventListener("mouseup", e=>{touches[prop]=false;});
+});
+
+// Variables du jeu
+let player, enemies, bullets, enemyBullets, score, gameOver, level, enemyWave;
+function resetGame() {
+  player = {x:W/2, y:H-50, w:44, h:18, cooldown:0, lives:3};
+  bullets=[]; enemyBullets=[]; score=0; gameOver=false; level=1;
+  spawnWave();
+}
+function spawnWave() {
+  enemies = [];
+  enemyWave = Math.min(6,2+level); // nb rangées
+  for(let r=0;r<enemyWave;r++)
+    for(let c=0;c<8;c++)
+      enemies.push({
+        x:110+c*70, y:55+r*50, w:36, h:24, alive:true, dir:1,
+        ty:55+r*50, phase:r, t:0
+      });
+}
+resetGame();
+
+// Mouvement ennemi (sinusoïdal et descente occasionnelle)
+let enemyFrame = 0;
+function moveEnemies(){
+  enemyFrame++;
+  let speed = 1.7+(level-1)*0.27;
+  for(let e of enemies) if(e.alive) {
+    e.t++;
+    // Mouvement sinusoïdal, descente occasionnelle
+    e.x += Math.cos(e.t*0.041+e.phase)*0.9*e.dir;
+    e.y = e.ty + Math.sin(e.t*0.069+e.phase*2)*(12+e.phase*6);
+    // Changement direction si bord
+    if((e.x<16 && e.dir<0)||(e.x>W-16-e.w && e.dir>0)) e.dir*=-1;
+    // Tirs aléatoires
+    if(Math.random()<0.002*level) enemyBullets.push({x:e.x+e.w/2, y:e.y+e.h, vy:3+Math.random()*1.7});
+  }
+}
+
+function handleInput(){
+  if(keys.left||touches.left) player.x -= 6;
+  if(keys.right||touches.right) player.x += 6;
+  player.x = Math.max(8,Math.min(W-8-player.w,player.x));
+  // Tir joueur
+  if((keys.fire||touches.fire)&&player.cooldown<=0&&!gameOver){
+    bullets.push({x:player.x+player.w/2, y:player.y-10, vy:-10});
+    player.cooldown=15;
+  }
+  player.cooldown = Math.max(0,player.cooldown-1);
+}
+
+function gameLoop(){
+  if(gameOver) return;
+  handleInput(); moveEnemies();
+  for(let b of bullets) b.y += b.vy;
+  for(let eb of enemyBullets) eb.y += eb.vy;
+  // Collision balle joueur <-> ennemi
+  for(let e of enemies) if(e.alive)
+    for(let i=bullets.length-1;i>=0;i--){
+      let b=bullets[i];
+      if(b.x>e.x&&b.x<e.x+e.w&&b.y>e.y&&b.y<e.y+e.h){
+        e.alive=false; score+=80-(e.phase*16)-(level*8); bullets.splice(i,1);break;
+      }
+    }
+  bullets = bullets.filter(b=>b.y>-30);
+  enemyBullets = enemyBullets.filter(eb=>eb.y<H+20);
+  // Collision vaisseau <-> tir ennemi
+  for(let eb of enemyBullets){
+    if(eb.y>=player.y&&eb.x>player.x&&eb.x<player.x+player.w&&eb.y<=player.y+player.h){
+      player.lives--;
+      enemyBullets.length=0;
+      if(player.lives<=0){gameOver=true;}
+      else player.x=W/2;
+      break;
+    }
+  }
+  // Collision ennemi <-> joueur (descente)
+  for(let e of enemies) if(e.alive&&e.y+e.h>player.y){
+    player.lives=0; gameOver=true; break;
+  }
+  // Niveau terminé ?
+  if(enemies.every(e=>!e.alive)){
+    level++;
+    setTimeout(spawnWave,640);
+  }
+}
+
+// Dessin du jeu
+function drawPlayer(){
+  ctx.save();
+  ctx.fillStyle="#ace";
+  ctx.fillRect(player.x,player.y,player.w,player.h);
+  ctx.fillStyle="#6e2";
+  ctx.fillRect(player.x+player.w/3,player.y-10,player.w/3,11);
+  ctx.restore();
+}
+function drawEnemy(e){
+  ctx.save();
+  ctx.translate(e.x+e.w/2,e.y+e.h/2);
+  ctx.scale(1,1);
+  ctx.strokeStyle="#fff";
+  ctx.fillStyle=e.phase%2?"#a4fa":"#e8a";
+  ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.arc(0,0,11,Math.PI*0.33,Math.PI*1.7,false);
+  ctx.lineTo(-13,0); ctx.closePath(); ctx.fill(); ctx.stroke();
+  // ailes
+  ctx.fillStyle="#fea";
+  ctx.fillRect(-15,2,30,5);
+  ctx.restore();
+}
+function drawBullet(b,hostile){
+  ctx.save();
+  ctx.strokeStyle=hostile?"#fa3":"#7fc";
+  ctx.lineWidth=hostile?5:3;
+  ctx.beginPath();
+  ctx.moveTo(b.x,b.y); ctx.lineTo(b.x,b.y+(hostile?18:-18));
+  ctx.stroke(); ctx.restore();
+}
+function draw(){
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,W,H);
+  for(let s=0;s<34;s++){
+    ctx.globalAlpha=0.36+Math.random()*0.24;
+    ctx.fillStyle="#fff";
+    ctx.beginPath();
+    ctx.arc(Math.random()*W,Math.random()*H,Math.random()*1.5+0.2,0,2*Math.PI);
+    ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  drawPlayer();
+  for(let e of enemies) if(e.alive) drawEnemy(e);
+  for(let b of bullets) drawBullet(b,false);
+  for(let eb of enemyBullets) drawBullet(eb,true);
+  // UI
+  ctx.font="21px monospace"; ctx.fillStyle="#fff";
+  ctx.fillText("Score:"+score,20,32);
+  ctx.fillText("Vies:"+player.lives,20,58);
+  ctx.fillText("Niveau:"+level,20,84);
+  if(gameOver){
+    ctx.globalAlpha=0.83;
+    ctx.fillStyle="#000";
+    ctx.fillRect(W/2-120,H/2-64,242,110);
+    ctx.globalAlpha=1;
+    ctx.fillStyle="#fff"; ctx.textAlign="center";
+    ctx.font="32px monospace";
+    ctx.fillText("GAME OVER",W/2,H/2-11);
+    ctx.font="22px monospace";
+    ctx.fillText("Score final : "+score,W/2,H/2+25);
+    ctx.fillText("Entrée/Espace/bouton rejouer",W/2,H/2+57);
+  }
+}
+// Boucle principale
+function mainLoop(){
+  gameLoop(); draw();
+  requestAnimationFrame(mainLoop);
+}
+mainLoop();
+</script>
+</body>
+</html>
