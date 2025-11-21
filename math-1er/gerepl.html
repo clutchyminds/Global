@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass – Géométrie repérée dans le plan</title>
+    <meta name="description" content="Tout pour maîtriser la géométrie repérée : coordonnées, droites, distance, exercices, quiz, lexique, applications et histoire, avec graphismes modernes.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#deffe4 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.3rem; margin: 0 0 10px; color: #1877f2;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 750px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #e7ffe7; border-left: 7px solid #167c2b; font-style: italic; margin: 1em 0; padding: 12px 17px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 12px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Géométrie repérée dans le plan</h1>
+    <div class="intro">
+        Les outils essentiels pour tout mathématicien, programmeur ou physicien :  
+        <b>Coordonnées, distance, équations de droites et applications concrètes !</b>
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Définition et cadre</h2>
+    <div class="infos">Le plan est un espace doté d’un repère \( (O,\,\vec{i},\,\vec{j}) \) où chaque point a des coordonnées \( (x, y) \).<br>
+    On peut ainsi calculer des distances, des milieux, des équations avec précision et modéliser des situations réelles ou informatiques.</div>
+    <ul>
+        <li>Exemples : point A(3 ; -2), vecteur \( \vec{u} = (x_u, y_u) \)</li>
+        <li>Le repère est souvent orthonormé (axes perpendiculaires, unité 1 sur chaque)</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Formules et propriétés majeures</h2>
+    <ul>
+        <li><b>Distance entre deux points</b> A(xA ; yA), B(xB ; yB) :  
+            \( AB = \sqrt{(x_B-x_A)^2 + (y_B-y_A)^2} \ )</li>
+        <li><b>Milieu</b> de [AB] :  
+            \( M = \left( \frac{x_A+x_B}{2},\,\frac{y_A+y_B}{2} \right) \)</li>
+        <li><b>Équation de droite</b> passant par A et de vecteur directeur \( \vec{u}(a, b) \) :  
+            \( y = mx + p \) si possible,  
+            ou sous forme cartésienne : \( ax + by + c = 0 \)</li>
+        <li>Vecteur \( \vec{AB} = (x_B-x_A,\,y_B-y_A) \)</li>
+    </ul>
+    <div class="box-important">
+        Astuce : Utilise les coordonnées pour généraliser tous les calculs géométriques — simplifie la vie en programmation !
+    </div>
+</section>
+<section>
+    <h2>🟦 Schéma interactif : deux points, milieu et droite</h2>
+    <label>A_x: <input type="number" id="Ax" value="2"></label>
+    <label>A_y: <input type="number" id="Ay" value="1"></label>
+    <label>B_x: <input type="number" id="Bx" value="7"></label>
+    <label>B_y: <input type="number" id="By" value="5"></label>
+    <canvas id="schema" width="440" height="260"></canvas>
+    <div id="desc-geom"></div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>Dans le repère, A(2 ; 1), B(7 ; 5). Calcule la distance AB et le milieu M.</p>
+    <button onclick="afficheReponseGeom()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-geom" style="display:none;">
+        Distance : \( AB = \sqrt{(7-2)^2 + (5-1)^2} = \sqrt{25+16} = \sqrt{41} \approx 6,4 \)<br>
+        Milieu : M = \( \left( \frac{2+7}{2},\,\frac{1+5}{2} \right) = (4, 3) \)
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>Détermine l’équation cartésienne de la droite passant par A(2 ; 1) et B(7 ; 5).</p>
+    <button onclick="document.getElementById('exo2-reponse-geom').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-geom" style="display:none;">
+        Vecteur directeur : \( \vec{AB} = (5, 4) \)<br>
+        Équation : \( y - 1 = \frac{4}{5}(x - 2) \) ou \( 4x - 5y + 1 = 0 \)
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>Le milieu du segment [AB] d’A(0 ; 6), B(4 ; 2) est :</p>
+    <button onclick="quizG(0)">(2 ; 4)</button>
+    <button onclick="quizG(1)">(1 ; 8)</button>
+    <button onclick="quizG(2)">(0 ; 2)</button>
+    <div class="reponse" id="rep-quiz-g"></div>
+    <p>La distance entre les points A(0;0) et B(3;4) est :</p>
+    <button onclick="quizG2(0)">5</button>
+    <button onclick="quizG2(1)">6</button>
+    <button onclick="quizG2(2)">7</button>
+    <div class="reponse" id="rep-quiz-g2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li><b>Physique</b> : positions, trajectoires, mouvement rectiligne, centre de masse…</li>
+        <li><b>Informatique</b> : dessin, modélisation, algorithmes de collision, repérage GPS…</li>
+        <li><b>Maths :</b> calculs d’aires, d’intersections, géométrie analytique…</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Oublier de bien repérer les axes (x/y, sens)</li>
+        <li>Mal utiliser la formule de distance ou de milieu</li>
+        <li>Confondre équation de droite cartésienne et affine</li>
+        <li>Oublier que le repère peut être non orthonormé</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Repère :</b> ensemble {O ; vecteurs de base} pour calculer positions<br>
+    <b>Coordonnées :</b> nombres repérant un point [(x ; y)]<br>
+    <b>Vecteur directeur :</b> vecteur indiquant la direction d’une droite<br>
+    <b>Équation cartésienne :</b> équation générale de droite dans le plan
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>La géométrie analytique est née avec René Descartes au XVIIe siècle !</li>
+        <li>Le calcul des coordonnées a permis de relier algèbre et géométrie</li>
+        <li>Aujourd’hui, indispensable de la physique au GPS !</li>
+    </ul>
+    <div class="source">Source : histoire des maths, Wikipedia</div>
+</section>
+<section class="anecdote">
+    <b>Astuce-mémoire :</b> Pour trouver le milieu, “moitié route” : tu fais la moyenne de chaque coordonnée !
+</section>
+<section>
+    <h2>💡 Méthodologie pour réussir</h2>
+    <ul>
+        <li>Trace toujours un schéma avec les points et leurs coordonnées</li>
+        <li>Recalcule chaque étape (vecteurs, distance, milieu, équation)</li>
+        <li>Utilise le module interactif pour t’entraîner à visualiser</li>
+        <li>Teste différents cas (alignés, non alignés, vertical/horizontal)</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizG(rep) {
+    let repElem = document.getElementById("rep-quiz-g");
+    repElem.textContent = (rep === 0) ? "Bravo ! (2 ; 4) est bien le milieu." : "Faux, refais la formule du milieu.";
+}
+function quizG2(rep) {
+    let repElem = document.getElementById("rep-quiz-g2");
+    repElem.textContent = (rep === 0) ? "Bonne réponse ! √(3²+4²) = √9+16 = √25 = 5." : "Incorrect, calcule bien la distance.";
+}
+function afficheReponseGeom() {
+    document.getElementById("exo-reponse-geom").style.display = "block";
+}
+function drawGeometrie() {
+    let Ax = parseFloat(document.getElementById("Ax").value);
+    let Ay = parseFloat(document.getElementById("Ay").value);
+    let Bx = parseFloat(document.getElementById("Bx").value);
+    let By = parseFloat(document.getElementById("By").value);
+    let canvas = document.getElementById("schema");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, 440, 260);
+    // Axes
+    ctx.strokeStyle="#aaa"; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(40,220); ctx.lineTo(420,220); ctx.moveTo(40,40); ctx.lineTo(40,220); ctx.stroke();
+    // Points scaled
+    let f = 30, ox=40, oy=220;
+    let Axp = ox+f*Ax, Ayp = oy-f*Ay, Bxp = ox+f*Bx, Byp = oy-f*By;
+    // Points
+    ctx.beginPath(); ctx.arc(Axp,Ayp,5,0,2*Math.PI); ctx.fillStyle="#1877f2"; ctx.fill();
+    ctx.fillText("A",Axp+7,Ayp-8); ctx.fillText("("+Ax+","+Ay+")",Axp-14,Ayp+18);
+    ctx.beginPath(); ctx.arc(Bxp,Byp,5,0,2*Math.PI); ctx.fillStyle="#167c2b"; ctx.fill();
+    ctx.fillText("B",Bxp+7,Byp-8); ctx.fillText("("+Bx+","+By+")",Bxp-14,Byp+18);
+    // Segment AB
+    ctx.beginPath(); ctx.moveTo(Axp,Ayp); ctx.lineTo(Bxp,Byp);
+    ctx.strokeStyle="#a133ff"; ctx.lineWidth=3; ctx.stroke();
+    // Milieu
+    let Mxp=(Axp+Bxp)/2, Myp=(Ayp+Byp)/2;
+    ctx.beginPath(); ctx.arc(Mxp,Myp,5,0,2*Math.PI); ctx.fillStyle="#ffa500"; ctx.fill();
+    ctx.fillText("M",Mxp+7,Myp-8);
+    // Equation de la droite (optionnel, left as segment above)
+    // Description
+    let dist = Math.sqrt((Bx-Ax)**2 + (By-Ay)**2);
+    let mx = (Ax+Bx)/2, my=(Ay+By)/2;
+    document.getElementById("desc-geom").innerHTML =
+        "AB = "+dist.toFixed(2)+", Milieu M = ("+mx+", "+my+")";
+}
+drawGeometrie();
+document.getElementById("Ax").addEventListener("input", drawGeometrie);
+document.getElementById("Ay").addEventListener("input", drawGeometrie);
+document.getElementById("Bx").addEventListener("input", drawGeometrie);
+document.getElementById("By").addEventListener("input", drawGeometrie);
+</script>
+</body>
+</html>

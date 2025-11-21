@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass — Équation de cercle</title>
+    <meta name="description" content="Tout sur l’équation de cercle : définitions, propriétés, méthodes, schéma dynamique, exercices, quiz, applications, lexique et histoire, pour la spé maths.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#def9fc 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #e7ffe7; border-left: 7px solid #167c2b; font-style: italic; margin: 1em 0; padding: 12px 17px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 14px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Équation de cercle</h1>
+    <div class="intro">
+        Pour tout comprendre (et réussir) sur les cercles dans le plan cartésien :  
+        équation, position, distance, intersections, schéma interactif, exos et astuces !
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Définition</h2>
+    <div class="infos">
+        Un cercle de centre \( C(a ; b) \) et de rayon \( r > 0 \) est l’ensemble des points \( M(x ; y) \) tels que :  
+        <b>\( (x - a)^2 + (y - b)^2 = r^2 \)</b>
+    </div>
+    <ul>
+        <li>L’équation traduit la propriété de distance constante entre tout point du cercle et le centre.</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Propriétés et équations dérivées</h2>
+    <ul>
+        <li>Centre : \( C(a ; b) \), rayon \( r \).</li>
+        <li>Si le cercle a pour centre O(0 ; 0), son équation se simplifie en : \( x^2 + y^2 = r^2 \).</li>
+        <li>Pour vérifier si un point \( P(x0 ; y0) \) appartient au cercle, il suffit de tester l’équation.</li>
+        <li>Équation développée : \( x^2 + y^2 + m x + n y + p = 0 \) où \( m, n, p \) déterminent centre/rayon.</li>
+        <li>
+          <b>Distance d’un point au centre</b> :  
+          \( d(M, C) = \sqrt{(x - a)^2 + (y - b)^2} \)
+        </li>
+    </ul>
+    <div class="box-important">
+        Astuce : La géométrie analytique permet de transformer tout problème géométrique en équation à résoudre (super utile en programmation ou IA !).
+    </div>
+</section>
+<section>
+    <h2>🟦 Schéma interactif — cercle variable</h2>
+    <label>C_x: <input type="number" id="Cx" value="5"></label>
+    <label>C_y: <input type="number" id="Cy" value="3"></label>
+    <label>r: <input type="number" id="r" value="4"></label>
+    <canvas id="schema" width="380" height="260"></canvas>
+    <div id="desc-cercle"></div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>Donne l’équation réduite du cercle de centre C(5 ; 3) et de rayon 4.</p>
+    <button onclick="afficheReponseCercle()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-cercle" style="display:none;">
+        \( (x - 5)^2 + (y - 3)^2 = 16 \)
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>Le point P(8 ; 7) appartient-il au cercle de centre (5 ; 3), rayon 5 ?</p>
+    <button onclick="document.getElementById('exo2-reponse-cercle').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-cercle" style="display:none;">
+        Calcul : \( (8-5)^2 + (7-3)^2 = 9 + 16 = 25 \), donc oui : P appartient au cercle car \( 25 = 5^2 \)
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>Le cercle de centre O(0 ; 0), rayon 3, a pour équation :</p>
+    <button onclick="quizCercle(0)">\( x^2 + y^2 = 9 \)</button>
+    <button onclick="quizCercle(1)">\( (x-3)^2 + (y-3)^2 = 9 \)</button>
+    <button onclick="quizCercle(2)">\( x^2 + y^2 = 6 \)</button>
+    <div class="reponse" id="rep-quiz-cercle"></div>
+    <p>Une équation développée comme \( x^2 + y^2 - 2x + 6y - 6 = 0 \) est un cercle de centre :</p>
+    <button onclick="quizCercle2(0)">(1 ; -3)</button>
+    <button onclick="quizCercle2(1)">(2 ; 6)</button>
+    <button onclick="quizCercle2(2)">(1 ; 3)</button>
+    <div class="reponse" id="rep-quiz-cercle2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li><b>Maths/Physique :</b> trajectoires, construction géométrique, modélisation de mouvement circulaire</li>
+        <li><b>Informatique :</b> détection de collision dans les jeux vidéo, prog graphique…</li>
+        <li><b>Technologie :</b> radio, satellite (réception en zone circulaire), robotique, etc.
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Oublier de mettre au carré le rayon dans l’équation</li>
+        <li>Mal placer les signes dans les équations \((x - a)\) et \((y - b)\)</li>
+        <li>Confondre centre du cercle et point du cercle</li>
+        <li>Penser que tout polynôme du 2d degré est un cercle <i>(voir ellipse, parabole…)</i></li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Cercle :</b> ensemble de points à distance constante du centre<br>
+    <b>Rayon :</b> distance du centre à un point du cercle<br>
+    <b>Équation réduite :</b> \( (x - a)^2 + (y - b)^2 = r^2 \ )<br>
+    <b>Équation développée :</b> développée en \( x^2, y^2, x, y \) et constante
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>Les cercles fascinent depuis l’Antiquité (Pi, Aristarque, Euclide…)</li>
+        <li>Descartes a permis leur “traduction” en équations cartésiennes</li>
+        <li>Ils apparaissent partout : roues, horloges, planètes, signaux hertziens…</li>
+    </ul>
+    <div class="source">Source : histoire des maths, Wikipedia</div>
+</section>
+<section class="anecdote">
+    <b>Astuce-mémoire :</b> Retire “centre” = translation (\(x-a\)), “rayon carré” = r², c’est tout !  
+</section>
+<section>
+    <h2>💡 Méthodologie pour réussir</h2>
+    <ul>
+        <li>Repère toujours le centre et le rayon (attention aux signes !)</li>
+        <li>Teste un point dans l’équation si tu as un doute</li>
+        <li>Sache développer et factoriser une équation de cercle</li>
+        <li>Utilise le schéma interactif pour t’entraîner à visualiser</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizCercle(rep) {
+    let repElem = document.getElementById("rep-quiz-cercle");
+    repElem.textContent = (rep === 0) ? "Bonne réponse ! centre O, rayon 3 ⇒ x² + y² = 9" : "Faux : revois l’équation standard.";
+}
+function quizCercle2(rep) {
+    let repElem = document.getElementById("rep-quiz-cercle2");
+    repElem.textContent = (rep === 0) ? "Bravo : centre (1 ; -3) ! Attention au signe de y." : "Non, revois la technique : x²-2x = (x-1)²-1 ; y²+6y = (y+3)²-9";
+}
+function afficheReponseCercle() {
+    document.getElementById("exo-reponse-cercle").style.display = "block";
+}
+function drawCercle() {
+    let Cx = parseFloat(document.getElementById("Cx").value);
+    let Cy = parseFloat(document.getElementById("Cy").value);
+    let r = parseFloat(document.getElementById("r").value);
+    let canvas = document.getElementById("schema");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, 380, 260);
+    // Axes
+    ctx.strokeStyle="#aaa"; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(20,130); ctx.lineTo(360,130); ctx.moveTo(190,20); ctx.lineTo(190,240); ctx.stroke();
+    // Cercle (axes centrés autour de (0,0) en (190,130))
+    ctx.beginPath();
+    ctx.arc(190+25*(Cx-0),130-25*(Cy-0),25*r,0,2*Math.PI);
+    ctx.strokeStyle="#1877f2"; ctx.lineWidth=3; ctx.stroke();
+    // Centre
+    ctx.beginPath(); ctx.arc(190+25*Cx,130-25*Cy,5,0,2*Math.PI); ctx.fillStyle="#243552"; ctx.fill();
+    ctx.font = "12px Arial";
+    ctx.fillStyle="#243552"; ctx.fillText("C ("+Cx+" ; "+Cy+")",190+25*Cx+6,130-25*Cy-6);
+    // Rayon
+    ctx.beginPath(); ctx.moveTo(190+25*Cx,130-25*Cy);
+    ctx.lineTo(190+25*Cx+25*r,130-25*Cy);
+    ctx.strokeStyle="#a133ff"; ctx.setLineDash([5,4]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillText("r = "+r,190+25*Cx+10+25*r/2,130-25*Cy-8);
+    // Description
+    document.getElementById("desc-cercle").innerHTML =
+        "Centre C = ("+Cx+" ; "+Cy+"), rayon = "+r+"<br>Équation : (x - "+Cx+")² + (y - "+Cy+")² = "+(r*r);
+}
+drawCercle();
+document.getElementById("Cx").addEventListener("input", drawCercle);
+document.getElementById("Cy").addEventListener("input", drawCercle);
+document.getElementById("r").addEventListener("input", drawCercle);
+</script>
+</body>
+</html>

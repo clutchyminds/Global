@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass – Produit scalaire et géométrie</title>
+    <meta name="description" content="Fiche détaillée sur le produit scalaire : définitions, propriétés, applications, quiz, exercices interactifs, lexique, astuces et anecdotes pour progresser en spé math/physique.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#ddebf6 80%); color: #243552; padding: 30px 0 12px; text-align: center;}
+        header h1 { font-size: 2.3rem; margin: 0 0 10px; color: #1877f2;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 750px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #e7ffe7; border-left: 7px solid #167c2b; font-style: italic; margin: 1em 0; padding: 12px 17px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 12px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass – Produit scalaire</h1>
+    <div class="intro">
+        L’outil incontournable pour la géométrie, la physique, l’algèbre et la modélisation.<br>
+        Définitions, propriétés, applications, schéma dynamique, quiz et exercices corrigés !
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Qu’est-ce que le produit scalaire ?</h2>
+    <div class="infos">
+        <b>Produit scalaire</b> : opération entre deux vecteurs \( \vec{u},\,\vec{v} \) qui renvoie un nombre réel.<br>
+        Interprétation : “projection” d’un vecteur dans la direction d’un autre : quantifie combien ils sont “alignés”.
+    </div>
+    <ul>
+        <li>Formule dans le plan : \( \vec{u}\cdot\vec{v} = x_u x_v + y_u y_v \)</li>
+        <li>Formule géométrique : \( \vec{u}\cdot\vec{v} = ||\vec{u}|| \cdot ||\vec{v}|| \cdot \cos\theta \), où θ = angle entre u et v</li>
+        <li>Si \( \vec{u}\cdot\vec{v} = 0 \) alors u ⟂ v (orthogonaux/perpendiculaires)</li>
+        <li>Scalaires/direction : positif, nul ou négatif selon l’angle</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Propriétés et usages</h2>
+    <ul>
+        <li>Linéarité : \( k\vec{u}\cdot\vec{v} = k(\vec{u}\cdot\vec{v}) \)</li>
+        <li>Symétrie : \( \vec{u}\cdot\vec{v} = \vec{v}\cdot\vec{u} \)</li>
+        <li>Orthogonalité : si produit scalaire nul, les vecteurs sont perpendiculaires</li>
+        <li>Norme d’un vecteur : \( \vec{u}\cdot\vec{u} = ||\vec{u}||^2 \)</li>
+    </ul>
+    <table class="formules">
+        <tr><th>Cas</th><th>Produit scalaire</th><th>Interprétation</th></tr>
+        <tr><td>Angle droit</td><td>0</td><td>Vecteurs orthogonaux</td></tr>
+        <tr><td>Angle aigu (0 &lt; θ &lt; 90°)</td><td>&gt; 0</td><td>“Même sens”</td></tr>
+        <tr><td>Angle obtus (90 &lt; θ &lt; 180°)</td><td>&lt; 0</td><td>“Sens opposés”</td></tr>
+    </table>
+    <div class="box-important">
+        Astuce : Utilise le produit scalaire pour repérer rapidement si deux vecteurs sont perpendiculaires !
+    </div>
+</section>
+<section>
+    <h2>🟦 Schéma dynamique : angle et produit scalaire de deux vecteurs</h2>
+    <label>u_x: <input type="number" id="ux" value="4"></label>
+    <label>u_y: <input type="number" id="uy" value="2"></label>
+    <label>v_x: <input type="number" id="vx" value="1"></label>
+    <label>v_y: <input type="number" id="vy" value="3"></label>
+    <canvas id="schema" width="360" height="250"></canvas>
+    <div id="desc-scalaire"></div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>Soit \( \vec{a} = (3, 4) \) et \( \vec{b} = (2, -1) \). Calcule \( \vec{a} \cdot \vec{b} \) et l’angle θ entre ces vecteurs.</p>
+    <button onclick="afficheReponsePS()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-ps" style="display:none;">
+        \( \vec{a} \cdot \vec{b} = 3\times2 + 4\times(-1) = 6-4 = 2 \)<br>
+        Normes : \( ||\vec{a}||=5 \), \( ||\vec{b}||=\sqrt{5} \approx 2,24 \)<br>
+        θ = arccos( \( \frac{2}{5\times2,24} \approx 0{,}18 \) ) ≈ 79,6°
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>Soient \( \vec{u} = (1,2) \) et \( \vec{v} = (1,-2) \). Les vecteurs sont-ils orthogonaux ?</p>
+    <button onclick="document.getElementById('exo2-reponse-ps').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-ps" style="display:none;">
+        Produit scalaire : \( 1\times1 + 2\times(-2) = 1 - 4 = -3 \) donc non, ils ne sont pas orthogonaux
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>Le produit scalaire de deux vecteurs orthogonaux est…</p>
+    <button onclick="quizPS(0)">Toujours positif</button>
+    <button onclick="quizPS(1)">Zéro</button>
+    <button onclick="quizPS(2)">Toujours négatif</button>
+    <div class="reponse" id="rep-quiz-ps"></div>
+    <p>Si \( \vec{u} \cdot \vec{v} &lt; 0 \), alors l’angle entre u et v est…</p>
+    <button onclick="quizPS2(0)">aigu</button>
+    <button onclick="quizPS2(1)">obtus</button>
+    <div class="reponse" id="rep-quiz-ps2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li><b>Physique</b> : calcul du travail d’une force \( W = \vec{F}·\vec{d} \)</li>
+        <li><b>Maths :</b> vérification d’orthogonalité, calculs d’angles</li>
+        <li><b>Info/Graphisme :</b> shaders 3D, recherche de collisions, IA</li>
+        <li><b>Ingénierie :</b> calculs structuraux, efforts directionnels</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Prendre le mauvais angle (\( \cos \theta \))</li>
+        <li>Mal calculer les coordonnées et la norme d’un vecteur</li>
+        <li>Confondre la formule géométrique et algébrique</li>
+        <li>Oublier que le produit scalaire NUL = orthogonalité</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Produit scalaire</b>: opération entre deux vecteurs qui quantifie leur “alignement”<br>
+    <b>Norme</b>: longueur d’un vecteur<br>
+    <b>Orthogonalité</b>: perpendiculaires, produit scalaire nul<br>
+    <b>Angle obtus</b>: produit scalaire négatif
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>Inventé par Grassmann et Hamilton au XIXe siècle</li>
+        <li>Le produit scalaire relie le calcul vectoriel à la géométrie euclidienne</li>
+        <li>Aujourd’hui, indispensable de la physique quantique au design 3D !</li>
+    </ul>
+    <div class="source">Source : histoire des maths, Wikipedia</div>
+</section>
+<section class="anecdote">
+    <b>Astuce-mémoire :</b> Pour l’orthogonalité, pense à un angle droit sur ta feuille, 90° : \( \cos(90°) = 0 \), donc produit scalaire nul !
+</section>
+<section>
+    <h2>💡 Méthodologie pour le produit scalaire</h2>
+    <ul>
+        <li>Recalcule les coordonnées avant d’appliquer la formule</li>
+        <li>Pense angle/vecteurs et interprétation physique</li>
+        <li>Teste tous les cas : angle aigu, angle droit, angle obtus</li>
+        <li>Utilise le schéma dynamique pour visualiser la projection</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizPS(rep) {
+    let repElem = document.getElementById("rep-quiz-ps");
+    repElem.textContent = (rep === 1) ? "Bonne réponse ! Produit scalaire nul = orthogonalité." : "Faux, relis la propriété géométrique.";
+}
+function quizPS2(rep) {
+    let repElem = document.getElementById("rep-quiz-ps2");
+    repElem.textContent = (rep === 1) ? "Exact : produit scalaire négatif = angle obtus (>90°)." : "Non, uniquement si produit scalaire positif = angle aigu.";
+}
+function afficheReponsePS() {
+    document.getElementById("exo-reponse-ps").style.display = "block";
+}
+// Schéma dynamique
+function drawScalaire() {
+    let ux = parseFloat(document.getElementById("ux").value);
+    let uy = parseFloat(document.getElementById("uy").value);
+    let vx = parseFloat(document.getElementById("vx").value);
+    let vy = parseFloat(document.getElementById("vy").value);
+    let canvas = document.getElementById("schema");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, 360, 250);
+    // Origine au centre
+    let ox = 60, oy = 190;
+    // u
+    ctx.beginPath();
+    ctx.moveTo(ox, oy); ctx.lineTo(ox+25*ux, oy-25*uy);
+    ctx.strokeStyle="#1877f2"; ctx.lineWidth=3; ctx.stroke();
+    ctx.font="12px Arial"; ctx.fillStyle="#1877f2"; ctx.fillText("u",ox+25*ux,oy-25*uy+16);
+    // v
+    ctx.beginPath();
+    ctx.moveTo(ox, oy); ctx.lineTo(ox+25*vx, oy-25*vy);
+    ctx.strokeStyle="#167c2b"; ctx.lineWidth=3; ctx.stroke();
+    ctx.font="12px Arial"; ctx.fillStyle="#167c2b"; ctx.fillText("v",ox+25*vx,oy-25*vy+16);
+    // Angle entre vecteurs
+    let dot = ux*vx + uy*vy;
+    let normu = Math.sqrt(ux*ux+uy*uy), normv = Math.sqrt(vx*vx+vy*vy);
+    let cos_theta = dot/(normu*normv);
+    let theta = Math.acos(cos_theta)*180/Math.PI;
+    document.getElementById("desc-scalaire").innerHTML =
+        "u = ("+ux+", "+uy+"), v = ("+vx+", "+vy+")<br>Produit scalaire = "+dot+"<br>Angulaire θ ≈ "+theta.toFixed(1)+"°";
+    // Point Origine
+    ctx.beginPath(); ctx.arc(ox,oy,4,0,2*Math.PI); ctx.fillStyle="#222"; ctx.fill();
+}
+drawScalaire();
+document.getElementById("ux").addEventListener("input", drawScalaire);
+document.getElementById("uy").addEventListener("input", drawScalaire);
+document.getElementById("vx").addEventListener("input", drawScalaire);
+document.getElementById("vy").addEventListener("input", drawScalaire);
+</script>
+</body>
+</html>

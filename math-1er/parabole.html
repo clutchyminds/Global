@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass — Paraboles</title>
+    <meta name="description" content="La parabole expliquée : équations, propriétés, schéma interactif, exercices, quiz, applications et histoire, pour la spé maths/physique.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#eafdec 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #eeeaff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 14px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Paraboles</h1>
+    <div class="intro">
+        Comprends tout sur les paraboles : équations, variations, schéma dynamique et applications (trajectoire, optique, architecture !)
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Définition & équations</h2>
+    <div class="infos">
+        Une parabole est la courbe représentative d’une fonction polynôme du second degré :  
+        <b>\( y = ax^2 + bx + c \)</b> où \( a ≠ 0 \).
+        Son sommet est en \( (\alpha ; \beta) \), avec \( \alpha = -\frac{b}{2a} \), \( \beta = f(\alpha) \).
+    </div>
+    <ul>
+        <li>Ouvre vers le haut si \( a > 0 \), vers le bas si \( a < 0 \).</li>
+        <li>Symétrique par rapport à l’axe vertical passant par le sommet.</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Propriétés géométriques</h2>
+    <ul>
+        <li><b>Sommet</b> :  
+            \( S\left(-\frac{b}{2a} ;\,f\left(-\frac{b}{2a}\right)\right) \)</li>
+        <li><b>Discriminant</b> :  
+            \( \Delta = b^2 - 4ac \) (nombre de racines de l’équation \( ax^2+bx+c=0 \))</li>
+        <li><b>Racines/résolution</b> :  
+            Si \( \Delta > 0 \), 2 racines ; \( \Delta = 0 \), 1 racine double ; \( \Delta < 0 \), pas de racine réelle.</li>
+        <li><b>Variations</b> :  
+            Si \( a > 0 \) : décroissante puis croissante.<br>
+            Si \( a < 0 \) : croissante puis décroissante.</li>
+    </ul>
+    <div class="box-important">
+        Astuce : La parabole modélise aussi bien un lancer de balle qu’un miroir d’antenne télé !
+    </div>
+</section>
+<section>
+    <h2>🟦 Schéma interactif — parabole dynamique</h2>
+    <label>a: <input type="number" id="a" value="1" step="0.1"></label>
+    <label>b: <input type="number" id="b" value="0" step="0.1"></label>
+    <label>c: <input type="number" id="c" value="0" step="0.1"></label>
+    <canvas id="schema" width="410" height="260"></canvas>
+    <div id="desc-parabole"></div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>Soit \( f(x) = 2x^2 - 8x + 6 \). Calcule le sommet et les racines.</p>
+    <button onclick="afficheReponseParabole()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-parabole" style="display:none;">
+        \( \alpha = \frac{8}{4} = 2,\, \beta = f(2) = 2 \times 4 - 8 \times 2 + 6 = 8 - 16 + 6 = -2 \)<br>
+        \( \Delta = 64 - 48 = 16 \), racines \( x_1 = 1,\, x_2 = 3 \)
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>Donne la forme canonique de \( x^2 - 4x + 5 \).</p>
+    <button onclick="document.getElementById('exo2-reponse-parabole').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-parabole" style="display:none;">
+        Forme canonique : \( (x-2)^2 + 1 \)
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>La parabole de \( f(x) = -x^2 + 2x - 1 \) est :</p>
+    <button onclick="quizP(0)">Ouverte vers le haut</button>
+    <button onclick="quizP(1)">Ouverte vers le bas</button>
+    <div class="reponse" id="rep-quiz-p"></div>
+    <p>Le sommet de la parabole \( y = x^2 - 6x + 8 \) est :</p>
+    <button onclick="quizP2(0)">(3 ; -1)</button>
+    <button onclick="quizP2(1)">(8 ; -6)</button>
+    <button onclick="quizP2(2)">(6 ; 8)</button>
+    <div class="reponse" id="rep-quiz-p2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li><b>Physique</b> : trajectoire des projectiles, miroir/parabole satellite, lumière</li>
+        <li><b>Maths :</b> optimisation, évolution quadratique, étude de fonctions</li>
+        <li><b>Info/Jeux vidéo :</b> mouvements, graphisme, simulation de trajectoire</li>
+        <li><b>Ingénierie/Archit.</b> : pont suspendu, paraboloïde de rotations</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Confondre les “sens” de la parabole (a > 0 ou a < 0)</li>
+        <li>Mal appliquer la formule du sommet</li>
+        <li>Oublier de calculer le discriminant pour l’équation</li>
+        <li>Ne pas simplifier la forme canonique</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Parabole :</b> courbe du second degré<br>
+    <b>Sommet :</b> extrémum de la courbe<br>
+    <b>Forme canonique :</b> écriture \( a(x-\alpha)^2 + \beta \)<br>
+    <b>Discriminant :</b> \( \Delta \), nombre de racines de l’équation
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>Les paraboles ont fasciné les savants depuis la Grèce antique (Archimède, Apollonius…)</li>
+        <li>Leur nom vient du grec “application, comparaison”</li>
+        <li>Essentielles en optique, architecture, balistique et design</li>
+    </ul>
+    <div class="source">Source : histoire des maths, mathcurve.com</div>
+</section>
+<section class="anecdote">
+    <b>Astuces-mémoire</b> : “Parabole” = “pare-balles” : la trajectoire d’une balle suit toujours… une parabole !
+</section>
+<section>
+    <h2>💡 Méthodologie pour réussir</h2>
+    <ul>
+        <li>Commence par calculer a, b, c ; puis sommet, discriminant, racines</li>
+        <li>Trace la courbe et repère le sommet</li>
+        <li>Déduis forme canonique pour variation/optimisation</li>
+        <li>Entraîne-toi sur le module interactif pour voir l’effet des paramètres</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizP(rep) {
+    let repElem = document.getElementById("rep-quiz-p");
+    repElem.textContent = (rep === 1) ? "Bonne réponse : a négatif = ouverture vers le bas !" : "Faux, a < 0 signifie ouverture vers le bas.";
+}
+function quizP2(rep) {
+    let repElem = document.getElementById("rep-quiz-p2");
+    repElem.textContent = (rep === 0) ? "Bravo : (3 ; -1), car α = 3 ; β = -1" : "Non, refais le calcul du sommet.";
+}
+function afficheReponseParabole() {
+    document.getElementById("exo-reponse-parabole").style.display = "block";
+}
+// Schéma dynamique
+function drawParabole() {
+    let a = parseFloat(document.getElementById("a").value);
+    let b = parseFloat(document.getElementById("b").value);
+    let c = parseFloat(document.getElementById("c").value);
+    let canvas = document.getElementById("schema");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, 410, 260);
+    // Axes
+    ctx.strokeStyle="#aaa"; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(20,130); ctx.lineTo(400,130); ctx.moveTo(210,20); ctx.lineTo(210,240); ctx.stroke();
+    // Parabole
+    ctx.beginPath();
+    for(let xPx=0;xPx<=410;xPx++){
+        let x=(xPx-210)/38; // x ∈ [-5 ; 5]
+        let y=a*x*x+b*x+c;
+        let yPx=130-y*22;
+        if(xPx===0) ctx.moveTo(xPx,yPx); else ctx.lineTo(xPx,yPx);
+    }
+    ctx.strokeStyle="#1877f2"; ctx.lineWidth=3; ctx.stroke();
+    // Sommet
+    let alpha = -b/(2*a), beta = a*alpha*alpha + b*alpha + c;
+    let SxPx = 210 + 38*alpha, SyPx = 130 - 22*beta;
+    ctx.beginPath(); ctx.arc(SxPx,SyPx,5,0,2*Math.PI); ctx.fillStyle="#fa9100"; ctx.fill();
+    ctx.font="12px Arial"; ctx.fillStyle="#fa9100"; ctx.fillText("S("+alpha.toFixed(1)+";"+beta.toFixed(1)+")",SxPx+7,SyPx-8);
+    // Description
+    document.getElementById("desc-parabole").innerHTML =
+        "Sommet S = ("+alpha.toFixed(2)+" ; "+beta.toFixed(2)+")";
+}
+drawParabole();
+document.getElementById("a").addEventListener("input", drawParabole);
+document.getElementById("b").addEventListener("input", drawParabole);
+document.getElementById("c").addEventListener("input", drawParabole);
+</script>
+</body>
+</html>
