@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Asteroids — Mini-jeu</title>
+  <style>
+    :root { color-scheme: dark; }
+    body {
+      margin: 0; background: #0b0f1a; color: #e5e7eb; font-family: system-ui, sans-serif;
+      display: grid; grid-template-rows: auto 1fr auto; min-height: 100vh;
+    }
+    header, footer { padding: 10px 16px; background: #0e1422; border-bottom: 1px solid #182033; }
+    header { display: flex; align-items: center; justify-content: space-between; }
+    .hud { display: flex; gap: 16px; align-items: center; }
+    .btn {
+      background: #1f2937; color: #e5e7eb; border: 1px solid #374151; padding: 6px 10px;
+      border-radius: 8px; cursor: pointer; font-weight: 600;
+    }
+    .btn:hover { background: #273243; }
+    #game { display: grid; place-items: center; position: relative; }
+    #canvas { width: 100vw; height: calc(100vh - 160px); display: block; }
+    .tip { font-size: 12px; opacity: .75; }
+
+    /* Contrôles tactiles */
+    #touch-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      z-index: 1000;
+    }
+    #touch-controls button {
+      font-size: 24px;
+      padding: 16px;
+      border-radius: 50%;
+      border: none;
+      background: #1f2937;
+      color: #fff;
+      cursor: pointer;
+    }
+    #touch-controls button:active { background: #374151; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hud">
+      <div><strong>Score:</strong> <span id="score">0</span></div>
+      <div><strong>Vies:</strong> <span id="lives">3</span></div>
+      <div><strong>Niveau:</strong> <span id="level">1</span></div>
+    </div>
+    <button id="restart" class="btn">Recommencer</button>
+  </header>
+
+  <main id="game">
+    <canvas id="canvas"></canvas>
+  </main>
+
+  <!-- Boutons tactiles -->
+  <div id="touch-controls">
+    <button id="btn-left">⬅️</button>
+    <button id="btn-right">➡️</button>
+    <button id="btn-up">⬆️</button>
+    <button id="btn-fire">🔥</button>
+  </div>
+
+  <footer>
+    <div class="tip">Contrôles: ← → tourner, ↑ accélérer, Espace tirer. Sur mobile: utilisez les boutons.</div>
+  </footer>
+
+  <script>
+    // ===== Canvas & resize =====
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    function resize() {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(canvas.clientWidth * dpr);
+      canvas.height = Math.floor(canvas.clientHeight * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', resize);
+
+    // ===== Utilitaires =====
+    const TWO_PI = Math.PI * 2;
+    const rand = (min, max) => Math.random() * (max - min) + min;
+    const wrap = (v, max) => (v < 0 ? v + max : v > max ? v - max : v);
+    const dist2 = (ax, ay, bx, by) => { const dx = ax - bx, dy = ay - by; return dx*dx + dy*dy; };
+
+    // ===== Entrées clavier =====
+    const keys = new Set();
+    window.addEventListener('keydown', (e) => {
+      if (['ArrowLeft','ArrowRight','ArrowUp','Space'].includes(e.code)) e.preventDefault();
+      keys.add(e.code);
+    });
+    window.addEventListener('keyup', (e) => keys.delete(e.code));
+
+    // ===== Contrôles tactiles =====
+    function pressKey(code) { keys.add(code); }
+    function releaseKey(code) { keys.delete(code); }
+    function bindButton(id, code) {
+      const btn = document.getElementById(id);
+      if (!btn) return;
+      btn.addEventListener("touchstart", (e) => { e.preventDefault(); pressKey(code); });
+      btn.addEventListener("touchend", (e) => { e.preventDefault(); releaseKey(code); });
+    }
+    bindButton("btn-left", "ArrowLeft");
+    bindButton("btn-right", "ArrowRight");
+    bindButton("btn-up", "ArrowUp");
+    bindButton("btn-fire", "Space");
+
+    // ===== État du jeu =====
+    let scoreEl = document.getElementById('score');
+    let livesEl = document.getElementById('lives');
+    let levelEl = document.getElementById('level');
+    let running = true;
+    const state = { score:0, lives:3, level:1, ship:null, bullets:[], asteroids:[], particles:[], lastShot:0 };
+
+    // ===== Entités =====
+    function createShip() {
+      return { x:canvas.clientWidth/2, y:canvas.clientHeight/2, vx:0, vy:0, ang:-Math.PI/2,
+        thrust:0.08, maxSpeed:6, friction:0.995, radius:12, invincibleUntil:0 };
+    }
+    function createAsteroid(x,y,size) {
+      const speed = rand(0.5,2)*(size/24);
+      return { x,y, vx:rand(-speed,speed), vy:rand(-speed,speed), ang:rand(0,TWO_PI),
+        spin:rand(-0.02,0.02), size, verts:makeJaggedPolygon(size) };
+    }
+    function makeJaggedPolygon(r) {
+      const points=[]; const sides=Math.floor(rand(8,13));
+      for(let i=0;i<sides;i++){ const a=i/sides*TWO_PI; const offset=rand(0.75,1.25);
+        points.push({x:Math.cos(a)*r*offset,y:Math.sin(a)*r*offset}); }
+      return points;
+    }
+    function shootBullet() {
+      const now=performance.now(); if(now-state.lastShot<180) return; state.lastShot=now;
+      const speed=8;
+      state.bullets.push({ x:state.ship.x+Math.cos(state.ship.ang)*state.ship.radius,
+        y:state.ship.y+Math.sin(state.ship.ang)*state.ship.radius,
+        vx:Math.cos(state.ship.ang)*speed+state.ship.vx*0.3,
+        vy:Math.sin(state.ship.ang)*speed+state.ship.vy*0.3,
+        life:900, radius:2 });
+    }
+    function explode(x,y,count=12,speed=2){
+      for(let i=0;i<count;i++){ state.particles.push({
+        x,y,vx:Math.cos(rand(0,TWO_PI))*rand(speed*0.5,speed*1.5),
+        vy:Math.sin(rand(0,TWO_PI))*rand(speed*0.5,speed*1.5), life:rand(300,800)}); }
+    }
+
+    // ===== Gestion du niveau =====
+    function spawnWave(){ const n=3+state.level;
+      for(let i=0;i<n;i++){ let x,y;
+        do{ x=rand(0,canvas.clientWidth); y=rand(0,canvas.clientHeight); }
+        while(dist2(x,y,state.ship?.x||0,state.ship?.y||0)<200*200);
+        state.asteroids.push(createAsteroid(x,y,rand(24,44))); }
+    }
+    function resetGame(){ resize(); state.score=0; state.lives=3; state.level=1;
+      state.ship=createShip(); state.bullets=[]; state.asteroids=[]; state.particles=[];
+      running=true; spawnWave(); updateHud(); }
+    function nextLevel(){ state.level++; spawnWave(); updateHud(); }
+    function updateHud(){ scoreEl.textContent=state.score; livesEl.textContent=state.lives; levelEl.textContent=state.level; }
+
+    // ===== Update =====
+    function update(dt){
+      if(!running) return;
+      const w=canvas.clientWidth,h=canvas.clientHeight;
+      if(keys.has('ArrowLeft')) state.ship.ang-=0.08;
