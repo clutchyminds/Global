@@ -41,16 +41,24 @@
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
 
   <script>
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "firebase/app";
+    import { getAnalytics } from "firebase/analytics"
     // ⚠️ Remplace par ta configuration Firebase
     const firebaseConfig = {
-      apiKey: "TA_CLE_API",
-      authDomain: "ton-projet.firebaseapp.com",
-      projectId: "ton-projet",
+      apiKey: "AIzaSyD4yHErJhszCsEBV0KirXaFvli0HGXksrQ",
+      authDomain: "authentificat-3b84c.firebaseapp.com",
+      projectId: "authentificat-3b84c",
+      storageBucket: "authentificat-3b84c.firebasestorage.app",
+      messagingSenderId: "481339691180",
+      appId: "1:481339691180:web:9bbbc0971adaefccc58f09",
+      measurementId: "G-EGKJPZ8MYZ"
     };
 
     // Initialisation Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    
 
     // Inscription
     document.getElementById("signup-form").addEventListener("submit", (e) => {
