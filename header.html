@@ -1,0 +1,81 @@
+<!-- header.html -->
+<header id="site-header">
+  <div id="user-menu">
+    <button id="user-button" aria-haspopup="true" aria-expanded="false">
+      <span id="user-icon" aria-hidden="true">👤</span>
+      <span id="user-name">Invité</span>
+    </button>
+    <nav id="dropdown" class="hidden" aria-label="Menu utilisateur">
+      <a href="/index.html">Accueil</a>
+      <a href="/apropos.html">À propos</a>
+      <a id="login-link" href="/login.html">Se connecter</a>
+      <button id="logout-link" class="hidden">Se déconnecter</button>
+    </nav>
+  </div>
+</header>
+
+<style>
+  /* Style de l’en-tête */
+  #site-header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 56px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 8px 16px;
+    background: #ffffffcc;
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid #e5e7eb;
+    z-index: 1000;
+  }
+
+  #user-menu { position: relative; }
+
+  #user-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    padding: 6px 10px;
+    border-radius: 8px;
+  }
+  #user-button:hover { background: #f3f4f6; }
+
+  #user-icon { font-size: 22px; }
+  #user-name { font-size: 14px; color: #374151; }
+
+  #dropdown {
+    position: absolute;
+    top: 44px;
+    right: 0;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+  #dropdown.hidden { display: none; }
+
+  #dropdown a, #dropdown button {
+    text-align: left;
+    text-decoration: none;
+    color: #111827;
+    padding: 8px;
+    border-radius: 6px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+  }
+  #dropdown a:hover, #dropdown button:hover { background: #f3f4f6; }
+</style>
