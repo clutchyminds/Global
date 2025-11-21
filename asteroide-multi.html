@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Asteroids P2P</title>
+  <meta name="viewport" content="width=800, initial-scale=1">
+  <style>
+    html,body{background:#151c28;margin:0;}
+    #gameCanvas{display:block; margin:auto; background:#202a3b;}
+    .setup{padding:20px;color:#fff;font-family:monospace;}
+    .hidden{display:none}
+    .btn{padding:6px 16px;border-radius:5px;border:none;background:#208fa3;color:#fff;}
+    .row{margin-bottom:12px;}
+    label{margin-right:5px;}
+  </style>
+</head>
+<body>
+<!-- Page d’accueil/config -->
+<div id="setup" class="setup">
+  <div class="row"><label>Pseudo :</label><input type="text" id="nickname" value="Player"></div>
+  <div class="row"><label>Couleur vaisseau :</label>
+    <input id="color" type="color" value="#25d2c2"/>
+  </div>
+  <div class="row"><label>Accès partie (code) :</label>
+    <input type="text" id="roomcode" placeholder="(vide pour générer)">
+    <button class="btn" onclick="hostGame()">Créer</button>
+    <button class="btn" onclick="joinGame()">Rejoindre</button>
+  </div>
+  <div id="sharecode" class="row hidden"></div>
+  <div id="status" class="row"></div>
+</div>
+<canvas id="gameCanvas" width="800" height="600" class="hidden"></canvas>
+
+<!-- Librairie simple-peer CDN -->
+<script src="https://cdn.jsdelivr.net/npm/simple-peer@9/simplepeer.min.js"></script>
+<script>
+let nickname,color,peer,connReady=false,amHost,roomcode,otherPlayer={};
+let canvas=document.getElementById('gameCanvas'),ctx=canvas.getContext('2d');
+let setupDiv=document.getElementById('setup'),statusDiv=document.getElementById('status');
+let shareDiv=document.getElementById('sharecode');
+
+// Génère une clé partie unique
+function generateCode(){return Math.random().toString(36).substr(2,7);}
+
+// Créer partie (host : offre la connexion P2P)
+function hostGame(){
+  nickname=document.getElementById('nickname').value;
+  color=document.getElementById('color').value;
+  roomcode=document.getElementById('roomcode').value||generateCode();
+  amHost=true;
+  peer=new SimplePeer({initiator:true,trickle:false});
+  peer.on('signal',data=>{
+    shareDiv.innerText='Code à donner au partenaire : '+btoa(JSON.stringify(data));
+    shareDiv.classList.remove('hidden');
+  });
+  peer.on('connect',startGame);
+  peer.on('data',onPeerMsg);
+  statusDiv.innerText='En attente connexion P2P…';
+}
+// Rejoindre partie (peer invité, entre le code fourni)
+function joinGame(){
+  nickname=document.getElementById('nickname').value;
+  color=document.getElementById('color').value;
+  roomcode=document.getElementById('roomcode').value;
+  if(!roomcode){statusDiv.innerText='Entrez un code de partie !';return;}
+  amHost=false;
+  peer=new SimplePeer({initiator:false,trickle:false});
+  peer.on('signal',data=>{
+    shareDiv.innerHTML='<b>Code réponse à coller chez le créateur :</b> '+btoa(JSON.stringify(data));
+    shareDiv.classList.remove('hidden');
+  });
+  peer.on('connect',startGame);
+  peer.on('data',onPeerMsg);
+  let inp=prompt('Colle le code du créateur ici :');
+  if(inp){peer.signal(JSON.parse(atob(inp)));}
+  statusDiv.innerText='Connexion à la partie…';
+}
+
+window.peerRespond=function(){
+  let inp=prompt('Colle la réponse du partenaire ici :');
+  if(inp) peer.signal(JSON.parse(atob(inp)));
+}
+
+function startGame(){
+  connReady=true;setupDiv.classList.add('hidden');
+  canvas.classList.remove('hidden');
+  // Envoi infos joueur au pair
+  peer.send(JSON.stringify({type:'info',nickname,color}));
+}
+
+function onPeerMsg(msg){
+  let data=JSON.parse(msg);
+  if(data.type==='info'){otherPlayer=data;}
+  if(data.type==='state'){
+    otherPlayer.x=data.x;otherPlayer.y=data.y;otherPlayer.angle=data.angle;
+    otherPlayer.bullets=data.bullets;
+  }
+}
+
+// ------------------ GAME ASTEROIDS (simplifié 2 joueurs) --------------------
+let ship={x:120,y:300,vx:0,vy:0,angle:0,bullets:[],cooldown:0},score=0,lives=3;
+let asteroids=[],key={left:false,right:false,up:false,space:false}; 
+function makeAsteroids(){asteroids=[];for(let i=0;i<4;i++)
+  asteroids.push({x:100+i*180,y:Math.random()*H,r:38+Math.random()*12,vx:1+Math.random()*2,vy:1+Math.random()*2,angle:0});}
+makeAsteroids();
+// Controls
+document.addEventListener('keydown',e=>{
+  if(e.code==='ArrowLeft')key.left=true;
+  if(e.code==='ArrowRight')key.right=true;
+  if(e.code==='ArrowUp')key.up=true;
+  if(e.code==='Space')key.space=true;
+});
+document.addEventListener('keyup',e=>{
+  if(e.code==='ArrowLeft')key.left=false;
+  if(e.code==='ArrowRight')key.right=false;
+  if(e.code==='ArrowUp')key.up=false;
+  if(e.code==='Space')key.space=false;
+});
+
+function sendState(){
+  if(connReady && peer) peer.send(JSON.stringify({
+    type:'state',x:ship.x,y:ship.y,angle:ship.angle,bullets:ship.bullets
+  }));
+}
+
+function updateShip(){
+  if(key.left) ship.angle -= 0.07;
+  if(key.right) ship.angle += 0.07;
+  if(key.up){
+    ship.vx += Math.cos(ship.angle)*0.11;
+    ship.vy += Math.sin(ship.angle)*0.11;
+  }
+  if((key.space)&&ship.cooldown<=0){
+    ship.bullets.push({x:ship.x+Math.cos(ship.angle)*22, y:ship.y+Math.sin(ship.angle)*22,
+      vx:Math.cos(ship.angle)*4.4+ship.vx, vy:Math.sin(ship.angle)*4.4+ship.vy, t:0
+    }); ship.cooldown=18;
+  }
+  ship.x+=ship.vx;ship.y+=ship.vy;ship.cooldown=Math.max(0,ship.cooldown-1);
+  ship.vx*=0.98;ship.vy*=0.98;
+  if(ship.x<0)ship.x+=800;if(ship.x>800)ship.x-=800;
+  if(ship.y<0)ship.y+=600;if(ship.y>600)ship.y-=600;
+}
+function updateBullets(){
+  for(let b of ship.bullets){b.x+=b.vx;b.y+=b.vy;b.t++;}
+  ship.bullets=ship.bullets.filter(b=>b.t<49);
+}
+function drawShip(s,nick,col){
+  ctx.save();ctx.translate(s.x,s.y);ctx.rotate(s.angle);
+  ctx.beginPath();
+  ctx.moveTo(22,0);ctx.lineTo(-15,12);
+  ctx.lineTo(-9,0);ctx.lineTo(-15,-12);ctx.closePath();
+  ctx.strokeStyle=col||"#fff";ctx.lineWidth=2.2;ctx.stroke();
+  ctx.restore();
+  // pseudo
+  ctx.font="16px monospace";ctx.fillStyle=col||"#fff";
+  ctx.fillText(nick,s.x-30,s.y-18);
+}
+function draw(){
+  ctx.clearRect(0,0,800,600);
+  for(let a of asteroids){
+    ctx.save();ctx.beginPath();
+    ctx.arc(a.x,a.y,a.r,0,2*Math.PI);ctx.strokeStyle="#fc9";ctx.lineWidth=2;ctx.stroke();ctx.restore();
+  }
+  drawShip(ship,nickname,color);
+  if(otherPlayer.x!=null)
+    drawShip(otherPlayer,otherPlayer.nickname||"?",otherPlayer.color||"#fff");
+  // Bullets
+  ctx.strokeStyle="#fb4";
+  for(let b of ship.bullets){ctx.beginPath();ctx.arc(b.x,b.y,3,0,2*Math.PI);ctx.stroke();}
+  if(otherPlayer.bullets)
+    for(let b of otherPlayer.bullets){ctx.beginPath();ctx.arc(b.x,b.y,3,0,2*Math.PI);ctx.stroke();}
+}
+function loop(){
+  if(connReady){
+    updateShip();updateBullets();sendState();
+  }
+  draw();requestAnimationFrame(loop);
+}
+loop();
+
+</script>
+</body>
+</html>
