@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat P2P multi - PeerJS</title>
+  <meta name="viewport" content="width=800">
+  <style>
+    body {background:#232641;margin:0;height:100vh;display:flex;flex-direction:column;}
+    .setup{background:#1d1e2b;color:#eee;padding:18px;}
+    .btn{padding:6px 16px;border-radius:5px;border:none;background:#286dcc;color:#fff;}
+    .row{margin-bottom:12px;}
+    label{margin-right:4px;}
+    #chatWin{flex:1;overflow:auto;padding:18px 10px 18px 18px;background:#232641;}
+    .msg{margin:7px 0;display:flex;align-items:center;}
+    .avatar{width:32px;height:32px;border-radius:50%;margin-right:10px;}
+    .nick{font-weight:bold;margin-right:9px;}
+    .me .nick{color:#36e;}
+    .peer .nick{color:#0e8;}
+    #userlist{font-size:14px;margin-bottom:7px;}
+  </style>
+</head>
+<body>
+<div id="setup" class="setup">
+  <div class="row"><label>Pseudo :</label><input type="text" id="nickname" value="Player"></div>
+  <div class="row"><label>Couleur pseudo :</label><input type="color" id="color" value="#2be9a8"></div>
+  <div class="row"><label>Image profil (URL) :</label>
+    <input type="text" id="avatar" value="https://ui-avatars.com/api/?name=Player" style="width:180px"></div>
+  <div class="row"><label>Code salle :</label>
+    <input type="text" id="roomcode" placeholder="ex : salon1" style="width:100px">
+    <button class="btn" onclick="launch()">GO</button>
+  </div>
+  <div id="status" class="row"></div>
+</div>
+<div id="userlist" style="display:none"></div>
+<div id="chatWin" style="display:none"></div>
+<div id="chatInput" style="display:none;padding:8px;background:#1d1e2b">
+  <input type="text" id="inputMsg" style="width:72%" placeholder="Entrer message...">
+  <button class="btn" onclick="sendMsg()">Envoyer</button>
+</div>
+<script src="https://unpkg.com/peerjs@1.5.3/dist/peerjs.min.js"></script>
+<script>
+let nickname,color,avatar,roomcode,peer,conns=[];
+let peers={},userlistDiv=document.getElementById('userlist');
+let setupDiv=document.getElementById('setup'),chatWin=document.getElementById('chatWin'),chatInp=document.getElementById('chatInput'),inputMsg=document.getElementById('inputMsg');
+let myid=null;
+
+function launch(){
+  nickname=document.getElementById('nickname').value.trim()||'Player';
+  color=document.getElementById('color').value;
+  avatar=document.getElementById('avatar').value.trim()||'https://ui-avatars.com/api/?name='+nickname;
+  roomcode=(document.getElementById('roomcode').value.trim()||'default').replace(/[^a-zA-Z0-9_-]/g,'').toLowerCase();
+  if(roomcode.length<2){document.getElementById('status').innerText='Choisis un code salle plus long !';return;}
+  setupDiv.style.display='none';chatWin.style.display='block';chatInp.style.display='block';userlistDiv.style.display='block';
+  document.title="Chat : "+roomcode;
+  connectPeer();
+}
+
+function connectPeer(){
+  // ID Peer : roomcode--pseudo-hasard
+  myid = roomcode+"--"+nickname.replace(/[^a-zA-Z0-9_-]/g, '').toLowerCase()+"-"+Math.random().toString(36).substr(2,3);
+  peer = new Peer(myid, { debug:2 });
+  peer.on('open', function(id) {
+    joinRoom();
+  });
+  peer.on('connection', conn=>{
+    conn.on('data', d=>processMsg(conn,d));
+    conns.push(conn);
+  });
+  peer.on('disconnected',()=>{
+    writeMsg("--- Déconnecté du serveur PeerJS ! ---","sys");
+  });
+}
+
+// Recherche tous les autres peers de la salle et se connecte à eux
+function joinRoom(){
+  fetch("https://0.peerjs.com/peers").then(r=>r.json()).then(ids=>{
+    let others = ids.filter(pid=>pid.startsWith(roomcode+"--") && pid!==myid);
+    for(let id of others){
+      let conn=peer.connect(id);
+      conn.on('open', ()=>{conn.send({type:"hello",n:nickname,c:color,a:avatar,myid});});
+      conn.on('data', d=>processMsg(conn,d));
+      conns.push(conn);
+    }
+    // Se présente à soi-même
+    peers[myid]={nickname,color,avatar,me:true};
+    updateUserList();
+  });
+}
+
+function processMsg(conn,data){
+  if(data.type==="hello"){
+    peers[conn.peer]=({nickname:data.n, color:data.c, avatar:data.a, me:false});
+    conn.send({type:"hello",n:nickname,c:color,a:avatar,myid});
+    updateUserList();
+    writeMsg("a rejoint la salle.","sys",peers[conn.peer]);
+  }
+  if(data.type==="chat"){
+    writeMsg(data.msg,"peer", peers[conn.peer]);
+  }
+}
+function updateUserList(){
+  let html='<b>Connectés : </b>'+Object.values(peers).map(u=>`<span style="color:${u.color}">${u.nickname}${u.me?" (me)":""}</span>`).join(', ');
+  userlistDiv.innerHTML=html;
+}
+function sendMsg(){
+  let txt=inputMsg.value.trim();
+  if(!txt)return;
+  writeMsg(txt,"me",peers[myid]);
+  for(let c of conns) c.open && c.send({type:"chat",msg:txt});
+  inputMsg.value="";
+}
+function writeMsg(txt,type,data){
+  let d=document.createElement('div');
+  d.className="msg "+(type==="me"?"me":type==="peer"?"peer":"sys");
+  if(type==="sys"){d.style.textAlign="center";d.style.color="#fda";}
+  else{
+    let ava=document.createElement("img");
+    ava.className="avatar";
+    ava.src=(data&&data.avatar)||"https://ui-avatars.com/api/?name=Bot";
+    d.appendChild(ava);
+    let nick=document.createElement("span");
+    nick.className="nick";
+    nick.style.color=(data&&data.color)||"#eee";
+    nick.innerText=(type==="me"?nickname:(data&&data.nickname)||"Anon");
+    d.appendChild(nick);
+  }
+  let sp=document.createElement("span");
+  sp.innerText=txt;
+  d.appendChild(sp);
+  chatWin.appendChild(d);
+  chatWin.scrollTop=chatWin.scrollHeight;
+}
+</script>
+</body>
+</html>
