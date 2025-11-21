@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mon site avec comptes</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    form { margin-bottom: 20px; }
+    input { margin: 5px; padding: 8px; }
+    button { padding: 8px 12px; }
+    #user-info { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Bienvenue sur mon site 🚀</h1>
+
+  <!-- Formulaire d'inscription -->
+  <h2>Créer un compte</h2>
+  <form id="signup-form">
+    <input type="email" id="signup-email" placeholder="Email" required>
+    <input type="password" id="signup-password" placeholder="Mot de passe" required>
+    <button type="submit">S'inscrire</button>
+  </form>
+
+  <!-- Formulaire de connexion -->
+  <h2>Se connecter</h2>
+  <form id="login-form">
+    <input type="email" id="login-email" placeholder="Email" required>
+    <input type="password" id="login-password" placeholder="Mot de passe" required>
+    <button type="submit">Connexion</button>
+  </form>
+
+  <!-- Bouton de déconnexion -->
+  <button id="logout-btn">Déconnexion</button>
+
+  <!-- Zone d'affichage de l'état utilisateur -->
+  <div id="user-info">Utilisateur non connecté</div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js"></script>
+
+  <script>
+    // ⚠️ Remplace par ta configuration Firebase
+    const firebaseConfig = {
+      apiKey: "TA_CLE_API",
+      authDomain: "ton-projet.firebaseapp.com",
+      projectId: "ton-projet",
+    };
+
+    // Initialisation Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Inscription
+    document.getElementById("signup-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("signup-email").value;
+      const password = document.getElementById("signup-password").value;
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          alert("Compte créé : " + userCredential.user.email);
+        })
+        .catch(error => {
+          alert("Erreur : " + error.message);
+        });
+    });
+
+    // Connexion
+    document.getElementById("login-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("login-email").value;
+      const password = document.getElementById("login-password").value;
+
+      auth.signInWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          alert("Connecté : " + userCredential.user.email);
+        })
+        .catch(error => {
+          alert("Erreur : " + error.message);
+        });
+    });
+
+    // Déconnexion
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      auth.signOut().then(() => {
+        alert("Déconnecté");
+      });
+    });
+
+    // État de connexion
+    auth.onAuthStateChanged(user => {
+      const info = document.getElementById("user-info");
+      if (user) {
+        info.textContent = "Utilisateur connecté : " + user.email;
+      } else {
+        info.textContent = "Utilisateur non connecté";
+      }
+    });
+  </script>
+</body>
+</html>
