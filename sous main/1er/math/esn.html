@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass — Suites numériques</title>
+    <meta name="description" content="Suites arithmétiques et géométriques : définitions, formules, propriétés, exercices, quiz, schéma interactif, méthodo et applications.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#e9ffe6 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #eeeaff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 14px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Suites numériques</h1>
+    <div class="intro">
+        Tout pour réussir ton chapitre sur les suites :  
+        définitions, variations, schéma dynamique, quiz, exercices, astuces et applications concrètes !
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Définitions essentielles</h2>
+    <div class="infos">
+        Une <b>suite numérique</b> est une famille de nombres indexés par des entiers n : \( u_n \).  
+        On distingue principalement :  
+        <b>Suite arithmétique</b> : chaque terme est obtenu en ajoutant une constante (raison) au précédent  
+        <b>Suite géométrique</b> : chaque terme est multiplié par une constante (raison) par rapport au précédent
+    </div>
+    <ul>
+        <li><b>Suite arithmétique</b> : \( u_{n+1} = u_n + r \) (r : raison)</li>
+        <li><b>Suite géométrique</b> : \( v_{n+1} = q \times v_n \) (q : raison)</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Formules et propriétés majeures</h2>
+    <ul>
+        <li><b>Suite arithmétique</b> :  
+            \( u_n = u_0 + n \times r \) ou \( u_p = u_k + (p-k) r \)</li>
+        <li><b>Somme des n premiers termes</b> :  
+            \( S_n = (n+1) \frac{u_0 + u_n}{2} \)</li>
+        <li><b>Suite géométrique</b> :  
+            \( v_n = v_0 \times q^n \), ou \( v_p = v_k \times q^{p-k} \)</li>
+        <li><b>Somme des n premiers termes</b> (si \( q\neq 1 \)) :  
+            \( S_n = v_0 \frac{1-q^{n+1}}{1-q} \)</li>
+        <li><b>Variation</b> :  
+            arithmétique croissante si r > 0, géométrique croissante si q > 1 et v_0 > 0</li>
+    </ul>
+    <div class="box-important">
+        Astuce : Ces formules sont super utiles pour résoudre tous les problèmes de lois, calculs d’intérêts, séries, modélisation.
+    </div>
+</section>
+<section>
+    <h2>🟦 Schéma interactif — visualisation de suites</h2>
+    <label>u_0: <input type="number" id="u0" value="2"></label>
+    <label>r: <input type="number" id="r" value="3" step="0.1"></label>
+    <label>v_0: <input type="number" id="v0" value="2"></label>
+    <label>q: <input type="number" id="q" value="1.5" step="0.05"></label>
+    <canvas id="schema" width="400" height="240"></canvas>
+    <div id="desc-suite"></div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>Soit \( u_0 = 3 \), r = 2. Calcule \( u_5 \) puis la somme des 6 premiers termes.</p>
+    <button onclick="afficheReponseSuite()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-suite" style="display:none;">
+        \( u_5 = 3 + 5\times2 = 13 \)<br>
+        Somme : \( S_5 = 6 \times \frac{3+13}{2} = 6\times8 = 48 \)
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>Soit la suite géométrique \( v_0 = 5 \), q = 2.  
+      Calcule \( v_4 \) et la somme des 5 premiers termes.</p>
+    <button onclick="document.getElementById('exo2-reponse-suite').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-suite" style="display:none;">
+        \( v_4 = 5 \times 2^4 = 5\times16 = 80 \)<br>
+        Somme : \( S_4 = 5 \times \frac{1 - 2^5}{1 - 2} = 5\times\frac{1-32}{-1} = 5\times31 = 155 \)
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>La suite \( u_n = 7 - 3n \) est :</p>
+    <button onclick="quizSuite(0)">Arithmétique</button>
+    <button onclick="quizSuite(1)">Géométrique</button>
+    <div class="reponse" id="rep-quiz-suite"></div>
+    <p>La somme des 10 premiers termes d’une suite géométrique (q ≠ 1) est :</p>
+    <button onclick="quizSuite2(0)">\( v_0 \frac{1-q^{10}}{1-q} \)</button>
+    <button onclick="quizSuite2(1)">\( u_0 + 10r \)</button>
+    <div class="reponse" id="rep-quiz-suite2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li><b>Maths/Physique</b> : évolutions (lois de mouvement, population, mécanique, radioactivité…)</li>
+        <li><b>Finance</b> : calculs d’intérêts, croissance de capital, amortissement</li>
+        <li><b>Info/Algorithmique</b> : boucles, modélisation, systèmes numériques, fractales</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Confondre raison “r” (additif) et “q” (multiplicatif)</li>
+        <li>Ne pas utiliser la bonne formule pour le terme général</li>
+        <li>Oublier que la somme comporte (n+1) termes, pas n</li>
+        <li>Mal interpréter les variations (croissance, décroissance…)</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Suite</b>: liste ordonnée de nombres<br>
+    <b>Terme général</b>: expression pour n’importe quel rang<br>
+    <b>Raison (arith)</b>: nombre ajouté à chaque étape<br>
+    <b>Raison (géom)</b>: nombre multiplié à chaque étape
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>Les suites existaient déjà avec Fibonacci (les lapins !) au XIIIe siècle</li>
+        <li>La notion formalisée au XIXe, pour les calculs d’intérêts et d’évolution en physique/économie</li>
+        <li>Super utile pour coder des algos dans tous les langages modernes !</li>
+    </ul>
+    <div class="source">Source : histoire des suites numériques, Wikipedia</div>
+</section>
+<section class="anecdote">
+    <b>Astuce-mémoire :</b> “arithmétique = addition”, “géométrique = multiplication”.  
+    Pour la somme : pense à “trapèze” pour arithmétique, “effet boule de neige” pour géométrique !
+</section>
+<section>
+    <h2>💡 Méthodologie pour progresser</h2>
+    <ul>
+        <li>Identifie bien le type de suite avant d’utiliser la formule</li>
+        <li>Calcule toujours le terme général, puis la somme</li>
+        <li>Teste des valeurs pour n = 0, 1, 2, etc.</li>
+        <li>Utilise le module interactif pour visualiser et comparer les évolutions</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizSuite(rep) {
+    let repElem = document.getElementById("rep-quiz-suite");
+    repElem.textContent = (rep === 0) ? "Bonne réponse : c’est une suite arithmétique (raison = -3)." : "Faux, il n’y a pas de multiplication.";
+}
+function quizSuite2(rep) {
+    let repElem = document.getElementById("rep-quiz-suite2");
+    repElem.textContent = (rep === 0) ? "Bravo ! Formule générale de la somme d’une géométrique !" : "Non, relis la formule de la somme.";
+}
+function afficheReponseSuite() {
+    document.getElementById("exo-reponse-suite").style.display = "block";
+}
+// Schéma dynamique suites
+function drawSuite() {
+    let u0 = parseFloat(document.getElementById("u0").value);
+    let r = parseFloat(document.getElementById("r").value);
+    let v0 = parseFloat(document.getElementById("v0").value);
+    let q = parseFloat(document.getElementById("q").value);
+    let canvas = document.getElementById("schema");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, 400, 240);
+    // Axes
+    ctx.strokeStyle="#aaa"; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(30,200); ctx.lineTo(370,200); ctx.moveTo(30,30); ctx.lineTo(30,200); ctx.stroke();
+    // Arith
+    ctx.strokeStyle="#1877f2"; ctx.lineWidth=3;
+    ctx.beginPath();
+    for(let n=0;n<=12;n++){
+        let x=30+n*28, y=200-u0-n*r*12;
+        let un = u0 + n*r;
+        let yp = 200-un*12;
+        if(n===0) ctx.moveTo(x,yp); else ctx.lineTo(x,yp);
+        ctx.font="11px Arial"; ctx.fillStyle="#1877f2"; ctx.fillText(un.toFixed(1),x-5,yp-6);
+        ctx.beginPath(); ctx.arc(x, yp, 3, 0, 2*Math.PI); ctx.fill();
+    }
+    ctx.stroke();
+    // Geom
+    ctx.strokeStyle="#167c2b"; ctx.lineWidth=2;
+    ctx.beginPath();
+    for(let n=0;n<=12;n++){
+        let x=30+n*28;
+        let vn = v0*Math.pow(q,n);
+        let yp = 200-vn*12;
+        if(n===0) ctx.moveTo(x,yp); else ctx.lineTo(x,yp);
+        ctx.font="11px Arial"; ctx.fillStyle="#167c2b"; ctx.fillText(vn.toFixed(1),x-5,yp+16);
+    }
+    ctx.stroke();
+    document.getElementById("desc-suite").innerHTML =
+        "Bleu (arithmétique), Vert (géométrique) : évolutions pour n = 0 à 12";
+}
+drawSuite();
+document.getElementById("u0").addEventListener("input", drawSuite);
+document.getElementById("r").addEventListener("input", drawSuite);
+document.getElementById("v0").addEventListener("input", drawSuite);
+document.getElementById("q").addEventListener("input", drawSuite);
+</script>
+</body>
+</html>

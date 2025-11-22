@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass — Notions de listes</title>
+    <meta name="description" content="Tout sur les listes en algorithmique et Python : définitions, manipulations, schéma dynamique, quiz, exercices, applications et erreurs à éviter.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#edfff9 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.2rem; margin: 0 0 13px; color: #1877f2;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.13);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #edfff9; border-left: 6px solid #20b992;}
+        .box-exo {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .box-important {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #e8fffc; border-left: 7px solid #27c7b3; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #edfff9; border-radius: 8px; border: 1px solid #20b992;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 14px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Notions de listes</h1>
+    <div class="intro">
+        Tout pour comprendre, manipuler et optimiser les listes : structure, opérations, schéma dynamique, quiz, exercices et usages en algorithmique et Python !
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Définitions et bases</h2>
+    <div class="infos">
+        Une <b>liste</b> est une structure de données qui rassemble des éléments (nombres, chaînes, objets…) dans un ordre précis.<br>
+        En Python : <code>ma_liste = [2, 4, 7, 1]</code>
+    </div>
+    <ul>
+        <li>Les listes peuvent contenir tout type d’éléments (même mixtes !)</li>
+        <li>L’accès à chaque élément se fait par son “indice” (commence à 0 en Python)</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Principales opérations sur les listes</h2>
+    <ul>
+        <li>Ajout d’un élément : <code>ma_liste.append(8)</code></li>
+        <li>Suppression : <code>del ma_liste[2]</code></li>
+        <li>Modification : <code>ma_liste[0] = 99</code></li>
+        <li>Longueur : <code>len(ma_liste)</code></li>
+        <li>Parcours :  
+            <code>for val in ma_liste: print(val)</code></li>
+        <li>Extraction/slicing : <code>ma_liste[1:3]</code> (sous-liste d’indices 1 à 2 inclus)</li>
+    </ul>
+    <div class="box-important">
+        Astuce : En Python, tu peux faire des listes de listes : <code>L=[[3,5],[8,10]]</code>
+    </div>
+</section>
+<section>
+    <h2>🟦 Schéma dynamique — manipule ta liste !</h2>
+    <label>Ajouter : <input type="number" id="addval" value="5"></label>
+    <button onclick="ajoute()">Ajouter</button>
+    <label>Enlever l’élément d’indice : <input type="number" id="delidx" value="0" min="0"></label>
+    <button onclick="enleve()">Enlever</button>
+    <div id="schema"></div>
+    <div id="desc-list"></div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>Soit <code>L = [2, 6, 3]</code>. Ajoute 7 puis retire l’élément d’indice 1.</p>
+    <button onclick="afficheReponseList()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-list" style="display:none;">
+        Après ajout : [2, 6, 3, 7]  
+        Après suppression de l’élément 1 : [2, 3, 7]
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>Donne le code pour créer une liste contenant tous les nombres pairs de 2 à 16 inclus.</p>
+    <button onclick="document.getElementById('exo2-reponse-list').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-list" style="display:none;">
+        <code>L = [i for i in range(2,17,2)]</code>
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>En Python, l’indice du premier élément de la liste <code>L</code> est :</p>
+    <button onclick="quizList(0)">0</button>
+    <button onclick="quizList(1)">1</button>
+    <div class="reponse" id="rep-quiz-list"></div>
+    <p>Pour obtenir la longueur d’une liste <code>L</code> :</p>
+    <button onclick="quizList2(0)">len(L)</button>
+    <button onclick="quizList2(1)">count(L)</button>
+    <div class="reponse" id="rep-quiz-list2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li>NSI/Algorithmique : stocker et manipuler des données, parcours, filtrage</li>
+        <li>Physique/Maths : calculs d’ensemble, statistiques, séries</li>
+        <li>Info/Programmation : base des structures avancées (piles, files, tableaux multidimensionnels)</li>
+        <li>Jeux : scores, inventaires, positions d’objets en code</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Oublier que l’indice commence à 0</li>
+        <li>Accéder à un indice inexistant (<code>IndexError</code>)</li>
+        <li>Confondre append et extend (<code>extend</code> ajoute tous les éléments d’une autre liste, pas juste un)</li>
+        <li>Modifier la liste pendant un parcours sans précaution</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Liste</b>: structure ordonnée, modifiable<br>
+    <b>Indice</b>: position de l’élément<br>
+    <b>Append</b>: ajout d’un élément<br>
+    <b>Slicing</b>: extraction de sous-liste
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>Les listes informatiques dérivent des “tableaux”, déjà présents dans les premiers langages (Fortran, C…)</li>
+        <li>Python les a rendues dynamiques/customisables dès l’origine du langage</li>
+        <li>Base de la programmation moderne : IA, bases de données, web…</li>
+    </ul>
+    <div class="source">Source : histoire de Python, CNAM/INRIA</div>
+</section>
+<section class="anecdote">
+    <b>Astuce-mémoire</b>: “Commence à zéro, finit à n-1 : repère le terrain !”  
+</section>
+<section>
+    <h2>💡 Méthodologie pour progresser</h2>
+    <ul>
+        <li>Teste tous les types d’opérations sur des exemples concrets</li>
+        <li>Utilise le schéma interactif pour manipuler ta propre liste</li>
+        <li>Maîtrise le slicing pour faire des sous-listes et des tris</li>
+        <li>Apprends à construire des listes avec des boucles ou des compréhensions</li>
+    </ul>
+</section>
+</main>
+<script>
+let L = [2, 6, 3];
+function dessine() {
+    let s = '<b>Liste actuelle :</b> [' + L.join(', ') + ']';
+    document.getElementById("schema").innerHTML = s;
+    document.getElementById("desc-list").innerHTML =
+        "Longueur : "+L.length;
+    document.getElementById("delidx").max = Math.max(0, L.length-1);
+}
+function ajoute() {
+    let v = parseInt(document.getElementById("addval").value);
+    L.push(v);
+    dessine();
+}
+function enleve() {
+    let idx = parseInt(document.getElementById("delidx").value);
+    if(L.length>0 && idx>=0 && idx<L.length) {
+        L.splice(idx, 1);
+        dessine();
+    }
+}
+function quizList(rep) {
+    let repElem = document.getElementById("rep-quiz-list");
+    repElem.textContent = (rep === 0) ? "Bonne réponse : en Python, le premier indice est 0 !" : "Faux, c’est 0 en Python.";
+}
+function quizList2(rep) {
+    let repElem = document.getElementById("rep-quiz-list2");
+    repElem.textContent = (rep === 0) ? "Correct ! len(L) donne la longueur de la liste." : "Non, en Python c’est len(L).";
+}
+function afficheReponseList() {
+    document.getElementById("exo-reponse-list").style.display = "block";
+}
+dessine();
+</script>
+</body>
+</html>

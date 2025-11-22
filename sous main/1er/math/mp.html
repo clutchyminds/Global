@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass — Modélisation probabiliste</title>
+    <meta name="description" content="Tout sur la modélisation probabiliste : méthodes, étapes, exemples, schéma interactif, quiz, exercices, applications et erreurs à éviter pour la spé maths.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#daeaff 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.14);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #efe8ff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 14px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Modélisation probabiliste</h1>
+    <div class="intro">
+        Apprends à traduire des situations réelles en modèles de probabilité : étapes, méthodes, simulations, schéma interactif, quiz, erreurs, métiers et enjeux modernes !
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Définition et principe</h2>
+    <div class="infos">
+        La <b>modélisation probabiliste</b> consiste à représenter un phénomène aléatoire réel  
+        (jeu, expérience, système complexe…) par un modèle mathématique basé sur le hasard :  
+        - Univers probabiliste, événements, loi de probabilité, variable aléatoire...<br>
+        <b>Objectif : prévoir, simuler, ou optimiser un système incertain.</b>
+    </div>
+    <ul>
+        <li>Étudier la météo, tirer à pile ou face, analyser statistiques sur de gros jeux/expériences</li>
+        <li>Traduire un problème concret en termes d’issues, probabilités, variables</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Les étapes d’une modélisation probabiliste</h2>
+    <ol>
+        <li>Identifier l’expérience aléatoire (ce qui varie, ce qui est fixé)</li>
+        <li>Définir l’univers des possibles (issues, événements)</li>
+        <li>Attribuer des probabilités aux issues/événements</li>
+        <li>Choisir la <b>variable aléatoire</b> à étudier (gains, nombre de succès, etc.)</li>
+        <li>Calculer les lois, l’espérance, la variance selon le modèle choisi (binomiale, géométrique, loi uniforme…)</li>
+        <li>Avantage : on peut ensuite faire des approximations, des simulations ou des prévisions numériques.</li>
+    </ol>
+    <div class="box-important">
+        Astuce : Toujours commencer par formuler clairement la question à modéliser : “Qu’est-ce qui peut varier ? Qu’est-ce qui est aléatoire ?”
+    </div>
+</section>
+<section>
+    <h2>🟦 Schéma interactif — tirages, piles ou faces (simulation)</h2>
+    <label>Nombre de tirages : <input type="number" id="n" value="5" min="1" max="12"></label>
+    <label>Pile (proba) : <input type="number" id="p" value="0.5" step="0.01" min="0.01" max="0.99"></label>
+    <canvas id="schema" width="420" height="170"></canvas>
+    <div id="desc-mod"></div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>On lance 5 fois une pièce équilibrée. Quelle est la probabilité d’obtenir exactement 3 piles ?</p>
+    <button onclick="afficheReponseModel()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-model" style="display:none;">
+        Modèle : X ~ Binomiale(5;0,5).<br>
+        \( P(X=3) = C_5^3 \times 0,5^3 \times 0,5^2 = 10 \times 0,125 \times 0,25 = 0,3125 \)
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>Un tir aléatoire touche une cible avec proba 0,2 ; on répète 8 fois.  
+      Calcule l’espérance du nombre de touches.</p>
+    <button onclick="document.getElementById('exo2-reponse-model').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-model" style="display:none;">
+        Loi binomiale X~B(8;0,2) ; E(X) = 8×0,2 = 1,6.
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>Modéliser une expérience aléatoire, c’est :</p>
+    <button onclick="quizModel(0)">Traduire en problématique de probabilité</button>
+    <button onclick="quizModel(1)">Calculer l’espérance</button>
+    <button onclick="quizModel(2)">Résoudre une équation</button>
+    <div class="reponse" id="rep-quiz-model"></div>
+    <p>La somme des probabilités sur toutes les issues possibles est :</p>
+    <button onclick="quizModel2(0)">N’importe quel nombre</button>
+    <button onclick="quizModel2(1)">Toujours 1</button>
+    <button onclick="quizModel2(2)">Toujours 0</button>
+    <div class="reponse" id="rep-quiz-model2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li><b>Jeux/Statistiques</b> : tirages, loteries, scores sportifs</li>
+        <li><b>Sciences</b> : génétique, physique, chimie (radioactivité, diffusion…)</li>
+        <li><b>Informatique</b> : simuler des algorithmes, cryptographie, IA/statistique</li>
+        <li><b>Économie</b> : estimation, assurance, gestion de risque</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Oublier de préciser la variable étudiée (X…)</li>
+        <li>Mal attribuer la loi (binomiale, etc.) ou confondre paramètres</li>
+        <li>Penser que “hasard” = imprévisible ; un modèle ne donne qu’une tendance, pas un cas unique</li>
+        <li>Ignorer que toute simulation s’appuie sur de “vrais” tirages ou probabilités cumulées</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Modélisation</b>&nbsp;: passage d’un problème concret à un modèle mathématique<br>
+    <b>Variable aléatoire</b>&nbsp;: grandeur numérique issue du hasard<br>
+    <b>Loi</b>&nbsp;: distribution des probabilités<br>
+    <b>Simulation</b>&nbsp;: réalisation “virtuelle” de l’expérience aléatoire
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>La modélisation probabiliste émerge avec Bernoulli, Pierre-Simon Laplace et les casinos !</li>
+        <li>Elle irrigue aujourd’hui la science des données, les décisions, la politique de santé…</li>
+    </ul>
+    <div class="source">Source: histoire des probabilités, Wikipedia</div>
+</section>
+<section class="anecdote">
+    <b>Astuce-mémoire :</b> “On ne prédit pas le prochain résultat, mais la forme globale sur des milliers d’essais !”
+</section>
+<section>
+    <h2>💡 Méthodologie pour progresser</h2>
+    <ul>
+        <li>Décris toujours précisément ce que tu veux modéliser (questions, issues)</li>
+        <li>Attribue la variable et la loi adaptée, puis visualise/évalue tes résultats</li>
+        <li>Varie les paramètres (n, p…) pour t’entrainer avec le schéma</li>
+        <li>Pense simulation pour comprendre la “vraie vie” derrière l’abstraction</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizModel(rep) {
+    let repElem = document.getElementById("rep-quiz-model");
+    repElem.textContent = (rep === 0) ? "Bravo ! La modélisation, c’est traduire en modèle proba." : "Non, la modélisation précède le calcul...";
+}
+function quizModel2(rep) {
+    let repElem = document.getElementById("rep-quiz-model2");
+    repElem.textContent = (rep === 1) ? "Bonne réponse ! Toujours 1." : "Attention : la somme des probabilités sur tous les cas doit être 1.";
+}
+function afficheReponseModel() {
+    document.getElementById("exo-reponse-model").style.display = "block";
+}
+// Schéma dynamique pile/face binomiale
+function drawModel() {
+    let n = parseInt(document.getElementById("n").value);
+    let p = parseFloat(document.getElementById("p").value);
+    let canvas = document.getElementById("schema");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0,0,420,170);
+    ctx.font="13px Arial";
+    ctx.fillStyle="#1877f2";
+    let tot=0,xs=[];
+    for(let k=0;k<=n;k++){
+        // Binomiale
+        let comb=1;
+        for(let i=1;i<=k;i++) comb*=(n-i+1)/i;
+        let proba=comb*Math.pow(p,k)*Math.pow(1-p,n-k);
+        xs.push(proba); tot+=proba;
+    }
+    for(let k=0;k<=n;k++){
+        ctx.fillStyle="#1877f2";
+        ctx.fillRect(35+k*30,150-xs[k]*110,24,xs[k]*110);
+        ctx.fillStyle="#222";
+        ctx.fillText(k, 44+k*30, 164);
+        ctx.fillText(xs[k].toFixed(3), 36+k*30, 150-xs[k]*113);
+    }
+    ctx.fillStyle="#a133ff"; ctx.fillText("somme des proba = "+tot.toFixed(2), 210, 16);
+    document.getElementById("desc-mod").innerHTML =
+        "Loi Binomiale : n="+n+", p="+p+"<br>Observe la fréquence de chaque nombre de piles.";
+}
+drawModel();
+document.getElementById("n").addEventListener("input",drawModel);
+document.getElementById("p").addEventListener("input",drawModel);
+</script>
+</body>
+</html>

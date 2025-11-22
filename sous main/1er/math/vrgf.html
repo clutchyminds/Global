@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass — Variations et représentations des fonctions</title>
+    <meta name="description" content="Tout sur les variations et les représentations graphiques des fonctions : définitions, schéma interactif, quiz, exercices, analyse, applications et histoire.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#ffeeda 90%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.15);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #ffe8ff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 14px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Variations et représentations graphiques des fonctions</h1>
+    <div class="intro">
+        Comprends comment lire, tracer et analyser les fonctions pour déduire leurs variations, leurs extremums et leur comportement global !
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Définitions et notions-clé</h2>
+    <div class="infos">
+        La <b>variation</b> d’une fonction décrit comment les valeurs changent selon l’abscisse x : croissante (y augmente), décroissante (y diminue) ou constante.<br>
+        La représentation graphique permet de “visualiser” la fonction : max/min, inflexions, tangentes, asymptotes...
+    </div>
+    <ul>
+        <li>Pour <b>déterminer les variations</b> : analyse la dérivée ou le tableau de valeurs</li>
+        <li><b>Extremum</b> : minimum ou maximum local ou global</li>
+        <li><b>Points particuliers</b> : maximum, minimum, point d’inflexion, zéro/facteur, asymptote…</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Méthode d’étude des variations</h2>
+    <ol>
+        <li>Définir la fonction f(x) et son domaine</li>
+        <li>Calculer sa dérivée f'(x) pour repérer croissance/décroissance</li>
+        <li>Étudier le signe de f'(x) pour déduire les intervalles de variation</li>
+        <li>Identifier les extremums (f'(x)=0), points d’inflexion si possible</li>
+        <li>Tracer la courbe avec les points clés, asymptotes/non-définis, etc.</li>
+    </ol>
+    <div class="box-important">
+        Astuce : Un schéma bien tracé t’aide à visualiser les problèmes complexes et à comprendre tout de suite le comportement global !
+    </div>
+</section>
+<section>
+    <h2>🟦 Schéma interactif — visualisation et tangente</h2>
+    <label>Domaine : [<input type="number" id="xmin" value="-3"> ; <input type="number" id="xmax" value="3">]</label>
+    <select id="select">
+        <option value="x*x">f(x)=x²</option>
+        <option value="x*x*x">f(x)=x³</option>
+        <option value="Math.sin(x)">f(x)=sin(x)</option>
+        <option value="Math.exp(x)">f(x)=eˣ</option>
+        <option value="1/x">f(x)=1/x</option>
+    </select>
+    <input type="number" id="pt" value="0" step="0.1" min="-3" max="3"> (point d’étude de la tangente)
+    <canvas id="schema" width="410" height="260"></canvas>
+    <div id="desc-var"></div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>Pour f(x) = x³ - 3x² + 2, trouve les extremums et la nature des variations.</p>
+    <button onclick="afficheReponseVar()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-var" style="display:none;">
+        f'(x) = 3x² - 6x ;  
+        Signe de f'(x) : <br>
+        - S’annule en x=0 et x=2  
+        - Croissante sur ]-∞,0[, décroissante sur ]0,2[, croissante sur ]2,+∞[  
+        - Extrema : max local en x=0, min local en x=2
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>Pour f(x) = eˣ, quelle est la nature de ses variations ?</p>
+    <button onclick="document.getElementById('exo2-reponse-var').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-var" style="display:none;">
+        f'(x) = eˣ > 0 pour tout x, donc f(x) est strictement croissante partout !
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>La dérivée de f(x)=sin x s’annule en…</p>
+    <button onclick="quizVar(0)">x=0</button>
+    <button onclick="quizVar(1)">x=π/2</button>
+    <button onclick="quizVar(2)">x=π</button>
+    <div class="reponse" id="rep-quiz-var"></div>
+    <p>La courbe de f(x)=1/x possède une asymptote…</p>
+    <button onclick="quizVar2(0)">verticale</button>
+    <button onclick="quizVar2(1)">horizontale</button>
+    <button onclick="quizVar2(2)">les deux</button>
+    <div class="reponse" id="rep-quiz-var2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li><b>Maths</b> : optimisation, modélisation, prédiction de comportements</li>
+        <li><b>Physique</b> : mécanique, croissance/décroissance, fréquence, énergie…</li>
+        <li><b>Info/IA</b> : graphiques, simulation, courbes d’apprentissage</li>
+        <li><b>Technologie</b> : design d’objets, économie, architecture</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Oublier que le signe de la dérivée donne la variation locale</li>
+        <li>Mal placer les points d’annulation, extrema ou asymptotes</li>
+        <li>Confondre minimum et maximum</li>
+        <li>Oublier que les tangentes visualisent localement la fonction</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Variation</b> : sens dans lequel une fonction évolue<br>
+    <b>Extremum</b> : valeur max ou min local/global<br>
+    <b>Tangente</b> : droite qui “colle” à la courbe, coefficient directeur = dérivée<br>
+    <b>Asymptote</b> : droite que la courbe va “rejoindre” à l’infini
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>L’étude des variations est fondatrice pour les sciences, du calcul différentiel (Newton/Leibniz) à l’optimisation industrielle</li>
+        <li>La représentation graphique permet à tous les chercheurs d’avoir “une intuition visuelle” des comportements des fonctions</li>
+    </ul>
+    <div class="source">Source : histoire des maths, Wikipedia</div>
+</section>
+<section class="anecdote">
+    <b>Astuce-mémoire</b> : “La courbe monte = la dérivée est positive, elle stagne = dérivée nulle, elle descend = négative”
+</section>
+<section>
+    <h2>💡 Méthodologie pour progresser</h2>
+    <ul>
+        <li>Etablis toujours le tableau de variations après la dérivée</li>
+        <li>Trace la courbe pour valider visuellement et mieux retenir</li>
+        <li>Analyse les points clefs (zéros, extrema, asymptotes)</li>
+        <li>Utilise le module interactif pour afficher la tangente et les points critiques</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizVar(rep) {
+    let repElem = document.getElementById("rep-quiz-var");
+    repElem.textContent = (rep === 0) ? "Bravo ! (sin x)' = cos x, s’annule en x=0, x=π/2, etc." : "Faux, vérifie les annulations.";
+}
+function quizVar2(rep) {
+    let repElem = document.getElementById("rep-quiz-var2");
+    repElem.textContent = (rep === 2) ? "Bonne réponse ! 1/x possède à la fois une asymptote verticale en x=0 et horizontale en y=0." : "Faux, vérifie les comportements aux bornes.";
+}
+function afficheReponseVar() {
+    document.getElementById("exo-reponse-var").style.display = "block";
+}
+// Schéma interactif
+function evalFunc(expr, x) {
+    if(expr === "x*x") return x*x;
+    if(expr === "x*x*x") return x*x*x;
+    if(expr === "Math.sin(x)") return Math.sin(x);
+    if(expr === "Math.exp(x)") return Math.exp(x);
+    if(expr === "1/x") return (x!==0)?1/x:0;
+    return 0;
+}
+function derivFunc(expr, x, h=1e-5) {
+    return (evalFunc(expr, x+h)-evalFunc(expr, x-h))/(2*h);
+}
+function drawVar() {
+    let xmin = parseFloat(document.getElementById("xmin").value);
+    let xmax = parseFloat(document.getElementById("xmax").value);
+    let expr = document.getElementById("select").value;
+    let pt = parseFloat(document.getElementById("pt").value);
+    let canvas = document.getElementById("schema");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, 410, 260);
+    // Axes
+    ctx.strokeStyle="#aaa"; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(20,130); ctx.lineTo(400,130); ctx.moveTo(210,20); ctx.lineTo(210,240); ctx.stroke();
+    // Courbe
+    ctx.beginPath();
+    for(let xPx=0;xPx<=410;xPx++){
+        let x=xmin+(xmax-xmin)*xPx/410;
+        let y=evalFunc(expr, x);
+        let yPx=130-y*32;
+        if(xPx===0) ctx.moveTo(xPx,yPx); else ctx.lineTo(xPx,yPx);
+    }
+    ctx.strokeStyle="#1877f2"; ctx.lineWidth=3; ctx.stroke();
+    // Tangente
+    let At=210+410*(pt-xmin)/(xmax-xmin);
+    let yt=evalFunc(expr, pt);
+    let fpt=derivFunc(expr, pt);
+    let Ayt=130-yt*32;
+    ctx.beginPath(); ctx.arc(At,Ayt,5,0,2*Math.PI); ctx.fillStyle="#fa9100"; ctx.fill();
+    ctx.font="12px Arial"; ctx.fillStyle="#fa9100"; ctx.fillText("("+pt.toFixed(1)+" ; "+yt.toFixed(1)+")",At+7,Ayt-8);
+    // Tangente
+    ctx.beginPath();
+    for(let dx=-120;dx<=120;dx++){
+        let xx=pt+dx*0.02;
+        let yy=yt+fpt*(xx-pt);
+        let xPx=210+410*(xx-xmin)/(xmax-xmin);
+        let yPx=130-yy*32;
+        if(dx===-120) ctx.moveTo(xPx,yPx); else ctx.lineTo(xPx,yPx);
+    }
+    ctx.strokeStyle="#a133ff"; ctx.setLineDash([5,4]); ctx.lineWidth=2; ctx.stroke(); ctx.setLineDash([]);
+    document.getElementById("desc-var").innerHTML =
+        "Tangente au point x = "+pt.toFixed(2)+", f'(x) ≈ "+fpt.toFixed(2);
+}
+drawVar();
+document.getElementById("xmin").addEventListener("input", drawVar);
+document.getElementById("xmax").addEventListener("input", drawVar);
+document.getElementById("select").addEventListener("input", drawVar);
+document.getElementById("pt").addEventListener("input", drawVar);
+</script>
+</body>
+</html>

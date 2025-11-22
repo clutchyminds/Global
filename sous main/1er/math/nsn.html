@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass — Notions sur les suites numériques</title>
+    <meta name="description" content="Tout comprendre sur les suites numériques : définitions, types, variations, schéma interactif, exercices, quiz, applications et méthodologie pour la spé maths.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#e6faff 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #eeeaff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 14px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Suites numériques (notions générales)</h1>
+    <div class="intro">
+        Les bases indispensables pour progresser en maths : terminologie, types de suites, méthodes, schémas, exercices, quiz, histoire et erreurs fréquentes !
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Définitions, types et vocabulaire clé</h2>
+    <div class="infos">
+        Une suite numérique est une liste ordonnée de nombres, notée \( (u_n) \) ou \( u_0,\ u_1,\ u_2,\ ... \)  
+        Pour chaque entier n, \( u_n \) est appelé le terme de rang n.
+    </div>
+    <ul>
+        <li><b>Terme général</b> : \( u_n \), formule donnant chaque terme</li>
+        <li><b>Suite explicitement définie</b> : par une formule directe, <i>ex</i> : \( u_n = 2n + 5 \)</li>
+        <li><b>Suite définie par récurrence</b> : on donne \( u_0 \) (ou \( u_1 \)), puis \( u_{n+1} \) en fonction de \( u_n \)</li>
+        <li><b>Exemples</b> :  
+            - Arithmétique : \( u_{n+1} = u_n + r \)  
+            - Géométrique : \( v_{n+1} = q \times v_n \)
+        </li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Propriétés fondamentales</h2>
+    <ul>
+        <li><b>Monotonie</b> : une suite est dite <b>croissante</b> (si \( u_{n+1}\geq u_n \)), <b>décroissante</b> (si \( u_{n+1}\leq u_n \)), <b>constante</b> (tous les termes égaux)</li>
+        <li><b>Suites majorées/minorées</b> : il existe M tel que \( u_n \leq M \), ou m tel que \( u_n \geq m \)</li>
+        <li><b>Borne</b> : une suite est bornée s’il existe à la fois un min et un max qui encadrent tous les termes</li>
+        <li><b>Suite convergente</b> : elle « tend » vers une limite réelle quand n est très grand (se voit sur le graphe !)</li>
+    </ul>
+    <div class="box-important">
+        Astuce : Ces propriétés sont essentielles pour démontrer des limites ou étudier la stabilité/évolution de systèmes.
+    </div>
+</section>
+<section>
+    <h2>🟦 Schéma interactif — tester différents cas</h2>
+    <label>u_0: <input type="number" id="u0" value="1"></label>
+    <label>r: <input type="number" id="r" value="2" step="0.1"></label>
+    <label>q: <input type="number" id="q" value="0.8" step="0.05"></label>
+    <canvas id="schema" width="400" height="240"></canvas>
+    <div id="desc-suite"></div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>Donne la nature (croissante/décroissante, majorée/bornée) de la suite \( u_n = 2n - 1 \) pour \( n \geq 0 \).</p>
+    <button onclick="afficheReponseGenSuite()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-gensuite" style="display:none;">
+        \( u_n \) est strictement croissante (r = 2), non bornée supérieurement, minorée (toujours \( u_n \geq -1 \)).
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>Que dire de la suite \( v_n = 2 \times 0,8^n \) (<i>n≥0</i>) pour les variations et la convergence ?</p>
+    <button onclick="document.getElementById('exo2-reponse-gensuite').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-gensuite" style="display:none;">
+        La suite est strictement décroissante (q=0,8<1, v0>0), majorée (par v0=2), minorée par 0, bornée, et converge vers 0.
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>La suite \( u_n = (-1)^n \) est :</p>
+    <button onclick="quizGenSuite(0)">Bornée mais non convergente</button>
+    <button onclick="quizGenSuite(1)">Majorée mais non minorée</button>
+    <button onclick="quizGenSuite(2)">Constante</button>
+    <div class="reponse" id="rep-quiz-gensuite"></div>
+    <p>Une suite \( u_n \) converge si :</p>
+    <button onclick="quizGenSuite2(0)">Ses termes tendent vers une limite quand n grandit</button>
+    <button onclick="quizGenSuite2(1)">Elle est toujours croissante</button>
+    <div class="reponse" id="rep-quiz-gensuite2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li><b>Maths/Physique</b> : évolution d’état, convergence d’algorithmes, modèles de croissance/décroissance</li>
+        <li><b>Finance</b> : rentes, placements, amortissements</li>
+        <li><b>Info/Algorithmique</b> : boucle de calcul, analyse de stabilité, fractales, itérations</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Confondre bornée/convergente, ou croissance et divergence</li>
+        <li>Oublier de distinguer suite explicite/récurrente</li>
+        <li>Mal définir la propriété de la variation</li>
+        <li>Oublier la méthode graphique pour comprendre un comportement</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Suite</b>&nbsp;: suite ordonnée de réels<br>
+    <b>Monotone</b>&nbsp;: toujours croissante ou décroissante<br>
+    <b>Majorée/minorée</b>: encadrée par un max/min<br>
+    <b>Convergente</b>: possède une limite réelle
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>Les suites servent à tout : prédire l’évolution d’une épidémie, modéliser une population, régler des calculs d’intérêts</li>
+        <li>La notion de limite, plus profonde, structure toutes les maths modernes (analyse, calcul intégral, etc.)</li>
+    </ul>
+    <div class="source">Source : histoire des suites, mathcurve.com, Wikipedia</div>
+</section>
+<section class="anecdote">
+    <b>Astuce-mémoire</b> : “Monotonie = même sens”, “Limite : imagine une cible que la suite approche de plus en plus”
+</section>
+<section>
+    <h2>💡 Méthodologie pour progresser</h2>
+    <ul>
+        <li>Teste les définitions sur différents exemples numériques</li>
+        <li>Visualise tes suites avec des schémas pour comprendre leur “sens”</li>
+        <li>Exerce-toi à prouver les variations et bornages</li>
+        <li>Fais la différence entre divergence, convergence et oscillation</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizGenSuite(rep) {
+    let repElem = document.getElementById("rep-quiz-gensuite");
+    repElem.textContent = (rep === 0) ? "Bonne réponse ! Elle oscille entre deux valeurs : bornée, mais ne converge pas." : "Faux, refais le schéma.";
+}
+function quizGenSuite2(rep) {
+    let repElem = document.getElementById("rep-quiz-gensuite2");
+    repElem.textContent = (rep === 0) ? "Exact ! C’est ce qu’on appelle la convergence d’une suite." : "Non, attention : une suite croissante peut diverger.";
+}
+function afficheReponseGenSuite() {
+    document.getElementById("exo-reponse-gensuite").style.display = "block";
+}
+// Schéma interactif notions générales
+function drawGenSuite() {
+    let u0 = parseFloat(document.getElementById("u0").value);
+    let r = parseFloat(document.getElementById("r").value);
+    let q = parseFloat(document.getElementById("q").value);
+    let canvas = document.getElementById("schema");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, 400, 240);
+    // Axes
+    ctx.strokeStyle="#aaa"; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(30,200); ctx.lineTo(370,200); ctx.moveTo(30,30); ctx.lineTo(30,200); ctx.stroke();
+    // Arith
+    ctx.strokeStyle="#1877f2"; ctx.lineWidth=3;
+    ctx.beginPath();
+    for(let n=0;n<=12;n++){
+        let x=30+n*28, un = u0 + n*r, yp = 200-un*12;
+        if(n===0) ctx.moveTo(x,yp); else ctx.lineTo(x,yp);
+        ctx.font="11px Arial"; ctx.fillStyle="#1877f2"; ctx.fillText(un.toFixed(1),x-8,yp-6);
+        ctx.beginPath(); ctx.arc(x, yp, 2.5, 0, 2*Math.PI); ctx.fill();
+    }
+    ctx.stroke();
+    // Geom
+    ctx.strokeStyle="#167c2b"; ctx.lineWidth=2;
+    ctx.beginPath();
+    for(let n=0;n<=12;n++){
+        let x=30+n*28, vn = u0*Math.pow(q,n), yp = 200-vn*12;
+        if(n===0) ctx.moveTo(x,yp); else ctx.lineTo(x,yp);
+        ctx.font="11px Arial"; ctx.fillStyle="#167c2b"; ctx.fillText(vn.toFixed(1),x-8,yp+14);
+    }
+    ctx.stroke();
+    document.getElementById("desc-suite").innerHTML =
+        "Bleu = suite arithmétique, Vert = géométrique (visualisation pour n=0 à 12)";
+}
+drawGenSuite();
+document.getElementById("u0").addEventListener("input", drawGenSuite);
+document.getElementById("r").addEventListener("input", drawGenSuite);
+document.getElementById("q").addEventListener("input", drawGenSuite);
+</script>
+</body>
+</html>

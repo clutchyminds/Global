@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass — Écriture de programmes simples</title>
+    <meta name="description" content="Apprends à écrire des programmes simples en Python : méthode, exemples types, quiz, exercices, erreurs, astuces et bonnes pratiques pour la NSI ou autodidacte.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#ffe6d0 90%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.2rem; margin: 0 0 13px; color: #e4872d;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(228,135,45,0.10);}
+        h2 { color: #e4872d; margin-top: 32px;}
+        h3 { color: #1877f2; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #ffeeda; border-left: 6px solid #e4872d;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        .anecdote {background: #fef7ea; border-left: 7px solid #e4872d; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
+        button {background: #e4872d; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #d06d0e;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        pre {background: #f8f4ee; border-radius: 5px; padding: 8px 13px; margin: 5px 0; font-size: 1em;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Écriture de programmes simples</h1>
+    <div class="intro">
+        Méthode, exemples types, quiz et astuces pour écrire ses premiers vrais programmes Python, compris et corrigés pas à pas !
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Méthodologie générale</h2>
+    <div class="infos">
+        Un programme, même simple, suit toujours un schéma :   
+        1️⃣ Lecture / initialisation des données  
+        2️⃣ Traitement / calcul(s)  
+        3️⃣ Affichage / restitution des résultats
+    </div>
+    <ul>
+        <li>Pense à la séquence : Entrée (saisies) ➡️ Traitement ➡️ Sortie (affichage)</li>
+        <li>Découpe ton problème en petites instructions claires</li>
+        <li>Utilise des noms de variables explicites</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Exemples concrets de programmes simples</h2>
+    <b>Exemple 1 : Afficher les nombres de 1 à 10</b>
+    <pre>
+for i in range(1, 11):
+    print(i)
+    </pre>
+    <b>Exemple 2 : Calculer la somme de deux nombres saisis par l’utilisateur</b>
+    <pre>
+a = int(input("Premier nombre : "))
+b = int(input("Deuxième nombre : "))
+print("Somme =", a + b)
+    </pre>
+    <b>Exemple 3 : Liste tous les multiples de 4 entre 0 et 20 inclus</b>
+    <pre>
+for n in range(0, 21, 4):
+    print(n)
+    </pre>
+</section>
+<section class="box-important">
+    <h2>💡 Astuce méthodo</h2>
+    <ul>
+        <li>Ajoute <code>print()</code> régulièrement pour vérifier où tu en es</li>
+        <li>Teste chaque morceau avant de tout écrire d’un coup</li>
+        <li>Commente ton code pour t’y retrouver</li>
+    </ul>
+</section>
+<section>
+    <h2>🟦 Exercices interactifs</h2>
+    <div class="box box-exo">
+        <h3>💡 Exercice d’application</h3>
+        <p>Écrire un programme qui demande un nom d’utilisateur et affiche “Bonjour, nom !”</p>
+        <button onclick="afficheReponseProg()">Voir la correction</button>
+        <div class="reponse" id="exo-reponse-prog" style="display:none;">
+            <pre>
+nom = input("Quel est ton nom ? ")
+print("Bonjour,", nom + "!")
+            </pre>
+        </div>
+    </div>
+    <div class="box-exo">
+        <h3>🔥 Exercice “expert”</h3>
+        <p>Écrire un programme qui affiche tous les entiers pairs entre 15 et 30 inclus.</p>
+        <button onclick="document.getElementById('exo2-reponse-prog').style.display='block';">Voir la correction</button>
+        <div class="reponse" id="exo2-reponse-prog" style="display:none;">
+            <pre>
+for n in range(16, 31, 2):
+    print(n)
+            </pre>
+        </div>
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>Comment lit-on un nombre entier tapé au clavier en Python ?</p>
+    <button onclick="quizProg(0)">int(input())</button>
+    <button onclick="quizProg(1)">input(int())</button>
+    <button onclick="quizProg(2)">print(input())</button>
+    <div class="reponse" id="rep-quiz-prog"></div>
+    <p>Pour afficher le double d’un nombre saisi dans x :</p>
+    <button onclick="quizProg2(0)">print(2 * x)</button>
+    <button onclick="quizProg2(1)">print(x ** 2)</button>
+    <div class="reponse" id="rep-quiz-prog2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li>NSI / Algorithmique : premiers scripts, automatisation de calculs</li>
+        <li>Vie de tous les jours : calculatrices, outils maison, jeux simples</li>
+        <li>Sciences / Info : manipulation de données, tests, modélisations</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Oublier <code>input()</code> pour saisir les données</li>
+        <li>Confondre “str” et “int” (conversion de chaînes en entier)</li>
+        <li>SyntaxError : parenthèses , indentation (espaces)</li>
+        <li>Démarrer la boucle for range(n, m) avec n > m sans pas négatif</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Programme</b>: suite d’instructions exécutées par l’ordinateur<br>
+    <b>Boucle</b>: structure qui répète un bloc<br>
+    <b>Saisie</b>: “input()” en Python<br>
+    <b>Affichage</b>: “print()” en Python
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>Les premiers “vrais” programmes remontent aux années 1940 (ENIAC, Alan Turing…)</li>
+        <li>Python permet aujourd’hui d’apprendre très vite avec peu de lignes</li>
+    </ul>
+    <div class="source">Source : histoire de la programmation, Wikipedia</div>
+</section>
+<section class="anecdote">
+    <b>Astuce-mémoire</b> : “Entrée &rarr; Traitement &rarr; Sortie : comme un sandwich, pas de bug au milieu !”
+</section>
+<section>
+    <h2>💡 Pour progresser</h2>
+    <ul>
+        <li>Varie les données d’entrée et observe le comportement du programme</li>
+        <li>Améliore tes exemples progressivement (ajoute des tests, des boucles, des calculs)</li>
+        <li>Essaie d’inventer tes propres petits défis et corrige-les avec cet assistant !</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizProg(rep) {
+    let repElem = document.getElementById("rep-quiz-prog");
+    repElem.textContent = (rep === 0) ? "Bonne réponse ! int(input()) convertit bien la saisie en nombre entier." : "Non, regarde l’ordre et la fonction de conversion.";
+}
+function quizProg2(rep) {
+    let repElem = document.getElementById("rep-quiz-prog2");
+    repElem.textContent = (rep === 0) ? "Bravo, c’est bien print(2 * x)." : "Non, attention, x**2 donne le carré."
+}
+function afficheReponseProg() {
+    document.getElementById("exo-reponse-prog").style.display = "block";
+}
+</script>
+</body>
+</html>

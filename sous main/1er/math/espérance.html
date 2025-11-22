@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass — Espérance mathématique</title>
+    <meta name="description" content="Espérance de variable aléatoire : définition, calculs, propriétés, schéma interactif, quiz, exercices, applications et erreurs typiques pour réussir en spé maths.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#fff3be 90%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.2rem; margin: 0 0 13px; color: #1877f2;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.13);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #fffadd; border-left: 6px solid #e9c400;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #e8fffb; border-left: 7px solid #1bb3ac; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #fffce3; border-radius: 8px; border: 1px solid #e9c400;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 14px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+        table.loi { border-collapse: collapse; margin: 14px auto; }
+        table.loi th, table.loi td { border: 1px solid #f5e7b5; padding: 7px 13px; text-align: center;}
+        table.loi th { background: #fffadd; color: #bba723;}
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Espérance mathématique</h1>
+    <div class="intro">
+        Définitions, propriétés, exemples, schéma interactif, quiz, exercices et applications pour comprendre et réussir tous les calculs d’espérance !
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Définitions & fondamentaux</h2>
+    <div class="infos">
+        L’<b>espérance</b> d’une variable aléatoire X, notée \( E(X) \), représente la moyenne théorique obtenue après un très grand nombre de répétitions.<br>
+        <b>\( E(X) = \sum x_i \cdot P(X=x_i) \)</b> pour X discrète (ex. : dé, loterie, pile/face…)
+    </div>
+    <ul>
+        <li>Pour une variable continue :  
+            \( E(X) = \int_{-\infty}^{+\infty} x \cdot f(x)\,dx \)</li>
+        <li>L’espérance ne correspond pas forcément à une valeur effectivement réalisable</li>
+        <li>Elle sert à prévoir les “gains attendus”, optimiser des systèmes de jeu, ou calculer des moyennes de distribution</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Propriétés et calculs classiques</h2>
+    <ul>
+        <li>L’espérance est linéaire :  
+            - \( E(aX+b) = aE(X)+b \)
+            - \( E(X+Y) = E(X) + E(Y) \) si X et Y aléatoires</li>
+        <li>Pour une loi binomiale B(n,p) :  
+            - \( E(X) = n \times p \)</li>
+        <li>Pour une loi uniforme sur n valeurs :  
+            - \( E(X) = \frac{\text{première valeur} + \text{dernière}}{2} \)</li>
+    </ul>
+    <div class="box-important">
+        Astuce : L’espérance te dit “combien on peut gagner/perdre en moyenne” sur le long terme et sert à choisir la meilleure stratégie !
+    </div>
+</section>
+<section>
+    <h2>🟦 Schéma dynamique — loi à 3 valeurs</h2>
+    <table class="loi">
+        <tr><th>x</th><th>P(X=x)</th></tr>
+        <tr><td><input type="number" id="x1" value="0"></td><td><input type="number" id="p1" step="0.01" value="0.3"></td></tr>
+        <tr><td><input type="number" id="x2" value="2"></td><td><input type="number" id="p2" step="0.01" value="0.5"></td></tr>
+        <tr><td><input type="number" id="x3" value="5"></td><td><input type="number" id="p3" step="0.01" value="0.2"></td></tr>
+    </table>
+    <div id="schema"></div>
+    <div id="desc-esp"></div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>On joue à un jeu : gain possible 0€ (p=0,3), 2€ (p=0,5), 5€ (p=0,2).  
+    Calcule l’espérance.</p>
+    <button onclick="afficheReponseEsp()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-esp" style="display:none;">
+        E(X) = 0×0,3 + 2×0,5 + 5×0,2 = 0 + 1 + 1 = 2€
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>Pour X~B(4;0,3), calcule E(X).</p>
+    <button onclick="document.getElementById('exo2-reponse-esp').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-esp" style="display:none;">
+        Binomiale : E(X) = n × p = 4 × 0,3 = 1,2
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>L’espérance d’une variable discrète est :</p>
+    <button onclick="quizEsp(0)">sa moyenne pondérée</button>
+    <button onclick="quizEsp(1)">sa valeur la plus probable</button>
+    <div class="reponse" id="rep-quiz-esp"></div>
+    <p>Pour une loi uniforme sur 6 valeurs (dé équilibré), l’espérance vaut :</p>
+    <button onclick="quizEsp2(0)">3,5</button>
+    <button onclick="quizEsp2(1)">6</button>
+    <button onclick="quizEsp2(2)">1</button>
+    <div class="reponse" id="rep-quiz-esp2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li><b>Finance/Jeux</b> : gains attendus, stratégies, assurance</li>
+        <li><b>Stats/Physique</b> : moyenne de mesures, prévision d’évolution</li>
+        <li><b>Info/IA</b> : stratégie de décision, calculs d’espérance de temps, “théorie des jeux”</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Oublier que la somme des p(x) doit valoir 1</li>
+        <li>Confondre espérance et valeur la plus probable (mode)</li>
+        <li>Faire des erreurs de calcul sur les pondérations</li>
+        <li>Appliquer la formule continue à une variable discrète</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Espérance</b>: moyenne théorique<br>
+    <b>Variable aléatoire</b>: grandeur liée au hasard<br>
+    <b>Loi</b>: distribution sur les valeurs possibles<br>
+    <b>Pondération</b>: “poids” attribué à chaque issue
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>L’espérance naît à l’époque des jeux de hasard/analyse des risques (Pascal, Fermat, Bernoulli… XVIIe siècle)</li>
+        <li>Bases de l’actuariat et de la finance moderne</li>
+        <li>Déterminante pour choisir les stratégies de jeu et optimiser les décisions numériques</li>
+    </ul>
+    <div class="source">Source : histoire des maths et des probabilités, Wikipedia</div>
+</section>
+<section class="anecdote">
+    <b>Astuce-mémoire</b>: “L’espérance c’est ce que tu gagnes en moyenne si tu joues des milliers de fois !”
+</section>
+<section>
+    <h2>💡 Méthodologie pour progresser</h2>
+    <ul>
+        <li>Commence par vérifier les proba puis calcule la pondération</li>
+        <li>Teste sur jeux classiques, pile/face, loterie, binomiale</li>
+        <li>Utilise le schéma dynamique pour varier les valeurs/gains</li>
+        <li>Pense à la différence entre espérance et moyenne observée sur un échantillon limité</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizEsp(rep) {
+    let repElem = document.getElementById("rep-quiz-esp");
+    repElem.textContent = (rep === 0) ? "Bravo ! L’espérance est la moyenne pondérée des valeurs." : "Non, attention, la plus probable n’est pas forcément la moyenne.";
+}
+function quizEsp2(rep) {
+    let repElem = document.getElementById("rep-quiz-esp2");
+    repElem.textContent = (rep === 0) ? "Bonne réponse ! 3,5 pour 1,2,3,4,5,6." : "Non, fais la somme pondérée !";
+}
+function afficheReponseEsp() {
+    document.getElementById("exo-reponse-esp").style.display = "block";
+}
+function drawEsp() {
+    let x1 = parseFloat(document.getElementById("x1").value);
+    let x2 = parseFloat(document.getElementById("x2").value);
+    let x3 = parseFloat(document.getElementById("x3").value);
+    let p1 = parseFloat(document.getElementById("p1").value);
+    let p2 = parseFloat(document.getElementById("p2").value);
+    let p3 = parseFloat(document.getElementById("p3").value);
+    let E = x1*p1 + x2*p2 + x3*p3;
+    document.getElementById("desc-esp").innerHTML =
+        "Espérance calculée: "+E.toFixed(2)+
+        "<br>Pense à vérifier la somme p(x): "+(p1+p2+p3).toFixed(2);
+    // Histogramme
+    let canvas = document.createElement('canvas');
+    canvas.width=320; canvas.height=80;
+    let ctx = canvas.getContext("2d");
+    let vals = [x1,x2,x3], ps = [p1,p2,p3];
+    for(let i=0;i<3;i++){
+        ctx.fillStyle="#e9c400"; ctx.fillRect(20+90*i,70-ps[i]*60,40,ps[i]*60);
+        ctx.fillStyle="#222";ctx.fillText("x="+vals[i],32+90*i,75);
+        ctx.fillText("p="+ps[i],32+90*i,63-ps[i]*60);
+    }
+    document.getElementById("schema").innerHTML="";
+    document.getElementById("schema").appendChild(canvas);
+}
+drawEsp();
+["x1","x2","x3","p1","p2","p3"].forEach(id=>{
+    document.getElementById(id).addEventListener("input",drawEsp);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass — Fonction exponentielle</title>
+    <meta name="description" content="La fonction exponentielle expliquée — définition, propriétés, schémas, exercices, quiz, applications et erreurs fréquentes pour la spé maths.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#eafdec 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #ffe8ff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 14px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Fonction exponentielle</h1>
+    <div class="intro">
+        Pour tout comprendre et réussir sur l’exponentielle : définitions, propriétés, schéma dynamique, applications, quiz, exos, histoire et astuces-mémoire !
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Définition et premières propriétés</h2>
+    <div class="infos">
+        La fonction exponentielle est définie pour tout réel x par :  
+        <b>\( \exp(x) \) ou \( e^x \)</b> où e ≈ 2,718281...  
+        Elle vérifie :  
+        - \( \exp(0) = 1 \)
+        - \( \exp(x+y) = \exp(x)\exp(y) \) (ce qui fait toute sa puissance)
+    </div>
+    <ul>
+        <li>Sa dérivée est elle-même : \( (\exp(x))' = \exp(x) \)</li>
+        <li>Elle est toujours strictement positive et croissante</li>
+        <li>Pour tout a, \( \exp(a)^x = \exp(ax) \)</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Propriétés graphiques et algébriques</h2>
+    <ul>
+        <li>La courbe de \( \exp(x) \) passe par (0 ; 1), est croissante et ne touche jamais l’axe des abscisses (y = 0 est asymptote)</li>
+        <li>Pour toute fonction affine a x + b : \( f(x) = \exp(ax+b) \), variation selon a</li>
+        <li>Calculs :  
+            - \( \exp(-x) = 1/\exp(x) \)
+            - \( \exp(x) > 0 \), croissante sur R
+        </li>
+        <li>Suite géométrique et exponentielle sont étroitement liées : \( q^n = \exp(n\ln q) \)</li>
+    </ul>
+    <div class="box-important">
+        Astuce : L’exponentielle s’utilise partout où il y a croissance proportionnelle, décadence, population, intérêts composés, radioactivité...
+    </div>
+</section>
+<section>
+    <h2>🟦 Schéma dynamique</h2>
+    <label>a: <input type="number" id="a" value="1" step="0.1"></label>
+    <label>b: <input type="number" id="b" value="0" step="0.1"></label>
+    <canvas id="schema" width="410" height="260"></canvas>
+    <div id="desc-exp"></div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>Calcule la dérivée de la fonction \( f(x) = e^{2x-1} \).</p>
+    <button onclick="afficheReponseExp()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-exp" style="display:none;">
+        f'(x) = 2 × e^{2x-1}
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>Résous : \( e^{x} = 5 \)</p>
+    <button onclick="document.getElementById('exo2-reponse-exp').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-exp" style="display:none;">
+        x = ln(5)
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>La fonction exponentielle est :</p>
+    <button onclick="quizExp(0)">Strictement croissante</button>
+    <button onclick="quizExp(1)">Strictement décroissante</button>
+    <button onclick="quizExp(2)">Constante</button>
+    <div class="reponse" id="rep-quiz-exp"></div>
+    <p>La dérivée de \( e^{ax+b} \) est :</p>
+    <button onclick="quizExp2(0)">\( a e^{ax+b} \)</button>
+    <button onclick="quizExp2(1)">\( e^{ax+b} \)</button>
+    <button onclick="quizExp2(2)">\( b e^{ax+b} \)</button>
+    <div class="reponse" id="rep-quiz-exp2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li><b>Physique/Chimie</b> : radioactivité, loi d’évolution, électromagnétisme, cinétique…</li>
+        <li><b>Finance</b> : calcul d’intérêts composés, croissance de capital</li>
+        <li><b>Informatique</b> : modélisation, IA, régularisation, algos exponentiels</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Oublier que la dérivée de l’exponentielle inclut le facteur a si composée avec ax+b</li>
+        <li>Oublier que \( e^{-x} = 1/e^x \)</li>
+        <li>Confondre croissance exponentielle avec croissance linéaire</li>
+        <li>Mal interpréter “asymptote horizontale” y=0 (jamais atteinte)</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Exponentielle</b>&nbsp;: fonction de croissance proportionnelle<br>
+    <b>Dérivée</b>&nbsp;: la fonction elle-même<br>
+    <b>Asymptote</b>&nbsp;: droite non atteinte (y=0 ici)<br>
+    <b>Logarithme</b>&nbsp;: fonction réciproque de l’exponentielle
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>L’exponentielle apparaît en maths depuis Euler (XVIIIe), base du calcul différentiel</li>
+        <li>Elle décrit la croissance accélérée et la décroissance rapide dans les sciences et la finance</li>
+    </ul>
+    <div class="source">Source : histoire des maths, Wikipedia</div>
+</section>
+<section class="anecdote">
+    <b>Astuce-mémoire</b> : L’exponentielle, c’est la “fonction qui se dérive toute seule” !
+</section>
+<section>
+    <h2>💡 Méthodologie pour progresser</h2>
+    <ul>
+        <li>Teste l’effet des paramètres a et b sur f(x)=e^{ax+b}</li>
+        <li>Visualise l’asymptote horizontale y=0</li>
+        <li>Fais des exercices de dérivation et d’équations</li>
+        <li>Utilise le module interactif pour voir la courbe changer</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizExp(rep) {
+    let repElem = document.getElementById("rep-quiz-exp");
+    repElem.textContent = (rep === 0) ? "Bonne réponse ! L’exponentielle est strictement croissante." : "Faux, elle monte continuellement.";
+}
+function quizExp2(rep) {
+    let repElem = document.getElementById("rep-quiz-exp2");
+    repElem.textContent = (rep === 0) ? "Bravo ! Sa dérivée, c’est a×e^{ax+b}." : "Faux : la dérivée doit inclure a.";
+}
+function afficheReponseExp() {
+    document.getElementById("exo-reponse-exp").style.display = "block";
+}
+// Schéma interactif exponentielle
+function drawExp() {
+    let a = parseFloat(document.getElementById("a").value);
+    let b = parseFloat(document.getElementById("b").value);
+    let canvas = document.getElementById("schema");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, 410, 260);
+    // Axes
+    ctx.strokeStyle="#aaa"; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(20,130); ctx.lineTo(400,130); ctx.moveTo(210,30); ctx.lineTo(210,240); ctx.stroke();
+    // Exponentielle
+    ctx.beginPath();
+    for(let xPx=0;xPx<=410;xPx++){
+        let x=(xPx-210)/48; // x ∈ [-4, 4]
+        let y=Math.exp(a*x+b);
+        let yPx=130-y*32;
+        if(xPx===0) ctx.moveTo(xPx,yPx); else ctx.lineTo(xPx,yPx);
+    }
+    ctx.strokeStyle="#1877f2"; ctx.lineWidth=3; ctx.stroke();
+    // Point clef x=0
+    let y0=Math.exp(b);
+    let y0p=130-y0*32;
+    ctx.beginPath(); ctx.arc(210,y0p,5,0,2*Math.PI); ctx.fillStyle="#fa9100"; ctx.fill();
+    ctx.font="12px Arial"; ctx.fillStyle="#fa9100"; ctx.fillText("("+0+" ; "+y0.toFixed(2)+")",218,y0p-8);
+    document.getElementById("desc-exp").innerHTML =
+        "f(0) = e^{"+b+"} = "+y0.toFixed(2)+"<br>Asymptote y = 0";
+}
+drawExp();
+document.getElementById("a").addEventListener("input", drawExp);
+document.getElementById("b").addEventListener("input", drawExp);
+</script>
+</body>
+</html>

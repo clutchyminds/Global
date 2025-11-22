@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass — Probabilités conditionnelles</title>
+    <meta name="description" content="Tout sur les probabilités conditionnelles : formules, arbres, exercices, quiz, schéma interactif, lexique, erreurs, applications… pour réussir en spé maths !">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#fadada 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #ffe8ff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 14px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Probabilités conditionnelles</h1>
+    <div class="intro">
+        Maîtrise toutes les bases et techniques pour calculer P(A|B), raisonner avec des événements dépendants, les arbres, le théorème de Bayes, et réussir tous les QCM !
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Définition, vocabulaire et bases</h2>
+    <div class="infos">
+        La <b>probabilité conditionnelle</b> de A sachant B est notée \( P(A|B) \),  
+        et mesure la probabilité que A se réalise sachant que B est déjà arrivé :  
+        <b>\( P(A|B) = \frac{P(A \cap B)}{P(B)} \)</b> (si \( P(B) > 0 \))
+    </div>
+    <ul>
+        <li>Lecture : “la proba d’avoir A une fois qu’on sait que B est réalisé”</li>
+        <li>Si A et B sont indépendants : \( P(A|B) = P(A) \)</li>
+        <li>Théorème : \( P(A \cap B) = P(A|B)P(B) = P(B|A)P(A) \)</li>
+        <li>Utilisation : enchaînement d’événements dépendants, arbres, jeux, diagnostiques…</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Formules et techniques courantes</h2>
+    <ul>
+        <li>Arbre de probabilités : chaque chemin correspond à un événement composé</li>
+        <li>Probabilité totale (partition) :  
+            \( P(A) = P(A|B)P(B) + P(A|\overline{B})P(\overline{B}) \)</li>
+        <li>Théorème de Bayes (retour) :  
+            \( P(B|A) = \frac{P(A|B)P(B)}{P(A)} \)</li>
+        <li>Exemple : succès/échec, malades/testés, tirages sans remise…</li>
+    </ul>
+    <div class="box-important">
+        Astuce : Utilise un schéma (arbre) pour visualiser les enchaînements d’événements conditionnés !
+    </div>
+</section>
+<section>
+    <h2>🟦 Schéma interactif (arbre simple à deux niveaux)</h2>
+    <label>P(B): <input type="number" id="pb" step="0.01" value="0.4" min="0.01" max="0.99"></label>
+    <label>P(A|B): <input type="number" id="pab" step="0.01" value="0.7" min="0.01" max="0.99"></label>
+    <label>P(A|¬B): <input type="number" id="pab2" step="0.01" value="0.3" min="0.01" max="0.99"></label>
+    <canvas id="schema" width="430" height="220"></canvas>
+    <div id="desc-proba"></div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>Dans une urne, 40% de boules sont rouges (événement B), P(A|B)=0,7 (gagner avec une boule rouge), P(A|¬B)=0,3 (gagner sans rouge).  
+    Calcule P(A).</p>
+    <button onclick="afficheReponseProba()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-proba" style="display:none;">
+        P(A) = 0,7×0,4 + 0,3×0,6 = 0,28 + 0,18 = 0,46  
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>Avec les mêmes données, calcule P(B|A).</p>
+    <button onclick="document.getElementById('exo2-reponse-proba').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-proba" style="display:none;">
+        P(B|A) = (0,7×0,4)/0,46 ≈ 0,609 (théorème de Bayes)
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>Si A et B sont indépendants, alors :</p>
+    <button onclick="quizProba(0)">\( P(A|B) = P(A) \)</button>
+    <button onclick="quizProba(1)">\( P(A|B) = P(B) \)</button>
+    <button onclick="quizProba(2)">\( P(A|B) = 1 \)</button>
+    <div class="reponse" id="rep-quiz-proba"></div>
+    <p>Dans un schéma, la probabilité du chemin “B puis ¬A” vaut :</p>
+    <button onclick="quizProba2(0)">\( P(B)\times P(A|B) \)</button>
+    <button onclick="quizProba2(1)">\( P(B)\times (1-P(A|B)) \)</button>
+    <button onclick="quizProba2(2)">\( P(A|B)\times (1-P(B)) \)</button>
+    <div class="reponse" id="rep-quiz-proba2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li><b>Médecine</b> : tests diagnostiques, détection maladie</li>
+        <li><b>Info/IA</b> : modèles de classification, “Bayésien”</li>
+        <li><b>Gestion/Jeux</b> : stratégies probabilistes, jeux à tirages</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Confondre P(A|B) et P(B|A)</li>
+        <li>Ne pas distinguer événements indépendants/dépendants</li>
+        <li>Mal appliquer le théorème de Bayes (bien prendre les probabilités totales en dénominateur !)</li>
+        <li>Oublier qu’un arbre doit toujours se “fermer” sur une somme à 1</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Conditionnelle</b>&nbsp;: proba sachant une information<br>
+    <b>Indépendant</b>&nbsp;: réalisation de l’un ne change pas l’autre<br>
+    <b>Partition</b>&nbsp;: découpage complet de l’univers<br>
+    <b>Bayes</b>&nbsp;: formule qui inverse cause/effet par les probabilités
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>Formalisées par Thomas Bayes (XVIIIe), les probabilités conditionnelles sont le socle de la statistique moderne</li>
+        <li>Fondamentales en intelligence artificielle et sciences expérimentales</li>
+    </ul>
+    <div class="source">Source : histoire de la proba, Wikipedia</div>
+</section>
+<section class="anecdote">
+    <b>Astuce-mémoire</b> : Dessine toujours l’arbre des événements et colorie les chemins pour voir !
+</section>
+<section>
+    <h2>💡 Méthodologie pour réussir</h2>
+    <ul>
+        <li>Ecris chaque événement, clarifie tes notations (P(A|B) ≠ P(B|A))</li>
+        <li>Faire systématiquement l’arbre des cas</li>
+        <li>Utilise la formule de probabilités totales avant Bayes pour les cas ambigus</li>
+        <li>Vérifie toujours que la somme des branches issues du même sommet vaut 1</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizProba(rep) {
+    let repElem = document.getElementById("rep-quiz-proba");
+    repElem.textContent = (rep === 0) ? "Bonne réponse : indépendant ⇒ \( P(A|B) = P(A) \) !" : "Faux, revois la définition d’indépendance.";
+}
+function quizProba2(rep) {
+    let repElem = document.getElementById("rep-quiz-proba2");
+    repElem.textContent = (rep === 1) ? "Oui, il faut multiplier par la branche complémentaire." : "Faux, revoie la structure d’un arbre.";
+}
+function afficheReponseProba() {
+    document.getElementById("exo-reponse-proba").style.display = "block";
+}
+// Schéma arbre proba
+function drawArbreProba() {
+    let pb = parseFloat(document.getElementById("pb").value);
+    let pab = parseFloat(document.getElementById("pab").value);
+    let pab2 = parseFloat(document.getElementById("pab2").value);
+    let canvas = document.getElementById("schema");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, 430, 220);
+    // Arbre
+    ctx.strokeStyle="#1877f2"; ctx.lineWidth=2;
+    // Tronc
+    ctx.beginPath(); ctx.moveTo(60, 100); ctx.lineTo(160, 50); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(60, 100); ctx.lineTo(160, 150); ctx.stroke();
+    ctx.font = "13px Arial";
+    ctx.fillStyle="#243552"; ctx.fillText("B", 120, 38); ctx.fillText("¬B", 120, 162);
+    ctx.fillStyle = "#1877f2"; ctx.fillText("P(B)="+pb,87,68); ctx.fillText("P(¬B)="+(1-pb).toFixed(2),85,134);
+    // Branches 2ème étages
+    ctx.strokeStyle="#167c2b";
+    ctx.beginPath(); ctx.moveTo(160,50);ctx.lineTo(325,20);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(160,50);ctx.lineTo(325,80);ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(160,150);ctx.lineTo(325,120);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(160,150);ctx.lineTo(325,180);ctx.stroke();
+    ctx.font = "13px Arial";
+    ctx.fillStyle="#167c2b";
+    ctx.fillText("A",265,8);ctx.fillText("¬A",265,93);ctx.fillText("A",265,107);ctx.fillText("¬A",265,192);
+    ctx.fillText("P(A|B)="+pab,220,32);ctx.fillText("P(¬A|B)="+(1-pab).toFixed(2),210,66);
+    ctx.fillText("P(A|¬B)="+pab2,205,118);ctx.fillText("P(¬A|¬B)="+(1-pab2).toFixed(2),190,154);
+    // Résultats
+    let pA = pab*pb+pab2*(1-pb);
+    ctx.font = "13px Arial"; ctx.fillStyle="#a133ff";
+    ctx.fillText("P(A) = "+pA.toFixed(3),340,35);
+    ctx.fillText("P(B∩A) = "+(pb*pab).toFixed(3),340,10);
+    ctx.fillText("P(¬B∩A) = "+((1-pb)*pab2).toFixed(3),340,120);
+    ctx.fillText("P(B|A) = "+(pb*pab/pA).toFixed(3),340,190);
+    // Légende
+    document.getElementById("desc-proba").innerHTML =
+        "Calculs dynamiques : P(A) = "+pA.toFixed(3)+" ; P(B∩A) = "+(pb*pab).toFixed(3)+" ; P(B|A) ≈ "+(pb*pab/pA).toFixed(3);
+}
+drawArbreProba();
+document.getElementById("pb").addEventListener("input", drawArbreProba);
+document.getElementById("pab").addEventListener("input", drawArbreProba);
+document.getElementById("pab2").addEventListener("input", drawArbreProba);
+</script>
+</body>
+</html>

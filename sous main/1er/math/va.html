@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass — Variables aléatoires</title>
+    <meta name="description" content="Variables aléatoires : définitions, lois, espérance, variance, schéma interactif, quiz, exercices, applications et erreurs pour la spé maths.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#faf6da 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #efe8ff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 14px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+        table.loi { border-collapse: collapse; margin: 14px auto; }
+        table.loi th, table.loi td { border: 1px solid #d6e4f0; padding: 7px 13px; text-align: center; }
+        table.loi th { background: #e7f3fa; color: #1877f2; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Variables aléatoires</h1>
+    <div class="intro">
+        Tout ce qu’il faut pour comprendre et utiliser les variables aléatoires : définition, calculs de lois, espérance, variance, schéma interactif, quiz, exos et applications.
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Définition & types principaux</h2>
+    <div class="infos">
+        Une <b>variable aléatoire</b> (X) associe à chaque issue possible d’une expérience un nombre réel.<br>
+        Cas classiques :  
+        - X = nombre de succès dans n essais  
+        - X = résultat d’un dé
+    </div>
+    <ul>
+        <li>Variable <b>discrète</b> : nombre de valeurs finies ou dénombrables (dé, loterie, tirage, etc.)</li>
+        <li>Variable <b>continue</b> : toute valeur réelle sur un intervalle (durée, masse, température…)</li>
+        <li><b>Loi de probabilité</b> : à chaque valeur k, on associe P(X=k)</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Loi de probabilité, espérance et variance</h2>
+    <table class="loi">
+        <tr><th>x</th><th>P(X=x)</th></tr>
+        <tr><td><input type="number" id="x1" value="0"></td><td><input type="number" id="p1" step="0.01" value="0.3"></td></tr>
+        <tr><td><input type="number" id="x2" value="1"></td><td><input type="number" id="p2" step="0.01" value="0.5"></td></tr>
+        <tr><td><input type="number" id="x3" value="2"></td><td><input type="number" id="p3" step="0.01" value="0.2"></td></tr>
+    </table>
+    <div id="schema"></div>
+    <div id="desc-var"></div>
+    <ul>
+        <li><b>Espérance (moyenne théorique)</b> : <b>\( E(X) = \sum x_i \times P(X=x_i) \)</b></li>
+        <li><b>Variance</b> : \( V(X) = E(X^2) - [E(X)]^2 \)</li>
+    </ul>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>Sachant la loi suivante :  
+      x = 0 (p=0,3), x = 1 (p=0,5), x = 2 (p=0,2).  
+      Calcule l’espérance et la variance.</p>
+    <button onclick="afficheReponseVaralea()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-varalea" style="display:none;">
+        E(X) = 0×0,3 + 1×0,5 + 2×0,2 = 0 + 0,5 + 0,4 = 0,9 <br>
+        E(X²) = 0²×0,3 + 1²×0,5 + 2²×0,2 = 0 + 0,5 + 0,8 = 1,3 <br>
+        V(X) = 1,3 - (0,9)² = 1,3 - 0,81 = 0,49
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>Pour X~Binomiale(3 ; 0,5), possible valeurs : x=0,1,2,3.  
+      Calcule E(X).</p>
+    <button onclick="document.getElementById('exo2-reponse-varalea').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-varalea" style="display:none;">
+        Espérance binomiale : n×p = 3×0,5 = 1,5
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>L’espérance correspond à :</p>
+    <button onclick="quizVaralea(0)">La valeur la plus probable</button>
+    <button onclick="quizVaralea(1)">La moyenne théorique</button>
+    <button onclick="quizVaralea(2)">La variance</button>
+    <div class="reponse" id="rep-quiz-varalea"></div>
+    <p>La variance mesure :</p>
+    <button onclick="quizVaralea2(0)">La dispersion</button>
+    <button onclick="quizVaralea2(1)">La moyenne</button>
+    <button onclick="quizVaralea2(2)">La probabilité</button>
+    <div class="reponse" id="rep-quiz-varalea2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li><b>Stats/Physique</b> : analyse de distributions, mesures, sondages</li>
+        <li><b>Finance</b> : calculs de placements, gestion de risques/jeux</li>
+        <li><b>Info/IA</b> : modèles de probabilité, simulations, algos stochastiques</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Confondre espérance et probabilité la plus probable</li>
+        <li>Oublier que la somme des probabilités = 1</li>
+        <li>Erreur de calcul sur E(X²)</li>
+        <li>Bien choisir la loi pour le problème posé (Binomiale, géométrique, etc.)</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Variable aléatoire</b>&nbsp;: grandeur attachée à un résultat aléatoire<br>
+    <b>Loi</b>&nbsp;: attribution de chaque issue à une probabilité<br>
+    <b>Espérance</b>&nbsp;: moyenne pondérée<br>
+    <b>Variance</b>&nbsp;: écart “typique” au carré à la moyenne
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>Concept formalisé par Kolmogorov au XXe siècle</li>
+        <li>Bases des statistiques modernes, actuariat, modélisation scientifique</li>
+    </ul>
+    <div class="source">Source : histoire des probas, Wikipedia</div>
+</section>
+<section class="anecdote">
+    <b>Astuce-mémoire</b> : “L’espérance : si tu rejoues le jeu des milliers de fois, tu gagneras ce nombre en moyenne !”
+</section>
+<section>
+    <h2>💡 Méthodologie pour progresser</h2>
+    <ul>
+        <li>Vérifie que la somme des proba fait 1, puis calcule E(X), E(X²), V(X)</li>
+        <li>Teste sur des lois connues (dé, pile ou face, binomiale)</li>
+        <li>Utilise le schéma dynamique pour voir l’évolution/moyenne</li>
+        <li>Demande toujours la loi adaptée au problème</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizVaralea(rep) {
+    let repElem = document.getElementById("rep-quiz-varalea");
+    repElem.textContent = (rep === 1) ? "Bonne réponse : l’espérance est la moyenne pondérée !" : "Non : attention à la définition.";
+}
+function quizVaralea2(rep) {
+    let repElem = document.getElementById("rep-quiz-varalea2");
+    repElem.textContent = (rep === 0) ? "Bravo ! La variance mesure la dispersion des valeurs." : "Faux, c’est l’écart typique.";
+}
+function afficheReponseVaralea() {
+    document.getElementById("exo-reponse-varalea").style.display = "block";
+}
+function drawVaralea() {
+    let x1 = parseFloat(document.getElementById("x1").value);
+    let x2 = parseFloat(document.getElementById("x2").value);
+    let x3 = parseFloat(document.getElementById("x3").value);
+    let p1 = parseFloat(document.getElementById("p1").value);
+    let p2 = parseFloat(document.getElementById("p2").value);
+    let p3 = parseFloat(document.getElementById("p3").value);
+    let E = x1*p1 + x2*p2 + x3*p3;
+    let E2 = x1*x1*p1 + x2*x2*p2 + x3*x3*p3;
+    let V = E2-E*E;
+    document.getElementById("desc-var").innerHTML =
+        "Espérance : "+E.toFixed(3)+"<br>Variance : "+V.toFixed(3)+
+        "<br>Vérifie que la somme des proba = "+(p1+p2+p3).toFixed(2);
+    // Histogramme
+    let canvas = document.createElement('canvas');
+    canvas.width=320; canvas.height=80;
+    let ctx = canvas.getContext("2d");
+    let vals = [x1,x2,x3], ps = [p1,p2,p3];
+    for(let i=0;i<3;i++){
+        ctx.fillStyle="#1877f2"; ctx.fillRect(20+90*i,70-ps[i]*60,40,ps[i]*60);
+        ctx.fillStyle="#222";ctx.fillText("x="+vals[i],32+90*i,75);
+        ctx.fillText("p="+ps[i],32+90*i,63-ps[i]*60);
+    }
+    document.getElementById("schema").innerHTML="";
+    document.getElementById("schema").appendChild(canvas);
+}
+drawVaralea();
+["x1","x2","x3","p1","p2","p3"].forEach(id=>{
+    document.getElementById(id).addEventListener("input",drawVaralea);
+});
+</script>
+</body>
+</html>

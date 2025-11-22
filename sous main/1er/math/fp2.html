@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass — Fonctions polynômes du second degré</title>
+    <meta name="description" content="Tout sur les fonctions et équations polynômes du second degré : définitions, résolutions, schéma dynamique, quiz, exercices, lexique et applications.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#eafdec 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #eeeaff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 14px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Second degré</h1>
+    <div class="intro">
+        Toutes les clés pour réussir sur les équations et fonctions polynômes du second degré : définitions, résolutions, schémas dynamiques, quiz, applications et astuces !
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Définition</h2>
+    <div class="infos">
+        La fonction polynôme du second degré : <br>
+        <b>\( f(x) = ax^2 + bx + c \)</b> avec \( a ≠ 0 \). Sa courbe est une parabole.
+    </div>
+    <ul>
+        <li>Équation du second degré : \( ax^2 + bx + c = 0 \)</li>
+        <li><b>Forme canonique</b> : \( a(x - \alpha)^2 + \beta \), \(\alpha = -\frac{b}{2a}\), \(\beta = f(\alpha)\)</li>
+        <li><b>Discriminant</b> : \( \Delta = b^2 - 4ac \)</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Résolutions et propriétés</h2>
+    <ul>
+        <li><b>Racines de l’équation</b> (si \( \Delta \geq 0 \)): <br>
+          \( x_1 = \frac{-b - \sqrt{\Delta}}{2a} \), \( x_2 = \frac{-b + \sqrt{\Delta}}{2a} \)</li>
+        <li>Si \( \Delta = 0 \): une racine double. <br>
+          Si \( \Delta < 0 \): pas de racine réelle.</li>
+        <li><b>Sommet de la parabole</b> : \( (\alpha ; \beta) \ )</li>
+        <li><b>Variations</b> : minimum si a > 0, maximum si a < 0</li>
+        <li>Parabole “smile” 😊 si a > 0, “frown” ☹️ si a < 0</li>
+    </ul>
+    <div class="box-important">
+        Astuce : Passe toujours à la forme canonique pour trouver le sommet et les variations facilement.
+    </div>
+</section>
+<section>
+    <h2>🟦 Schéma dynamique — parabole</h2>
+    <label>a: <input type="number" id="a" value="1" step="0.1"></label>
+    <label>b: <input type="number" id="b" value="0" step="0.1"></label>
+    <label>c: <input type="number" id="c" value="0" step="0.1"></label>
+    <canvas id="schema" width="410" height="260"></canvas>
+    <div id="desc-second"></div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>Soit \( f(x) = x^2 - 6x + 5 \). Calcule le sommet, le discriminant et les racines.</p>
+    <button onclick="afficheReponseSecond()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-second" style="display:none;">
+        \( \alpha = 3 ; \beta = f(3) = 9 - 18 + 5 = -4 \)<br>
+        \( \Delta = 36 - 20 = 16 \), racines \( x_1 = 5,\, x_2 = 1 \)
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>Forme canonique de \( 2x^2 - 8x + 6 \) ?</p>
+    <button onclick="document.getElementById('exo2-reponse-second').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-second" style="display:none;">
+        \( \alpha = 2 ; \beta = 2 \times 4 -8 \times 2 + 6 = 8 - 16 + 6 = -2 \)<br>
+        Donc : \( 2(x-2)^2 -2 \)
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>Le discriminant de \( x^2 - 4x + 5 \) est ?</p>
+    <button onclick="quizSecond(0)">-4</button>
+    <button onclick="quizSecond(1)">4</button>
+    <button onclick="quizSecond(2)">0</button>
+    <div class="reponse" id="rep-quiz-second"></div>
+    <p>La parabole de \( f(x) = -x^2 + 4x - 3 \) s’ouvre :</p>
+    <button onclick="quizSecond2(0)">Vers le haut</button>
+    <button onclick="quizSecond2(1)">Vers le bas</button>
+    <div class="reponse" id="rep-quiz-second2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li><b>Physique/Maths</b> : trajectoires, optimisation, calcul d’extrémum</li>
+        <li><b>Info/Algorithmique</b> : courbes, modélisation, graphiques</li>
+        <li><b>Finance</b> : optimisation de profit/cout, évolution quadratique</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Mal calculer le discriminant ! (<b>b² - 4ac</b>)</li>
+        <li>Confondre formes canonique/générale</li>
+        <li>Oublier le signe de a pour le sens de la parabole</li>
+        <li>Omettre la double racine si \(\Delta = 0\)</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Polynôme du second degré</b> : \( ax^2 + bx + c \)<br>
+    <b>Discriminant</b> : \( \Delta \), repère le nombre de solutions<br>
+    <b>Forme canonique</b> : permet de lire sommet/variations<br>
+    <b>Racine</b> : solution de \( f(x) = 0 \)
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>Connus depuis les Babyloniens, les polynômes du second degré apparaissent partout en sciences et économie</li>
+        <li>Les paraboles sont étudiées par Apollonius et Descartes</li>
+        <li>Fondement de l’analyse, optimisation, trajectoires physiques</li>
+    </ul>
+    <div class="source">Source : histoire des maths, Wikipedia</div>
+</section>
+<section class="anecdote">
+    <b>Astuces-mémoire</b> : La parabole “smile” (a>0), la parabole “triste” (a<0) — le sommet est toujours \( -\frac{b}{2a} \)
+</section>
+<section>
+    <h2>💡 Méthodologie pour réussir</h2>
+    <ul>
+        <li>Calcule systématiquement le discriminant, les racines, puis le sommet</li>
+        <li>Trace la courbe pour visualiser les variations</li>
+        <li>Passe en forme canonique si besoin d’optimiser ou lire le sommet</li>
+        <li>Utilise le schéma dynamique pour t’entraîner avec différents coefficients</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizSecond(rep) {
+    let repElem = document.getElementById("rep-quiz-second");
+    repElem.textContent = (rep === 0) ? "Parfait ! \(-4\), car \(16 - 20 = -4\)." : "Faux, refais la formule discriminant : b² - 4ac.";
+}
+function quizSecond2(rep) {
+    let repElem = document.getElementById("rep-quiz-second2");
+    repElem.textContent = (rep === 1) ? "Bonne réponse ! a négatif = ouverture vers le bas." : "Faux, a négatif descend.";
+}
+function afficheReponseSecond() {
+    document.getElementById("exo-reponse-second").style.display = "block";
+}
+// Schéma dynamique
+function drawSecond() {
+    let a = parseFloat(document.getElementById("a").value);
+    let b = parseFloat(document.getElementById("b").value);
+    let c = parseFloat(document.getElementById("c").value);
+    let canvas = document.getElementById("schema");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, 410, 260);
+    // Axes
+    ctx.strokeStyle="#aaa"; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(20,130); ctx.lineTo(400,130); ctx.moveTo(210,20); ctx.lineTo(210,240); ctx.stroke();
+    // Parabole
+    ctx.beginPath();
+    for(let xPx=0;xPx<=410;xPx++){
+        let x=(xPx-210)/38; // x ∈ [-5 ; 5]
+        let y=a*x*x+b*x+c;
+        let yPx=130-y*22;
+        if(xPx===0) ctx.moveTo(xPx,yPx); else ctx.lineTo(xPx,yPx);
+    }
+    ctx.strokeStyle="#1877f2"; ctx.lineWidth=3; ctx.stroke();
+    // Sommet
+    let alpha = -b/(2*a), beta = a*alpha*alpha + b*alpha + c;
+    let SxPx = 210 + 38*alpha, SyPx = 130 - 22*beta;
+    ctx.beginPath(); ctx.arc(SxPx,SyPx,5,0,2*Math.PI); ctx.fillStyle="#fa9100"; ctx.fill();
+    ctx.font="12px Arial"; ctx.fillStyle="#fa9100"; ctx.fillText("S("+alpha.toFixed(1)+";"+beta.toFixed(1)+")",SxPx+7,SyPx-8);
+    // Description
+    document.getElementById("desc-second").innerHTML =
+        "Sommet S = ("+alpha.toFixed(2)+" ; "+beta.toFixed(2)+")";
+}
+drawSecond();
+document.getElementById("a").addEventListener("input", drawSecond);
+document.getElementById("b").addEventListener("input", drawSecond);
+document.getElementById("c").addEventListener("input", drawSecond);
+</script>
+</body>
+</html>

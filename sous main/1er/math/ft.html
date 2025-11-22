@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass — Fonctions trigonométriques</title>
+    <meta name="description" content="Tout comprendre sur les fonctions trigonométriques : définitions, propriétés, schémas dynamiques, quiz, exercices, applications, histoire, erreurs et astuces pour réussir en spé maths.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#ffeeda 90%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #ffe8ff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 14px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Fonctions trigonométriques</h1>
+    <div class="intro">
+        Maîtrise le trio sinus, cosinus, tangente — définitions, propriétés, courbes, schémas, quiz, exercices, applications et astuces pour tout réussir !
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Définitions & propriétés essentielles</h2>
+    <div class="infos">
+        Les fonctions trigonométriques associent chaque angle θ (en radians) à des coordonnées sur le cercle trigonométrique :  
+        - <b>\( \sin(\theta) \)</b> : ordonnée du point  
+        - <b>\( \cos(\theta) \)</b> : abscisse du point  
+        - <b>\( \tan(\theta) = \frac{\sin(\theta)}{\cos(\theta)} \)</b> (si \( \cos(\theta) \neq 0 \))
+    </div>
+    <ul>
+        <li>Valeurs remarquables :
+            <ul>
+                <li>\( \sin(0) = 0 \), \( \sin(\frac{\pi}{2}) = 1 \), \( \sin(\pi) = 0 \)</li>
+                <li>\( \cos(0) = 1 \), \( \cos(\frac{\pi}{2}) = 0 \), \( \cos(\pi) = -1 \)</li>
+            </ul>
+        </li>
+        <li>Période : sinus/cosinus sont périodiques de période \( 2\pi \), tangente de période \( \pi \)</li>
+        <li>Identité fondamentale : \( \sin^2(\theta) + \cos^2(\theta) = 1 \)</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Formules à savoir</h2>
+    <ul>
+        <li>\( \sin(a \pm b) = \sin a \cos b \pm \cos a \sin b \)</li>
+        <li>\( \cos(a \pm b) = \cos a \cos b \mp \sin a \sin b \)</li>
+        <li>\( \tan(a \pm b) = \frac{\tan a \pm \tan b}{1 \mp \tan a \tan b} \), si dénominateur non nul</li>
+        <li>\( \sin(-x) = -\sin(x) \) ; \( \cos(-x) = \cos(x) \)</li>
+        <li>Variation : sinus et tangente sont impaires, cosinus est paire</li>
+    </ul>
+    <div class="box-important">
+        Astuce : Place l’angle sur le cercle pour retrouver les valeurs exactes rapidement (voir schéma dynamique).
+    </div>
+</section>
+<section>
+    <h2>🟦 Schéma interactif — courbes trigonométriques</h2>
+    <label>Angle θ : <input type="number" id="theta" value="0" step="0.1" min="-6.28" max="6.28"></label>
+    <canvas id="schema" width="460" height="260"></canvas>
+    <div id="desc-trigo"></div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>Calcule \( \sin(\frac{\pi}{4}) \), \( \cos(\frac{\pi}{3}) \) et \( \tan(\frac{\pi}{6}) \).</p>
+    <button onclick="afficheReponseTrigo()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-trigo" style="display:none;">
+        \( \sin(\frac{\pi}{4}) = \frac{\sqrt{2}}{2} \)<br>
+        \( \cos(\frac{\pi}{3}) = \frac{1}{2} \)<br>
+        \( \tan(\frac{\pi}{6}) = \frac{1}{\sqrt{3}} \)
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>Exprime \( \sin(2x) \) en fonction de \( \sin(x) \) et \( \cos(x) \).</p>
+    <button onclick="document.getElementById('exo2-reponse-trigo').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-trigo" style="display:none;">
+        \( \sin(2x) = 2\sin(x)\cos(x) \)
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>La période de \( \sin(x) \) est :</p>
+    <button onclick="quizTrigo(0)">π</button>
+    <button onclick="quizTrigo(1)">2π</button>
+    <button onclick="quizTrigo(2)">4π</button>
+    <div class="reponse" id="rep-quiz-trigo"></div>
+    <p>Pour x = π, \( \cos(x) \) vaut :</p>
+    <button onclick="quizTrigo2(0)">0</button>
+    <button onclick="quizTrigo2(1)">1</button>
+    <button onclick="quizTrigo2(2)">-1</button>
+    <div class="reponse" id="rep-quiz-trigo2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li><b>Maths/Physique</b> : ondes, oscillations, mouvements circulaires, pendule, électronique</li>
+        <li><b>Info</b> : calculs graphiques, animations périodiques, trigonométrie en jeux vidéo</li>
+        <li><b>Technologie</b> : signal audio, analyse de fréquence, modélisations GPS</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Confondre la période de sin(x) (2π) et celle de tan(x) (π)</li>
+        <li>Oublier les signes (off sur les axes/quadrants)</li>
+        <li>Penser que \( \tan(x) \) existe partout — non si \( \cos(x) = 0 \)</li>
+        <li>Mélanger radians et degrés lors des calculs</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Sinus :</b> ordonnée sur le cercle trigo<br>
+    <b>Cosinus :</b> abscisse sur le cercle trigo<br>
+    <b>Tangente :</b> rapport <br>
+    <b>Période :</b> longueur du plus petit intervalle où la fonction “se répète”<br>
+    <b>Quadrant :</b> quart du cercle/trigonome où le signe change
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>La trigonométrie remonte à l’Antiquité (Hipparque, Ptolémée)</li>
+        <li>Elle sert à naviguer, cartographier, étudier les astres… et maintenant partout en science numérique</li>
+    </ul>
+    <div class="source">Source : histoire des maths, Wikipedia</div>
+</section>
+<section class="anecdote">
+    <b>Astuce-mémoire</b> : “Cos” = “côté horizontal”, “Sin” = “côté vertical” sur le cercle trigo !
+</section>
+<section>
+    <h2>💡 Méthodologie pour progresser</h2>
+    <ul>
+        <li>Fais toujours un schéma du cercle trigo pour les angles remarquables</li>
+        <li>Test chaque formule sur les valeurs clés</li>
+        <li>Exerce-toi à reconnaitre les signes dans chaque quadrant</li>
+        <li>Utilise le schéma interactif pour voir les courbes et leurs liens</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizTrigo(rep) {
+    let repElem = document.getElementById("rep-quiz-trigo");
+    repElem.textContent = (rep === 1) ? "Bonne réponse ! Période de sin(x) = 2π." : "Faux, vérifie la périodicité.";
+}
+function quizTrigo2(rep) {
+    let repElem = document.getElementById("rep-quiz-trigo2");
+    repElem.textContent = (rep === 2) ? "Exact ! cos(π) = -1." : "Faux, attention au signe à π.";
+}
+function afficheReponseTrigo() {
+    document.getElementById("exo-reponse-trigo").style.display = "block";
+}
+// Schéma dynamique trigo
+function drawTrigo() {
+    let theta = parseFloat(document.getElementById("theta").value);
+    let canvas = document.getElementById("schema");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, 460, 260);
+    // Axes
+    ctx.strokeStyle="#aaa"; ctx.beginPath();
+    ctx.moveTo(20,130); ctx.lineTo(440,130); ctx.moveTo(230,20); ctx.lineTo(230,240); ctx.stroke();
+    // Courbes sin et cos sur [-2π ; 2π]
+    ctx.beginPath();
+    for(let xPx=0;xPx<=460;xPx++){
+        let x=-2*Math.PI+4*Math.PI*xPx/460;
+        let y=130-72*Math.sin(x);
+        if(xPx===0) ctx.moveTo(xPx,y); else ctx.lineTo(xPx,y);
+    }
+    ctx.strokeStyle="#167c2b"; ctx.lineWidth=3; ctx.stroke();
+    ctx.beginPath();
+    for(let xPx=0;xPx<=460;xPx++){
+        let x=-2*Math.PI+4*Math.PI*xPx/460;
+        let y=130-72*Math.cos(x);
+        if(xPx===0) ctx.moveTo(xPx,y); else ctx.lineTo(xPx,y);
+    }
+    ctx.strokeStyle="#243552"; ctx.lineWidth=3; ctx.stroke();
+    // Point mobile
+    let xt=230+92*theta/Math.PI, ysin=130-72*Math.sin(theta), ycos=130-72*Math.cos(theta), ytan=130-72*Math.tan(theta);
+    ctx.beginPath();
+    ctx.arc(xt,ysin,6,0,2*Math.PI);
+    ctx.fillStyle="#167c2b"; ctx.fill();
+    ctx.arc(xt,ycos,6,0,2*Math.PI);
+    ctx.fillStyle="#243552"; ctx.fill();
+    ctx.font="12px Arial"; ctx.fillStyle="#167c2b"; ctx.fillText("sin(θ)",xt+8,ysin-4);
+    ctx.fillStyle="#243552"; ctx.fillText("cos(θ)",xt+8,ycos-4);
+    // Description
+    document.getElementById("desc-trigo").innerHTML =
+      "Pour θ = "+theta.toFixed(2)+"<br>"+
+      "sin(θ) = "+Math.sin(theta).toFixed(3)+", cos(θ) = "+Math.cos(theta).toFixed(3)+
+      ", tan(θ) = "+(Math.abs(Math.cos(theta))<0.001?"indéfini":Math.tan(theta).toFixed(3));
+}
+drawTrigo();
+document.getElementById("theta").addEventListener("input", drawTrigo);
+</script>
+</body>
+</html>

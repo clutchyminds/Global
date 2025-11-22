@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass — Indépendance (probabilités)</title>
+    <meta name="description" content="Tout sur l’indépendance en probabilités : définitions, propriété, schéma interactif, quiz, exercices, erreurs, applications, lexique et histoire.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#dadafa 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #efe8ff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 14px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Indépendance (probabilités)</h1>
+    <div class="intro">
+        Comprends la notion fondamentale d’indépendance entre événements, ses propriétés, comment la tester, calculer et l’utiliser en proba, stats et sciences !
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Définitions et base conceptuelle</h2>
+    <div class="infos">
+        Deux événements A et B sont <b>indépendants</b> si la réalisation de l’un n’a aucune influence sur la réalisation de l’autre.<br>
+        En probabilités :  
+        <b>\( P(A \cap B) = P(A) \times P(B) \)</b>
+    </div>
+    <ul>
+        <li>Cas typiques : lancer deux dés, tirages avec remise, épreuves répétées…</li>
+        <li>Si A et B sont indépendants :  
+            \( P(A|B) = P(A) \) et \( P(B|A) = P(B) \)</li>
+        <li>Indépendance ≠ incompatibilité (incompatible : événements ne peuvent pas arriver ensemble)</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Propriétés et méthodes de vérification</h2>
+    <ul>
+        <li>Tester : 
+            - \( P(A \cap B) = P(A)P(B) \) ?
+            - Si non, événements sont dépendants ou liés</li>
+        <li>Indépendance généralisée : pour n événements, il faut que chaque sous-ensemble soit indépendant</li>
+        <li>Si la proba change en connaissant la réalisation de l’autre : dépendance !</li>
+    </ul>
+    <div class="box-important">
+        Astuce : Pour vérifier l’indépendance : multiplie les probabilités “simples”, compare au résultat “double”. Si égalité, c’est bon !
+    </div>
+</section>
+<section>
+    <h2>🟦 Schéma interactif (simulation de 2 événements)</h2>
+    <label>P(A): <input type="number" id="pa" step="0.01" value="0.4"></label>
+    <label>P(B): <input type="number" id="pb" step="0.01" value="0.7"></label>
+    <label>P(A∩B): <input type="number" id="pab" step="0.01" value="0.28"></label>
+    <canvas id="schema" width="380" height="120"></canvas>
+    <div id="desc-indep"></div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>Dans un jeu, P(A)=0,4 (gagner au 1er lancer), P(B)=0,7 (gagner au 2e lancer), P(A ∩ B) = 0,28.  
+        A et B sont-ils indépendants ?</p>
+    <button onclick="afficheReponseIndep()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-indep" style="display:none;">
+        Vérification : 0,4 × 0,7 = 0,28 — donc OUI, A et B sont indépendants !
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>Tente avec P(A)=0,5, P(B)=0,6, P(A∩B)=0,35. Sont-ils indépendants ?</p>
+    <button onclick="document.getElementById('exo2-reponse-indep').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-indep" style="display:none;">
+        0,5×0,6=0,3 ≠ 0,35 — donc événements DÉPENDANTS.
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>Deux événements incompatibles sont toujours indépendants ?</p>
+    <button onclick="quizIndep(0)">Oui</button>
+    <button onclick="quizIndep(1)">Non</button>
+    <div class="reponse" id="rep-quiz-indep"></div>
+    <p>Si \( P(A|B) = P(A) \), alors ?</p>
+    <button onclick="quizIndep2(0)">A et B sont indépendants</button>
+    <button onclick="quizIndep2(1)">Ils sont incompatibles</button>
+    <div class="reponse" id="rep-quiz-indep2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li><b>Maths/Statistiques</b> : lois de Bernoulli, binomiale, analyse de protocoles</li>
+        <li><b>Info/IA</b> : machine learning “naïf Bayes”, modèles probabilistes</li>
+        <li><b>Physique/Chimie</b> : systèmes indépendants, analyse d’expériences, tests</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Confondre independent/incompatible</li>
+        <li>Oublier de calculer P(A ∩ B), pas seulement P(A|B)</li>
+        <li>Pense à tester tous les cas (dépendance ≠ causalité !)</li>
+        <li>Oublier qu’indépendance peut être testée statistiquement (échantillon)</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Indépendants</b> : probas ne s'influencent pas<br>
+    <b>Dépendants</b> : réalisation d’un change la proba de l’autre<br>
+    <b>Incompatibles</b> : ne peuvent PAS arriver en même temps<br>
+    <b>Produit</b> : test d’indépendance = multiplication des proba simples
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>L’indépendance est la clé de la théorie des probabilités, du calcul des lois simples à la statistique avancée</li>
+        <li>Elle permet l’émergence des grands modèles aléatoires modernes</li>
+    </ul>
+    <div class="source">Source : histoire de la proba, Wikipedia, mathcurve.com</div>
+</section>
+<section class="anecdote">
+    <b>Astuce-mémoire</b> : “Indépendant = les événements vivent leur vie sans se parler !”   
+</section>
+<section>
+    <h2>💡 Méthodologie pour progresser</h2>
+    <ul>
+        <li>Toujours comparer P(A∩B) à P(A)×P(B)</li>
+        <li>Exerce-toi avec des exemples concrets de la vie courante</li>
+        <li>Fais la différence entre incompatibilité (jamais ensemble) et indépendance (pas d'influence)</li>
+        <li>Utilise le schéma pour visualiser les liens ou non-liens</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizIndep(rep) {
+    let repElem = document.getElementById("rep-quiz-indep");
+    repElem.textContent = (rep === 1) ? "Bonne réponse ! Incompatible : ne peuvent arriver ensemble (P(A∩B)=0), mais pas forcément indépendante !" : "Faux, ils sont juste exclusifs, pas forcément indépendants.";
+}
+function quizIndep2(rep) {
+    let repElem = document.getElementById("rep-quiz-indep2");
+    repElem.textContent = (rep === 0) ? "Oui ! C'est la définition clé." : "Non, relis la propriété d'indépendance...";
+}
+function afficheReponseIndep() {
+    document.getElementById("exo-reponse-indep").style.display = "block";
+}
+// Schéma de simulation
+function drawIndep() {
+    let pa = parseFloat(document.getElementById("pa").value);
+    let pb = parseFloat(document.getElementById("pb").value);
+    let pab = parseFloat(document.getElementById("pab").value);
+    let canvas = document.getElementById("schema");
+    let ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, 380, 120);
+    // Représentation proba simples
+    ctx.font="15px Arial";
+    ctx.fillStyle="#1877f2";
+    ctx.fillText("P(A) = "+pa,30,34); ctx.fillText("P(B) = "+pb,150,34);
+    ctx.fillStyle="#a133ff"; ctx.fillText("P(A∩B) = "+pab,85,74);
+    // Test d’indépendance
+    let pprod = pa*pb;
+    ctx.fillStyle="#243552"; ctx.fillText("Test : P(A)×P(B) = "+pprod.toFixed(3),40,104);
+    if(Math.abs(pprod-pab)<0.001) {
+      ctx.fillStyle="#127e3c";
+      ctx.fillText("⇒ Indépendant ! ✅",220,104);
+    }
+    else {
+      ctx.fillStyle="#e06359";
+      ctx.fillText("⇒ Dépendant ❌",220,104);
+    }
+    document.getElementById("desc-indep").innerHTML =
+      "Compare P(A∩B) à P(A)×P(B) pour tester l’indépendance.";
+}
+drawIndep();
+document.getElementById("pa").addEventListener("input", drawIndep);
+document.getElementById("pb").addEventListener("input", drawIndep);
+document.getElementById("pab").addEventListener("input", drawIndep);
+</script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass — Passage du langage naturel au langage Python</title>
+    <meta name="description" content="Comment passer d’un énoncé en langage courant à du code Python : méthodologie, exemples corrigés, quiz, exercices, applications, erreurs pour la NSI et le débutant.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#ffe6d0 85%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.2rem; margin: 0 0 13px; color: #e4872d;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(228,135,45,0.08);}
+        h2 { color: #e4872d; margin-top: 32px;}
+        h3 { color: #1877f2; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #f7ebd7; border-left: 6px solid #e4872d;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        .anecdote {background: #ffeaa8; border-left: 7px solid #e4872d; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
+        button {background: #e4872d; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #d06d0e;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 14px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+        pre {background: #f8f4ee; border-radius: 5px; padding: 8px 13px; margin: 5px 0; font-size: 1em;}
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Du langage naturel au code Python</h1>
+    <div class="intro">
+        Comment transformer un énoncé ou un algorithme en français en un vrai code Python fonctionnel ?  
+        <b>Méthodologie, exemples interactifs, quiz et astuces pour devenir autonome !</b>
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Définition & enjeu</h2>
+    <div class="infos">
+        Passer du langage naturel (“écrire un programme qui…”) au Python demande d’analyser l’énoncé, découper les étapes, traduire chaque action en instruction Python.
+    </div>
+    <ul>
+        <li>En NSI, c’est ce qui permet de coder “pour de vrai” des algorithmes, des jeux, des scripts !</li>
+        <li>Ce passage est au cœur de la programmation : comprendre, décoder, reformuler.</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Étapes méthodologiques</h2>
+    <ol>
+        <li>Lire et reformuler l’énoncé en étapes simples, courtes</li>
+        <li>Déterminer les variables à utiliser</li>
+        <li>Identifier les structures nécessaires (boucles, tests, listes, fonctions…)</li>
+        <li>Traduire chaque étape ou action en instruction Python</li>
+        <li>Vérifier (mentalement/cas concrets) l’enchaînement</li>
+    </ol>
+    <div class="box-important">
+        Astuce : utiliser un papier/crayon pour poser ses idées, ou écrire un pseudo-code intermédiaire avant de rédiger le Python.
+    </div>
+</section>
+<section>
+    <h2>🟦 Exemples concrets (énoncé -> Python)</h2>
+    <b>Exemple 1 : “Afficher les 10 premiers entiers positifs”</b>
+    <pre>
+# Langage naturel : Pour n allant de 1 à 10, afficher n.
+for n in range(1, 11):
+    print(n)              # Affiche 1, 2, ..., 10
+    </pre>
+    <b>Exemple 2 : “Demander l’âge d’un utilisateur et afficher s’il est majeur”</b>
+    <pre>
+# Lire un entier, tester la condition, afficher la phrase correspondante
+age = int(input('Entrez votre âge : '))
+if age >= 18:
+    print("Majeur")
+else:
+    print("Mineur")
+    </pre>
+    <b>Exemple 3 : “Calculer la somme des éléments d’une liste”</b>
+    <pre>
+L = [2, 5, 8, 3]
+somme = 0
+for val in L:
+    somme += val
+print(somme)
+    </pre>
+</section>
+<section>
+    <h2>💡 Mini schéma de passage</h2>
+    <div class="infos">
+        <b>Énoncé naturel</b> <span style="font-size:1.3em">➡️</span> <b>Étapes logiques</b> <span style="font-size:1.3em">➡️</span> <b>Code Python structuré</b><br>
+        <i>Astuce : note toujours en marges les tests, conditions, boucles, puis code-les un par un !</i>
+    </div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>Écrire un programme qui affiche tous les multiples de 3 entre 1 et 20 inclus.</p>
+    <button onclick="afficheReponseLangNat()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-langnat" style="display:none;">
+        <pre>
+for n in range(1, 21):
+    if n % 3 == 0:
+        print(n)
+        </pre>
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>Langage naturel : “Demander un nombre n à l’utilisateur, afficher tous les diviseurs de n”.</p>
+    <button onclick="document.getElementById('exo2-reponse-langnat').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-langnat" style="display:none;">
+        <pre>
+n = int(input("Entrez un nombre : "))
+for d in range(1, n+1):
+    if n % d == 0:
+        print(d)
+        </pre>
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>Traduction de “Répéter l’action 5 fois” :</p>
+    <button onclick="quizLangNat(0)">for i in range(5): ...</button>
+    <button onclick="quizLangNat(1)">while i &lt; 5: ...</button>
+    <div class="reponse" id="rep-quiz-langnat"></div>
+    <p>Traduction de “Si x est pair, afficher x” :</p>
+    <button onclick="quizLangNat2(0)">if x % 2 == 0: print(x)</button>
+    <button onclick="quizLangNat2(1)">if x/2 == 1: print(x)</button>
+    <div class="reponse" id="rep-quiz-langnat2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li>NSI & Algorithmique: résoudre des problèmes, automatiser des calculs, écrire de vrais scripts</li>
+        <li>Physique/Maths: simulation, modélisation, calculs répétés</li>
+        <li>Info/Data Science: traitement de données, automatisation, IA</li>
+        <li>Vie pro: robots, tests automatiques, jeux vidéos, apps web...</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Trop “coller” mot à mot à l’énoncé : toujours reformuler en étapes logiques</li>
+        <li>Oublier d’initialiser les variables (somme, compteur…)</li>
+        <li>Mal traduire la condition (ex : pair/impair, boucle/instruction unique…)</li>
+        <li>Oublier la gestion des entrées avec input()</li>
+        <li>Confondre indentation et bloc de code</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Langage naturel</b>: texte courant/humain<br>
+    <b>Algorithme</b>: suite ordonnée d'instructions<br>
+    <b>Pseudo-code</b>: version simplifiée, proche du code<br>
+    <b>Boucle</b>: répétition, “for” ou “while”
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>Le passage du langage humain au code est un art : il fonde l’informatique avec Alan Turing (“machine universelle”)</li>
+        <li>La programmation moderne facilite ce passage avec des langages clairs, des IDE évolués, et la documentation en ligne</li>
+    </ul>
+    <div class="source">Source : histoire de l’algorithmique, Wikipedia</div>
+</section>
+<section class="anecdote">
+    <b>Astuce-mémoire</b>: “Explique à voix haute ce que tu veux coder… puis code-le ! À chaque phrase, une ligne !"  
+</section>
+<section>
+    <h2>💡 Méthodologie pour progresser</h2>
+    <ul>
+        <li>Commence toujours par reformuler : “Qu’est-ce que je dois faire, dans quel ordre ?”</li>
+        <li>Découpe le problème en mini-tâches et code-les l’une après l’autre</li>
+        <li>Pense à tester ton code sur des petits cas concrets</li>
+        <li>Utilise des commentaires pour lier chaque étape au texte de l’énoncé</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizLangNat(rep) {
+    let repElem = document.getElementById("rep-quiz-langnat");
+    repElem.textContent = (rep === 0) ? "Bonne traduction ! Boucle “for” pour répéter l’action." : "Possible, mais for...range() est plus adapté ici.";
+}
+function quizLangNat2(rep) {
+    let repElem = document.getElementById("rep-quiz-langnat2");
+    repElem.textContent = (rep === 0) ? "Exact ! x % 2 == 0 vérifie que x est pair." : "Faux, x / 2 == 1 ne teste pas la parité.";
+}
+function afficheReponseLangNat() {
+    document.getElementById("exo-reponse-langnat").style.display = "block";
+}
+</script>
+</body>
+</html>

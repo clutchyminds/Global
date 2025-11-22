@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass — Variance</title>
+    <meta name="description" content="Variance en probabilités et stats : définitions, calculs, propriétés, schéma dynamique, quiz, exercices, applications, erreurs, lexique et histoire pour réussir en spé.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+        header { background: linear-gradient(90deg,#eef4fb,#ccefff 90%); color: #243552; padding: 28px 0 12px; text-align: center;}
+        header h1 { font-size: 2.2rem; margin: 0 0 13px; color: #1877f2;}
+        .intro { font-size: 1.01rem;}
+        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.13);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #e3f6ff; border-left: 6px solid #1877f2;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #e8fffc; border-left: 7px solid #27c7b3; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #e3f6ff; border-radius: 8px; border: 1px solid #1877f2;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        label { margin-right: 14px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+        table.loi { border-collapse: collapse; margin: 14px auto; }
+        table.loi th, table.loi td { border: 1px solid #d0e5f9; padding: 7px 13px; text-align: center;}
+        table.loi th { background: #e3f6ff; color: #1877f2;}
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass — Variance</h1>
+    <div class="intro">
+        Définitions, calculs, propriétés, schéma interactif, quiz, exercices, applications et astuces pour comprendre et utiliser la variance en probabilités et statistiques !
+    </div>
+</header>
+<main>
+<section>
+    <h2>📝 Définitions & concepts</h2>
+    <div class="infos">
+        La <b>variance</b> d’une variable aléatoire X mesure la dispersion de ses valeurs autour de l’espérance :  
+        <b>\( V(X) = E[(X-E(X))^2] \)</b><br>
+        Pour les variables discrètes :  
+        <b>\( V(X) = E(X^2) - [E(X)]^2 \)</b> (où \( E(X^2) = \sum x_i^2 P(X=x_i) \))
+    </div>
+    <ul>
+        <li>Plus la variance est grande, plus les résultats possibles sont “éparpillés”</li>
+        <li>La racine carrée de la variance est <b>l’écart-type</b>, très utilisée en stats</li>
+    </ul>
+</section>
+<section>
+    <h2>📗 Propriétés et calculs classiques</h2>
+    <ul>
+        <li>Formule de variance pour \( Y = aX+b \) :  
+            - \( V(aX+b) = a^2 V(X) \) (b n’influence pas la dispersion)</li>
+        <li>Variance de la binomiale \( B(n,p) \) :  
+            - \( V(X) = n p (1-p) \)</li>
+        <li>Variance nulle : variable constante (pas de dispersion)</li>
+    </ul>
+    <div class="box-important">
+        Astuce : La variance te renseigne sur la “stabilité” d’un jeu/d’une expérience — faible : résultat proche de la moyenne, forte : résultats très variables !
+    </div>
+</section>
+<section>
+    <h2>🟦 Schéma dynamique : calcul sur loi à 3 valeurs</h2>
+    <table class="loi">
+        <tr><th>x</th><th>P(X=x)</th></tr>
+        <tr><td><input type="number" id="x1" value="0"></td><td><input type="number" id="p1" step="0.01" value="0.1"></td></tr>
+        <tr><td><input type="number" id="x2" value="2"></td><td><input type="number" id="p2" step="0.01" value="0.7"></td></tr>
+        <tr><td><input type="number" id="x3" value="5"></td><td><input type="number" id="p3" step="0.01" value="0.2"></td></tr>
+    </table>
+    <div id="schema"></div>
+    <div id="desc-var"></div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif</h2>
+    <p>On joue à un jeu : gains 0€ (p=0,1), 2€ (p=0,7), 5€ (p=0,2). Calcule la variance.</p>
+    <button onclick="afficheReponseVar()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-var" style="display:none;">
+        E(X) = 0×0,1 + 2×0,7 + 5×0,2 = 0 + 1,4 + 1 = 2,4 <br>
+        E(X²) = 0²×0,1 + 2²×0,7 + 5²×0,2 = 0 + 2,8 + 5 = 7,8 <br>
+        Variance : V(X) = 7,8 - 2,4² = 7,8 - 5,76 = 2,04
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice “expert”</h2>
+    <p>X~Binomiale(6;0,4). Calcule la variance.</p>
+    <button onclick="document.getElementById('exo2-reponse-var').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-var" style="display:none;">
+        Variance : V(X) = n×p×(1-p) = 6×0,4×0,6 = 1,44
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz express</h2>
+    <p>La variance mesure :</p>
+    <button onclick="quizVar(0)">La dispersion autour de la moyenne</button>
+    <button onclick="quizVar(1)">L’espérance</button>
+    <button onclick="quizVar(2)">La probabilité la plus forte</button>
+    <div class="reponse" id="rep-quiz-var"></div>
+    <p>L’écart-type est :</p>
+    <button onclick="quizVar2(0)">La racine carrée de la variance</button>
+    <button onclick="quizVar2(1)">La somme des proba</button>
+    <button onclick="quizVar2(2)">Le carré de la moyenne</button>
+    <div class="reponse" id="rep-quiz-var2"></div>
+</section>
+<section class="box-important">
+    <h2>🌐 Applications concrètes</h2>
+    <ul>
+        <li>Finance/Jeux : calcul de risque, stabilité d’une stratégie</li>
+        <li>Stats : mesurer la fiabilité d’une estimation (plus la variance est faible, meilleur est l’estimateur)</li>
+        <li>Physique : propagation, incertitude de mesure, lois de diffusion…</li>
+        <li>Info/IA : analyse des distributions, sélection de modèles</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Oublier E(X²) ou mal calculer la pondération (carré AVANT multiplication)</li>
+        <li>Confondre variance et écart-type</li>
+        <li>Penser qu’une variance nulle signifie forcément “proba 1” (juste variable constante)</li>
+        <li>Ignorer la formule pour Y=aX+b (bien penser au carré sur a !)</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Variance</b>: mesure de dispersion<br>
+    <b>Espérance</b>: moyenne attendue<br>
+    <b>Ecart-type</b>: racine de la variance<br>
+    <b>Pondération</b>: “poids” attribué à chaque valeur
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>La variance apparaît dès le XIXe siècle (Gauss, Laplace) pour mieux évaluer la qualité des mesures et prédictions</li>
+        <li>Essentielle pour tout test statistique, analyse de risques, IA moderne</li>
+    </ul>
+    <div class="source">Source : histoire des stats et proba, Wikipedia</div>
+</section>
+<section class="anecdote">
+    <b>Astuce-mémoire</b>: “Variance élevée : les valeurs sont dans tous les sens ; variance faible : fiable et stable !”
+</section>
+<section>
+    <h2>💡 Méthodologie pour progresser</h2>
+    <ul>
+        <li>Teste et recalcule E(X) et E(X²), puis la différence</li>
+        <li>Utilise le schéma interactif, modifie les lois/dispersions pour voir l’effet</li>
+        <li>Pense toujours à l’écart-type (plus manipulable) !</li>
+        <li>Relie variance et stabilité pour comprendre l’intérêt dans les QCM, stats ou physique</li>
+    </ul>
+</section>
+</main>
+<script>
+function quizVar(rep) {
+    let repElem = document.getElementById("rep-quiz-var");
+    repElem.textContent = (rep === 0) ? "Bravo ! La variance quantifie la dispersion autour de la moyenne." : "Non, attention, ce n’est pas une moyenne ni une proba directe.";
+}
+function quizVar2(rep) {
+    let repElem = document.getElementById("rep-quiz-var2");
+    repElem.textContent = (rep === 0) ? "Bonne réponse ! L’écart-type est la racine carrée de la variance." : "Non, revois la définition !";
+}
+function afficheReponseVar() {
+    document.getElementById("exo-reponse-var").style.display = "block";
+}
+// Schéma dynamique variance
+function drawVar() {
+    let x1 = parseFloat(document.getElementById("x1").value);
+    let x2 = parseFloat(document.getElementById("x2").value);
+    let x3 = parseFloat(document.getElementById("x3").value);
+    let p1 = parseFloat(document.getElementById("p1").value);
+    let p2 = parseFloat(document.getElementById("p2").value);
+    let p3 = parseFloat(document.getElementById("p3").value);
+    let E = x1*p1 + x2*p2 + x3*p3;
+    let E2 = x1*x1*p1 + x2*x2*p2 + x3*x3*p3;
+    let V = E2-E*E;
+    let sV = Math.sqrt(V);
+    document.getElementById("desc-var").innerHTML =
+        "Variance : "+V.toFixed(2)+
+        "<br>Ecart-type : "+sV.toFixed(2)+
+        "<br>Somme des proba : "+(p1+p2+p3).toFixed(2);
+    // Histogramme
+    let canvas = document.createElement('canvas');
+    canvas.width=320; canvas.height=80;
+    let ctx = canvas.getContext("2d");
+    let vals = [x1,x2,x3], ps = [p1,p2,p3];
+    for(let i=0;i<3;i++){
+        ctx.fillStyle="#1877f2"; ctx.fillRect(20+90*i,70-ps[i]*60,40,ps[i]*60);
+        ctx.fillStyle="#222";ctx.fillText("x="+vals[i],32+90*i,75);
+        ctx.fillText("p="+ps[i],32+90*i,62-ps[i]*60);
+    }
+    document.getElementById("schema").innerHTML="";
+    document.getElementById("schema").appendChild(canvas);
+}
+drawVar();
+["x1","x2","x3","p1","p2","p3"].forEach(id=>{
+    document.getElementById(id).addEventListener("input",drawVar);
+});
+</script>
+</body>
+</html>
