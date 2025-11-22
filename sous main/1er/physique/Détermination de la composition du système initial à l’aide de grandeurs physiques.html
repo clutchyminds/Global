@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Masterclass Physique-Chimie : Détermination composition initiale</title>
+    <meta name="description" content="Tout pour cartonner sur la détermination de la composition initiale ! Fiche, méthodes, schémas, quiz, lexique et erreurs fréquentes, version expert pour Première spé Physique-Chimie.">
+    <style>
+        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0; }
+        header { background: linear-gradient(90deg,#eef4fb,#deffe4 80%); color: #243552; padding: 30px 0 12px; text-align: center;}
+        header h1 { font-size: 2.3rem; margin: 0 0 10px; color: #1877f2;}
+        header .intro { font-size: 1rem;}
+        main { max-width: 750px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
+        h2 { color: #1877f2; margin-top: 32px;}
+        h3 { color: #f5a623; margin-top: 22px;}
+        ul, ol { margin-left: 1.4em;}
+        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
+        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+        .error {background: #ffeaea; border-left: 7px solid #e06359;}
+        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+        .anecdote {background: #e7ffe7; border-left: 7px solid #167c2b; font-style: italic; margin: 1em 0; padding: 12px 17px; border-radius: 6px;}
+        .source { font-size: 0.9em; color: #999; text-align: right;}
+        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+        button:hover { background: #145ac3;}
+        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
+        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+        #desc-schema { background: #e7f3f7; border-radius: 6px; color: #1877f2; font-weight: bold; padding: 10px; text-align: center; min-height: 25px; margin-bottom: 10px;}
+        label { margin-right: 12px;}
+        @media (max-width: 768px) { main { padding: 12px 2px; } }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Masterclass Physique-Chimie : Détermination de la composition initiale</h1>
+    <div class="intro">
+        Réussis tous tes contrôles sur les méthodes expérimentales clés : <b>dosages, titrages, spectro, analyse de pH et quantités de matière !</b>
+    </div>
+</header>
+<main>
+<section>
+    <h2>📋 Fiche synthèse ultra-complète</h2>
+    <ul>
+        <li><b>But :</b> Identifier précisément les quantités et concentrations initiales dans un système (solution, mélange, réaction chimique).</li>
+        <li><b>Grandeurs physiques principales :</b> Masse, volume, concentration (\(C\)), <b>absorbance</b>, <b>conductivité</b>, <b>pH</b>, etc.</li>
+        <li><b>Méthodes phare :</b>
+            <ul>
+                <li>Titrage : <b>colorimétrique</b>, <b>conductimétrique</b>, <b>pH-métrique</b></li>
+                <li>Spectrophotométrie : loi de Beer-Lambert (\(A = \kappa l C\)), mesure de couleur/concentration</li>
+                <li>Mesure de <b>densité</b>, <b>masse volumique</b>, suivi de <b>volume</b> sur balance</li>
+            </ul>
+        </li>
+        <li><b>Formules clés :</b>
+            <ul>
+                <li>Masse : \( m = C \times V \times M \) (selon contexte)</li>
+                <li>Loi Beer-Lambert : \( A = \kappa \times l \times C \)</li>
+                <li>Concentration : \( C = \frac{n}{V} \), \( n = \frac{m}{M} \)</li>
+                <li>Conductivité  (\( \sigma \)) : \( \sigma = k \times C \)</li>
+            </ul>
+        </li>
+        <li><b>Justifie à chaque fois la méthode choisie</b> : selon la précision, la nature du système, le type de soluté ou d’ion étudié.</li>
+    </ul>
+</section>
+<section>
+    <h2>🧪 Schéma d’expérience type (Spectrophotométrie)</h2>
+    <canvas id="schema" width="360" height="130"></canvas>
+    <div id="desc-schema">Spectrophotomètre : lumière traversant une cuve de solution → mesure de l’absorbance.</div>
+</section>
+<section class="box box-exo">
+    <h2>💡 Exercice interactif niveau “bac”</h2>
+    <p>Une solution contient un colorant, on mesure une absorbance \(A = 0,30\) à \(l = 1\) cm, coefficient d'absorption \( \kappa = 2,0 \) L·mol⁻¹·cm⁻¹.<br>
+    <b>Question :</b> Quelle est la concentration ?</p>
+    <button onclick="afficheReponsePC()">Voir la correction</button>
+    <div class="reponse" id="exo-reponse-pc" style="display:none;">
+        Loi de Beer-Lambert : \(C = \frac{A}{\kappa \cdot l} = \frac{0{,}30}{2{,}0 \times 1} = 0{,}15\) mol/L
+    </div>
+</section>
+<section class="box-exo">
+    <h2>🔥 Exercice expertise</h2>
+    <p>Une solution contient 2 g de NaCl dissous dans 500 mL d’eau.<br>
+    <b>Question :</b> Calcule la concentration molaire de NaCl (M = 58,5 g/mol).</p>
+    <button onclick="document.getElementById('exo2-reponse-pc').style.display='block';">Voir la correction</button>
+    <div class="reponse" id="exo2-reponse-pc" style="display:none;">
+        Nombre de moles : \(n = \frac{2}{58,5} \approx 0{,}034\) mol<br>
+        Volume : 500 mL = 0,5 L<br>
+        Concentration : \(C = \frac{0{,}034}{0{,}5} \approx 0{,}068\) mol/L
+    </div>
+</section>
+<section class="quiz">
+    <h2>🎯 Quiz rapide</h2>
+    <p>Le pH permet de déterminer…</p>
+    <button onclick="quizPC(0)">La masse de soluté</button>
+    <button onclick="quizPC(1)">La concentration en ions H⁺ (acidité)</button>
+    <button onclick="quizPC(2)">La couleur de la solution</button>
+    <div class="reponse" id="rep-quiz-pc"></div>
+    <p>La loi de Beer-Lambert relie absorbance à…</p>
+    <button onclick="quizPC2(0)">La température</button>
+    <button onclick="quizPC2(1)">La concentration et la longueur de la cuve</button>
+    <div class="reponse" id="rep-quiz-pc2"></div>
+</section>
+<section class="box-important">
+    <h2>🌍 Applications concrètes</h2>
+    <ul>
+        <li><b>Chimie</b>: analyse des eaux, médicaments, titrages, contrôle qualité industrielle</li>
+        <li><b>Physique</b>: mesure d’absorption/réflexion, contrôle de solutions, analyse spectrale</li>
+        <li><b>Biologie-médical</b>: dosage du sang, analyse urinaire, recherche d’espèces chimiques</li>
+    </ul>
+</section>
+<section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+        <li>Oublier de convertir les unités (mL ↔ L, mg ↔ g)</li>
+        <li>Confondre absorbance et transmission !</li>
+        <li>Ne pas justifier la méthode utilisée (toujours expliquer le choix au bac !)</li>
+        <li>Mélanger concentration et quantité de matière</li>
+    </ul>
+</section>
+<section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Absorbance</b>: mesure de l’absorption de la lumière par une solution <br>
+    <b>Concentration</b>: quantité de soluté par litre (<b>mol/L</b>) <br>
+    <b>Titrage</b>: méthode expérimentale pour déterminer une concentration <br>
+    <b>Beer-Lambert</b>: loi reliant absorbance à concentration
+</section>
+<section class="rubrique">
+    <h3>📖 Petite histoire</h3>
+    <ul>
+        <li>La détermination de composition par spectroscopie date du XIXe siècle : invention du spectrophotomètre pour analyser la lumière d’une solution !</li>
+        <li>Le titrage existe depuis Lavoisier et les pionniers de la chimie.</li>
+        <li>Ces méthodes sont à la base du contrôle qualité moderne, en pharma, environnement, biologie…</li>
+    </ul>
+    <div class="source">Source : chimie physique, histoire des sciences</div>
+</section>
+<section class="anecdote">
+    <b>Anecdote mémoire</b>: "A" comme "Absorbance" et "Beer-Lambert" : pense à une bière (beer) traversée par la lumière 🤓.
+</section>
+<section>
+    <h2>💡 Méthodologie clé pour le contrôle</h2>
+    <ul>
+        <li>Identifie la grandeur à mesurer et la méthode adaptée</li>
+        <li>Rassemble les données : mesure, schéma, calcul</li>
+        <li>Justifie à chaque étape : “je choisis cette méthode car…”</li>
+        <li>Structure ton raisonnement : intro, méthode, calcul, conclusion</li>
+        <li>Soigne schéma et rédaction : points bonus au bac !</li>
+    </ul>
+</section>
+</main>
+<script>
+    function drawSchema() {
+        var canvas = document.getElementById("schema");
+        var ctx = canvas.getContext("2d");
+        ctx.clearRect(0,0,360,130);
+        // Lumière
+        ctx.fillStyle="#FFD800";
+        ctx.fillRect(10,45,40,20);
+        ctx.font="10px Arial"; ctx.fillStyle="#333";
+        ctx.fillText("Source", 10, 40);
+        // flèche lumière
+        ctx.beginPath(); ctx.moveTo(55,55); ctx.lineTo(100,55); ctx.strokeStyle="#FFD800"; ctx.lineWidth=2; ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(93,52); ctx.lineTo(100,55); ctx.lineTo(93,58); ctx.stroke();
+        // Cuve
+        ctx.fillStyle="#79acee"; ctx.fillRect(100,35,25,40);
+        ctx.strokeStyle="#243552"; ctx.strokeRect(100,35,25,40);
+        ctx.fillStyle="#333"; ctx.fillText("Cuve", 102, 30);
+        // flèche absorbance
+        ctx.beginPath(); ctx.moveTo(125,55); ctx.lineTo(200,55); ctx.strokeStyle="#243552"; ctx.lineWidth=2; ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(193,52); ctx.lineTo(200,55); ctx.lineTo(193,58); ctx.stroke();
+        // Spectro
+        ctx.fillStyle="#bebdbd"; ctx.fillRect(200,35,45,40);
+        ctx.fillStyle="#333"; ctx.fillText("Spectro.", 205, 65);
+        // Résultat
+        ctx.fillStyle="#f3aa3f"; ctx.fillRect(260,40,70,25);
+        ctx.fillStyle="#333"; ctx.fillText("Affichage A", 265, 55);
+    }
+    drawSchema();
+
+    // Quiz
+    function quizPC(rep) {
+        let rq = document.getElementById("rep-quiz-pc");
+        rq.textContent = (rep === 1) ? "Bonne réponse ! Le pH renseigne sur l'acidité (concentration en ions H⁺)." : "Faux ! Relis la partie sur les grandeurs physiques.";
+    }
+    function quizPC2(rep) {
+        let rq = document.getElementById("rep-quiz-pc2");
+        rq.textContent = (rep === 1) ? "Bravo : Absorbance dépend de la concentration et de la longueur de cuve !" : "Incorrect. Relis la Loi de Beer-Lambert !";
+    }
+    // Exercice correction
+    function afficheReponsePC() {
+        document.getElementById("exo-reponse-pc").style.display = "block";
+    }
+</script>
+</body>
+</html>
