@@ -28,6 +28,8 @@
         label { margin-right: 12px;}
         @media (max-width: 768px) { main { padding: 12px 2px; } }
     </style>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
 <header>
@@ -42,7 +44,7 @@
     <h2>📝 Qu’est-ce qu’un vecteur ?</h2>
     <div class="infos">
         Un vecteur est un objet mathématique défini par <b>une direction, un sens et une longueur (norme)</b>. Il symbolise un déplacement, une force, une vitesse, etc.<br>
-        Notation : \( \vec{u},\, \vec{AB} \) (de A vers B) ; coordonnées dans le plan : \( (x, y) \)
+        Notation : ( vec{u},\, \vec{AB} \) (de A vers B) ; coordonnées dans le plan : \( (x, y) \)
     </div>
     <ul>
         <li>Exemples : vélocité (\( \vec{v} \)), accélération (\( \vec{a} \)), force (\( \vec{F} \))</li>
@@ -206,3 +208,6 @@ document.getElementById("vy").addEventListener("input", drawVecteur);
 </script>
 </body>
 </html>
+
+
+
