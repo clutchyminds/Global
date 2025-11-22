@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Platformer 15 Niveaux – Timer & Classement</title>
+<style>
+  body, html { margin:0; padding:0; overflow:hidden; background:#282c34; }
+  canvas { background:#1e1f26; display:block; margin:0 auto; border:3px solid #61dafb; border-radius:10px; }
+  #levelText { color:#61dafb; text-align:center; font-family:'Arial'; margin-top:5px; }
+  #timer { position:fixed; top:18px; right:25px; color:#ffd700; background:#363f57cc; padding:4px 13px; border-radius:8px; font-size:19px; font-weight:bold; font-family:Arial; z-index:1001;}
+  #restartButton {
+    position: fixed;
+    bottom: 100px;
+    right: 26px;
+    z-index:1002;
+    background: #e06c75;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 22px;
+    font-family: Arial;
+    padding: 14px 24px;
+    box-shadow: 2px 2px 6px #0006;
+    opacity: 0.90;
+    cursor: pointer;
+  }
+  #classement {
+    position: fixed;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #232840ee;
+    color: #98c379;
+    border-radius: 12px;
+    box-shadow: 2px 2px 10px #0006;
+    padding: 10px 13px;
+    z-index: 5000;
+    font-family: Arial;
+    font-size: 21px;
+    text-align:center;
+    display:none;
+  }
+  .control-button {
+    position: fixed;
+    bottom: 20px;
+    width: 60px; height: 60px;
+    background: #61dafb;
+    opacity: 0.8;
+    border-radius: 15px;
+    text-align: center;
+    line-height: 60px;
+    font-size: 30px;
+    user-select: none;
+    z-index: 1000;
+    box-shadow: 2px 2px 8px #0006;
+  }
+  #leftButton { left: 20px; }
+  #rightButton { left: 90px; }
+  #jumpButton {
+    right: 20px;
+    background: #98c379;
+  }
+  @media (max-width: 700px) {
+    canvas { width: 98vw !important; height: 62vw !important; }
+    #timer { font-size: 15px; padding:4px 7px;}
+    #restartButton { font-size: 16px; padding: 11px 18px;bottom:74px;}
+    #classement { font-size: 16px; padding:8px 8px;}
+  }
+</style>
+</head>
+<body>
+<h1 id="levelText">Niveau 1</h1>
+<div id="timer">Temps : 0.00s</div>
+<canvas id="gameCanvas" width="600" height="400"></canvas>
+<div id="leftButton" class="control-button">&#8592;</div>
+<div id="rightButton" class="control-button">&#8594;</div>
+<div id="jumpButton" class="control-button">&#8679;</div>
+<button id="restartButton">Recommencer</button>
+<div id="classement"></div>
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const timerEl = document.getElementById('timer');
+const restartBtn = document.getElementById('restartButton');
+const classementEl = document.getElementById('classement');
+
+const levels = [
+  {platforms:[{x:0,y:350,width:600,height:50},{x:80,y:300,width:100,height:10},{x:220,y:250,width:100,height:10},{x:360,y:200,width:100,height:10},{x:500,y:150,width:80,height:10}],enemies:[],goal:{x:540,y:110,width:30,height:50}},
+  {platforms:[{x:0,y:350,width:600,height:50},{x:150,y:310,width:100,height:10},{x:300,y:260,width:100,height:10},{x:450,y:210,width:80,height:10}],enemies:[{x:200,y:290,width:30,height:30,speed:2,direction:1}],goal:{x:500,y:160,width:30,height:50}},
+  {platforms:[{x:0,y:350,width:600,height:50},{x:100,y:320,width:80,height:10},{x:300,y:280,width:100,height:10},{x:80,y:240,width:80,height:10},{x:400,y:200,width:120,height:10}],enemies:[{x:130,y:300,width:30,height:30,speed:3,direction:-1}],goal:{x:490,y:160,width:30,height:50}},
+  {platforms:[{x:0,y:350,width:600,height:50},{x:500,y:310,width:80,height:10},{x:200,y:270,width:100,height:10},{x:400,y:230,width:80,height:10},{x:100,y:190,width:80,height:10}],enemies:[{x:500,y:290,width:30,height:30,speed:2,direction:-1}],goal:{x:120,y:150,width:30,height:50}},
+  {platforms:[{x:0,y:350,width:600,height:50},{x:100,y:310,width:80,height:10},{x:220,y:270,width:80,height:10},{x:340,y:230,width:80,height:10},{x:460,y:190,width:80,height:10}],enemies:[{x:115,y:290,width:30,height:30,speed:2,direction:1},{x:350,y:210,width:30,height:30,speed:3,direction:-1}],goal:{x:480,y:150,width:30,height:50}},
+  {platforms:[{x:0,y:350,width:600,height:50},{x:320,y:300,width:80,height:10},{x:160,y:260,width:80,height:10},{x:400,y:220,width:80,height:10},{x:240,y:180,width:80,height:10}],enemies:[{x:330,y:280,width:30,height:30,speed:2,direction:-1}],goal:{x:260,y:140,width:30,height:50}},
+  {platforms:[{x:0,y:350,width:600,height:50},{x:110,y:300,width:70,height:10},{x:230,y:260,width:70,height:10},{x:350,y:220,width:70,height:10},{x:470,y:180,width:70,height:10}],enemies:[{x:120,y:280,width:30,height:30,speed:3,direction:1}],goal:{x:500,y:140,width:30,height:50}},
+  {platforms:[{x:0,y:350,width:600,height:50},{x:500,y:290,width:80,height:10},{x:400,y:250,width:80,height:10},{x:300,y:210,width:80,height:10},{x:200,y:170,width:80,height:10},{x:100,y:130,width:80,height:10}],enemies:[{x:420,y:230,width:30,height:30,speed:2,direction:-1},{x:120,y:110,width:30,height:30,speed:3,direction:1}],goal:{x:150,y:90,width:30,height:50}},
+  {platforms:[{x:0,y:350,width:600,height:50},{x:50,y:300,width:80,height:10},{x:150,y:270,width:80,height:10},{x:260,y:230,width:80,height:10},{x:370,y:190,width:80,height:10},{x:480,y:150,width:80,height:10}],enemies:[{x:180,y:250,width:30,height:30,speed:3,direction:-1},{x:400,y:170,width:30,height:30,speed:2,direction:1}],goal:{x:530,y:110,width:30,height:50}},
+  {platforms:[{x:0,y:350,width:600,height:50},{x:120,y:310,width:90,height:10},{x:280,y:270,width:90,height:10},{x:440,y:230,width:90,height:10},{x:220,y:190,width:90,height:10}],enemies:[{x:430,y:210,width:30,height:30,speed:3,direction:1}],goal:{x:250,y:150,width:30,height:50}},
+  {platforms:[{x:0,y:350,width:600,height:50},{x:400,y:300,width:75,height:10},{x:300,y:260,width:75,height:10},{x:200,y:220,width:75,height:10},{x:100,y:180,width:75,height:10},{x:400,y:140,width:75,height:10}],enemies:[{x:410,y:120,width:30,height:30,speed:2,direction:-1},{x:315,y:240,width:30,height:30,speed:4,direction:1}],goal:{x:440,y:100,width:30,height:50}},
+  {platforms:[{x:0,y:350,width:600,height:50},{x:280,y:315,width:60,height:10},{x:420,y:278,width:60,height:10},{x:180,y:242,width:60,height:10},{x:340,y:205,width:60,height:10},{x:220,y:150,width:60,height:10}],enemies:[{x:300,y:295,width:30,height:30,speed:3,direction:1},{x:360,y:185,width:30,height:30,speed:4,direction:-1}],goal:{x:230,y:110,width:30,height:50}},
+  {platforms:[{x:0,y:350,width:600,height:50},{x:120,y:310,width:120,height:10},{x:300,y:265,width:120,height:10},{x:100,y:220,width:120,height:10},{x:380,y:175,width:120,height:10}],enemies:[{x:350,y:150,width:30,height:30,speed:3,direction:-1},{x:180,y:200,width:30,height:30,speed:2,direction:1}],goal:{x:430,y:135,width:30,height:50}},
+  {platforms:[{x:0,y:350,width:600,height:50},{x:130,y:325,width:75,height:10},{x:301,y:275,width:75,height:10},{x:167,y:210,width:75,height:10},{x:360,y:160,width:75,height:10},{x:490,y:120,width:75,height:10}],enemies:[{x:185,y:190,width:30,height:30,speed:4,direction:1},{x:315,y:255,width:30,height:30,speed:2,direction:1}],goal:{x:510,y:80,width:30,height:50}},
+  {platforms:[{x:0,y:350,width:600,height:50},{x:100,y:315,width:65,height:10},{x:380,y:282,width:85,height:10},{x:230,y:250,width:85,height:10},{x:170,y:190,width:75,height:10},{x:490,y:150,width:65,height:10}],enemies:[{x:122,y:295,width:30,height:30,speed:4,direction:-1},{x:500,y:130,width:30,height:30,speed:3,direction:1}],goal:{x:510,y:100,width:30,height:50}}
+];
+
+let currentLevel = 0;
+let gameOver = false;
+const player = {
+  x: 50, y: 0, width: 30, height: 50,
+  color: '#61dafb', dy: 0,
+  jumpPower: -10, grounded: false
+};
+
+const keys = {};
+let timeStart = null, timeElapsed = 0, timerInterval = null;
+
+function startTimer() {
+  timeStart = Date.now();
+  timeElapsed = 0;
+  clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    if (!gameOver) {
+      timeElapsed = (Date.now()-timeStart)/1000;
+      timerEl.textContent = "Temps : " + timeElapsed.toFixed(2) + "s";
+    }
+  },50);
+}
+function stopTimer() {
+  clearInterval(timerInterval);
+  timerEl.textContent = "Temps : " + timeElapsed.toFixed(2) + "s";
+}
+
+const records = [9.37, 12.84, 16.20];
+function showClassement(finalScore) {
+  classementEl.style.display = "block";
+  let scores = [...records, finalScore].sort((a,b)=>a-b).slice(0,3);
+  let html = "<b>🏆 Classement des meilleurs temps</b><br><br>";
+  scores.forEach((s,i) => {
+    html += `#${i+1}: ${s.toFixed(2)}s<br>`;
+  });
+  html += "<br>Veux-tu rejouer pour améliorer ton score ?";
+  classementEl.innerHTML = html;
+}
+
+window.addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if ((e.code === 'ArrowUp' || e.code === 'Space') && player.grounded) {
+    player.dy = player.jumpPower;
+    player.grounded = false;
+  }
+});
+window.addEventListener('keyup', e => { keys[e.code] = false; });
+
+const leftBtn = document.getElementById('leftButton');
+const rightBtn = document.getElementById('rightButton');
+const jumpBtn = document.getElementById('jumpButton');
+let leftPressed = false, rightPressed = false;
+
+leftBtn.addEventListener('touchstart', e => { keys['ArrowLeft'] = true; leftPressed = true; e.preventDefault(); });
+leftBtn.addEventListener('touchend', e => { keys['ArrowLeft'] = false; leftPressed = false; e.preventDefault(); });
+rightBtn.addEventListener('touchstart', e => { keys['ArrowRight'] = true; rightPressed = true; e.preventDefault(); });
+rightBtn.addEventListener('touchend', e => { keys['ArrowRight'] = false; rightPressed = false; e.preventDefault(); });
+jumpBtn.addEventListener('touchstart', e => {
+  if (player.grounded) {
+    player.dy = player.jumpPower;
+    player.grounded = false;
+  }
+  e.preventDefault();
+});
+function continueTouchMove() {
+  if (leftPressed) keys['ArrowLeft'] = true;
+  if (rightPressed) keys['ArrowRight'] = true;
+  requestAnimationFrame(continueTouchMove);
+}
+continueTouchMove();
+
+restartBtn.onclick = function() {
+  currentLevel = 0;
+  gameOver = false;
+  classementEl.style.display = "none";
+  document.getElementById('levelText').textContent = "Niveau 1";
+  player.x = 50; player.y = 0; player.dy = 0;
+  startTimer();
+  gameLoop();
+};
+
+function rectsColliding(r1, r2) {
+  return r1.x < r2.x + r2.width &&
+         r1.x + r1.width > r2.x &&
+         r1.y < r2.y + r2.height &&
+         r1.height + r1.y > r2.y;
+}
+
+function updatePlayer() {
+  if (keys.ArrowLeft) player.x -= 4;
+  if (keys.ArrowRight) player.x += 4;
+  player.dy += 0.5;
+  player.y += player.dy;
+  player.grounded = false;
+  for (const p of levels[currentLevel].platforms) {
+    if (rectsColliding(player, p)) {
+      if (player.dy > 0) {
+        player.y = p.y - player.height;
+        player.grounded = true;
+        player.dy = 0;
+      }
+    }
+  }
+  if (player.x < 0) player.x = 0;
+  if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+  if (player.y > canvas.height) respawnLevel();
+}
+
+function updateEnemies() {
+  for (const enemy of levels[currentLevel].enemies) {
+    enemy.x += enemy.speed * enemy.direction;
+    if (enemy.x <= 0 || enemy.x + enemy.width >= canvas.width) {
+      enemy.direction *= -1;
+    }
+    if (rectsColliding(player, enemy)) {
+      respawnLevel();
+    }
+  }
+}
+
+function drawRect(rect, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (const p of levels[currentLevel].platforms) {
+    drawRect(p, '#282c34');
+    ctx.strokeStyle = '#61dafb';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(p.x, p.y, p.width, p.height);
+  }
+  ctx.fillStyle = player.color;
+  ctx.fillRect(player.x, player.y, player.width, player.height);
+  for (const enemy of levels[currentLevel].enemies) {
+    drawRect(enemy, '#e06c75');
+  }
+  const goal = levels[currentLevel].goal;
+  ctx.fillStyle = '#98c379';
+  ctx.fillRect(goal.x, goal.y, goal.width, goal.height);
+}
+
+function respawnLevel() {
+  player.x = 50;
+  player.y = 0;
+  player.dy = 0;
+}
+
+function checkGoal() {
+  if (rectsColliding(player, levels[currentLevel].goal)) {
+    currentLevel++;
+    if (currentLevel >= levels.length) {
+      gameOver = true;
+      stopTimer();
+      setTimeout(() => {
+        alert('Félicitations! Tu as fini tous les niveaux en '+timeElapsed.toFixed(2)+'s!');
+        showClassement(timeElapsed);
+      }, 100);
+    } else {
+      document.getElementById('levelText').textContent = 'Niveau ' + (currentLevel + 1);
+      player.x = 50;
+      player.y = 0;
+      player.dy = 0;
+    }
+  }
+}
+
+function gameLoop() {
+  if (!gameOver) {
+    updatePlayer();
+    updateEnemies();
+    checkGoal();
+    draw();
+    requestAnimationFrame(gameLoop);
+  }
+}
+startTimer();
+gameLoop();
+</script>
+</body>
+</html>
