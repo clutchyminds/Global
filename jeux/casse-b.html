@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Casse-brique - Jeux</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+    }
+    .top-banner {
+      background-color: #007BFF;
+      color: white;
+      padding: 18px 0 0 0;
+      font-size: 2rem;
+      letter-spacing: 1px;
+      font-weight: bold;
+    }
+    .nav-bar {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      background-color: #007BFF;
+      padding: 10px 0 18px 0;
+      margin: 0;
+    }
+    .nav-bar a {
+      color: white;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 500;
+      padding: 5px 18px;
+      border-radius: 12px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-bar a:hover {
+      background: #0057b8;
+      color: #fffbea;
+    }
+    #game-container {
+      margin: 32px auto 32px auto;
+      background: white;
+      border-radius: 22px;
+      padding: 25px;
+      box-shadow: 0 2px 12px #bbb;
+      max-width: 650px;
+      text-align:center;
+    }
+    canvas {
+      display: block;
+      margin: auto;
+      background: #f0f0f0;
+      border-radius: 18px;
+      box-shadow: 0 1px 10px #aaa;
+      border: 2px solid #007BFF;
+      touch-action: none;
+    }
+    .score {
+      font-size: 1.25rem;
+      font-weight: bold;
+      margin-bottom: 12px;
+      color: #007BFF;
+    }
+    .level {
+      font-size: 1.15rem;
+      color: #555;
+      margin-bottom: 18px;
+    }
+    .footer-links {
+      margin-top: 20px;
+      text-align:center;
+    }
+    .footer-links a {
+      color: #007BFF;
+      text-decoration: none;
+      margin: 0 7px;
+      font-weight: bold;
+      font-size: 1.03rem;
+    }
+    .bottom-footer {
+      background-color: #333;
+      color: #eee;
+      padding: 16px 0;
+      text-align: center;
+      font-size: 1rem;
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      box-shadow: 0 -1px 8px #bbb;
+    }
+    .page-padding {
+      padding-bottom: 60px;
+    }
+    .btn {
+      font-size: 1rem;
+      padding: 8px 18px;
+      margin-top: 18px;
+      color: white;
+      background: #007BFF;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: #0057b8;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-banner">
+    Casse-brique
+    <nav class="nav-bar">
+      <a href="index.html">Accueil</a>
+      <a href="apropos.html">À propos</a>
+    </nav>
+  </div>
+  <div class="page-padding">
+    <div id="game-container">
+      <div class="score">Score : <span id="score">0</span></div>
+      <div class="level">Niveau : <span id="level">1</span>/20</div>
+      <canvas id="gameCanvas" width="600" height="400"></canvas>
+      <button class="btn" id="restartBtn" style="display:none;">Rejouer</button>
+    </div>
+  </div>
+  <div class="bottom-footer">
+    ©Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Comptenu des cour : Perplexity (ia)
+  </div>
+  <script>
+    // JEUX CASSE BRIQUE
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreElement = document.getElementById('score');
+    const levelElement = document.getElementById('level');
+    const restartBtn = document.getElementById('restartBtn');
+
+    let bricks = [], ball, paddle;
+    let score = 0, level = 1, lives = 3;
+    const maxLevel = 20;
+    let gameRunning = true, waitingNextLevel = false;
+
+    // Constantes paramétrables
+    const brickRowBase = 4, brickColBase = 9;
+    const brickWidth = 58, brickHeight = 20, brickPadding = 7, brickOffsetTop = 30, brickOffsetLeft = 18;
+
+    // --- EQUIPES DE BONUS ET MALUS ---
+    // type: 0 = normal, 1 = bonus-large, 2 = bonus-ball, 3 = malus-small, 4 = malus-fast
+    const brickTypes = [
+      { color: "#007BFF" }, // normal
+      { color: "#43ea3d" }, // bonus paddle large
+      { color: "#ffeb3b" }, // bonus extra-ball
+      { color: "#dd3333" }, // malus paddle small
+      { color: "#ff9100" }  // malus balle rapide
+    ];
+
+    function createLevel(n) {
+      // Plus de briques à chaque niveau + disposition variée + certaines briques spéciales
+      bricks = [];
+      const rows = brickRowBase + Math.floor(n / 3);
+      const cols = brickColBase + Math.floor(n / 4);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          // Placer des briques spéciales aléatoires (bonus ou malus)
+          let type = 0;
+          let specialChance = Math.random();
+          if (specialChance < 0.08 + n*0.012) type = 1; // bonus paddle large
+          else if (specialChance < 0.16 + n*0.014) type = 2; // bonus extra-ball
+          else if (specialChance > 0.86 - n*0.008) type = 3; // malus paddle small
+          else if (specialChance > 0.78 - n*0.009) type = 4; // malus balle rapide
+          bricks.push({
+            x: brickOffsetLeft + c*(brickWidth+brickPadding),
+            y: brickOffsetTop + r*(brickHeight+brickPadding),
+            status: 1, type: type
+          });
+        }
+      }
+    }
+
+    function initBall() {
+      ball = {
+        x: canvas.width/2, y: canvas.height-80,
+        dx: (2 + 0.1*level)*(Math.random() < 0.5 ? 1 : -1),
+        dy: -3 - 0.18*level,
+        radius: 9,
+        speedMult: 1
+      };
+    }
+
+    function initPaddle() {
+      paddle = {
+        width: 92, height: 18,
+        x: canvas.width/2 - 46,
+        y: canvas.height-36,
+        dx: 0,
+        speed: 9
+      };
+    }
+
+    function startLevel(lvl) {
+      createLevel(lvl);
+      initBall();
+      initPaddle();
+      levelElement.textContent = lvl;
+      gameRunning = true;
+      restartBtn.style.display = "none";
+      waitingNextLevel = false;
+      document.body.focus();
+    }
+
+    // --------- DRAWING ---------
+    function drawBricks() {
+      bricks.forEach(brick => {
+        if (brick.status) {
+          ctx.fillStyle = brickTypes[brick.type].color;
+          ctx.fillRect(brick.x, brick.y, brickWidth, brickHeight);
+          if(brick.type !== 0) {
+            ctx.font = "bold 12px Arial";
+            ctx.fillStyle = "#fff";
+            ctx.fillText(brick.type==1 ? "+" : (brick.type==2 ? "B" : (brick.type==3 ? "-" : "F")),
+              brick.x+brickWidth/2-6, brick.y+brickHeight/2+6);
+          }
+        }
+      });
+    }
+
+    function drawBall() {
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI*2);
+      ctx.fillStyle = "#007BFF";
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    function drawPaddle() {
+      ctx.fillStyle = "#222";
+      ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawBricks();
+      drawBall();
+      drawPaddle();
+    }
+
+    // --------- GAME LOGIC ---------
+    let rightPressed = false, leftPressed = false;
+    document.addEventListener('keydown', (e) => {
+      if (e.key === "ArrowRight" || e.key === "d") rightPressed = true;
+      if (e.key === "ArrowLeft" || e.key === "q") leftPressed = true;
+    });
+    document.addEventListener('keyup', (e) => {
+      if (e.key === "ArrowRight" || e.key === "d") rightPressed = false;
+      if (e.key === "ArrowLeft" || e.key === "q") leftPressed = false;
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      let rect = canvas.getBoundingClientRect();
+      let mouseX = e.clientX - rect.left;
+      paddle.x = Math.max(0, Math.min(mouseX - paddle.width/2, canvas.width-paddle.width));
+    });
+
+    // ----- SUPPORT TACTILE -----
+    canvas.addEventListener('touchmove', function(e) {
+      const rect = canvas.getBoundingClientRect();
+      if (e.touches.length > 0) {
+        let touchX = e.touches[0].clientX - rect.left;
+        paddle.x = Math.max(0, Math.min(touchX - paddle.width/2, canvas.width-paddle.width));
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    function collisionDetection() {
+      // Ball collisions bricks
+      for(let i=0; i<bricks.length; i++) {
+        let b = bricks[i];
+        if(b.status) {
+          if(ball.x > b.x && ball.x < b.x+brickWidth &&
+             ball.y-ball.radius > b.y && ball.y-ball.radius < b.y+brickHeight) {
+            ball.dy = -ball.dy;
+            b.status = 0;
+            let addScore = 10;
+            // Gérer bonus/malus
+            switch(b.type) {
+              case 1:
+                paddle.width = Math.min(paddle.width+29, 150); break; // large
+              case 2:
+                score += 50; break; // bonus
+              case 3:
+                paddle.width = Math.max(paddle.width-32, 39); break; // petit
+              case 4:
+                ball.speedMult = Math.min(ball.speedMult+0.38, 2.8); break; // plus rapide
+            }
+            score += addScore;
+            scoreElement.textContent = score;
+            // Niveau terminé ?
+            if (bricks.every(bk=>bk.status==0)) {
+              waitingNextLevel = true;
+              setTimeout(()=>{
+                level++;
+                if(level>maxLevel) {
+                  alert("Bravo ! Tu as fini les 20 niveaux !");
+                  gameRunning = false;
+                  restartBtn.style.display = "block";
+                } else {
+                  startLevel(level);
+                }
+              },990);
+            }
+          }
+        }
+      }
+    }
+
+    function movePaddle() {
+      if (rightPressed) paddle.x += paddle.speed;
+      if (leftPressed) paddle.x -= paddle.speed;
+      paddle.x = Math.max(0, Math.min(paddle.x, canvas.width - paddle.width));
+    }
+
+    function moveBall() {
+      ball.x += ball.dx * ball.speedMult;
+      ball.y += ball.dy * ball.speedMult;
+
+      // Mur gauche/droit
+      if(ball.x-ball.radius < 0 || ball.x+ball.radius > canvas.width) ball.dx = -ball.dx;
+
+      // Mur haut
+      if(ball.y-ball.radius < 0) ball.dy = -ball.dy;
+
+      // Paddle
+      if(ball.x > paddle.x && ball.x < paddle.x+paddle.width &&
+         ball.y+ball.radius > paddle.y && ball.y-ball.radius < paddle.y+paddle.height) {
+        ball.dy = -ball.dy;
+        // Contrôle de l'angle selon la position sur la raquette
+        let hitPos = (ball.x - (paddle.x + paddle.width/2)) / (paddle.width/2);
+        ball.dx = (3+0.2*level)*hitPos;
+      }
+
+      // Balle tombe en bas
+      if(ball.y-ball.radius > canvas.height && !waitingNextLevel) {
+        lives--;
+        if(lives>0) {
+          initBall(); initPaddle();
+        } else {
+          alert("Perdu ! Score final : "+score);
+          gameRunning = false;
+          restartBtn.style.display = "block";
+        }
+      }
+    }
+
+    function gameLoop() {
+      if(gameRunning) {
+        draw();
+        movePaddle();
+        moveBall();
+        collisionDetection();
+        requestAnimationFrame(gameLoop);
+      }
+    }
+
+    restartBtn.onclick = ()=>{
+      score = 0; lives = 3; level = 1;
+      scoreElement.textContent = score;
+      startLevel(1);
+      gameRunning = true;
+      restartBtn.style.display = "none";
+      gameLoop();
+    };
+
+    // Démarrer le jeu
+    startLevel(1);
+    gameLoop();
+  </script>
+</body>
+</html>
