@@ -1,272 +1,531 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Galerie Fractales Zoomables et Géométriques</title>
-  <style>
-    body { background: #222; color: #fff; font-family: Arial; text-align: center;}
-    .container { max-width: 900px; margin: auto; }
-    canvas { background: #000; border: 1px solid #888; margin: 16px 0; cursor: grab; }
-    label, select { margin: 0 8px; }
-    input { width: 60px; margin: 0 5px; }
-    #inputs input { margin-bottom: 5px; }
-  </style>
+<meta charset="UTF-8">
+<title>Galerie Fractales Zoomables et Géométriques</title>
+<style>
+  body {
+    background: #121214;
+    color: #fafafa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    margin: 0; padding: 20px;
+  }
+  .container {
+    max-width: 900px;
+    margin: auto;
+  }
+  h1 {
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  canvas {
+    background: linear-gradient(135deg,#000022,#000011);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.75);
+    margin: 20px 0;
+    cursor: grab;
+    transition: box-shadow 0.3s ease;
+  }
+  canvas:active {
+    cursor: grabbing;
+    box-shadow: 0 6px 18px rgba(0,0,40,0.9);
+  }
+  label, select, input, button {
+    margin: 0 8px 10px 8px;
+    font-size: 1rem;
+  }
+  select, input {
+    border-radius: 4px;
+    border: none;
+    padding: 6px 10px;
+    background: #222;
+    color: #eee;
+    box-shadow: inset 2px 2px 6px #000a;
+  }
+  input[type=number] {
+    width: 72px;
+    text-align: center;
+  }
+  button {
+    background: #3a86ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px #234fbdaa;
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background: #577fff;
+  }
+  #zoomLabelSpan {
+    display: inline-block;
+    margin-left: 20px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    user-select: none;
+  }
+  #inputs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+</style>
 </head>
 <body>
 <div class="container">
   <h1>Grande Galerie des Fractales zoomables et classiques</h1>
-  <select id="fractalType" onchange="updateInputs()"></select>
-  <span id="inputs"></span>
-  <span id="zoomLabelSpan">
-    <label id="zoomLabelTxt">Zoom : <span id="zoomLabel">1</span></label>
-  </span>
+  <select id="fractalType" onchange="updateInputs()">
+    <option value="">-- Sélectionner une fractale --</option>
+  </select>
+  <div id="inputs"></div>
+  <span id="zoomLabelSpan">Zoom : <span id="zoomLabel">1</span></span>
+  <br>
   <button onclick="draw(true)">Dessine !</button>
   <canvas id="fractalCanvas" width="600" height="600"></canvas>
 </div>
+
 <script>
-const fractalList = [
-  {id:"mandelbrot", name:"Mandelbrot"},
-  {id:"julia", name:"Julia"},
-  {id:"burning", name:"Burning Ship"},
-  {id:"multibrot", name:"Multibrot"},
-  {id:"phoenix", name:"Phoenix"},
-  {id:"tricorn", name:"Tricorn (Mandelbar)"},
-  {id:"perpmandel", name:"Perpendicular Mandelbrot"},
-  {id:"celtic", name:"Celtic"},
-  {id:"buffalo", name:"Buffalo"},
-  {id:"perpbuffalo", name:"Perpendicular Buffalo"},
-  {id:"heart", name:"Heart"},
-  {id:"perpburn", name:"Perpendicular Burning Ship"},
-  {id:"douady", name:"Douady Rabbit"},
-  {id:"sierpinski", name:"Triangle Sierpinski"},
-  {id:"koch", name:"Flocon de Koch"}
-];
+  const fractalList = [
+    {id:"mandelbrot", name:"Mandelbrot"},
+    {id:"julia", name:"Julia"},
+    {id:"burning", name:"Burning Ship"},
+    {id:"multibrot", name:"Multibrot"},
+    {id:"phoenix", name:"Phoenix"},
+    {id:"tricorn", name:"Tricorn (Mandelbar)"},
+    {id:"perpmandel", name:"Perpendicular Mandelbrot"},
+    {id:"celtic", name:"Celtic"},
+    {id:"buffalo", name:"Buffalo"},
+    {id:"perpbuffalo", name:"Perpendicular Buffalo"},
+    {id:"heart", name:"Heart"},
+    {id:"perpburn", name:"Perpendicular Burning Ship"},
+    {id:"douady", name:"Douady Rabbit"},
+    {id:"sierpinski", name:"Triangle Sierpinski"},
+    {id:"koch", name:"Flocon de Koch"},
+    {id:"pythagore", name:"Arbre de Pythagore"},
+    {id:"pascal", name:"Triangle de Pascal"}
+  ];
 
-const selectHtml = fractalList.map(f=>`<option value="${f.id}">${f.name}</option>`).join("");
-document.getElementById('fractalType').innerHTML = `<option value="">-- Sélectionner une fractale --</option>${selectHtml}`;
+  // Initial setup of fractal selector
+  const fractalSelect = document.getElementById('fractalType');
+  fractalSelect.innerHTML += fractalList.map(f=>`<option value="${f.id}">${f.name}</option>`).join("");
 
-const canvas = document.getElementById('fractalCanvas');
-const ctx = canvas.getContext('2d');
-const inputsDiv = document.getElementById('inputs');
-const zoomLabel = document.getElementById('zoomLabel');
+  const canvas = document.getElementById('fractalCanvas');
+  const ctx = canvas.getContext('2d');
+  const inputsDiv = document.getElementById('inputs');
+  const zoomLabel = document.getElementById('zoomLabel');
 
-let state = {};
-fractalList.forEach(f=>{
-  state[f.id] = { centerx: f.id==="burning"?-1.75:0, centery:0, zoom:1, dragging:false, dragStart:{x:0,y:0}, startCenter:{x:0,y:0}};
-  if(f.id==="mandelbrot") state[f.id].centerx = -0.7;
-  if(f.id==="douady") state[f.id].creal = -0.123; state[f.id].cimag = 0.745; // repère pour Douady
-});
+  // State per fractal type
+  let state = {};
+  fractalList.forEach(f=>{
+    state[f.id] = {
+      centerx: f.id==="burning"?-1.75:0,
+      centery:0,
+      zoom:1,
+      dragging:false,
+      dragStart:{x:0,y:0},
+      startCenter:{x:0,y:0}
+    };
+    if(f.id==="mandelbrot") state[f.id].centerx = -0.7;
+    if(f.id==="douady") {
+      state[f.id].creal = -0.123;
+      state[f.id].cimag = 0.745;
+    }
+  });
 
-function updateInputs() {
-  const type = document.getElementById('fractalType').value;
-  let html = "";
-  zoomLabel.textContent = state[type]?.zoom?.toFixed(3) || "1";
-  // paramétrage plan complexe
-  if(["mandelbrot","burning","tricorn","perpmandel","celtic","buffalo","perpbuffalo","heart","perpburn"].includes(type)){
-    html = `
-      <label>Itérations <input id="iterations" type="number" value="200" min="10" max="4000"></label>
-      <label>Centre X <input id="centerx" type="number" value="${state[type].centerx}" step="0.001"></label>
-      <label>Centre Y <input id="centery" type="number" value="${state[type].centery}" step="0.001"></label>
-    `;
-  }
-  if(type==="multibrot"){
-    html = `
-      <label>Itérations <input id="iterations" type="number" value="180" min="10" max="4000"></label>
-      <label>Expo <input id="expo" type="number" value="3" min="2" max="9"></label>
-      <label>Centre X <input id="centerx" type="number" value="${state[type].centerx}" step="0.001"></label>
-      <label>Centre Y <input id="centery" type="number" value="${state[type].centery}" step="0.001"></label>
-    `;
-  }
-  if(type==="phoenix"){
-    html = `
-      <label>Itérations <input id="iterations" type="number" value="180" min="10" max="4000"></label>
-      <label>Centre X <input id="centerx" type="number" value="${state[type].centerx}" step="0.001"></label>
-      <label>Centre Y <input id="centery" type="number" value="${state[type].centery}" step="0.001"></label>
-      <label>p <input id="p" type="number" value="-0.5" step="0.001"></label>
-      <label>q <input id="q" type="number" value="-0.5" step="0.001"></label>
-    `;
-  }
-  if(type==="julia"){
-    html = `
-      <label>Itérations <input id="iterations" type="number" value="180" min="10" max="4000"></label>
-      <label>Centre X <input id="centerx" type="number" value="${state[type].centerx}" step="0.001"></label>
-      <label>Centre Y <input id="centery" type="number" value="${state[type].centery}" step="0.001"></label>
-      <label>c<sub>re</sub> <input id="creal" type="number" value="-0.8" step="0.001"></label>
-      <label>c<sub>im</sub> <input id="cimag" type="number" value="0.156" step="0.001"></label>
-    `;
-  }
-  if(type==="douady"){
-    html = `
-      <label>Itérations <input id="iterations" type="number" value="180" min="10" max="4000"></label>
-      <label>Centre X <input id="centerx" type="number" value="0" step="0.001"></label>
-      <label>Centre Y <input id="centery" type="number" value="0" step="0.001"></label>
-      <label>c<sub>re</sub> <input id="creal" type="number" value="-0.123" step="0.001"></label>
-      <label>c<sub>im</sub> <input id="cimag" type="number" value="0.745" step="0.001"></label>
-    `;
-  }
-  // fractales géométriques
-  if(type==="sierpinski"){
-    html = `<label>Profondeur <input id="depth" type="number" value="6" min="1" max="12"></label>`;
-  }
-  if(type==="koch"){
-    html = `<label>Profondeur <input id="depth" type="number" value="5" min="1" max="9"></label>`;
-  }
-  inputsDiv.innerHTML = html;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  draw(true);
-}
-document.getElementById('fractalType').addEventListener('change',updateInputs);
+  // Pinch zoom variables for touch
+  let lastTouchDist = null;
 
-canvas.addEventListener('mousedown', function(e){
-  const type = document.getElementById('fractalType').value;
-  if(state[type]){
-    state[type].dragging = true;
-    state[type].dragStart = {x:e.offsetX, y:e.offsetY};
-    state[type].startCenter = {x: state[type].centerx, y: state[type].centery};
-    canvas.style.cursor = "grabbing";
+  // Update input fields based on fractal choice
+  function updateInputs() {
+    const type = fractalSelect.value;
+    if(!type) {
+      inputsDiv.innerHTML = "";
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      zoomLabel.textContent = "1";
+      return;
+    }
+
+    zoomLabel.textContent = state[type]?.zoom?.toFixed(3) || "1";
+
+    let html = "";
+    // Complex plane fractals
+    if(["mandelbrot","burning","tricorn","perpmandel","celtic","buffalo","perpbuffalo","heart","perpburn"].includes(type)){
+      html = `
+        <label>Itérations <input id="iterations" type="number" value="200" min="10" max="4000"></label>
+        <label>Centre X <input id="centerx" type="number" value="${state[type].centerx}" step="0.001"></label>
+        <label>Centre Y <input id="centery" type="number" value="${state[type].centery}" step="0.001"></label>
+      `;
+    }
+    if(type==="multibrot"){
+      html = `
+        <label>Itérations <input id="iterations" type="number" value="180" min="10" max="4000"></label>
+        <label>Expo <input id="expo" type="number" value="3" min="2" max="9"></label>
+        <label>Centre X <input id="centerx" type="number" value="${state[type].centerx}" step="0.001"></label>
+        <label>Centre Y <input id="centery" type="number" value="${state[type].centery}" step="0.001"></label>
+      `;
+    }
+    if(type==="phoenix"){
+      html = `
+        <label>Itérations <input id="iterations" type="number" value="180" min="10" max="4000"></label>
+        <label>Centre X <input id="centerx" type="number" value="${state[type].centerx}" step="0.001"></label>
+        <label>Centre Y <input id="centery" type="number" value="${state[type].centery}" step="0.001"></label>
+        <label>p <input id="p" type="number" value="-0.5" step="0.001"></label>
+        <label>q <input id="q" type="number" value="-0.5" step="0.001"></label>
+      `;
+    }
+    if(type==="julia"){
+      html = `
+        <label>Itérations <input id="iterations" type="number" value="180" min="10" max="4000"></label>
+        <label>Centre X <input id="centerx" type="number" value="${state[type].centerx}" step="0.001"></label>
+        <label>Centre Y <input id="centery" type="number" value="${state[type].centery}" step="0.001"></label>
+        <label>c<sub>re</sub> <input id="creal" type="number" value="-0.8" step="0.001"></label>
+        <label>c<sub>im</sub> <input id="cimag" type="number" value="0.156" step="0.001"></label>
+      `;
+    }
+    if(type==="douady"){
+      html = `
+        <label>Itérations <input id="iterations" type="number" value="180" min="10" max="4000"></label>
+        <label>Centre X <input id="centerx" type="number" value="0" step="0.001"></label>
+        <label>Centre Y <input id="centery" type="number" value="0" step="0.001"></label>
+        <label>c<sub>re</sub> <input id="creal" type="number" value="-0.123" step="0.001"></label>
+        <label>c<sub>im</sub> <input id="cimag" type="number" value="0.745" step="0.001"></label>
+      `;
+    }
+    // Geometric fractals with depth input
+    if(["sierpinski","koch","pythagore","pascal"].includes(type)){
+      html = `<label>Profondeur <input id="depth" type="number" value="6" min="1" max="12"></label>`;
+    }
+
+    inputsDiv.innerHTML = html;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    draw(true);
   }
-});
-canvas.addEventListener('mouseup', function(e){
-  const type = document.getElementById('fractalType').value;
-  if(state[type]) state[type].dragging = false;
-  canvas.style.cursor = "grab";
-  draw(true);
-});
-canvas.addEventListener('mousemove', function(e){
-  const type = document.getElementById('fractalType').value;
-  if(state[type] && state[type].dragging && !["sierpinski","koch"].includes(type)){
-    const w = canvas.width, h = canvas.height;
-    const scale = 3.5 / state[type].zoom;
-    const dx = e.offsetX - state[type].dragStart.x;
-    const dy = e.offsetY - state[type].dragStart.y;
-    state[type].centerx = state[type].startCenter.x - dx*scale/w;
-    state[type].centery = state[type].startCenter.y - dy*scale/w;
-    document.getElementById('centerx').value = state[type].centerx;
-    document.getElementById('centery').value = state[type].centery;
-    draw(false);
-  }
-});
-canvas.addEventListener('wheel', function(e){
-  const type = document.getElementById('fractalType').value;
-  if(state[type] && !["sierpinski","koch"].includes(type)){
+
+  fractalSelect.addEventListener('change', updateInputs);
+
+  // Mouse dragging for panning
+  canvas.addEventListener('mousedown', function(e){
+    const type = fractalSelect.value;
+    if(state[type]){
+      state[type].dragging = true;
+      state[type].dragStart = {x:e.offsetX, y:e.offsetY};
+      state[type].startCenter = {x: state[type].centerx, y: state[type].centery};
+      canvas.style.cursor = "grabbing";
+    }
+  });
+  canvas.addEventListener('mouseup', function(e){
+    const type = fractalSelect.value;
+    if(state[type]){
+      state[type].dragging = false;
+    }
+    canvas.style.cursor = "grab";
+  });
+  canvas.addEventListener('mouseleave', function(e){
+    const type = fractalSelect.value;
+    if(state[type]){
+      state[type].dragging = false;
+    }
+    canvas.style.cursor = "grab";
+  });
+  canvas.addEventListener('mousemove', function(e){
+    const type = fractalSelect.value;
+    if(state[type] && state[type].dragging && !["sierpinski","koch","pythagore","pascal"].includes(type)){
+      const w = canvas.width, h = canvas.height;
+      const scale = 3.5 / state[type].zoom;
+      const dx = e.offsetX - state[type].dragStart.x;
+      const dy = e.offsetY - state[type].dragStart.y;
+      state[type].centerx = state[type].startCenter.x - dx*scale/w;
+      state[type].centery = state[type].startCenter.y - dy*scale/w;
+      const cxInput = document.getElementById('centerx');
+      const cyInput = document.getElementById('centery');
+      if(cxInput) cxInput.value = state[type].centerx;
+      if(cyInput) cyInput.value = state[type].centery;
+      draw(false);
+    }
+  });
+
+  // Mouse wheel zoom
+  canvas.addEventListener('wheel', function(e){
+    const type = fractalSelect.value;
+    if(state[type] && !["sierpinski","koch","pythagore","pascal"].includes(type)){
+      e.preventDefault();
+      const factor = e.deltaY < 0 ? 1.18 : 1 / 1.18;
+      state[type].zoom *= factor;
+      zoomLabel.textContent = state[type].zoom.toFixed(3);
+      draw(false);
+    }
+  }, { passive:false });
+
+  // Touch events for pinch zoom and pan
+  canvas.addEventListener('touchstart', function(e){
+    const type = fractalSelect.value;
+    if(state[type]){
+      if(e.touches.length === 1){
+        // single touch = start drag
+        const rect = canvas.getBoundingClientRect();
+        state[type].dragging = true;
+        state[type].dragStart = {x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top};
+        state[type].startCenter = {x: state[type].centerx, y: state[type].centery};
+      } else if(e.touches.length === 2){
+        lastTouchDist = getTouchDist(e.touches);
+      }
+    }
+  }, {passive:false});
+
+  canvas.addEventListener('touchmove', function(e){
     e.preventDefault();
-    const factor = e.deltaY<0 ? 1.18 : 1/1.18;
-    state[type].zoom *= factor;
-    zoomLabel.textContent = state[type].zoom.toFixed(3);
-    draw(false);
+    const type = fractalSelect.value;
+    if(state[type]){
+      const rect = canvas.getBoundingClientRect();
+      if(e.touches.length === 1 && state[type].dragging && !["sierpinski","koch","pythagore","pascal"].includes(type)){
+        // Single finger drag
+        const touch = e.touches[0];
+        const currPos = {x: touch.clientX - rect.left, y: touch.clientY - rect.top};
+        const w = canvas.width, h = canvas.height;
+        const scale = 3.5 / state[type].zoom;
+        const dx = currPos.x - state[type].dragStart.x;
+        const dy = currPos.y - state[type].dragStart.y;
+        state[type].centerx = state[type].startCenter.x - dx*scale/w;
+        state[type].centery = state[type].startCenter.y - dy*scale/w;
+        const cxInput = document.getElementById('centerx');
+        const cyInput = document.getElementById('centery');
+        if(cxInput) cxInput.value = state[type].centerx;
+        if(cyInput) cyInput.value = state[type].centery;
+        draw(false);
+      } else if(e.touches.length === 2){
+        // Handle pinch zoom, center fixed on midpoint of touches
+        let newDist = getTouchDist(e.touches);
+        if(lastTouchDist){
+          const zoomChange = newDist / lastTouchDist;
+          state[type].zoom *= zoomChange;
+          zoomLabel.textContent = state[type].zoom.toFixed(3);
+          draw(false);
+        }
+        lastTouchDist = newDist;
+      }
+    }
+  }, {passive:false});
+
+  canvas.addEventListener('touchend', function(e){
+    const type = fractalSelect.value;
+    if(state[type]){
+      if(e.touches.length < 2){
+        lastTouchDist = null;
+      }
+      if(e.touches.length === 0){
+        state[type].dragging = false;
+        draw(true);
+      }
+    }
+  }, {passive:false});
+
+  function getTouchDist(touches){
+    let dx = touches[0].clientX - touches[1].clientX;
+    let dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx*dx + dy*dy);
   }
-});
 
-function draw(isFinal) {
-  const type = document.getElementById('fractalType').value;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  if (!type) return;
-  const iter = document.getElementById('iterations') ? parseInt(document.getElementById('iterations').value) : 180;
-  const depth = document.getElementById('depth') ? parseInt(document.getElementById('depth').value) : 6;
-  const expo = document.getElementById('expo') ? parseFloat(document.getElementById('expo').value) : 3;
-  const creal = document.getElementById('creal') ? parseFloat(document.getElementById('creal').value) : null;
-  const cimag = document.getElementById('cimag') ? parseFloat(document.getElementById('cimag').value) : null;
-  const p = document.getElementById('p') ? parseFloat(document.getElementById('p').value) : -0.5;
-  const q = document.getElementById('q') ? parseFloat(document.getElementById('q').value) : -0.5;
+  // Draw logic unified for fractals
+  function draw(isFinal) {
+    const type = fractalSelect.value;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if(!type) return;
 
-  // Plan complexe
-  if(type==="mandelbrot") drawSet((z,c,n)=>mandelbrot(z,c,n), state[type], iter, isFinal);
-  if(type==="julia") drawSet((z,c,n)=>julia(z,c,n), { ...state[type], creal, cimag }, iter, isFinal);
-  if(type==="burning") drawSet((z,c,n)=>burningShip(z,c,n), state[type], iter, isFinal);
-  if(type==="tricorn") drawSet((z,c,n)=>tricorn(z,c,n), state[type], iter, isFinal);
-  if(type==="perpmandel") drawSet((z,c,n)=>perpmandel(z,c,n), state[type], iter, isFinal);
-  if(type==="celtic") drawSet((z,c,n)=>celtic(z,c,n), state[type], iter, isFinal);
-  if(type==="buffalo") drawSet((z,c,n)=>buffalo(z,c,n), state[type], iter, isFinal);
-  if(type==="perpbuffalo") drawSet((z,c,n)=>perpbuffalo(z,c,n), state[type], iter, isFinal);
-  if(type==="heart") drawSet((z,c,n)=>heart(z,c,n), state[type], iter, isFinal);
-  if(type==="perpburn") drawSet((z,c,n)=>perpburn(z,c,n), state[type], iter, isFinal);
-  if(type==="phoenix") drawSet((z,c,n)=>phoenix(z,c,n,p,q), state[type], iter, isFinal);
-  if(type==="multibrot") drawSet((z,c,n)=>multibrot(z,c,n,expo), state[type], iter, isFinal);
-  if(type==="douady") drawSet((z,c,n)=>julia(z,c,n), { ...state[type], creal, cimag }, iter, isFinal);
+    // Get inputs or default values
+    const iter = document.getElementById('iterations') ? parseInt(document.getElementById('iterations').value) : 180;
+    const depth = document.getElementById('depth') ? parseInt(document.getElementById('depth').value) : 6;
+    const expo = document.getElementById('expo') ? parseFloat(document.getElementById('expo').value) : 3;
+    const creal = document.getElementById('creal') ? parseFloat(document.getElementById('creal').value) : null;
+    const cimag = document.getElementById('cimag') ? parseFloat(document.getElementById('cimag').value) : null;
+    const p = document.getElementById('p') ? parseFloat(document.getElementById('p').value) : -0.5;
+    const q = document.getElementById('q') ? parseFloat(document.getElementById('q').value) : -0.5;
 
-  // Fractales géométriques
-  if(type==="sierpinski") drawSierpinski(depth);
-  if(type==="koch") drawKoch(depth);
-}
-
-// ----- Fractales du plan complexe -----
-function drawSet(fractal, st, iter, isFinal) {
-  let w = canvas.width, h = canvas.height;
-  let zoom = st.zoom;
-  let centerx = st.centerx;
-  let centery = st.centery;
-  let creal = st.creal!==undefined ? st.creal : null;
-  let cimag = st.cimag!==undefined ? st.cimag : null;
-  let scale = 3.5 / zoom;
-  let xmin = centerx - scale / 2;
-  let xmax = centerx + scale / 2;
-  let ymin = centery - scale * h / w / 2;
-  let ymax = centery + scale * h / w / 2;
-  const effectiveIter = isFinal ? iter : Math.min(iter,45);
-  let imageData = ctx.createImageData(w, h);
-  for (let px=0; px<w; px++) for (let py=0; py<h; py++) {
-    let cx = xmin + (px/w) * (xmax-xmin);
-    let cy = ymin + (py/h) * (ymax-ymin);
-    let v = fractal({x:cx, y:cy}, {cre:creal, cim:cimag}, effectiveIter);
-    let idx = (py*w+px)*4;
-    let c = v === effectiveIter ? 0 : 255*Math.sqrt(v/effectiveIter);
-    imageData.data[idx]=c; imageData.data[idx+1]=c*0.5; imageData.data[idx+2]=255-c; imageData.data[idx+3]=255;
+    // Dispatch drawing according to fractal type
+    if(["mandelbrot","burning","tricorn","perpmandel","celtic","buffalo","perpbuffalo","heart","perpburn"].includes(type))
+      drawSet(window[type], state[type], iter, isFinal);
+    else if(type==="julia")
+      drawSet(julia, {...state[type], creal, cimag}, iter, isFinal);
+    else if(type==="phoenix")
+      drawSet(phoenix, state[type], iter, isFinal, p, q);
+    else if(type==="multibrot")
+      drawSet(multibrot, state[type], iter, isFinal, expo);
+    else if(type==="douady")
+      drawSet(julia, {...state[type], creal, cimag}, iter, isFinal);
+    else if(type==="sierpinski")
+      drawSierpinski(depth);
+    else if(type==="koch")
+      drawKoch(depth);
+    else if(type==="pythagore")
+      drawPythagore(depth);
+    else if(type==="pascal")
+      drawPascal(depth);
   }
-  ctx.putImageData(imageData,0,0);
-  zoomLabel.textContent = zoom.toFixed(3);
-}
-// Algorithmes
-function mandelbrot(z,_,n){ let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=x*x-y*y+z.x; y=2*x*y+z.y; x=xt;i++;} return i;}
-function julia(z,c,n){ let x=z.x,y=z.y,i=0; while(x*x+y*y<=4&&i<n){let xt=x*x-y*y+(c.cre??-0.8); y=2*x*y+(c.cim??0.156); x=xt;i++;} return i;}
-function burningShip(z,_,n){ let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=x*x-y*y+z.x; y=Math.abs(2*x*y)+z.y; x=Math.abs(xt);i++;} return i;}
-function tricorn(z,_,n){ let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=x*x-y*y+z.x; y=-2*x*y+z.y; x=xt;i++;} return i;}
-function perpmandel(z,_,n){ let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=x*x-y*y+z.x; y=-2*Math.abs(x*y)+z.y;x=xt;i++;} return i;}
-function celtic(z,_,n){ let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=Math.abs(x*x-y*y)+z.x; y=2*x*y+z.y;x=xt;i++;} return i;}
-function buffalo(z,_,n){ let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=Math.abs(x*x-y*y)+z.x; y=-2*Math.abs(x*y)+z.y;x=xt;i++;} return i;}
-function perpbuffalo(z,_,n){let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=Math.abs(x*x-y*y)+z.x; y=-2*x*y+z.y;x=xt;i++;}return i;}
-function heart(z,_,n){ let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=x*x-y*y+z.x; y=Math.abs(2*x*y)+z.y;x=xt;i++;}return i;}
-function perpburn(z,_,n){let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=x*x-y*y+z.x; y=-2*Math.abs(x*y)+z.y;x=Math.abs(xt);i++;}return i;}
-function phoenix(z,_,p,q,n){let x=0,y=0,xo=0,yo=0,i=0; while(x*x+y*y<=4&&i<n){let xt=x*x-y*y+z.x+p*xo+q*yo; let yt=2*x*y+z.y+p*yo+q*xo; xo=x;yo=y;x=xt;y=yt;i++;}return i;}
-function multibrot(z,_,expo,n){let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let r=Math.pow(x*x+y*y,expo/2); let th=Math.atan2(y,x)*expo; let xt=r*Math.cos(th)+z.x; let yt=r*Math.sin(th)+z.y;x=xt;y=yt;i++;}return i;}
 
-// Fractales géométriques
-function drawSierpinski(depth) {
-  let w=canvas.width,h=canvas.height;
-  function sierpinski(x,y,size,d){
-    if(d===0){ ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+size/2,y+size*Math.sqrt(3)/2);ctx.lineTo(x-size/2,y+size*Math.sqrt(3)/2);ctx.closePath();ctx.fillStyle="#53f";ctx.fill();return; }
-    sierpinski(x, y, size/2, d-1);
-    sierpinski(x-size/4, y+size*Math.sqrt(3)/4, size/2, d-1);
-    sierpinski(x+size/4, y+size*Math.sqrt(3)/4, size/2, d-1);
-  }
-  sierpinski(w/2, 30, w*0.8, depth);
-}
-function drawKoch(depth){
-  let w=canvas.width,h=canvas.height;
-  function koch(x1,y1,x2,y2,d){
-    if(d===0){ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);return;}
-    let dx=(x2-x1)/3,dy=(y2-y1)/3;
-    let xA=x1+dx, yA=y1+dy;
-    let xB=x1+2*dx, yB=y1+2*dy;
-    let mx = (xA+xB)/2 + (Math.sqrt(3)/6)*(yA-yB);
-    let my = (yA+yB)/2 + (Math.sqrt(3)/6)*(xB-xA);
-    koch(x1, y1, xA, yA, d-1); koch(xA, yA, mx, my, d-1); koch(mx, my, xB, yB, d-1); koch(xB, yB, x2, y2, d-1);
-  }
-  ctx.beginPath();
-  let size = w*0.7, h0 = h*0.7;
-  let x1=w/2-size/2, y1=h0;
-  let x2=w/2+size/2, y2=h0;
-  let x3=w/2, y3=h0-size*Math.sqrt(3)/2;
-  koch(x1,y1, x2,y2, depth);
-  koch(x2,y2, x3,y3, depth);
-  koch(x3,y3, x1,y1, depth);
-  ctx.strokeStyle="#5ff";
-  ctx.stroke();
-}
+  // Complex plane fractals helpers
+  function drawSet(fractal, st, iter, isFinal, arg1, arg2) {
+    const w = canvas.width, h = canvas.height;
+    const zoom = st.zoom;
+    const centerx = st.centerx;
+    const centery = st.centery;
+    const scale = 3.5 / zoom;
+    
+    const xmin = centerx - scale / 2;
+    const xmax = centerx + scale / 2;
+    const ymin = centery - scale * h / w / 2;
+    const ymax = centery + scale * h / w / 2;
+    const effectiveIter = isFinal ? iter : Math.min(iter, 45);
 
-canvas.addEventListener('mouseup',()=>draw(true));
-["mouseup","touchend"].forEach(ev=>canvas.addEventListener(ev,()=>draw(true)));
-inputsDiv.addEventListener('input', function(e) { draw(true); });
-updateInputs();
+    const imageData = ctx.createImageData(w, h);
+    for(let px = 0; px < w; px++){
+      for(let py = 0; py < h; py++){
+        const cx = xmin + (px/w)*(xmax - xmin);
+        const cy = ymin + (py/h)*(ymax - ymin);
+        const v = fractal({x: cx, y: cy}, {cre: st.creal, cim: st.cimag}, effectiveIter, arg1, arg2);
+        const idx = (py * w + px) * 4;
+        const c = v === effectiveIter ? 0 : 255 * Math.sqrt(v / effectiveIter);
+        imageData.data[idx] = c;
+        imageData.data[idx + 1] = c * 0.5;
+        imageData.data[idx + 2] = 255 - c;
+        imageData.data[idx + 3] = 255;
+      }
+    }
+    ctx.putImageData(imageData, 0, 0);
+    zoomLabel.textContent = zoom.toFixed(3);
+  }
+
+  // Fractal functions (simplified arrow)
+  function mandelbrot(z,_,n){ let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=x*x-y*y+z.x; y=2*x*y+z.y; x=xt;i++;} return i;}
+  function julia(z,c,n){ let x=z.x,y=z.y,i=0; while(x*x+y*y<=4&&i<n){let xt=x*x-y*y+(c.cre??-0.8); y=2*x*y+(c.cim??0.156); x=xt;i++;} return i;}
+  function burning(z,_,n){ let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=x*x-y*y+z.x; y=Math.abs(2*x*y)+z.y; x=Math.abs(xt);i++;} return i;}
+  function burningShip(z,_,n){ return burning(z,_,n);} // alias for burning
+  function tricorn(z,_,n){ let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=x*x-y*y+z.x; y=-2*x*y+z.y; x=xt;i++;} return i;}
+  function perpmandel(z,_,n){ let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=x*x-y*y+z.x; y=-2*Math.abs(x*y)+z.y; x=xt;i++;} return i;}
+  function celtic(z,_,n){ let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=Math.abs(x*x-y*y)+z.x; y=2*x*y+z.y; x=xt;i++;} return i;}
+  function buffalo(z,_,n){ let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=Math.abs(x*x-y*y)+z.x; y=-2*Math.abs(x*y)+z.y; x=xt;i++;} return i;}
+  function perpbuffalo(z,_,n){ let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=Math.abs(x*x-y*y)+z.x; y=-2*x*y+z.y; x=xt;i++;} return i;}
+  function heart(z,_,n){ let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=x*x-y*y+z.x; y=Math.abs(2*x*y)+z.y; x=xt;i++;} return i;}
+  function perpburn(z,_,n){ let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){let xt=x*x-y*y+z.x; y=-2*Math.abs(x*y)+z.y; x=Math.abs(xt);i++;} return i;}
+  function phoenix(z,_,p,q,n){ let x=0,y=0,xo=0,yo=0,i=0; while(x*x+y*y<=4&&i<n){ let xt=x*x-y*y+z.x+p*xo+q*yo; let yt=2*x*y+z.y+p*yo+q*xo; xo=x; yo=y; x=xt; y=yt; i++;} return i;}
+  function multibrot(z,_,expo,n){ let x=0,y=0,i=0; while(x*x+y*y<=4&&i<n){ let r=Math.pow(x*x+y*y,expo/2); let th=Math.atan2(y,x)*expo; let xt=r*Math.cos(th)+z.x; let yt=r*Math.sin(th)+z.y; x=xt; y=yt; i++;} return i;}
+
+  // Geometric fractals
+  function drawSierpinski(depth){
+    const w = canvas.width, h = canvas.height;
+    function sierpinski(x,y,size,d){
+      if(d===0){
+        ctx.beginPath();
+        ctx.moveTo(x,y);
+        ctx.lineTo(x+size/2, y+size*Math.sqrt(3)/2);
+        ctx.lineTo(x-size/2, y+size*Math.sqrt(3)/2);
+        ctx.closePath();
+        ctx.fillStyle = "#53f";
+        ctx.fill();
+        return;
+      }
+      sierpinski(x, y, size/2, d-1);
+      sierpinski(x - size/4, y + size*Math.sqrt(3)/4, size/2, d-1);
+      sierpinski(x + size/4, y + size*Math.sqrt(3)/4, size/2, d-1);
+    }
+    ctx.clearRect(0,0,w,h);
+    sierpinski(w/2, 30, w*0.8, depth);
+  }
+
+  function drawKoch(depth) {
+    const w = canvas.width, h = canvas.height;
+    function koch(x1,y1,x2,y2,d){
+      if(d===0){
+        ctx.moveTo(x1,y1);
+        ctx.lineTo(x2,y2);
+        return;
+      }
+      let dx=(x2-x1)/3, dy=(y2-y1)/3;
+      let xA = x1 + dx, yA = y1 + dy;
+      let xB = x1 + 2*dx, yB = y1 + 2*dy;
+      let mx = (xA+xB)/2 + (Math.sqrt(3)/6)*(yA-yB);
+      let my = (yA+yB)/2 + (Math.sqrt(3)/6)*(xB-xA);
+      koch(x1,y1,xA,yA,d-1);
+      koch(xA,yA,mx,my,d-1);
+      koch(mx,my,xB,yB,d-1);
+      koch(xB,yB,x2,y2,d-1);
+    }
+    ctx.clearRect(0,0,w,h);
+    ctx.beginPath();
+    const size = w * 0.7, h0 = h * 0.7;
+    const x1 = w / 2 - size / 2, y1 = h0;
+    const x2 = w / 2 + size / 2, y2 = h0;
+    const x3 = w / 2, y3 = h0 - size * Math.sqrt(3) / 2;
+    koch(x1,y1,x2,y2,depth);
+    koch(x2,y2,x3,y3,depth);
+    koch(x3,y3,x1,y1,depth);
+    ctx.strokeStyle = "#5ff";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  // New fractal: Arbre de Pythagore (recursive squares and triangles)
+  function drawPythagore(depth){
+    if(depth < 1) return;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.strokeStyle = '#76c7c0';
+    ctx.fillStyle = '#074f57';
+
+    // Draw a square base with two recursive smaller squares on top at angles
+    function drawTree(x, y, size, angle, depth){
+      if(depth === 0) return;
+      ctx.save();
+      ctx.translate(x,y);
+      ctx.rotate(angle);
+      // Draw square
+      ctx.fillRect(0, 0, size, size);
+      ctx.strokeRect(0, 0, size, size);
+      // Left branch (smaller square rotated)
+      drawTree(0, 0, size * 0.7, angle - Math.PI/6, depth - 1);
+      // Right branch
+      drawTree(size, 0, size * 0.7, angle + Math.PI/6, depth - 1);
+      ctx.restore();
+    }
+    drawTree(canvas.width/2 - 50, canvas.height - 100, 100, 0, depth);
+  }
+
+  // New fractal: Triangle de Pascal (simple colored binomial coefficients)
+  function drawPascal(depth){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.font = `${14}px monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillStyle = "#ffd166";
+
+    // Calculate binomial coefficient (n choose k)
+    function binomialCoeff(n,k){
+      let res = 1;
+      for(let i=0;i<k;i++){
+        res *= (n-i)/(i+1);
+      }
+      return Math.round(res);
+    }
+
+    const lineHeight = 22;
+    for(let row = 0; row < depth; row++){
+      const y = 30 + row * lineHeight;
+      for(let col = 0; col <= row; col++){
+        const x = canvas.width/2 + (col - row/2) * 35;
+        const val = binomialCoeff(row,col);
+        // Color based on parity to highlight pattern
+        ctx.fillStyle = (val % 2 === 0) ? "#ff6f59" : "#268bd2";
+        ctx.fillText(val, x, y);
+      }
+    }
+  }
+
+  // Listen for inputs changes to redraw
+  inputsDiv.addEventListener('input', () => draw(true));
+
+  // Initial call
+  updateInputs();
+
 </script>
 </body>
 </html>
