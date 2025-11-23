@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Platformer 3D - Niveaux longs, tactile & timer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f0f0f0; margin: 0; }
+    .top-banner { background-color: #007BFF; color: white; padding: 18px 0 0 0; font-size: 2rem; letter-spacing: 1px; font-weight: bold;}
+    .nav-bar { display: flex; justify-content: center; gap: 40px; background-color: #007BFF; padding: 10px 0 18px 0; margin: 0;}
+    .nav-bar a {color: white; text-decoration: none;font-size: 1.1rem; font-weight: 500; padding: 5px 18px; border-radius: 12px;transition: background 0.2s, color 0.2s;}
+    .nav-bar a:hover { background:#0057b8; color:#fffbea;}
+    .level-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(75px, 1fr)); gap: 22px; max-width: 500px; margin: 48px auto 0 auto; padding: 0 20px;}
+    .level-btn { background: #007BFF; color: #fff; font-size: 1.19rem; padding: 17px 0; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 8px #bbb5; transition: background 0.18s, transform 0.18s, color 0.2s; width: 100%; letter-spacing: 2px;}
+    .level-btn:hover { background:#0057b8; color:#fffbea; transform:scale(1.07);}
+    .bottom-footer { background-color: #333; color: #eee; padding: 16px 0; text-align: center; font-size: 1rem; position: fixed; left: 0; right: 0; bottom: 0; box-shadow: 0 -1px 8px #bbb;}
+    #gameZone { display:none; position:fixed; left:0;top:0;right:0;bottom:0; background:#151c2b; z-index:99;}
+    #hud-bar { position:absolute; top:15px; left:20px; color:#fff; font-size:1.15rem;font-family:sans-serif;letter-spacing:2px; text-shadow:2px 2px 8px #000d; z-index:2; background:#007bffcc;padding:8px 19px;border-radius:16px;font-weight:bold;}
+    #returnBtn { position:absolute;top:15px;right:20px;background:#007bff;color:#fff;border:none; border-radius:15px;padding:10px 18px;font-size:1.09rem;font-weight:bold;cursor:pointer; transition:background 0.18s, color 0.18s; z-index:2;}
+    #returnBtn:hover { background:#0057b8; color:#fffbea; }
+    #winMsg { position: absolute;left:50%;top:60px;transform:translateX(-50%); background: #fff; color: #007BFF; font-size:1.3rem;font-weight:bold;padding:10px 30px; border-radius:16px;box-shadow:3px 3px 14px #0005;z-index:9; display: none;}
+    #nextBtn { display: none; position: absolute; left: 50%; top: 140px; transform: translateX(-50%); background:#007bff; color:#fff; border:none; border-radius:15px;padding:16px 34px;font-size:1.25rem; font-weight:bold; cursor:pointer; box-shadow:0 2px 8px #2224; z-index:10; transition:background 0.18s;}
+    #nextBtn:hover { background: #0057b8; color: #fffbea;}
+    #touch-controls { position: absolute; left:0; right:0; bottom:38px; height:110px; z-index:9; display:flex; justify-content:center; pointer-events: none;}
+    .touch-btn { pointer-events: all; height:85px; width:85px; margin:13px; background:#007bffdd; color:#fff; font-size:2.3em; border:none; border-radius:22px; box-shadow: 0 2px 7px #0003; display:flex; align-items:center; justify-content:center; font-weight:bold; user-select:none; transition:background 0.2s; outline: none; touch-action: manipulation;}
+    .touch-btn:active { background:#0057b8; color:#fffbea;}
+    @media (max-width:600px) {
+      #touch-controls {height:70px;}
+      .touch-btn {height:55px; width:55px; font-size:1.7em;}
+    }
+    canvas { display:block; position:absolute;left:0; top:0; }
+  </style>
+</head>
+<body>
+  <div class="top-banner">
+    Plateformer 3D – Accueil
+    <nav class="nav-bar">
+      <a href="#">Accueil</a>
+      <a href="#">À propos</a>
+    </nav>
+  </div>
+  <div id="screen-home">
+    <div style="max-width:700px;margin:38px auto 0 auto;" class="page-padding">
+      <h2 style="text-align:center;letter-spacing:1.5px;color:#333;font-size:2.1em;margin-bottom:20px;margin-top:0;">Choisis ton niveau</h2>
+      <div class="level-grid" id="levelGrid"></div>
+    </div>
+  </div>
+  <div id="gameZone">
+    <div id="hud-bar"></div>
+    <button id="returnBtn" onclick="returnHome()">Retour accueil</button>
+    <div id="winMsg">Bravo ! Tu as fini ce niveau !</div>
+    <button id="nextBtn">Niveau suivant →</button>
+    <div id="touch-controls" style="display:none;">
+      <button class="touch-btn" id="btn-left">←</button>
+      <button class="touch-btn" id="btn-up">↑</button>
+      <button class="touch-btn" id="btn-down">↓</button>
+      <button class="touch-btn" id="btn-right">→</button>
+      <button class="touch-btn" id="btn-jump">⤓</button>
+    </div>
+  </div>
+  <div class="bottom-footer">
+    ©Plateformer 3D — Créé par <b>toi</b> | Code : Thomas Lewis | IA : Perplexity
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.156.1/three.min.js"></script>
+  <script>
+// -- Couleurs/textures plateformes
+const platformMats = [
+  new THREE.MeshLambertMaterial({color:0x8dbcef}), // sol
+  new THREE.MeshLambertMaterial({color:0x57e76d}), // normales
+  new THREE.MeshLambertMaterial({color:0xf7ea4c}), // arrivée
+];
+// --- Niveaux "longs" joueurs, 7-10 plateformes
+let levelData = [];
+for (let lvl = 0; lvl < 20; lvl++) {
+  let platfs = [];
+  platfs.push([0,0,0,24,2,24,0]);
+  let startX = 0, startY = 2, startZ = -3;
+  for (let i = 0; i < 8 + Math.floor(lvl/2); i++) {
+    let px = startX + i*3, py = startY + Math.floor(i/3)*1.3, pz = startZ - i*2;
+    platfs.push([px, py, pz, 3,1,2,1]);
+  }
+  let fx = startX + (8 + Math.floor(lvl/2))*3, fy = startY + Math.floor((8 + Math.floor(lvl/2))/3)*1.3, fz = startZ - (8 + Math.floor(lvl/2))*2;
+  platfs.push([fx, fy, fz, 4,1,2,2]);
+  levelData.push(platfs);
+}
+let spawnPoints = Array(levelData.length).fill().map(() => ({x:0, y:3, z:0, dir:0}));
+let nbLevels = levelData.length;
+
+// Boutons de niveaux
+let levelGrid = document.getElementById("levelGrid");
+for(let i=0;i<nbLevels;i++){
+  let btn = document.createElement('button');
+  btn.className = "level-btn";
+  btn.textContent = "Niveau "+(i+1);
+  btn.onclick = () => {launchGame(i);};
+  levelGrid.appendChild(btn);
+}
+let homeDiv = document.getElementById('screen-home');
+let gameZone = document.getElementById('gameZone');
+let hudBar = document.getElementById('hud-bar');
+let winMsg = document.getElementById('winMsg');
+let touchControls = document.getElementById('touch-controls');
+let nextBtn = document.getElementById('nextBtn');
+function returnHome(){ gameZone.style.display="none"; homeDiv.style.display="block"; endGame(); }
+
+let renderer, scene, camera, light, platforms, player, currentLevel, gameOn, animationRef;
+// TIMER
+let levelStartTime = 0, lastTime = 0, displayTime = 0, timeAnim = 0;
+function formatTime(secs) { return secs.toFixed(2).replace('.',',') + " s"; }
+function showTime() {
+  if (!gameOn) return;
+  let now = performance.now();
+  displayTime = (now - levelStartTime)*0.001;
+  hudBar.innerHTML = "Niveau : " + (currentLevel+1) + "/" + nbLevels + "<br>⏱ Temps : <b>"+formatTime(displayTime)+"</b>";
+  timeAnim = requestAnimationFrame(showTime);
+}
+function stopTime() { cancelAnimationFrame(timeAnim); }
+
+function initGame(lvl){
+  if(renderer){ renderer.dispose(), renderer.domElement.remove();}
+  renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight); renderer.setClearColor(0x151c2b, 1);
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 400);
+  light = new THREE.DirectionalLight(0xffffff, 0.92);
+  light.position.set(10,55,35); scene.add(light);
+  document.getElementById('gameZone').appendChild(renderer.domElement);
+  platforms = []; currentLevel = lvl;
+  winMsg.style.display = "none"; nextBtn.style.display = "none";
+  for(let p of levelData[lvl]) addPlatform(...p);
+  player = { pos:new THREE.Vector3(spawnPoints[lvl].x, spawnPoints[lvl].y, spawnPoints[lvl].z),
+    velocity:new THREE.Vector3(), direction:spawnPoints[lvl].dir, onGround:false
+  };
+  window.onresize = ()=>{ camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight);}
+  gameOn=true;
+  if(window.innerWidth<900 || ('ontouchstart' in window)) touchControls.style.display="flex";
+  else touchControls.style.display="none";
+  // TIMER :
+  levelStartTime = performance.now();
+  showTime();
+}
+function addPlatform(x,y,z,w,h,d,type=1){
+  let mat = platformMats[type] || platformMats[1];
+  let mesh = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat);
+  mesh.position.set(x,y,z); mesh.userData = {w, h, d}; platforms.push(mesh); scene.add(mesh);
+}
+// Contrôles clavier et tactiles
+let keys = {};
+window.addEventListener('keydown', e => { keys[e.code]=true; });
+window.addEventListener('keyup', e => { keys[e.code]=false; });
+// Touch events
+function touchKey(key, state){
+  keys[key]=state;
+  setTimeout(()=>{keys[key]=false;},180); // auto-release (fluidité), sauf jump
+}
+document.getElementById('btn-left').ontouchstart = ()=>touchKey("ArrowLeft",true);
+document.getElementById('btn-right').ontouchstart = ()=>touchKey("ArrowRight",true);
+document.getElementById('btn-up').ontouchstart = ()=>touchKey("ArrowUp",true);
+document.getElementById('btn-down').ontouchstart = ()=>touchKey("ArrowDown",true);
+document.getElementById('btn-jump').ontouchstart = ()=>{
+  keys["Space"]=true; setTimeout(()=>{keys["Space"]=false;},350);
+};
+function updatePlayer(){
+  let moveSpeed=0.17, rotSpeed=0.05;
+  if(keys["ArrowLeft"]) player.direction += rotSpeed;
+  if(keys["ArrowRight"]) player.direction -= rotSpeed;
+  let forward=0; if(keys["ArrowUp"])forward=1;if(keys["ArrowDown"])forward=-1;
+  let dx=Math.sin(player.direction)*moveSpeed*forward; let dz=Math.cos(player.direction)*moveSpeed*forward;
+  if(keys["Space"] && player.onGround) {player.velocity.y=0.32; player.onGround=false;}
+  player.velocity.y-=0.018; player.pos.x+=dx; player.pos.z+=dz; player.pos.y+=player.velocity.y;
+  player.onGround=false;
+  for(const plat of platforms){
+    let px=player.pos.x, py=player.pos.y, pz=player.pos.z,dxp=Math.abs(px-plat.position.x),dzp=Math.abs(pz-plat.position.z);
+    if(dxp<plat.userData.w/2&&dzp<plat.userData.d/2){
+      let top=plat.position.y+plat.userData.h/2,bottom=py-0.5;
+      if(bottom>top-0.2&&bottom<top+0.22&&player.velocity.y<=0){player.pos.y=top+0.5;player.velocity.y=0;player.onGround=true;}
+    }
+  }
+  if(player.pos.y<-10) { stopTime(); winMsg.textContent = "Tu es tombé ! Clique pour recommencer ce niveau."; winMsg.style.display="block"; nextBtn.style.display="none"; gameOn=false; }
+  let fin=platforms[platforms.length-1];
+  let near=(Math.abs(player.pos.x-fin.position.x)<fin.userData.w/2&&Math.abs(player.pos.z-fin.position.z)<fin.userData.d/2&&Math.abs((player.pos.y-0.5)-(fin.position.y+fin.userData.h/2))<0.8);
+  if(near) {
+    gameOn=false; stopTime();
+    winMsg.textContent = (currentLevel+1===nbLevels?"Bravo ! Tu as fini tous les niveaux !":"Bravo ! Tu as fini ce niveau !") 
+      + "<br><b>Temps : "+formatTime(displayTime)+"</b>";
+    winMsg.style.display="block";
+    if (currentLevel+1 < nbLevels) {
+      nextBtn.style.display = "block";
+      nextBtn.onclick = ()=>{ launchGame(currentLevel+1); };
+    }
+  }
+}
+function gameLoop(){
+  if(gameOn) updatePlayer();
+  camera.position.set(player.pos.x, player.pos.y+0.3, player.pos.z);
+  let target = new THREE.Vector3(player.pos.x+Math.sin(player.direction),player.pos.y+0.3,player.pos.z+Math.cos(player.direction));
+  camera.lookAt(target); renderer.render(scene, camera);
+  animationRef=requestAnimationFrame(gameLoop);
+}
+function launchGame(lvl){
+  homeDiv.style.display="none"; gameZone.style.display="block";
+  initGame(lvl); if(animationRef) cancelAnimationFrame(animationRef);
+  gameLoop();
+  winMsg.onclick = function(){ if(!gameOn){ initGame(currentLevel); if(animationRef) cancelAnimationFrame(animationRef); gameOn=true; winMsg.style.display="none"; nextBtn.style.display="none"; gameLoop(); showTime(); } }
+}
+function endGame(){
+  if(renderer){ renderer.dispose(); renderer.domElement.remove(); }
+  renderer=undefined;scene=undefined;camera=undefined;platforms=[];player=undefined;animationRef&&cancelAnimationFrame(animationRef);winMsg.onclick=null;
+  nextBtn.style.display = "none"; stopTime();
+}
+  </script>
+</body>
+</html>
