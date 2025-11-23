@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Convertisseur d’unités - Sciences</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+    }
+    .top-banner {
+      background-color: #007BFF;
+      color: white;
+      padding: 18px 0 0 0;
+      font-size: 2rem;
+      letter-spacing: 1px;
+      font-weight: bold;
+    }
+    .nav-bar {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      background-color: #007BFF;
+      padding: 10px 0 18px 0;
+      margin: 0;
+    }
+    .nav-bar a {
+      color: white;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 500;
+      padding: 5px 18px;
+      border-radius: 12px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-bar a:hover {
+      background: #0057b8;
+      color: #fffbea;
+    }
+    .container {
+      background: white;
+      max-width: 520px;
+      margin: 35px auto 16px auto;
+      border-radius: 15px;
+      box-shadow: 0 2px 8px #bbb;
+      padding: 36px;
+      text-align: center;
+    }
+    .container h2 {
+      margin-bottom: 22px;
+      font-size: 1.5rem;
+      color: #007BFF;
+    }
+    .row {
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    select, input[type="number"] {
+      padding: 8px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1.5px solid #ccc;
+      margin-bottom: 8px;
+      min-width: 120px;
+    }
+    button {
+      padding: 8px 24px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #0057b8;
+    }
+    .result {
+      margin-top: 19px;
+      font-size: 1.2rem;
+      color: #222;
+      font-weight: bold;
+    }
+    .bottom-footer {
+      background-color: #333;
+      color: #eee;
+      padding: 16px 0;
+      text-align: center;
+      font-size: 1rem;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      box-shadow: 0 -1px 8px #bbb;
+    }
+    .page-padding { padding-bottom: 60px; }
+  </style>
+</head>
+<body>
+  <div class="top-banner">
+    Convertisseur d’unités - Sciences
+    <nav class="nav-bar">
+      <a href="index.html">Accueil</a>
+      <a href="apropos.html">À propos</a>
+    </nav>
+  </div>
+  <div class="page-padding">
+    <div class="container">
+      <h2>Convertisseur d’unités</h2>
+      <form id="convertForm" onsubmit="event.preventDefault(); convert();">
+        <div class="row">
+          <select id="category" onchange="updateUnits()">
+            <option value="length">Longueur</option>
+            <option value="mass">Masse</option>
+            <option value="volume">Volume</option>
+            <option value="temperature">Température</option>
+          </select>
+        </div>
+        <div class="row">
+          <input id="value" type="number" step="any" placeholder="Valeur à convertir" required>
+        </div>
+        <div class="row">
+          <select id="fromUnit"></select>
+          <span style="font-size:1.5rem;">→</span>
+          <select id="toUnit"></select>
+        </div>
+        <button type="submit">Convertir</button>
+        <div class="result" id="result"></div>
+      </form>
+    </div>
+  </div>
+  <div class="bottom-footer">
+    © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Comptenu : Perplexity (ia)
+  </div>
+  <script>
+    // Unités disponibles
+    const units = {
+      length: {
+        'mètre (m)': 1,
+        'centimètre (cm)': 0.01,
+        'kilomètre (km)': 1000,
+        'millimètre (mm)': 0.001,
+        'pouce (in)': 0.0254,
+        'pied (ft)': 0.3048,
+        'mile (mi)': 1609.34
+      },
+      mass: {
+        'kilogramme (kg)': 1,
+        'gramme (g)': 0.001,
+        'tonne (t)': 1000,
+        'milligramme (mg)': 0.000001,
+        'livre (lb)': 0.453592,
+        'once (oz)': 0.0283495
+      },
+      volume: {
+        'litre (L)': 1,
+        'millilitre (mL)': 0.001,
+        'centimètre cube (cm³)': 0.001,
+        'mètre cube (m³)': 1000,
+        'pinte (pt)': 0.473176,
+        'gallon (gal)': 3.78541
+      },
+      temperature: {
+        'Celsius (°C)': 'C',
+        'Fahrenheit (°F)': 'F',
+        'Kelvin (K)': 'K'
+      }
+    };
+
+    function updateUnits() {
+      const category = document.getElementById('category').value;
+      const fromUnit = document.getElementById('fromUnit');
+      const toUnit = document.getElementById('toUnit');
+      fromUnit.innerHTML = '';
+      toUnit.innerHTML = '';
+      for (let u in units[category]) {
+        let opt1 = document.createElement('option');
+        opt1.value = u;
+        opt1.text = u;
+        fromUnit.add(opt1);
+        let opt2 = document.createElement('option');
+        opt2.value = u;
+        opt2.text = u;
+        toUnit.add(opt2);
+      }
+    }
+
+    function convert() {
+      const category = document.getElementById('category').value;
+      let value = parseFloat(document.getElementById('value').value);
+      const from = document.getElementById('fromUnit').value;
+      const to = document.getElementById('toUnit').value;
+      let resultTxt = '';
+      if (category !== 'temperature') {
+        // Conversion via base (mètre, kg, litre)
+        let base = value * units[category][from];
+        let result = base / units[category][to];
+        resultTxt = value + ' ' + from + ' = ' + result + ' ' + to;
+      } else {
+        // Conversion température spécifique
+        resultTxt = value + ' ' + from + ' = ' + tempConvert(value, units[category][from], units[category][to]) + ' ' + to;
+      }
+      document.getElementById('result').textContent = resultTxt;
+    }
+
+    function tempConvert(val, from, to) {
+      let k;
+      // Toutes les conversions passent par Kelvin
+      if (from === 'C') k = val + 273.15;
+      else if (from === 'F') k = (val - 32) * 5 / 9 + 273.15;
+      else k = val;
+
+      if (to === 'C') return (k - 273.15).toFixed(2);
+      else if (to === 'F') return ((k - 273.15) * 9 / 5 + 32).toFixed(2);
+      else return k.toFixed(2);
+    }
+
+    // Initialisation au chargement
+    window.onload = updateUnits;
+  </script>
+</body>
+</html>
