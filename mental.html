@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Carte mentale interactive - Zoomable</title>
+  <script src="https://cdn.jsdelivr.net/npm/leader-line@1.0.7/leader-line.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+    }
+    .top-banner {
+      background-color: #007BFF;
+      color: white;
+      padding: 18px 0 0 0;
+      font-size: 2rem;
+      letter-spacing: 1px;
+      font-weight: bold;
+    }
+    .nav-bar {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      background-color: #007BFF;
+      padding: 10px 0 18px 0;
+      margin: 0;
+    }
+    .nav-bar a {
+      color: white;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 500;
+      padding: 5px 18px;
+      border-radius: 12px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-bar a:hover {
+      background: #0057b8;
+      color: #fffbea;
+    }
+    .container {
+      background: white;
+      max-width: 740px;
+      margin: 35px auto 16px auto;
+      border-radius: 18px;
+      box-shadow: 0 2px 14px #bbb;
+      padding: 35px 22px 30px 22px;
+      text-align: center;
+    }
+    .container h2 {
+      margin-bottom: 10px;
+      font-size: 1.5rem;
+      color: #007BFF;
+    }
+    .instructions {
+      background: #e7f3ff;
+      border-left: 7px solid #007BFF;
+      padding: 15px 20px;
+      margin-bottom: 20px;
+      text-align: left;
+      border-radius: 8px;
+      font-size: 1.08rem;
+    }
+    .row {
+      margin-bottom: 11px;
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    input, select {
+      padding: 8px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1.4px solid #ccc;
+      margin-bottom: 7px;
+      min-width: 120px;
+    }
+    .zoom-controls {
+      margin: 7px auto 0 auto;
+      text-align: right;
+      width: 96%;
+      display: flex;
+      justify-content: flex-end;
+      gap: 7px;
+    }
+    .zoom-btn {
+      background:#007BFF;
+      color:white;
+      border:none;
+      border-radius:11px;
+      font-weight:bold;
+      font-size:1.2em;
+      width:36px; height:36px;
+      cursor:pointer;
+      box-shadow: 0 1px 4px #007BFF22;
+      transition: background 0.17s;
+    }
+    .zoom-btn:active { background: #0057b8; }
+    .map-area {
+      position: relative;
+      background: #f7fbff;
+      min-height: 420px;
+      min-width: 340px;
+      overflow: auto;
+      border-radius: 17px;
+      box-shadow: 0 1.2px 8px #b3d2f7;
+      margin: 0 auto 10px auto;
+      border: 2px solid #b7dbf7;
+      transition: height 0.2s;
+      touch-action: none;
+    }
+    .map-inner {
+      position: absolute;
+      left:0; top:0; width:100%; height:100%;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+    .node {
+      position: absolute;
+      min-width: 120px;
+      padding: 13px 15px;
+      border-radius: 21px;
+      background: #dbefff;
+      border: 2px solid #007bff77;
+      color: #1d3b60;
+      font-weight: bold;
+      cursor: move;
+      text-align:center;
+      box-shadow: 0 1px 7px #007BFF22;
+      user-select: none;
+      transition: box-shadow 0.2s;
+      z-index: 1;
+    }
+    .node.root {
+      background: #007BFF;
+      color: #fff;
+      border: 3px solid #0057b8;
+      font-size: 1.17rem;
+    }
+    .btn-mini {
+      font-size: 0.94em;
+      background: #e44;
+      color: #fff;
+      border-radius: 8px;
+      border: none;
+      padding: 2px 8px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    .btn-mini:hover { background: #a10; }
+    .bottom-footer {
+      background-color: #333;
+      color: #eee;
+      padding: 16px 0;
+      text-align: center;
+      font-size: 1rem;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      box-shadow: 0 -1px 8px #bbb;
+    }
+    .page-padding { padding-bottom: 60px; }
+    .notification {
+      color: #007BFF;
+      margin: 8px auto 8px auto;
+      font-weight: 500;
+      font-size: 1rem;
+      letter-spacing: .1px;
+      min-height: 18px;
+    }
+    @media (max-width: 900px) {.container {max-width: 99vw;}}
+    @media (max-width: 600px) {
+      .container { padding: 7vw 2vw; }
+      .map-area { min-height:240px; }
+      .node { min-width:77px; font-size: 0.94rem;}
+    }
+  </style>
+</head>
+<body>
+  <div class="top-banner">
+    Carte mentale interactive
+    <nav class="nav-bar">
+      <a href="../index.html">Accueil</a>
+      <a href="../apropos.html">À propos</a>
+    </nav>
+  </div>
+  <div class="page-padding">
+    <div class="container">
+      <h2>Carte mentale interactive avec zoom</h2>
+      <div class="instructions">
+        <b>Instructions :</b>
+        <ul>
+          <li>Ajoute une idée principale (« racine »), puis relie-lui des sous-idées.</li>
+          <li>Déplace les bulles où tu veux. Zoome/dézoome avec les boutons <b>+</b>/<b>-</b> ou en pincant l’écran.</li>
+          <li>Les fichiers de liaison restent visibles même en zoom.</li>
+          <li>Supprime une idée (et ses sous-idées) avec « X ». Capture d’écran : facile à partager ou intégrer dans un exposé !</li>
+        </ul>
+      </div>
+      <form id="ideaForm" onsubmit="event.preventDefault(); addNode();">
+        <div class="row">
+          <input type="text" id="nodeText" placeholder="Idée ou mot-clé" maxlength="46" required>
+          <select id="parentSelect"></select>
+          <button type="submit">Ajouter l'idée</button>
+        </div>
+      </form>
+      <div class="notification" id="notif"></div>
+      <div class="zoom-controls">
+        <button class="zoom-btn" onclick="zoomMap(1.25)" title="Zoomer">+</button>
+        <button class="zoom-btn" onclick="zoomMap(0.8)" title="Dézoomer">-</button>
+      </div>
+      <div class="map-area" id="mapArea" style="height:410px;">
+        <div class="map-inner" id="mapInner"></div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-footer">
+    © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Comptenu : Perplexity (ia)
+  </div>
+  <script>
+    let nodes = [];
+    let links = [];
+    let nodeId = 0;
+    let zoom = 1;
+
+    function getSiblings(parentId) {
+      return nodes.filter(n=>n.parent==parentId);
+    }
+
+    function addNode() {
+      const text = document.getElementById('nodeText').value.trim();
+      const parent = document.getElementById('parentSelect').value;
+      if (!text) return;
+
+      let nParent = nodes.find(n=>n.id==parent)||null;
+      let siblings = getSiblings(parent);
+      let childCount = siblings.length;
+      const mapW = 650, mapH = 380;
+      let x, y;
+
+      if (!nParent) { // Racine = centre
+        x = mapW/2+Math.random()*20-10;
+        y = mapH/2+Math.random()*20-10;
+      } else {
+        // dispersion en cercle autour du parent
+        let r = 135 + 30*childCount;
+        // Corrige le bug du "collé au coin" pour le premier enfant : place-le vers la droite du parent (angle=0)
+        let angle;
+        if(childCount === 0) {
+          angle = 0;
+        } else {
+          angle = (2*Math.PI/(siblings.length+1)*(childCount));
+        }
+        x = nParent.x + r * Math.cos(angle);
+        y = nParent.y + r * Math.sin(angle);
+      }
+      // Anti-collisions :
+      const radius = 70;
+      let collide;
+      for(let tries=0; tries<30; tries++) {
+        collide = nodes.some(n=>Math.hypot(x-n.x,y-n.y)<radius);
+        if(!collide) break;
+        x += 20-(Math.random()*40); y += 20-(Math.random()*40);
+      }
+      const newNode = {id: nodeId++, text, x, y, parent: parent==='' ? null : parseInt(parent)};
+      nodes.push(newNode);
+      updateParentSelect();
+      renderNodes();
+      notif('Idée ajoutée !');
+      document.getElementById('nodeText').value = '';
+    }
+
+    function updateParentSelect() {
+      const select = document.getElementById('parentSelect');
+      select.innerHTML = '';
+      if(nodes.length==0){
+        let opt=document.createElement('option');
+        opt.value = ''; opt.textContent = '— Racine —';
+        select.append(opt);
+      } else {
+        nodes.forEach(n => {
+          let opt = document.createElement('option');
+          opt.value = n.id;
+          opt.textContent = n.text;
+          select.append(opt);
+        });
+      }
+    }
+
+    function renderNodes() {
+      const inner = document.getElementById('mapInner');
+      inner.innerHTML = '';
+      // Nettoie les anciens liens
+      links.forEach(l => {if(l.remove) l.remove(); });
+      links = [];
+      nodes.forEach(n=>{
+        let div = document.createElement('div');
+        div.className = 'node' + (n.parent===null?' root':'');
+        div.innerHTML = n.text + ` <button class="btn-mini" onclick="delNode(${n.id})" title="Supprimer">X</button>`;
+        div.style.left = (n.x*zoom)+'px';
+        div.style.top = (n.y*zoom)+'px';
+        div.style.transform = `scale(${zoom})`;
+        div.style.transformOrigin = "top left";
+        div.id = 'node'+n.id;
+        inner.appendChild(div);
+        dragify(div, n);
+      });
+      setTimeout(drawAllLinks,20);
+    }
+
+    function drawAllLinks() {
+      nodes.forEach(n=>{
+        if(n.parent!==null 
+           && document.getElementById('node'+n.id) 
+           && document.getElementById('node'+n.parent)) {
+          links.push(new LeaderLine(
+            document.getElementById('node'+n.parent),
+            document.getElementById('node'+n.id),
+            {color: "#007BFF", size:2.8, path:'fluid', startSocket:'auto',endSocket:'auto',endPlug:'disc'}
+          ));
+        }
+      });
+    }
+
+    function dragify(element, n) {
+      let offsetX, offsetY, dragging = false;
+      element.onmousedown = function(e){
+        dragging = true;
+        offsetX = e.clientX - n.x*zoom;
+        offsetY = e.clientY - n.y*zoom;
+        element.style.zIndex = 10;
+        document.onmousemove = function(e2){
+          if(!dragging) return;
+          n.x = (e2.clientX - offsetX)/zoom;
+          n.y = (e2.clientY - offsetY)/zoom;
+          renderNodes();
+        };
+        document.onmouseup = function(){ dragging=false; element.style.zIndex = 1; document.onmousemove=null;};
+      };
+      element.ontouchstart = function(e){
+        dragging = true;
+        const touch=e.touches[0];
+        offsetX = touch.clientX - n.x*zoom;
+        offsetY = touch.clientY - n.y*zoom;
+        element.style.zIndex = 10;
+        document.ontouchmove = function(e2){
+          if(!dragging) return;
+          const t2=e2.touches[0];
+          n.x = (t2.clientX - offsetX)/zoom;
+          n.y = (t2.clientY - offsetY)/zoom;
+          renderNodes();
+        };
+        document.ontouchend = function(){ dragging=false; element.style.zIndex = 1; document.ontouchmove=null;};
+      };
+    }
+
+    function delNode(id) {
+      function removeChildren(pid) {
+        nodes.filter(n=>n.parent===pid).forEach(n=>{removeChildren(n.id)});
+        nodes = nodes.filter(n=>n.id!==pid);
+      }
+      removeChildren(id);
+      updateParentSelect();
+      renderNodes();
+      notif('Idée supprimée.');
+    }
+    function notif(msg) {
+      const el = document.getElementById('notif');
+      el.textContent = msg;
+      setTimeout(()=>{el.textContent='';}, 1650);
+    }
+    function zoomMap(factor) {
+      zoom = Math.max(0.5, Math.min(2.3, zoom*factor));
+      renderNodes();
+    }
+    // Mobile pinch zoom
+    let lastDist = null;
+    document.addEventListener('touchmove', function(e) {
+      const area = document.getElementById('mapArea');
+      if(e.touches.length==2 && area.contains(e.target)) {
+        let dx = e.touches[0].clientX-e.touches[1].clientX;
+        let dy = e.touches[0].clientY-e.touches[1].clientY;
+        let dist = Math.sqrt(dx*dx+dy*dy);
+        if(lastDist) {
+          let delta = dist-lastDist;
+          if(Math.abs(delta)>8) { zoomMap(1+delta/170); }
+        }
+        lastDist=dist;
+      }
+    },{passive:false});
+    document.addEventListener('touchend',()=>{lastDist=null;});
+
+    window.onload = ()=>{
+      updateParentSelect();
+    };
+  </script>
+</body>
+</html>
