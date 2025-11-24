@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Masterclass NSI : Représentation des données (interactif)</title>
+  <meta name="description" content="Cours complet et interactif pour maîtriser la représentation des types de base en NSI Première.">
+  <style>
+    body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+    header { background: linear-gradient(90deg,#eef4fb,#fff9e7 80%); color: #243552; padding: 30px 0 12px; text-align: center;}
+    header h1 { font-size: 2.3rem; margin: 0 0 10px; color: #1877f2;}
+    header .intro { font-size: 1rem;}
+    main { max-width: 950px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
+    h2 { color: #1877f2; margin-top: 32px;}
+    h3 { color: #f5a623; margin-top: 22px;}
+    ul, ol { margin-left: 1.4em;}
+    .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+    .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
+    .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+    .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+    .error {background: #ffeaea; border-left: 7px solid #e06359;}
+    .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+    .anecdote {background: #e7ffe7; border-left: 7px solid #167c2b; font-style: italic; margin: 1em 0; padding: 12px 17px; border-radius: 6px;}
+    .source { font-size: 0.9em; color: #999; text-align: right;}
+    button, .btn-expl {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 14px; cursor: pointer; margin-right: 8px; margin-top: 7px; transition: background 0.2s;}
+    button:hover, .btn-expl:hover { background: #145ac3;}
+    #schema { margin: 2em auto 1em; display: block; background: #f7f9fb; border-radius: 8px; border: 1px solid #d1d5db;}
+    .info-bulle {display:none;position: absolute; background:#fffefc; border:1px solid #243552; border-radius:5px;padding:10px;font-size:1rem;z-index:10; box-shadow: 0 3px 12px rgba(24,119,242,0.08);}
+    .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+    #desc-schema { background: #e7f3f7; border-radius: 6px; color: #1877f2; font-weight: bold; padding: 10px; text-align: center; min-height: 25px; margin-bottom: 10px;}
+    label { margin-right: 12px;}
+    table { border-collapse:collapse; margin: 10px auto;}
+    th, td { border:1px solid #1877f2; padding:7px 15px; text-align:center;}
+    th { background:#eef4fb;}
+    td.type { font-weight:bold; }
+    @media (max-width: 900px) { main { padding: 12px 2px; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Masterclass NSI : Représentation des données (interactif)</h1>
+  <div class="intro">Toute la théorie + la pratique interactive : types, binaire, erreurs, quiz et astuces NSI !</div>
+</header>
+<main>
+  <section>
+    <h2>📚 Cours complet – Représentation des données en NSI</h2>
+    <p>
+      L’ordinateur manipule des valeurs selon leur <b>type</b>, pour savoir comment les stocker, calculer ou comparer :
+    </p>
+    <table>
+      <tr>
+        <th>Type</th>
+        <th>Exemples</th>
+        <th>Codage</th>
+        <th>Particularité</th>
+      </tr>
+      <tr>
+        <td class="type">Entier<br>(int)</td>
+        <td>7, -42, 2025</td>
+        <td>Binaire (base 2)<br>Ex : 13 → <b>1101</b></td>
+        <td>Valeurs sans virgule, positives ou négatives</td>
+      </tr>
+      <tr>
+        <td class="type">Réel<br>(float)</td>
+        <td>1.5, -0.01, 3.14</td>
+        <td>Binaire (norme IEEE754)<br>Arrondi possible</td>
+        <td>À virgule (décimale ou scientifique)</td>
+      </tr>
+      <tr>
+        <td class="type">Booléen<br>(bool)</td>
+        <td>True (Vrai), False (Faux)</td>
+        <td>0 ou 1 (1 bit ou 1 octet)</td>
+        <td>Deux valeurs pour une logique</td>
+      </tr>
+      <tr>
+        <td class="type">Caractère<br>(char)</td>
+        <td>'A', '!', '5'</td>
+        <td>ASCII (7 bits), Unicode (8/16/32 bits)</td>
+        <td>1 symbole (lettre, chiffre, ponctuation…)</td>
+      </tr>
+    </table>
+    <p>
+      <b>En mémoire</b>, tout est transformé en binaire — chaque type a sa façon d’être codé :<br>
+      - <b>Entier</b> : nombre, ex <code>25</code> en binaire = <code>11001</code><br>
+      - <b>Réel</b> : nombre flottant, arrondi possible (ex : 0.1 n’est pas exactement stocké)<br>
+      - <b>Booléen</b> : True/False → 1 ou 0<br>
+      - <b>Caractère</b> : chaque lettre a son code, ex : “A” = 65 en ASCII (= <code>01000001</code> en binaire)
+    </p>
+    <p>
+      <b>Attention :</b> Un chiffre et un caractère n’ont pas le même codage : "1" (ASCII 49) ≠ 1 (entier binaire 00000001)<br>
+      Les conversions et le choix du type sont essentiels pour éviter les bugs !
+    </p>
+    <ul>
+      <li>Un entier sur n bits : valeurs de <b>-2<sup>n-1</sup></b> à <b>2<sup>n-1</sup>-1</b> (ordinateur = limite de mémoire)</li>
+      <li>Un octet : 8 bits = 256 combinaisons possibles</li>
+    </ul>
+    <p>
+      <b>En NSI</b>, savoir <i>représenter</i>, <i>convertir</i> et <i>reconnaître</i> le bon type est indispensable pour tous les chapitres (algos, programmation, sécurité).
+    </p>
+  </section>
+
+  <!-- Toutes les sections interactives et enrichies : -->
+  <section>
+    <h2>📋 Fiche synthèse interactive</h2>
+    <ul id="ul-synthese">
+      <li><b>Qu’est-ce qu’un type de donnée ?</b>
+        <button class="btn-expl" onclick="afficheSynthese('typedonnee')">Voir explication</button>
+        <span id="syn-typedonnee" style="display:none;color:#167c2b;">
+          Catégorie définissant la nature d’une valeur : nombre, texte, logique. L’ordinateur ne les manipule pas de la même façon !
+        </span>
+      </li>
+      <li>
+        <b>Dans quel alphabet sont codés les caractères ?</b>
+        <button class="btn-expl" onclick="afficheSynthese('ascii')">Réponse !</button>
+        <span id="syn-ascii" style="display:none;color:#f5a623;">
+          ASCII pour les premiers ordinateurs (127 symboles), Unicode aujourd’hui (plus de 140 000 caractères !)
+        </span>
+      </li>
+      <li>
+        <b>À quoi sert le booléen en NSI ?</b>
+        <button class="btn-expl" onclick="afficheSynthese('bool')">Clique ici</button>
+        <span id="syn-bool" style="display:none;color:#e06359;">
+          À représenter des situations vraies/faux. Exemples : “est-majeur ?” ou “mot de passe valide ?”
+        </span>
+      </li>
+      <li>
+        <b>Défi : Combien de valeurs représente 4 bits ?</b>
+        <button class="btn-expl" onclick="afficheSynthese('4bits')">Affiche la solution</button>
+        <span id="syn-4bits" style="display:none;color:#243552;">
+          16 valeurs différentes (de 0000 à 1111 en binaire).
+        </span>
+      </li>
+      <li>
+        <b>Peux-tu convertir le nombre 13 en binaire ? (Réponse ci-dessous)</b>
+        <button class="btn-expl" onclick="afficheSynthese('13b')">Afficher</button>
+        <span id="syn-13b" style="display:none;color:#1877f2;">
+          1101
+        </span>
+      </li>
+    </ul>
+    <div>
+      <button onclick="quizSynthese()">Quiz surprise</button>
+      <span class="reponse" id="quiz-synthese-res"></span>
+    </div>
+  </section>
+  <section>
+    <h2>💾 Schéma interactif “en mémoire”</h2>
+    <canvas id="schema" width="900" height="270"></canvas>
+    <div id="desc-schema">Survole chaque case pour comprendre la représentation en mémoire d'un entier, réel, booléen ou caractère !</div>
+    <div id="info-bulle" class="info-bulle"></div>
+  </section>
+  <section class="box box-exo">
+    <h2>💡 Exercices interactifs</h2>
+    <p>Convertis en binaire le nombre 21 :
+      <button onclick="afficheReponseNSI1()">Voir la correction</button>
+    </p>
+    <div class="reponse" id="exo-reponse-nsi1" style="display:none;">
+      21 en binaire = 10101
+    </div>
+    <p>
+      Quel code ASCII correspond à la lettre "C" ?
+      <button onclick="document.getElementById('exo2-reponse-nsi').style.display='block';">Voir la correction</button>
+    </p>
+    <div class="reponse" id="exo2-reponse-nsi" style="display:none;">
+      67 (en décimal), soit 01000011 en binaire.
+    </div>
+  </section>
+  <section class="quiz">
+    <h2>🎯 Quiz rapide</h2>
+    <p>Quel type de données peut valoir “True” ou “False” ?</p>
+    <button onclick="quizNSI(0)">Booléen</button>
+    <button onclick="quizNSI(1)">Réel</button>
+    <button onclick="quizNSI(2)">Caractère</button>
+    <div class="reponse" id="rep-quiz-nsi"></div>
+    <p>Combien de valeurs peut-on représenter avec 8 bits ?</p>
+    <button onclick="quizNSI2(0)">16</button>
+    <button onclick="quizNSI2(1)">128</button>
+    <button onclick="quizNSI2(2)">256</button>
+    <div class="reponse" id="rep-quiz-nsi2"></div>
+  </section>
+  <section class="box-important">
+    <h2>🌍 Applications concrètes</h2>
+    <ul>
+      <li><b>Systèmes numériques :</b> Calculatrices, PC, téléphones codent tout en binaire, même les photos ou textes !</li>
+      <li><b>Stockage :</b> Disques durs, clés USB : tout repose sur le codage des valeurs de base.</li>
+      <li><b>Programmation :</b> Les types et conversions sont essentiels pour éviter des bugs (ex : division entière vs flottante).</li>
+    </ul>
+  </section>
+  <section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+      <li>Confondre le chiffre “1” (nombre) et le caractère “1” (texte).</li>
+      <li>Penser qu’un réel peut être représenté exactement comme une fraction mathématique (il y a un arrondi, ex : 0,1).</li>
+      <li>Oublier que binaire ≠ décimal : 10 en binaire = 2 en base 10.</li>
+      <li>Croire que tous les caractères ASCII sont affichables (32 premiers codes = caractères de contrôle !).</li>
+    </ul>
+  </section>
+  <section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <b>Entier :</b> nombre sans virgule (ex : 5, -42, 2025)<br>
+    <b>Réel :</b> nombre à virgule, flottant (ex : 3.14, -0.01)<br>
+    <b>Booléen :</b> valeur logique (True/Vrai ou False/Faux)<br>
+    <b>Caractère :</b> symbole unique du texte (ex : 'A', '?', '4')<br>
+    <b>Bit :</b> plus petite unité d’information binaire (0 ou 1)<br>
+    <b>Octet :</b> groupe de 8 bits (256 valeurs différentes)
+  </section>
+  <section class="rubrique">
+    <h3>📖 Anecdotes et histoire</h3>
+    <ul>
+      <li>Le mot “bit” vient de “Binary digIT”.</li>
+      <li>Le code ASCII a été inventé en 1963 pour les téléscripteurs !</li>
+      <li>Le code binaire remonte à Leibniz au XVIIᵉ siècle.</li>
+      <li>L’Unicode permet d’écrire en presque toutes les langues du monde sur ton PC !</li>
+    </ul>
+    <div class="source">Source : NSI, Informatique générale</div>
+  </section>
+  <section class="anecdote">
+    <b>Astuce</b> : “Booléen” vient du mathématicien George Boole ! 
+    “101” = 5 ; “1101” = 13… Entraîne-toi à compter en binaire pour briller en NSI.
+  </section>
+  <section>
+    <h2>💡 Méthodologie clé pour le contrôle</h2>
+    <ul>
+      <li>Reconnais à chaque fois le bon type pour chaque valeur (ex : âge = entier, prix = réel, saisie ‘O/N’ = caractère ou booléen).</li>
+      <li>Sache représenter un nombre ou caractère en binaire et donner la plage de valeurs pour n bits.</li>
+      <li>Justifie pourquoi le choix du type est important (ex : éviter les bugs d’arrondi ou d’affichage).</li>
+      <li>Sois capable d’expliquer comment une info “de la vraie vie” devient une valeur binaire en mémoire.</li>
+      <li>Apprends et vérifie la table ASCII des caractères classiques.</li>
+      <li>Fais attention à la différence entre <b>texte</b> et <b>nombre</b> dans un programme !</li>
+    </ul>
+  </section>
+</main>
+<script>
+function afficheSynthese(id) {
+  var el = document.getElementById("syn-"+id);
+  if (el.style.display==="none") { el.style.display="inline"; }
+  else { el.style.display="none"; }
+}
+// Quiz synthèse
+function quizSynthese() {
+  let qs = [
+    {q:"Comment s’appelle le plus petit élément en binaire ?", rep:"bit"},
+    {q:"Vrai ou faux : 1111 en binaire = 15 en décimal", rep:"vrai"},
+    {q:"Quel est le code ASCII de 'A' ?", rep:"65"},
+    {q:"Combien de bits dans un octet ?", rep:"8"}
+  ];
+  let idx = Math.floor(Math.random()*qs.length);
+  let ask = qs[idx];
+  let reponse = prompt(ask.q);
+  let result = (reponse && reponse.toLowerCase().includes(ask.rep.toLowerCase())) ?
+    "Bravo ! " + ask.rep : "Raté. Réponse : " + ask.rep;
+  document.getElementById("quiz-synthese-res").textContent = result;
+}
+
+// Schéma interactif mémoire
+const schemaData = [
+  {x:90, y:200, w:170, h:41, zone:"Entier",    bulle:"Entier (int) — Exemples : 2, -7, 123<br>Passe en binaire (ex: 123 = 01111011 sur 8 bits)", color:"#f5a623"},
+  {x:310, y:60, w:200, h:47, zone:"Réel",     bulle:"Réel (float) — Ex : 3,14 ou 2.5<br>Codé en décimal puis binaire (norme IEEE754). Il y a un arrondi.", color:"#79acee"},
+  {x:600, y:100, w:110, h:41, zone:"Booléen", bulle:"Booléen (bool) — True/Vrai ou False/Faux<br>Souvent 1 bit (0 ou 1) mais parfois codé sur 1 octet pour simplifier", color:"#167c2b"},
+  {x:750, y:180, w:90, h:41,  zone:"Caractère", bulle:"Caractère (char) — Lettre, chiffre, ponctuation<br>Codé en ASCII (7 bits) puis Unicode (16 et 32 bits)", color:"#e06359"}
+]
+
+var canvas = document.getElementById("schema");
+var ctx = canvas.getContext("2d");
+function drawSchema() {
+  ctx.clearRect(0,0,900,270);
+  ctx.font="17px Arial";
+  ctx.fillStyle="#243552";
+  ctx.fillText("Mémoire vive (RAM) - chaque case contient un type de donnée, encodé en binaire :",200,40);
+  // Zones-types
+  for(let d of schemaData){
+    ctx.fillStyle=d.color; ctx.globalAlpha=0.19;
+    ctx.fillRect(d.x,d.y,d.w,d.h); 
+    ctx.globalAlpha=1.0;
+    ctx.strokeStyle="#333"; ctx.lineWidth=2;
+    ctx.strokeRect(d.x,d.y,d.w,d.h);
+    ctx.fillStyle="#243552"; ctx.font="bold 19px Arial";
+    ctx.fillText(d.zone, d.x+18, d.y+28);
+  }
+  // Bits en-dessous (visu binaire)
+  ctx.font="17px Courier New";
+  for(let k=0;k<8;k++){
+    ctx.fillStyle="#243552";
+    ctx.fillText("0",310+28*k,120);
+  }
+  for(let l=0;l<8;l++){
+    ctx.fillStyle="#243552";
+    ctx.fillText("1",90+18*l,244);
+  }
+}
+drawSchema();
+canvas.addEventListener('mousemove', function(e){
+  var rect = canvas.getBoundingClientRect();
+  var x = e.clientX - rect.left, y = e.clientY - rect.top;
+  var bulle = document.getElementById("info-bulle");
+  let found = false;
+  for(let d of schemaData){
+    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
+      bulle.style.left = (rect.left + d.x + 33) + "px";
+      bulle.style.top = (rect.top + d.y + 10) + "px";
+      bulle.style.display = "block";
+      bulle.innerHTML = d.bulle;
+      found=true;
+      break;
+    }
+  }
+  if(!found) bulle.style.display="none";
+});
+canvas.addEventListener('click', function(e){
+  var rect = canvas.getBoundingClientRect();
+  var x = e.clientX - rect.left, y = e.clientY - rect.top;
+  for(let d of schemaData){
+    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
+      alert(d.bulle.replace(/<br>/g,"\n"));
+      break;
+    }
+  }
+});
+// Exos correction et quiz
+function afficheReponseNSI1() {
+  document.getElementById("exo-reponse-nsi1").style.display = "block";
+}
+function quizNSI(rep) {
+  let rq = document.getElementById("rep-quiz-nsi");
+  rq.textContent = (rep === 0) ? "Bonne réponse ! Le booléen ne prend que deux valeurs." : "Incorrect.";
+}
+function quizNSI2(rep) {
+  let rq = document.getElementById("rep-quiz-nsi2");
+  rq.textContent = (rep === 2) ? "Bravo : 8 bits = 2^8 = 256 valeurs différentes." : "Raté. Essaie encore !";
+}
+</script>
+</body>
+</html>

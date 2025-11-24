@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Masterclass JavaScript — Cours ultra détaillé & interactif</title>
+  <meta name="description" content="Apprends tout sur JavaScript : variables, types, fonctions, objets, DOM, événements, Asynchrone, ES6+, projets, quiz et exercices." />
+  <style>
+    body {
+      background: #f0f4f8;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #222;
+      margin: 0;
+      line-height: 1.7;
+    }
+    header {
+      background: linear-gradient(90deg, #d0e7ff, #aad4ff);
+      color: #004080;
+      padding: 40px 0 25px;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 3rem;
+      margin: 0 0 15px;
+      color: #003366;
+    }
+    header .intro {
+      font-size: 1.3rem;
+      font-weight: 700;
+      max-width: 850px;
+      margin: 0 auto;
+    }
+    main {
+      max-width: 980px;
+      background: #fff;
+      margin: 50px auto 30px;
+      padding: 45px 55px;
+      border-radius: 20px;
+      box-shadow: 0 12px 40px rgba(0, 51, 102, 0.12);
+    }
+    h2 {
+      color: #003366;
+      margin-top: 50px;
+      border-bottom: 4px solid #aad4ff;
+      padding-bottom: 10px;
+      font-size: 2.5rem;
+    }
+    h3 {
+      color: #0059b3;
+      margin-top: 40px;
+      font-size: 1.8rem;
+    }
+    ul, ol {
+      margin-left: 2.5em;
+      margin-bottom: 2em;
+      font-size: 1.15rem;
+    }
+    .infos, .box-exo, .lexique, .error, .anecdote {
+      padding: 22px 32px;
+      border-radius: 10px;
+      margin: 2em 0;
+      font-size: 1.15rem;
+    }
+    .infos {
+      background: #e4f0ff;
+      border-left: 8px solid #3399ff;
+      color: #003366;
+    }
+    .box-exo {
+      background: #e9f2ff;
+      border-left: 9px solid #0066cc;
+      color: #004a99;
+    }
+    .box-important {
+      background: #fff9e6;
+      border-left: 9px solid #ffaa33;
+    }
+    .error {
+      background: #ffdddd;
+      border-left: 9px solid #cc3300;
+      color: #a80000;
+    }
+    .lexique {
+      background: #cce0ff;
+      border-left: 9px solid #0059b3;
+      padding: 25px;
+      margin: 2.5em 0;
+    }
+    .anecdote {
+      background: #b3cfff;
+      border-left: 9px solid #003366;
+      font-style: italic;
+      margin: 2.5em 0;
+      padding: 22px 30px;
+      color: #003366;
+    }
+    code {
+      background: #d9eaff;
+      padding: 0 7px;
+      border-radius: 6px;
+      font-family: 'Consolas', monospace;
+      font-size: 1.1rem;
+    }
+    pre {
+      background: #d9eaff;
+      padding: 22px;
+      border-radius: 10px;
+      overflow-x: auto;
+      font-family: 'Consolas', monospace;
+      margin: 1.2em 0 2.8em;
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
+    button, .btn-expl {
+      background: #0059b3;
+      color: white;
+      border: none;
+      font-weight: 800;
+      border-radius: 9px;
+      padding: 12px 22px;
+      cursor: pointer;
+      margin-right: 14px;
+      margin-top: 14px;
+      transition: background-color 0.3s ease;
+      font-size: 1.1rem;
+    }
+    button:hover, .btn-expl:hover {
+      background: #003d80;
+    }
+    .reponse {
+      margin-top: 1.3em;
+      font-weight: 800;
+      color: #003366;
+      text-align: center;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Masterclass JavaScript — Cours ultra complet & interactif</h1>
+  <div class="intro">Découvre tout sur JavaScript, du plus simple au plus avancé : variables, fonctions, objets, manipulation DOM, événements, asynchrone, ES6+, projets et exercices.</div>
+</header>
+<main>
+
+  <section>
+    <h2>💡 Qu’est-ce que JavaScript ?</h2>
+    <ul>
+      <li><b>JavaScript</b> est un langage de programmation interprété principalement côté client, intégré dans tous les navigateurs modernes.</li>
+      <li>Il permet de rendre une page web dynamique et interactive, par exemple en modifiant le contenu, en réagissant aux actions utilisateur ou en communiquant avec un serveur.</li>
+      <li>JavaScript est aujourd’hui aussi utilisé côté serveur (Node.js), dans les applications mobiles, le développement de jeux, etc.</li>
+      <li>Il est souvent utilisé conjointement avec HTML pour la structure et CSS pour le style, formant les bases du web moderne.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>🔤 Variables, types et valeurs en JavaScript</h2>
+    <p>JavaScript gère plusieurs types de données différents, stockés dans des variables déclarées avec <code>let</code>, <code>const</code> ou <code>var</code>.</p>
+    <ul>
+      <li><b>let</b> : variable mutable (modifiable), préférée actuellement.</li>
+      <li><b>const</b> : constante, variable non modifiable après assignation.</li>
+      <li><b>var</b> : ancienne déclaration, à éviter car moins stricte.</li>
+    </ul>
+    <p>Types de base :</p>
+    <ul>
+      <li><code>number</code> (entiers et décimaux),</li>
+      <li><code>string</code> (texte),</li>
+      <li><code>boolean</code> (true/false),</li>
+      <li><code>null</code> (valeur vide volontaire),</li>
+      <li><code>undefined</code> (valeur non définie),</li>
+      <li><code>object</code> (collections d’éléments).</li>
+    </ul>
+    <pre><code>let age = 25;
+const nom = "Alice";
+var estActif = true;
+let montant = 15.75;
+</code></pre>
+    <div class="infos">
+      <p>À la différence de Python, JavaScript est faiblement typé : tu peux changer le type d’une variable à tout moment. Cela demande de faire attention aux conversions implicites.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>⚖️ Opérateurs et expressions</h2>
+    <p>Les opérateurs servent à faire des calculs ou comparaisons.</p>
+    <ul>
+      <li><b>Opérateurs arithmétiques :</b> <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code>, <code>**</code> (puissance).</li>
+      <li><b>Opérateurs de comparaison :</b> <code>==</code>, <code>===</code>, <code>!=</code>, <code>!==</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>.</li>
+      <li><b>Opérateurs logiques :</b> <code>&&</code> (et), <code>||</code> (ou), <code>!</code> (non).</li>
+    </ul>
+    <pre><code>let x = 10 + 5;
+let estEgal = (x === 15);
+let estVrai = (true && false); // retourne false
+</code></pre>
+  </section>
+
+  <section>
+    <h2>🔀 Structures de contrôle : conditions et boucles</h2>
+    <p>Le contrôle du flux permet d'exécuter des instructions selon des conditions ou en boucle.</p>
+    <ul>
+      <li><b>if / else if / else :</b> exécute un bloc selon qu'une condition est vraie ou non.</li>
+      <li><b>switch :</b> alternative élégante à plusieurs conditions <code>if</code>.</li>
+      <li><b>while :</b> boucle tant qu’une condition est vraie.</li>
+      <li><b>do...while :</b> boucle au moins une fois avant de tester la condition.</li>
+      <li><b>for :</b> boucle avec compteur d’itérations précis.</li>
+      <li><b>for...in / for...of :</b> boucles spécialisées pour objets et collections.</li>
+    </ul>
+    <pre><code>if (age &gt;= 18) {
+  console.log("Majeur");
+} else if (age &gt;= 13) {
+  console.log("Adolescent");
+} else {
+  console.log("Enfant");
+}
+
+for (let i = 0; i &lt; 5; i++) {
+  console.log(i);
+}
+</code></pre>
+  </section>
+
+  <section>
+    <h2>🧩 Fonctions : blocs réutilisables de code</h2>
+    <p>Une fonction prend des entrées (paramètres), fait des actions et peut retourner une sortie.</p>
+    <p>Déclaration classique :</p>
+    <pre><code>function saluer(nom) {
+  return "Bonjour " + nom + " !";
+}
+
+console.log(saluer("Alice"));
+</code></pre>
+    <p>Fonctions fléchées (syntax plus courte, souvent pour les fonctions anonymes) :</p>
+    <pre><code>const saluer = nom =&gt; `Bonjour ${nom} !`;
+console.log(saluer("Bob"));
+</code></pre>
+  </section>
+
+  <section>
+    <h2>📦 Objets et tableaux</h2>
+    <p>En JavaScript, les objets et tableaux sont les structures de données principales.</p>
+    <ul>
+      <li><b>Objet :</b> collection clé-valeur — comme un dictionnaire Python.</li>
+      <li><b>Tableau :</b> liste ordonnée d'éléments.</li>
+    </ul>
+    <pre><code>const personne = {
+  nom: "Alice",
+  age: 30,
+  actif: true
+};
+
+const fruits = ["pomme", "banane", "orange"];
+
+console.log(personne.nom); // Alice
+console.log(fruits[1]);    // banane
+</code></pre>
+  </section>
+
+  <section>
+    <h2>🖥️ Manipulation du DOM (Document Object Model)</h2>
+    <p>Le DOM est une représentation en mémoire de la page HTML chargée. JavaScript peut lire, changer ou ajouter des éléments via le DOM.</p>
+    <ul>
+      <li>Sélectionner un élément avec <code>document.querySelector()</code> ou <code>document.getElementById()</code>.</li>
+      <li>Changer le contenu ou l’attribut avec <code>textContent</code>, <code>innerHTML</code>, <code>setAttribute</code>.</li>
+      <li>Créer des éléments avec <code>document.createElement()</code> puis insérer dans le DOM avec <code>appendChild()</code>.</li>
+    </ul>
+    <pre><code>const titre = document.querySelector("h1");
+titre.textContent = "Titre modifié par JS";
+
+const div = document.createElement("div");
+div.textContent = "Nouveau contenu";
+document.body.appendChild(div);
+</code></pre>
+  </section>
+
+  <section>
+    <h2>🖱️ Événements et gestionnaires</h2>
+    <p>JavaScript permet d’écouter les actions utilisateurs (clics, survols, touches clavier) via les événements et déclenche des fonctions en réponse.</p>
+    <pre><code>const bouton = document.querySelector("button");
+bouton.addEventListener("click", () =&gt; {
+  alert("Bouton cliqué !");
+});
+</code></pre>
+    <p>Les événements courants : <code>click</code>, <code>mouseover</code>, <code>keydown</code>, <code>submit</code> (formulaires), etc.</p>
+  </section>
+
+  <section>
+    <h2>⏳ Programmation Asynchrone : Promesses, Async/Await</h2>
+    <p>JavaScript est mono-thread, mais gère l’asynchronicité pour exécuter des tâches longues sans bloquer.</p>
+    <ul>
+      <li><b>Callbacks</b> : fonctions passées en argument, appelées après une tâche asynchrone.</li>
+      <li><b>Promesses</b> : objets représentant un résultat futur, avec <code>then</code> et <code>catch</code>.</li>
+      <li><b>Async/await</b> : syntaxe moderne rendant le code asynchrone plus lisible.</li>
+    </ul>
+    <pre><code>async function fetchData() {
+  try {
+    const response = await fetch("https://api.example.com/data");
+    const data = await response.json();
+    console.log(data);
+  } catch (error) {
+    console.error("Erreur :", error);
+  }
+}
+fetchData();
+</code></pre>
+  </section>
+
+  <section>
+    <h2>💡 Quiz interactif : testez vos connaissances</h2>
+    <ul>
+      <li><b>Quelle déclaration assure qu'une variable ne peut pas être réaffectée ?</b>
+        <button class="btn-expl" onclick="toggleQuiz('quiz1')">Voir réponse</button>
+        <span id="quiz1" style="display:none; color:#003366;">C’est <code>const</code>.</span>
+      </li>
+      <li><b>Comment écouter un clic sur un bouton en JS ?</b>
+        <button class="btn-expl" onclick="toggleQuiz('quiz2')">Voir réponse</button>
+        <span id="quiz2" style="display:none; color:#003366;">Avec <code>element.addEventListener('click', fonction)</code>.</span>
+      </li>
+      <li><b>Quelle méthode crée un nouvel élément HTML ?</b>
+        <button class="btn-expl" onclick="toggleQuiz('quiz3')">Voir réponse</button>
+        <span id="quiz3" style="display:none; color:#003366;"><code>document.createElement()</code>.</span>
+      </li>
+    </ul>
+  </section>
+
+  <section class="box-exo">
+    <h2>💡 Exercices pratiques</h2>
+    <p>1. Crée un script qui modifie le texte d’un titre <code>&lt;h1&gt;</code> au clic d’un bouton.</p>
+    <p>2. Implémente une fonction qui prend un tableau et retourne le maximum.</p>
+    <button onclick="showExoCode()">Voir correction</button>
+    <pre id="exo-code" style="display:none; color:#003366;">
+const bouton = document.querySelector("button");
+const titre = document.querySelector("h1");
+
+bouton.addEventListener("click", () =&gt; {
+  titre.textContent = "Titre changé !";
+});
+
+function maxTableau(arr) {
+  return Math.max(...arr);
+}
+
+console.log(maxTableau([10, 5, 30, 25]));
+    </pre>
+  </section>
+
+  <section class="box-important">
+    <h2>🧠 Méthodologie & bonnes pratiques</h2>
+    <ul>
+      <li>Teste ton code souvent dans la console du navigateur.</li>
+      <li>Commente ton code pour expliquer les parties complexes.</li>
+      <li>Privilégie <code>let</code> et <code>const</code> plutôt que <code>var</code> pour éviter les problèmes de portée.</li>
+      <li>Utilise les outils de développement intégrés (console, débogueur).</li>
+      <li>Découpe ton code en fonctions réutilisables et claires.</li>
+      <li>Toujours gérer les erreurs, surtout en asynchrone.</li>
+    </ul>
+  </section>
+
+  <section class="lexique">
+    <h2>📚 Lexique JavaScript</h2>
+    <b>Variable :</b> espace mémoire nommé pour stocker une donnée.<br />
+    <b>Fonction :</b> bloc de code réutilisable.<br />
+    <b>Objet :</b> collection clé-valeur.<br />
+    <b>Tableau :</b> liste ordonnée d’éléments.<br />
+    <b>DOM :</b> structure représentant la page HTML.<br />
+    <b>Événement :</b> action utilisateur détectée par le code.<br />
+    <b>Asynchrone :</b> processus qui s’exécute en parallèle sans bloquer.<br />
+  </section>
+
+  <section class="anecdote">
+    <b>Anecdote :</b> JavaScript a été créé en 1995 en moins de 10 jours par Brendan Eich, initialement nommé LiveScript, pour rendre les pages web interactives dès leur chargement.
+  </section>
+</main>
+
+<script>
+  function toggleQuiz(id) {
+    let el = document.getElementById(id);
+    el.style.display = (el.style.display === "none" || !el.style.display) ? "inline" : "none";
+  }
+  function showExoCode() {
+    document.getElementById("exo-code").style.display = "block";
+  }
+</script>
+</body>
+</html>

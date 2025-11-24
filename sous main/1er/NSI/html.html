@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Masterclass HTML — Cours détaillé & interactif</title>
+  <meta name="description" content="Le cours HTML le plus détaillé pour tous : structure, balises, attributs, liens, images, formulaires, sémantique, bonnes pratiques et quiz !" />
+  <style>
+    body {
+      background: #fafafa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #222;
+      margin: 0;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(90deg, #cce7ff, #99ccff);
+      color: #003366;
+      padding: 35px 0 20px;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 2.7rem;
+      margin: 0 0 10px;
+      color: #004a99;
+    }
+    header .intro {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    main {
+      max-width: 960px;
+      background: #fff;
+      margin: 45px auto 25px;
+      padding: 40px 50px;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0, 74, 153, 0.15);
+    }
+    h2 {
+      color: #004a99;
+      margin-top: 42px;
+      border-bottom: 3px solid #99ccff;
+      padding-bottom: 8px;
+    }
+    h3 {
+      color: #0073e6;
+      margin-top: 35px;
+    }
+    ul, ol {
+      margin-left: 2em;
+      margin-bottom: 1.8em;
+    }
+    .infos, .box-exo, .lexique, .error, .anecdote {
+      padding: 18px 28px;
+      border-radius: 8px;
+      margin: 1.8em 0;
+      font-size: 1.1rem;
+    }
+    .infos {
+      background: #e6f0ff;
+      border-left: 7px solid #3399ff;
+      color: #003366;
+    }
+    .box-exo {
+      background: #eef6ff;
+      border-left: 8px solid #0066cc;
+      color: #004a99;
+    }
+    .box-important {
+      background: #fffaf0;
+      border-left: 8px solid #ffb84d;
+    }
+    .error {
+      background: #ffe6e6;
+      border-left: 8px solid #cc3300;
+      color: #b32400;
+    }
+    .lexique {
+      background: #d9eaff;
+      border-left: 8px solid #0073e6;
+      padding: 20px;
+      margin: 2em 0;
+    }
+    .anecdote {
+      background: #cce0ff;
+      border-left: 8px solid #004a99;
+      font-style: italic;
+      margin: 2em 0;
+      padding: 18px 25px;
+      color: #004a99;
+    }
+    code {
+      background: #f0f8ff;
+      padding: 0 5px;
+      border-radius: 5px;
+      font-family: 'Consolas', monospace;
+    }
+    pre {
+      background: #f0f8ff;
+      padding: 18px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'Consolas', monospace;
+      margin: 1em 0 2em;
+      font-size: 1rem;
+      line-height: 1.4;
+    }
+    button, .btn-expl {
+      background: #0073e6;
+      color: white;
+      border: none;
+      font-weight: 700;
+      border-radius: 7px;
+      padding: 10px 18px;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-top: 10px;
+      transition: background-color 0.3s ease;
+    }
+    button:hover, .btn-expl:hover {
+      background: #005bb5;
+    }
+    .reponse {
+      margin-top: 1em;
+      font-weight: 700;
+      color: #004a99;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Masterclass HTML — Le cours détaillé & interactif</h1>
+  <div class="intro">Comprends parfaitement tout sur HTML : structure, balises, attributs, liens, images, formulaires, sémantique et bonnes pratiques.</div>
+</header>
+<main>
+  <section>
+    <h2>📄 À quoi sert le HTML ?</h2>
+    <ul>
+      <li><b>HTML</b> signifie <i>HyperText Markup Language</i>, c’est le langage de base qui structure toute page web.</li>
+      <li>Il permet d’organiser le contenu en titres, paragraphes, images, listes, liens, tableaux… bref tout ce que tu vois sur un site web.</li>
+      <li>Un navigateur web lit ce code HTML pour afficher la page visuellement.</li>
+      <li>Le HTML ne gère pas le style ou le comportement (pour ça il y a le CSS et JavaScript), mais uniquement la structure et le sens du contenu.</li>
+    </ul>
+    <div class="infos">
+      <p>Le HTML fonctionne avec des <b>balises</b> qui ouvrent et ferment des parties du contenu, comme par exemple :</p>
+      <pre><code>&lt;h1&gt;Titre principal&lt;/h1&gt;
+&lt;p&gt;Un paragraphe de texte ici.&lt;/p&gt;
+</code></pre>
+      <p>Les balises indiquent ce que ce texte représente, ici un titre puis un paragraphe.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>🧱 Structure de base d’un document HTML</h2>
+    <p>Toute page HTML commence par une structure commune, obligatoire pour être valide et bien comprise par les navigateurs :</p>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="fr"&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Titre de la page&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    Contenu visible ici
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+    <ul>
+      <li><b>&lt;!DOCTYPE html&gt;</b> : déclaration du type de document (HTML5 ici).</li>
+      <li><b>&lt;html lang="fr"&gt;</b> : 
+        <i>racine du document</i>, avec l’attribut <code>lang</code> précisant la langue.</li>
+      <li><b>&lt;head&gt;</b> : zone pour les métadonnées (titre, encodage, liens vers CSS, scripts).</li>
+      <li><b>&lt;body&gt;</b> : zone visible contenant tout ce qui s’affiche sur la page.</li>
+    </ul>
+    <div class="infos">
+      <p>Cette structure est essentielle : le navigateur s’appuie dessus pour interpréter correctement ta page, afficher le titre dans l’onglet, connaitre la langue pour le référencement, etc.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>🔖 Les balises HTML essentielles</h2>
+    <p>Voici quelques balises de base à connaitre pour bien commencer :</p>
+    <ul>
+      <li><code>&lt;h1&gt;...&lt;/h1&gt;</code> à <code>&lt;h6&gt;...&lt;/h6&gt;</code> : titres de niveaux 1 à 6.</li>
+      <li><code>&lt;p&gt;...&lt;/p&gt;</code> : paragraphe de texte.</li>
+      <li><code>&lt;a href="url"&gt;...&lt;/a&gt;</code> : lien cliquable vers une autre page ou ressource.</li>
+      <li><code>&lt;img src="URL" alt="description"&gt;</code> : image (sans balise de fermeture), <code>alt</code> décrit l’image si elle ne charge pas.</li>
+      <li><code>&lt;ul&gt;</code> / <code>&lt;ol&gt;</code> : listes à puces (ul) ou numérotées (ol), avec <code>&lt;li&gt;</code> pour chaque élément.</li>
+      <li><code>&lt;div&gt;</code> : conteneur générique pour grouper des éléments, utile pour la mise en page.</li>
+      <li><code>&lt;span&gt;</code> : comme div, mais pour du contenu inline (texte).</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>🖼️ Attributs et leurs rôles</h2>
+    <p>Les balises peuvent contenir des <b>attributs</b> pour préciser ou modifier leur comportement :</p>
+    <ul>
+      <li><code>href</code> dans <code>&lt;a&gt;</code> : adresse du lien.</li>
+      <li><code>src</code> dans <code>&lt;img&gt;</code> : source de l’image.</li>
+      <li><code>alt</code> dans <code>&lt;img&gt;</code> : texte alternatif pour accessibilité et SEO.</li>
+      <li><code>id</code> et <code>class</code> pour identifier ou classifier un élément, utiles pour le style CSS et le script.</li>
+      <li><code>title</code> ajoute un tooltip au survol d’un élément.</li>
+    </ul>
+    <div class="infos">
+      <p>Les attributs sont toujours placés dans la balise d’ouverture et s’écrivent sous la forme <code>nom="valeur"</code>. Ils personnalisent le comportement ou l’apparence.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>🧩 La sémantique HTML expliquée</h2>
+    <p>Utiliser les bonnes balises selon le contenu, c’est la <b>sémantique</b>. Cela aide les navigateurs, moteurs de recherche, et aides techniques à mieux comprendre la page.</p>
+    <ul>
+      <li><code>&lt;header&gt;</code> : en-tête de page ou section.</li>
+      <li><code>&lt;nav&gt;</code> : zone de navigation.</li>
+      <li><code>&lt;main&gt;</code> : contenu principal unique de la page.</li>
+      <li><code>&lt;section&gt;</code> : section thématique.</li>
+      <li><code>&lt;article&gt;</code> : contenu indépendant (article, billet de blog).</li>
+      <li><code>&lt;footer&gt;</code> : pied de page de section ou document.</li>
+    </ul>
+    <div class="infos">
+      <p>Respecter la sémantique facilite aussi le travail du CSS et améliore l’accessibilité web (lecteurs d’écran...).</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>🔗 Liens, images et médias</h2>
+    <p>Les liens et images sont les briques pour rendre une page riche et connectée :</p>
+    <pre><code>&lt;a href="https://exemple.com"&gt;Visitez notre site&lt;/a&gt;
+&lt;img src="chat.jpg" alt="Photo d'un chat mignon"&gt;
+</code></pre>
+    <ul>
+      <li>Le <code>href</code> du lien indique l’adresse ciblée.</li>
+      <li>Le <code>alt</code> de l’image est indispensable pour l’accessibilité.</li>
+      <li>Les balises <code>&lt;video&gt;</code> et <code>&lt;audio&gt;</code> permettent d’intégrer facilement des médias multimédia.</li>
+      <li>Pour un lien ouvrant dans un nouvel onglet, ajoute <code>target="_blank"</code> à la balise <code>&lt;a&gt;</code>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>📝 Formulaires HTML : interagir avec l’utilisateur</h2>
+    <p>Les formulaires recueillent des données : textes, choix, boutons, fichiers...</p>
+    <pre><code>&lt;form action="/envoyer" method="post"&gt;
+  &lt;label for="nom"&gt;Votre nom:&lt;/label&gt;
+  &lt;input type="text" id="nom" name="nom"&gt;
+  &lt;input type="submit" value="Envoyer"&gt;
+&lt;/form&gt;
+</code></pre>
+    <ul>
+      <li><code>&lt;form&gt;</code> regroupe des champs envoyés au serveur.</li>
+      <li><code>action</code> : URL du serveur qui traite les données.</li>
+      <li><code>method</code> : type de requête HTTP (GET ou POST).</li>
+      <li>Champs classiques : <code>input</code> (texte, bouton, fichier…), <code>textarea</code>, <code>select</code> (liste déroulante).</li>
+      <li>Les <code>label</code> améliorent l’accessibilité en désignant les champs.</li>
+    </ul>
+  </section>
+
+  <section class="box-exo">
+    <h2>💡 Exercices pratiques : créer ta première page HTML</h2>
+    <p>Crée une page avec :</p>
+    <ol>
+      <li>Un titre principal.</li>
+      <li>Un paragraphe de texte décrivant ton site.</li>
+      <li>Une image avec description.</li>
+      <li>Un lien vers un site que tu aimes.</li>
+    </ol>
+    <button onclick="showExoCode()">Voir correction complète</button>
+    <pre id="exo-code" style="display:none; color:#004a99;">
+&lt;!DOCTYPE html&gt;
+&lt;html lang="fr"&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Ma première page&lt;/title&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;Bienvenue sur mon site&lt;/h1&gt;
+    &lt;p&gt;Ceci est un paragraphe de présentation.&lt;/p&gt;
+    &lt;img src="chaton.jpg" alt="Un chaton mignon"&gt;
+    &lt;a href="https://www.example.com"&gt;Visitez Example.com&lt;/a&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+    </pre>
+  </section>
+
+  <section class="box-important">
+    <h2>🧠 Méthodologie & bonnes pratiques</h2>
+    <ul>
+      <li>Utilise toujours une indentation propre pour bien visualiser la structure.</li>
+      <li>Toujours déclarer la langue avec <code>lang</code> dans la balise <code>html</code>.</li>
+      <li>Ne pas oublier le <code>&lt;!DOCTYPE html&gt;</code> pour un rendu moderne.</li>
+      <li>Remplis toujours le <code>alt</code> des images pour l’accessibilité.</li>
+      <li>Teste ta page dans plusieurs navigateurs pour vérifier la compatibilité.</li>
+    </ul>
+  </section>
+
+  <section class="lexique">
+    <h2>📚 Lexique HTML</h2>
+    <b>Balise :</b> élément structurant du HTML, en général pair avec une ouverture et une fermeture.<br />
+    <b>Attribut :</b> information supplémentaire dans la balise d’ouverture.<br />
+    <b>Doctype :</b> déclaration du type de document HTML.<br />
+    <b>Sémantique :</b> usage approprié des balises selon le sens du contenu.<br />
+    <b>Élément inline vs block :</b> différence d’affichage et de comportement des balises.<br />
+  </section>
+
+  <section class="anecdote">
+    <b>Anecdote :</b> Le HTML a été inventé par Tim Berners-Lee en 1991 pour permettre de créer des pages web riches et accessibles via le navigateur web Mosaic, le premier navigateur graphique au monde.
+  </section>
+</main>
+
+<script>
+  function toggleQuiz(id) {
+    let el = document.getElementById(id);
+    el.style.display = (el.style.display === "none" || !el.style.display) ? "inline" : "none";
+  }
+  function showExoCode() {
+    document.getElementById("exo-code").style.display = "block";
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Masterclass NSI : Histoire de l’informatique (version interactive)</title>
+  <meta name="description" content="Histoire de l’informatique interactif : schéma animé, quiz, explications, anecdotes. Spécial NSI Première.">
+  <style>
+    body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+    header { background: linear-gradient(90deg,#eef4fb,#e7ffe7 80%); color: #243552; padding: 30px 0 12px; text-align: center;}
+    header h1 { font-size: 2.3rem; margin: 0 0 10px; color: #1877f2;}
+    header .intro { font-size: 1rem;}
+    main { max-width: 950px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
+    h2 { color: #1877f2; margin-top: 32px;}
+    h3 { color: #f5a623; margin-top: 22px;}
+    ul, ol { margin-left: 1.4em;}
+    .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+    .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
+    .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+    .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+    .error {background: #ffeaea; border-left: 7px solid #e06359;}
+    .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+    .anecdote {background: #e7ffe7; border-left: 7px solid #167c2b; font-style: italic; margin: 1em 0; padding: 12px 17px; border-radius: 6px;}
+    .source { font-size: 0.9em; color: #999; text-align: right;}
+    button, .btn-expl {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 14px; cursor: pointer; margin-right: 8px; margin-top: 7px; transition: background 0.2s;}
+    button:hover, .btn-expl:hover { background: #145ac3;}
+    #schema { margin: 2em auto 1em; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
+    .info-bulle {display:none;position: absolute; background:#fff; border:1px solid #243552; border-radius:5px;padding:10px;font-size:1rem;z-index:10; box-shadow: 0 3px 12px rgba(24,119,242,0.08);}
+    .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
+    #desc-schema { background: #e7f3f7; border-radius: 6px; color: #1877f2; font-weight: bold; padding: 10px; text-align: center; min-height: 25px; margin-bottom: 10px;}
+    label { margin-right: 12px;}
+    @media (max-width: 900px) { main { padding: 12px 2px; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Masterclass NSI : Histoire de l’informatique (interactif)</h1>
+  <div class="intro">Découvre l’histoire comme jamais avec schémas animés et quiz pour progresser plus vite !</div>
+</header>
+<main>
+  <section>
+    <h2>📋 Fiche synthèse ultra-complète et interactive</h2>
+    <ul id="ul-synthese">
+      <li><b>L’informatique :</b>
+        <button class="btn-expl" onclick="afficheSynthese('def')">Voir explication</button>
+        <span id="syn-def" style="display:none;color:#167c2b;">
+          Science du traitement automatique d’informations par des machines : facilite calcul, décision, mémoire.
+        </span>
+      </li>
+      <li><b>Qui est la première programmeuse ?</b>
+        <button class="btn-expl" onclick="afficheSynthese('ada')">Réponse !</button>
+        <span id="syn-ada" style="display:none;color:#f5a623;">
+          Ada Lovelace, ayant écrit en 1843 le premier algorithme pour la machine de Babbage !
+        </span>
+      </li>
+      <li><b>Qu’est-ce qui distingue le transistor du microprocesseur ?</b>
+        <button class="btn-expl" onclick="afficheSynthese('trans')">Clique ici</button>
+        <span id="syn-trans" style="display:none;color:#e06359;">
+          Le transistor est l’élément de base qui commute les signaux. Le microprocesseur regroupe des millions de transistors pour calculer et mémoriser.
+        </span>
+      </li>
+      <li>
+        <b>À quoi a servi ARPANET ?</b>
+        <button class="btn-expl" onclick="afficheSynthese('arpanet')">Devine !</button>
+        <span id="syn-arpanet" style="display:none;color:#243552;">
+          Premier réseau reliant plusieurs ordinateurs à distance, ancêtre direct d’Internet (1969).
+        </span>
+      </li>
+      <li>
+        <b>Quels sont les usages majeurs de l’informatique ? (Clique pour dérouler)</b>
+        <button class="btn-expl" onclick="afficheSynthese('usages')">Voir plus</button>
+        <span id="syn-usages" style="display:none;color:#1877f2;">
+          <ul>
+            <li>Calcul scientifique rapide (météo, astronomie, cryptographie)</li>
+            <li>Gestion de données : santé, finance, réseaux sociaux</li>
+            <li>Simulation et automatisation industrielle</li>
+            <li>Communications (web, e-mail, cloud)</li>
+            <li>Jeux vidéo, arts numériques, création musicale, IA</li>
+          </ul>
+        </span>
+      </li>
+    </ul>
+    <div>
+      <button onclick="quizSynthese()">Quiz surprise</button>
+      <span class="reponse" id="quiz-synthese-res"></span>
+    </div>
+  </section>
+
+  <section>
+    <h2>🧑‍💻 Frise chronologique interactive</h2>
+    <canvas id="schema" width="900" height="230"></canvas>
+    <div id="desc-schema">Survole ou clique chaque point de la frise : Découvre les infos et anecdotes pour chaque étape clé !</div>
+    <div id="info-bulle" class="info-bulle"></div>
+  </section>
+
+  <section class="box box-exo">
+    <h2>💡 Exercices interactifs</h2>
+    <p>Associe l’invention à sa date :<br>
+      <b>Langage Fortran</b> – A. 1945 B. 1957 C. 1990
+      <button onclick="afficheReponseNSI1()">Voir la correction</button>
+    </p>
+    <div class="reponse" id="exo-reponse-nsi1" style="display:none;">
+      Réponse : <b>1957</b> – Premier langage pour calcul scientifique.
+    </div>
+    <p>
+      <b>Qui a inventé le principe de la machine universelle ?</b>
+      <button onclick="document.getElementById('exo2-reponse-nsi').style.display='block';">Voir la correction</button>
+    </p>
+    <div class="reponse" id="exo2-reponse-nsi" style="display:none;">
+      Alan Turing, en 1936, avec la machine de Turing.
+    </div>
+  </section>
+
+  <section class="quiz">
+    <h2>🎯 Quiz rapide</h2>
+    <p>Quel composant a permis la miniaturisation fulgurante des ordinateurs ?</p>
+    <button onclick="quizNSI(0)">Le transistor</button>
+    <button onclick="quizNSI(1)">La roue dentée</button>
+    <button onclick="quizNSI(2)">La carte perforée</button>
+    <div class="reponse" id="rep-quiz-nsi"></div>
+    <p>En quelle année le web a-t-il été proposé par Tim Berners-Lee ?</p>
+    <button onclick="quizNSI2(0)">1984</button>
+    <button onclick="quizNSI2(1)">1990</button>
+    <button onclick="quizNSI2(2)">2007</button>
+    <div class="reponse" id="rep-quiz-nsi2"></div>
+  </section>
+
+  <section class="box-important">
+    <h2>🌍 Applications concrètes puissantes</h2>
+    <ul>
+      <li><b>Santé :</b> Calculs médicaux, gestion de dossiers patients, IA en imagerie.</li>
+      <li><b>Astronomie/Science :</b> Simulations d’univers, calculs de trajectoire satellite, météo prédictive.</li>
+      <li><b>Sécurité/Défense :</b> Cryptographie, cyberdéfense, cybersurveillance (protection et menaces).</li>
+      <li><b>Arts/Loisirs :</b> Musique électronique, effets spéciaux, jeux vidéo, cinéma numérique.</li>
+      <li><b>Quotidien :</b> Paiement, réseaux sociaux, transports connectés (GPS), objets intelligents.</li>
+      <li><b>Environnement :</b> Modélisation climatique, analyse pollution, capteurs et données temps réel.</li>
+    </ul>
+  </section>
+
+  <section class="error">
+    <h2>❌ Erreurs fréquentes à éviter (liste doublée)</h2>
+    <ul>
+      <li>Oublier la distinction : programmeur(teuse) = Ada Lovelace, théoricien = Turing.</li>
+      <li>Limiter l’histoire à la seule électronique (penser aussi à la mécanique et l’algorithme !).</li>
+      <li>Confondre invention du web (Berners-Lee) et d’Internet (ARPANET, en 1969).</li>
+      <li>Ignorer l’importance des langages de programmation pour contrôler les machines.</li>
+      <li>Penser que le progrès fut linéaire, alors qu’il y a eu ruptures, reculs (ex. : bulle Internet 2000).</li>
+      <li>Croire que l’intelligence artificielle vient d’apparaître (première mention : années 50).</li>
+      <li>Oublier l’impact social, éthique (emploi, surveillance, fake news).</li>
+      <li>Penser que le smartphone était prévu dès l’invention de l’ordinateur.</li>
+    </ul>
+  </section>
+
+  <section class="lexique">
+    <h2>📚 Lexique express (plus fourni)</h2>
+    <b>Algorithme :</b> suite d’instructions résolvant un problème<br>
+    <b>Carte perforée :</b> support physique de stockage d’instructions (métiers Jacquard, IBM)<br>
+    <b>Transistor :</b> commutateur électronique utilisé pour calculs logiques<br>
+    <b>Microprocesseur :</b> processeur complet miniaturisé<br>
+    <b>Réseau :</b> ensemble de machines reliées pour échanger des données<br>
+    <b>Intelligence artificielle :</b> méthodes permettant à une machine d’imiter l’intelligence humaine<br>
+    <b>Cryptographie :</b> science du secret et de la sécurité de l’information
+  </section>
+
+  <section class="rubrique">
+    <h3>📖 Petites histoires enrichies</h3>
+    <ul>
+      <li>Le mot « ordinateur » est inventé en France (1955) : « mettre en ordre » (Philippe Dreyfus).</li>
+      <li>Le premier « bug » : un papillon grillé dans un relais, découvert par Grace Hopper (1947), anecdote connue !</li>
+      <li>Enigma, machine cryptographique, a été une des plus grandes batailles informatiques de la 2ᵉ Guerre mondiale.</li>
+      <li>Le web a été inventé en Europe, au CERN, par un anglais.</li>
+      <li>La carte perforée, utilisée pour les métiers à tisser Jacquard dès 1801, servira aussi pour programmer les ordinateurs jusqu’aux années 1970 !</li>
+      <li>L’informatique doit beaucoup aux mathématiciens, ingénieurs, et… à la passion !</li>
+    </ul>
+    <div class="source">Source : manuels NSI, histoire de l’informatique</div>
+  </section>
+
+  <section class="anecdote">
+    <b>Anecdotes & Mémo</b> : 
+    Le mot "bit" vient de "Binary digit". Le microprocesseur Intel 4004 (1971) tenait dans une poche et pouvait déjà effectuer plusieurs milliers d’opérations par seconde !
+  </section>
+
+  <section>
+    <h2>💡 Méthodologie contrôle (version double)</h2>
+    <ul>
+      <li>Sache situer une invention dans son temps et la relier à sa conséquence (ex : transistor = miniaturisation = smartphone après 2007).</li>
+      <li>Justifie toujours : pourquoi cette évolution ? (besoins, contexte historique, guerre, société).</li>
+      <li>Structure ton raisonnement : début – rupture – conséquences ; cite plusieurs exemples à chaque étape.</li>
+      <li>Compare : anciens outils VS nouveaux (boulier VS IA…), différences majeures.</li>
+      <li>Cite au moins deux personnages ou anecdotes par question « histoire » au bac !</li>
+      <li>Explique l’apport de chaque évolution sur notre modernité : sans web = pas de réseaux sociaux ; sans transistor = pas de smartphone, etc.</li>
+      <li>Prépare-toi aussi à discuter les enjeux éthiques et sociaux liés à chaque invention.</li>
+      <li>Fais le lien : mathématiques, logique, machines, société : tout s’enchaîne !</li>
+    </ul>
+  </section>
+</main>
+<script>
+function afficheSynthese(id) {
+  var el = document.getElementById("syn-"+id);
+  if (el.style.display==="none") { el.style.display="inline"; }
+  else { el.style.display="none"; }
+}
+// Quiz synthèse
+function quizSynthese() {
+  let qs = [
+    {q:"En quelle année le premier ordinateur électronique est-il né ?", rep:"1945 (ENIAC)"},
+    {q:"Quel inventeur a donné son nom à un test sur l’intelligence des machines ?", rep:"Alan Turing"},
+    {q:"Quel composant a révolutionné la miniaturisation ?", rep:"Le transistor"},
+    {q:"Qui est l’auteur du premier algorithme ?", rep:"Ada Lovelace"}
+  ];
+  let idx = Math.floor(Math.random()*qs.length);
+  let ask = qs[idx];
+  let reponse = prompt(ask.q);
+  let result = (reponse && reponse.toLowerCase().includes(ask.rep.toLowerCase().split(" ")[0].toLowerCase())) ?
+    "Bravo ! " + ask.rep : "Dommage ! Réponse : " + ask.rep;
+  document.getElementById("quiz-synthese-res").textContent = result;
+}
+
+// Frise schéma
+var points = [
+  {x:30, y:170, label:"Abacus\nAntiquité", info:"Le boulier, premier calculateur manuel utilisé depuis -300 av. J.C."},
+  {x:110, y:110, label:"Pascaline\n1642", info:"Machine à calculer mécanique de Blaise Pascal."},
+  {x:200, y:100, label:"Jacquard\n1801", info:"Carte perforée du métier à tisser Jacquard, ancêtre de la programmation."},
+  {x:260, y:70, label:"Babbage\n1834", info:"Machine analytique, vrai précurseur de l’ordinateur."},
+  {x:320, y:50, label:"Ada\n1843", info:"Ada Lovelace, première personne à écrire un algorithme."},
+  {x:370, y:90, label:"Turing\n1936", info:"Théorie du calcul universel, machine abstraite."},
+  {x:450, y:120, label:"ENIAC\n1945", info:"Premier ordinateur électronique de grande échelle."},
+  {x:530, y:110, label:"Transistor\n1948", info:"Naissance de l’électronique, miniaturisation possible."},
+  {x:600, y:155, label:"Fortran\n1957", info:"Premier langage haut niveau en calcul scientifique."},
+  {x:690, y:110, label:"Internet\n1969", info:"Naissance d’ARPANET : connexion entre ordinateurs."},
+  {x:760, y:85, label:"Web\n1990", info:"Invention du World Wide Web par Tim Berners-Lee."},
+  {x:840, y:60, label:"IA\n2025", info:"Développement massif de l’intelligence artificielle."}
+];
+
+var canvas = document.getElementById("schema");
+var ctx = canvas.getContext("2d");
+
+function drawSchema() {
+  ctx.clearRect(0,0,900,230);
+  // Frise
+  ctx.strokeStyle="#243552";
+  ctx.lineWidth=6;
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, points[0].y);
+  for(let i=1;i<points.length;i++){
+    ctx.lineTo(points[i].x, points[i].y);
+  }
+  ctx.stroke();
+  // Points + labels
+  for(let i=0;i<points.length;i++){
+    ctx.beginPath();
+    ctx.arc(points[i].x, points[i].y, 18, 0, 2*Math.PI);
+    ctx.fillStyle="#79acee";
+    ctx.fill();
+    ctx.strokeStyle="#1877f2";
+    ctx.lineWidth=2;
+    ctx.stroke();
+    ctx.fillStyle="#222";
+    ctx.font="bold 14px Arial";
+    let t = points[i].label.split("\n");
+    ctx.fillText(t[0], points[i].x-18, points[i].y-24); // titre
+    ctx.font="12px Arial";
+    ctx.fillText(t[1], points[i].x-15, points[i].y+40); // date
+  }
+}
+drawSchema();
+
+// Interactivité schéma
+canvas.addEventListener('mousemove', function(e){
+  var rect = canvas.getBoundingClientRect();
+  var x = e.clientX - rect.left;
+  var y = e.clientY - rect.top;
+  var bulle = document.getElementById("info-bulle");
+  let found = false;
+  for(let i=0;i<points.length;i++){
+    let dx = x-points[i].x, dy = y-points[i].y;
+    if(dx*dx+dy*dy<350){ //20 px rayon
+      bulle.style.left = (rect.left + points[i].x + 25) + "px";
+      bulle.style.top = (rect.top + points[i].y - 10) + "px";
+      bulle.style.display = "block";
+      bulle.textContent = points[i].info;
+      found=true;
+      break;
+    }
+  }
+  if(!found){ bulle.style.display="none"; }
+});
+canvas.addEventListener('click', function(e){
+  var rect = canvas.getBoundingClientRect();
+  var x = e.clientX - rect.left;
+  var y = e.clientY - rect.top;
+  var bulle = document.getElementById("info-bulle");
+  for(let i=0;i<points.length;i++){
+    let dx = x-points[i].x, dy = y-points[i].y;
+    if(dx*dx+dy*dy<350){
+      alert(points[i].info);
+      break;
+    }
+  }
+});
+
+// Exos correction et quiz
+function afficheReponseNSI1() {
+  document.getElementById("exo-reponse-nsi1").style.display = "block";
+}
+function quizNSI(rep) {
+  let rq = document.getElementById("rep-quiz-nsi");
+  rq.textContent = (rep === 0) ? "Bravo ! Le transistor a permis la miniaturisation." : "Incorrect.";
+}
+function quizNSI2(rep) {
+  let rq = document.getElementById("rep-quiz-nsi2");
+  rq.textContent = (rep === 1) ? "Bonne réponse ! C’est en 1990." : "Faux, révise la frise.";
+}
+</script>
+</body>
+</html>
+

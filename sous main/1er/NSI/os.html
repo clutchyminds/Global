@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Masterclass NSI : Architecture matérielle & Systèmes d’exploitation</title>
+  <meta name="description" content="Cours NSI sur le fonctionnement interne des ordinateurs : matériel, processeur, mémoire, OS, schéma interactif, quiz et astuces.">
+  <style>
+    body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+    header { background: linear-gradient(90deg,#eef4fb,#ffe7df 80%); color: #243552; padding: 30px 0 12px; text-align: center;}
+    header h1 { font-size: 2.3rem; margin: 0 0 10px; color: #ff8800;}
+    header .intro { font-size: 1rem;}
+    main { max-width: 950px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(255,136,0,0.12);}
+    h2 { color: #ff8800; margin-top: 32px;}
+    h3 { color: #f5a623; margin-top: 22px;}
+    ul, ol { margin-left: 1.4em;}
+    .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+    .infos {background: #f9ecd7; border-left: 6px solid #ff8800;}
+    .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+    .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+    .error {background: #ffeaea; border-left: 7px solid #e06359;}
+    .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+    .anecdote {background: #fff7de; border-left: 7px solid #ff8800; font-style: italic; margin: 1em 0; padding: 12px 17px; border-radius: 6px;}
+    .source { font-size: 0.9em; color: #999; text-align: right;}
+    button, .btn-expl {background: #ff8800; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 14px; cursor: pointer; margin-right: 8px; margin-top: 7px; transition: background 0.2s;}
+    button:hover, .btn-expl:hover { background: #b56c13;}
+    #schema { margin: 2em auto 1em; display: block; background: #fff8f0; border-radius: 8px; border: 1px solid #d1d5db;}
+    .info-bulle {display:none;position: absolute; background:#fffefc; border:1px solid #243552; border-radius:5px;padding:10px;font-size:1rem;z-index:10; box-shadow: 0 3px 12px rgba(255,136,0,0.09);}
+    .reponse { margin-top: 0.7em; color: #ff8800; font-weight: bold; text-align: center;}
+    #desc-schema { background: #f9ecd7; border-radius: 6px; color: #ff8800; font-weight: bold; padding: 10px; text-align: center; min-height: 25px; margin-bottom: 10px;}
+    table { border-collapse:collapse; margin: 10px auto;}
+    th, td { border:1px solid #ff8800; padding:7px 15px; text-align:center;}
+    th { background:#fff8ea;}
+    td.type { font-weight:bold; }
+    @media (max-width: 900px) { main { padding: 12px 2px; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Masterclass NSI : Architecture matérielle & Systèmes d’exploitation</h1>
+  <div class="intro">Tout comprendre de l’intérieur : processeur, mémoire, stockage, OS et leurs rôles pour un vrai “hacker white hat” !</div>
+</header>
+<main>
+<section>
+  <h2>📚 Cours complet – Fonctionnement interne des ordinateurs</h2>
+  <p>
+    Un ordinateur associe <b>matériel</b> (hardware : composants physiques) et <b>logiciel</b> (software : programmes), tous pilotés par un <b>système d’exploitation</b> (OS).
+  </p>
+  <table>
+    <tr>
+      <th>Composant</th>
+      <th>Rôle</th>
+      <th>Exemples</th>
+    </tr>
+    <tr>
+      <td class="type">Processeur (CPU)</td>
+      <td>Exécute (calcule) toutes les instructions et décisions.</td>
+      <td>Intel i7, Apple M2, AMD Ryzen, ARM</td>
+    </tr>
+    <tr>
+      <td class="type">Mémoire vive (RAM)</td>
+      <td>Conserve temporairement les données/logiciels en cours d’utilisation.</td>
+      <td>8 Go, DDR4, 16 Go, DDR5</td>
+    </tr>
+    <tr>
+      <td class="type">Stockage</td>
+      <td>Garde les données et programmes sur le long terme</td>
+      <td>HDD, SSD, clé USB</td>
+    </tr>
+    <tr>
+      <td class="type">Carte mère & Bus</td>
+      <td>Relie et permet la circulation des infos (signaux, données) entre composants</td>
+      <td>PCIe, bus RAM, ports USB</td>
+    </tr>
+    <tr>
+      <td class="type">Périphériques</td>
+      <td>Communication avec l’utilisateur ou l’extérieur</td>
+      <td>Écran, clavier, souris, webcam, carte réseau</td>
+    </tr>
+    <tr>
+      <td class="type">Système d’exploitation (OS)</td>
+      <td>Coordonne, pilote le matériel, gère les fichiers, sécurise, lance les applis</td>
+      <td>Windows, Linux, MacOS, Android</td>
+    </tr>
+  </table>
+  <p>
+    <b>Comment ça fonctionne ?</b>
+    <ul>
+      <li>Le <b>CPU</b> suit le <b>cycle “fetch-decode-execute”</b> : va chercher une instruction, la lit/la comprend, puis la réalise.</li>
+      <li>Les <b>programmes</b>, stockés sur le disque, sont “chargés” en mémoire vive.</li>
+      <li>L’<b>OS</b> partage la mémoire, protège les fichiers, gère le multitâche (plusieurs applis à la fois), affecte des droits, affiche l’interface graphique.</li>
+      <li>Les <b>bus</b> font circuler bits et octets entre pièces : tout ce qui va plus vite (SSD/DDR5) rend tout l’ordinateur plus rapide !</li>
+      <li>Les <b>périphériques</b> dialoguent en lecture/écriture avec les logiciels grâce à des “drivers”.</li>
+    </ul>
+    <b>Architecture classique :</b> modèle de von Neumann (CPU, RAM, entrées/sorties, bus partagés).
+  </p>
+  <p>
+    <b>Exemple de séquence :</b> Tu ouvres un jeu : l’OS va lire le fichier du disque, le charger en RAM, allouer un espace mémoire, puis le CPU démarre le jeu et l’affichage. Tout dialogue grâce aux bus, avec la carte graphique.
+  </p>
+  <p>
+    <b>Sécurité :</b> L’OS isole chaque programme, limite les accès aux fichiers critiques, protège contre les virus et les erreurs utilisateurs.
+  </p>
+</section>
+<section>
+  <h2>📋 Fiche synthèse interactive</h2>
+  <ul id="ul-synthese">
+    <li><b>Qu’est-ce qu’un OS ?</b>
+      <button class="btn-expl" onclick="afficheSynthese('os')">Voir explication</button>
+      <span id="syn-os" style="display:none;color:#167c2b;">
+        Le chef d’orchestre qui gère tout : fichiers, mémoire, droits utilisateurs, lancement d’applications.
+      </span>
+    </li>
+    <li><b>Que fait la RAM quand tu coupes l’ordi ?</b>
+      <button class="btn-expl" onclick="afficheSynthese('ram')">Réponse !</button>
+      <span id="syn-ram" style="display:none;color:#e06359;">
+        Elle s’efface (mémoire volatile) : tout ce qui n’est pas sauvegardé est perdu.
+      </span>
+    </li>
+    <li><b>À quoi sert le “bus” ?</b>
+      <button class="btn-expl" onclick="afficheSynthese('bus')">Clique ici</button>
+      <span id="syn-bus" style="display:none;color:#f5a623;">
+        C’est le réseau qui transporte données/instructions entre processeur, mémoire, stockage et périphériques.
+      </span>
+    </li>
+    <li><b>Combien de logiciels peuvent tourner à la fois ?</b>
+      <button class="btn-expl" onclick="afficheSynthese('multi')">Voir réponse</button>
+      <span id="syn-multi" style="display:none;color:#243552;">
+        Plusieurs ! L’OS partage le temps de calcul (multitâche), chaque appli “croit” être seule.
+      </span>
+    </li>
+    <li><b>Défi : Peut-on installer Windows, Linux et Android sur le même PC ?</b>
+      <button class="btn-expl" onclick="afficheSynthese('multiOS')">Afficher</button>
+      <span id="syn-multiOS" style="display:none;color:#1877f2;">
+        Oui, via le “multi-boot” ou la virtualisation (machines virtuelles).
+      </span>
+    </li>
+  </ul>
+  <div>
+    <button onclick="quizSynthese()">Quiz surprise</button>
+    <span class="reponse" id="quiz-synthese-res"></span>
+  </div>
+</section>
+<section>
+  <h2>🖥️ Schéma interactif – Architecture interne</h2>
+  <canvas id="schema" width="900" height="260"></canvas>
+  <div id="desc-schema">Survole ou clique chaque bloc : visualise le rôle réel des composants et du système d’exploitation.</div>
+  <div id="info-bulle" class="info-bulle"></div>
+</section>
+<section class="box box-exo">
+  <h2>💡 Exercices interactifs</h2>
+  <p>Quel composant “oublie tout” si tu retires la prise d’alimentation ?
+    <button onclick="afficheReponseNSI1()">Voir la correction</button>
+  </p>
+  <div class="reponse" id="exo-reponse-nsi1" style="display:none;">
+    La RAM (mémoire vive) !
+  </div>
+  <p>À quoi sert un “driver” ?
+    <button onclick="document.getElementById('exo2-reponse-nsi').style.display='block';">Voir la correction</button>
+  </p>
+  <div class="reponse" id="exo2-reponse-nsi" style="display:none;">
+    À faire dialoguer le matériel (imprimante, souris, carte réseau…) avec l’OS et les logiciels.
+  </div>
+</section>
+<section class="quiz">
+  <h2>🎯 Quiz rapide</h2>
+  <p>Quel composant central exécute chaque instruction ?</p>
+  <button onclick="quizNSI(0)">CPU</button>
+  <button onclick="quizNSI(1)">SSD</button>
+  <button onclick="quizNSI(2)">RAM</button>
+  <div class="reponse" id="rep-quiz-nsi"></div>
+  <p>Quel OS gère aussi bien ordinateurs, serveurs et téléphones Android ?</p>
+  <button onclick="quizNSI2(0)">Linux</button>
+  <button onclick="quizNSI2(1)">Windows</button>
+  <button onclick="quizNSI2(2)">macOS</button>
+  <div class="reponse" id="rep-quiz-nsi2"></div>
+</section>
+<section class="box-important">
+  <h2>🌍 Applications concrètes</h2>
+  <ul>
+    <li>Ordinateur de bureau, PC gamer, serveur web, smartphone, montre connectée : tous basés sur l’architecture matérielle + OS</li>
+    <li>Raspberry Pi : mini-ordinateur, parfait pour apprendre !</li>
+    <li>Cloud, virtualisation, émulateur : on simule plusieurs machines grâce à des OS dans l’OS !</li>
+    <li>Gestion d’utilisateurs, sécurité des données, protection contre les virus (via l’OS)</li>
+  </ul>
+</section>
+<section class="error">
+  <h2>❌ Erreurs fréquentes à éviter</h2>
+  <ul>
+    <li>Penser que l’OS “fait tout” : il ne fait que gérer et partager les ressources matérielles</li>
+    <li>Confondre mémoire vive (RAM) et disque dur (SSD/HDD)</li>
+    <li>Croire qu’il suffit d’ajouter de la RAM pour accélérer tous les programmes</li>
+    <li>Négliger les rôles de la carte mère et des bus</li>
+    <li>Oublier l’importance des mises à jour (OS et drivers pour sécurité)</li>
+  </ul>
+</section>
+<section class="lexique">
+  <h2>📚 Lexique express</h2>
+  <b>CPU / Processeur :</b> “cerveau” qui exécute tout<br>
+  <b>RAM :</b> mémoire rapide, temporaire (données perdues à l’extinction)<br>
+  <b>SSD / HDD :</b> stockage durable, disque dur<br>
+  <b>Carte mère :</b> relie tous les composants<br>
+  <b>Bus :</b> circuits de communication internes<br>
+  <b>OS :</b> système d’exploitation, chef d’orchestre logiciel<br>
+  <b>Périphérique :</b> élément externe (souris, clé USB…)
+</section>
+<section class="rubrique">
+  <h3>📖 Anecdotes et histoire</h3>
+  <ul>
+    <li>Le modèle “von Neumann” (CPU/RAM/Stockage/Entrées-sorties) date de 1945 : il équipe TOUS les ordinateurs actuels.</li>
+    <li>Le premier système d’exploitation à interface graphique (GUI) : Xerox Alto, puis Lisa/Mac et Windows.</li>
+    <li>Linux (créé par Linus Torvalds en 1991) pilote la plupart des serveurs Internet… et Android !</li>
+    <li>“RAM” = “Random Access Memory” car l’accès à n’importe quelle case mémoire se fait très vite.</li>
+  </ul>
+  <div class="source">Source : Histoire de l’informatique, NSI</div>
+</section>
+<section class="anecdote">
+  <b>Astuces mémoire</b> :
+  “CPU = cerveau”, “RAM = mémoire à court terme”, “SSD = bibliothèque”, “Bus = routes”.  
+  Pour l’OS : Il fait le lien entre l’utilisateur, le matériel et les logiciels !
+</section>
+<section>
+  <h2>💡 Méthodologie pour le contrôle</h2>
+  <ul>
+    <li>Reconnaître et NOMMER chaque composant sur un schéma : CPU, RAM, Carte mère, SSD, écran…</li>
+    <li>Expliquer le chemin d’une donnée depuis le stockage jusqu’à l’affichage</li>
+    <li>Décrire le rôle de l’OS dans la gestion des ressources</li>
+    <li>Proposer une amélioration (plus de RAM ? un SSD ? quel intérêt réel ?..)</li>
+    <li>Savoir expliquer la différence entre hardware et software, entre RAM et stockage</li>
+  </ul>
+</section>
+</main>
+<script>
+function afficheSynthese(id) {
+  var el = document.getElementById("syn-"+id);
+  if (el.style.display==="none") { el.style.display="inline"; }
+  else { el.style.display="none"; }
+}
+function quizSynthese() {
+  let qs = [
+    {q:"Quel composant exécute le code machine ?", rep:"cpu"},
+    {q:"Vrai ou faux : un SSD garde les données même éteint ?", rep:"vrai"},
+    {q:"Comment s’appelle le chef d’orchestre logiciel ?", rep:"os"},
+    {q:"Un bus dans l’ordi, c’est… ?", rep:"liaison"}
+  ];
+  let idx = Math.floor(Math.random()*qs.length);
+  let ask = qs[idx]; let reponse = prompt(ask.q);
+  let result = (reponse && reponse.toLowerCase().includes(ask.rep.toLowerCase())) ?
+    "Bravo ! " + ask.rep : "Réponse attendue : " + ask.rep;
+  document.getElementById("quiz-synthese-res").textContent = result;
+}
+const schemaData = [
+  {x:410, y:70, w:110, h:55, zone:"CPU", bulle:"Le cerveau : exécute toutes les instructions, fait les calculs à partir des infos reçues.", color:"#ff8800"},
+  {x:280, y:30, w:90, h:44, zone:"RAM", bulle:"Mémoire vive : stocke TEMPORAIREMENT ce qu’on utilise en ce moment (mémoire tampon du travail)", color:"#79acee"},
+  {x:140, y:120, w:100, h:44, zone:"SSD/HDD", bulle:"Stockage durable : garde les fichiers et programmes même éteint", color:"#f5a623"},
+  {x:565, y:30, w:100, h:44, zone:"Carte mère & Bus", bulle:"Relie tous les composants ; les bus sont comme des autoroutes pour l’information.", color:"#243552"},
+  {x:700, y:120, w:110, h:44, zone:"Périphériques", bulle:"Tout ce qui sert à communiquer avec l’utilisateur ou le réseau (clavier, écran, carte réseau, etc.)", color:"#e06359"},
+  {x:350, y:180, w:200, h:38, zone:"OS", bulle:"Le chef d’orchestre : s’occupe de lancer/ranger les applis, partager la mémoire, gérer les droits utilisateurs et le stockage", color:"#167c2b"},
+];
+var canvas = document.getElementById("schema");
+var ctx = canvas.getContext("2d");
+function drawSchema() {
+  ctx.clearRect(0,0,900,260);
+  ctx.font="17px Arial";
+  ctx.fillStyle="#243552";
+  ctx.fillText("Schéma : composants principaux du PC avec rôle de l’OS (flèches : circulation des infos et rôle d’arbitrage)",110,60);
+  for(let d of schemaData){
+    ctx.fillStyle=d.color; ctx.globalAlpha=0.19; ctx.fillRect(d.x,d.y,d.w,d.h); ctx.globalAlpha=1.0;
+    ctx.strokeStyle="#333"; ctx.lineWidth=2; ctx.strokeRect(d.x,d.y,d.w,d.h);
+    ctx.fillStyle="#243552"; ctx.font="bold 18px Arial"; ctx.fillText(d.zone, d.x+13, d.y+28);
+  }
+  // Flèches CPU <-> RAM, CPU <-> SSD, etc.
+  ctx.strokeStyle="#ff8800"; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(470,125); ctx.lineTo(325,52); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(410,98); ctx.lineTo(190,142); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(520,98); ctx.lineTo(745,142); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(465,125); ctx.lineTo(465,198); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(567,52); ctx.lineTo(465,98); ctx.stroke();
+}
+drawSchema();
+canvas.addEventListener('mousemove', function(e){
+  var rect = canvas.getBoundingClientRect();
+  var x = e.clientX - rect.left, y = e.clientY - rect.top;
+  var bulle = document.getElementById("info-bulle"); let found = false;
+  for(let d of schemaData){
+    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
+      bulle.style.left = (rect.left + d.x + 33) + "px";
+      bulle.style.top = (rect.top + d.y + 10) + "px";
+      bulle.style.display = "block"; bulle.innerHTML = d.bulle; found=true; break;
+    }
+  }
+  if(!found) bulle.style.display="none";
+});
+canvas.addEventListener('click', function(e){
+  var rect = canvas.getBoundingClientRect();
+  var x = e.clientX - rect.left, y = e.clientY - rect.top;
+  for(let d of schemaData){
+    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
+      alert(d.bulle.replace(/<br>/g,"\n")); break;
+    }
+  }
+});
+function afficheReponseNSI1() { document.getElementById("exo-reponse-nsi1").style.display = "block"; }
+function quizNSI(rep) {
+  let rq = document.getElementById("rep-quiz-nsi");
+  rq.textContent = (rep === 0) ? "Bonne réponse : le processeur (CPU) exécute tout le code !" : "Faux, révise le rôle de chaque composant.";
+}
+function quizNSI2(rep) {
+  let rq = document.getElementById("rep-quiz-nsi2");
+  rq.textContent = (rep === 0) ? "Bravo : Linux gère serveurs, PC, smartphones (Android est basé sur Linux) !" : "Non, ni Windows ni Mac n'embarquent sur la majorité des serveurs et téléphones Android.";
+}
+</script>
+</body>
+</html>

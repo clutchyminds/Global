@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Masterclass NSI : Langages et programmation</title>
+  <meta name="description" content="Cours complet NSI - Initiation à la programmation : variables, structures de contrôle, fonctions, tableaux, fichiers, quiz, exercices, schéma.">
+  <style>
+    body { background: #f5f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+    header { background: linear-gradient(90deg,#eef4fb,#e7f1ff 80%); color: #243552; padding: 30px 0 12px; text-align: center;}
+    header h1 { font-size: 2.3rem; margin: 0 0 10px; color: #2154bb;}
+    header .intro { font-size: 1rem;}
+    main { max-width: 950px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(21,84,187,0.12);}
+    h2 { color: #2154bb; margin-top: 32px;}
+    h3 { color: #f5a623; margin-top: 22px;}
+    ul, ol { margin-left: 1.4em;}
+    .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+    .infos {background: #e7f3fa; border-left: 6px solid #2154bb;}
+    .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+    .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+    .error {background: #ffeaea; border-left: 7px solid #e06359;}
+    .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+    .anecdote {background: #e7f1ff; border-left: 7px solid #2154bb; font-style: italic; margin: 1em 0; padding: 12px 17px; border-radius: 6px;}
+    .source { font-size: 0.9em; color: #999; text-align: right;}
+    button, .btn-expl {background: #2154bb; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 14px; cursor: pointer; margin-right: 8px; margin-top: 7px; transition: background 0.2s;}
+    button:hover, .btn-expl:hover { background: #14357a;}
+    #schema { margin: 2em auto 1em; display: block; background: #e7f1ff; border-radius: 8px; border: 1px solid #d1d5db;}
+    .info-bulle {display:none;position: absolute; background:#fffefc; border:1px solid #243552; border-radius:5px;padding:10px;font-size:1rem;z-index:10; box-shadow: 0 3px 12px rgba(21,84,187,0.09);}
+    .reponse { margin-top: 0.7em; color: #2154bb; font-weight: bold; text-align: center;}
+    #desc-schema { background: #e7f3fa; border-radius: 6px; color: #2154bb; font-weight: bold; padding: 10px; text-align: center; min-height: 25px; margin-bottom: 10px;}
+    table { border-collapse:collapse; margin: 10px auto;}
+    th, td { border:1px solid #2154bb; padding:7px 15px; text-align:center;}
+    th { background:#eef4fb;}
+    td.type { font-weight:bold; }
+    code {background:#eef4fb; border-radius:4px; padding:0 2px;}
+    @media (max-width: 900px) { main { padding: 12px 2px; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Masterclass NSI : Langages et programmation</h1>
+  <div class="intro">Tout ce qu’il faut : variables, instructions, boucles, fonctions, tableaux, fichiers… pour devenir programmeur(se) NSI.</div>
+</header>
+<main>
+<section>
+  <h2>📚 Cours complet — Initiation à la programmation</h2>
+  <p>
+    Un <b>langage de programmation</b> permet de donner des instructions à l’ordinateur, qui exécutera les calculs, actions, affichages demandés.  
+    Les langages peuvent être <b>impératifs</b> (Python, C, JavaScript…), <b>logiques</b>, <b>fonctionnels</b>… Ici, on commence par les bases.
+  </p>
+  <table>
+    <tr>
+      <th>Concept</th>
+      <th>Explication</th>
+      <th>Exemple Python</th>
+    </tr>
+    <tr>
+      <td class="type">Variable</td>
+      <td>Contient une valeur (nombre, texte, etc.)</td>
+      <td><code>a = 5</code>, <code>nom = "Alice"</code></td>
+    </tr>
+    <tr>
+      <td class="type">Structure de contrôle</td>
+      <td>Oriente les actions : si/si…sinon, boucle</td>
+      <td><code>if a > 0: ...</code><br><code>for i in range(5): ...</code></td>
+    </tr>
+    <tr>
+      <td class="type">Fonction</td>
+      <td>Regroupe des instructions réutilisables</td>
+      <td><code>def salut(): print("Hello")</code></td>
+    </tr>
+    <tr>
+      <td class="type">Tableau/Liste</td>
+      <td>Groupe de valeurs numérotées</td>
+      <td><code>notes = [12, 16, 10]</code></td>
+    </tr>
+    <tr>
+      <td class="type">Fichier</td>
+      <td>Stocke infos à relire (texte, CSV…)</td>
+      <td><code>open("data.txt")</code></td>
+    </tr>
+  </table>
+  <b>Principales étapes pour coder :</b>
+  <ul>
+    <li><b>Déclarer</b> et <b>initialiser</b> les variables</li>
+    <li>Utiliser <b>structures de contrôle</b> pour tester, répéter des actions (<code>if</code>, <code>for</code>, <code>while</code>)</li>
+    <li>Créer des <b>fonctions</b> pour organiser le code, éviter de répéter</li>
+    <li>Lire, modifier, parcourir <b>tableaux/listes</b> pour traiter plusieurs données</li>
+    <li>Lire/écrire des <b>fichiers</b> pour sauvegarder et réutiliser informations/paramètres</li>
+  </ul>
+  <p>
+    <b>Exemple (Python) — Programme qui affiche la moyenne d’une liste de notes :</b><br>
+    <code>
+      notes = [15, 12, 18]<br>
+      def moyenne(liste):<br>
+      &nbsp;&nbsp;return sum(liste)/len(liste)<br>
+      print(moyenne(notes))
+    </code>
+  </p>
+  <p>
+    <b>Gestion de fichier — Lire chaque ligne d’un fichier texte :</b><br>
+    <code>
+      with open("notes.txt") as f:<br>
+      &nbsp;&nbsp;for ligne in f:<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;print(ligne)
+    </code>
+  </p>
+  <p>
+    <b>Organisation du code et bonnes pratiques :</b>
+    <ul>
+      <li>Bien nommer les variables</li>
+      <li>Commenter le code (“pourquoi” et “comment”)</li>
+      <li>Tester sur différentes valeurs</li>
+      <li>Faire des fonctions courtes, claires</li>
+      <li>Respecter l’indentation et la syntaxe</li>
+    </ul>
+  </p>
+</section>
+<section>
+  <h2>📋 Fiche synthèse interactive</h2>
+  <ul id="ul-synthese">
+    <li><b>Comment créer une boucle de 1 à 10 en Python ?</b>
+      <button class="btn-expl" onclick="afficheSynthese('boucle')">Affiche explication</button>
+      <span id="syn-boucle" style="display:none;color:#167c2b;">
+        <code>for i in range(1, 11): ...</code>
+      </span>
+    </li>
+    <li><b>À quoi servent les fonctions en programmation ?</b>
+      <button class="btn-expl" onclick="afficheSynthese('fonction')">Réponse !</button>
+      <span id="syn-fonction" style="display:none;color:#2154bb;">
+        À faire des blocs de code réutilisables, organisés, plus clairs à débugger.
+      </span>
+    </li>
+    <li><b>Différence entre tableau et liste ?</b>
+      <button class="btn-expl" onclick="afficheSynthese('tableau')">Voir ici</button>
+      <span id="syn-tableau" style="display:none;color:#f5a623;">
+        En Python, liste = tableau dynamique ; ailleurs, tableau est taille fixe.
+      </span>
+    </li>
+    <li><b>À quoi sert l’instruction “if” ?</b>
+      <button class="btn-expl" onclick="afficheSynthese('if')">Clique ici</button>
+      <span id="syn-if" style="display:none;color:#e06359;">
+        À exécuter une action selon la condition (si vrai, alors…)
+      </span>
+    </li>
+    <li><b>Défi : Comment lire tout un fichier rangé ligne par ligne ?</b>
+      <button class="btn-expl" onclick="afficheSynthese('fichier')">Afficher</button>
+      <span id="syn-fichier" style="display:none;color:#243552;">
+        <code>for line in open("monfichier.txt"):</code> <br>ou avec <code>with open(...) as f:</code>
+      </span>
+    </li>
+  </ul>
+  <div>
+    <button onclick="quizSynthese()">Quiz surprise</button>
+    <span class="reponse" id="quiz-synthese-res"></span>
+  </div>
+</section>
+<section>
+  <h2>💻 Schéma interactif — Logique du programme</h2>
+  <canvas id="schema" width="900" height="240"></canvas>
+  <div id="desc-schema">Survole chaque bloc : retrouve le chemin d’exécution typique du code (variables, contrôle, fonction, tableau, fichier).</div>
+  <div id="info-bulle" class="info-bulle"></div>
+</section>
+<section class="box box-exo">
+  <h2>💡 Exercices interactifs</h2>
+  <p>Quelle structure en Python pour parcourir une liste ?</p>
+  <button onclick="afficheReponseNSI1()">Voir la correction</button>
+  <div class="reponse" id="exo-reponse-nsi1" style="display:none;">
+    <code>for elt in liste:</code> — pour chaque élément, faire...
+  </div>
+  <p>Comment calculer le nombre de lignes dans un fichier Python ?</p>
+  <button onclick="document.getElementById('exo2-reponse-nsi').style.display='block';">Voir la correction</button>
+  <div class="reponse" id="exo2-reponse-nsi" style="display:none;">
+    <code>len(open("monfichier.txt").readlines())</code>
+  </div>
+</section>
+<section class="quiz">
+  <h2>🎯 Quiz rapide</h2>
+  <p>Quel mot-clé permet de répéter une action en Python ?</p>
+  <button onclick="quizNSI(0)">for</button>
+  <button onclick="quizNSI(1)">return</button>
+  <button onclick="quizNSI(2)">def</button>
+  <div class="reponse" id="rep-quiz-nsi"></div>
+  <p>Comment s’appelle la technique pour regrouper des instructions et y mettre des paramètres ?</p>
+  <button onclick="quizNSI2(0)">Variable</button>
+  <button onclick="quizNSI2(1)">Fonction</button>
+  <button onclick="quizNSI2(2)">Boucle</button>
+  <div class="reponse" id="rep-quiz-nsi2"></div>
+</section>
+<section class="box-important">
+  <h2>🌍 Applications concrètes</h2>
+  <ul>
+    <li>Statistiques, analyse de texte, gestion de listes, automatisation de tâches</li>
+    <li>Jeux vidéo (boucles, variables score et vie…), IA, robots, applis web</li>
+    <li>Outils pour traiter des fichiers CSV, logs, images, etc.</li>
+    <li>Systèmes embarqués : scripts pour Raspberry Pi, Arduino, etc.</li>
+  </ul>
+</section>
+<section class="error">
+  <h2>❌ Erreurs fréquentes à éviter</h2>
+  <ul>
+    <li>Oublier l’indentation : Python en a besoin pour comprendre qui dépend de quoi</li>
+    <li>Utiliser <code>=</code> au lieu de <code>==</code> dans les tests</li>
+    <li>Parcourir une liste sans faire attention à la taille</li>
+    <li>Ne pas fermer les fichiers après lecture/écriture (sauf “with open…”)</li>
+    <li>Confondre le rôle des fonctions (fonctions ≠ boucles ≠ variables)</li>
+  </ul>
+</section>
+<section class="lexique">
+  <h2>📚 Lexique express</h2>
+  <b>Variable :</b> nom qui contient une valeur<br>
+  <b>Boucle :</b> “for”, “while”, pour répéter<br>
+  <b>If/Sinon :</b> test/la condition<br>
+  <b>Fonction :</b> bloc de code réutilisable<br>
+  <b>Tableau/Liste :</b> plusieurs valeurs ensemble<br>
+  <b>Fichier :</b> texte/binaire sauvegardé
+</section>
+<section class="rubrique">
+  <h3>📖 Anecdotes et histoire</h3>
+  <ul>
+    <li>Le langage Python, créé en 1991 par Guido van Rossum, est utilisé du collège à la NASA !</li>
+    <li>Les premiers langages (Fortran, C…) étaient écrits pour calculer et piloter des machines scientifiques.</li>
+    <li>L’indentation obligatoire de Python évite les erreurs de lecture (“pyramide de code” plus claire !)</li>
+    <li>“def” vient de “define”, “for” veut dire “pour chaque”, “if” veut dire “si...”</li>
+  </ul>
+  <div class="source">Source : Histoire des langages et de la programmation, NSI</div>
+</section>
+<section class="anecdote">
+  <b>Astuce mémoire</b> :
+  “Boucle for” = “pour” tous les éléments ; “def” pour “définir”, “if” pour “si”.
+  Fais des fonctions courtes, c’est plus facile à relire !
+</section>
+<section>
+  <h2>💡 Méthodologie contrôle</h2>
+  <ul>
+    <li>Bien nommer, initialiser et commenter les variables</li>
+    <li>Utiliser boucles et structures pour traiter tous les cas possibles</li>
+    <li>Créer des fonctions pour organiser les programmes et montrer que tu sais structurer</li>
+    <li>Parcourir et modifier tableaux, fichiers, structures complexes</li>
+    <li>Gérer les erreurs (try/except, vérification des valeurs, tests de fichiers)</li>
+    <li>Justifier chaque choix et tester chaque partie sur des exemples simples et des cas limites !</li>
+  </ul>
+</section>
+</main>
+<script>
+function afficheSynthese(id) {
+  var el = document.getElementById("syn-"+id);
+  if (el.style.display==="none") { el.style.display="inline"; }
+  else { el.style.display="none"; }
+}
+function quizSynthese() {
+  let qs = [
+    {q:"Mot-clé pour débuter une fonction ?", rep:"def"},
+    {q:"Si on veut répéter 5 fois une action ?", rep:"for"},
+    {q:"Expression pour tester si x strictement positif ?", rep:"x > 0"},
+    {q:"Vrai ou faux : Les listes Python peuvent contenir différents types.", rep:"vrai"}
+  ];
+  let idx = Math.floor(Math.random()*qs.length);
+  let ask = qs[idx]; let reponse = prompt(ask.q);
+  let result = (reponse && reponse.toLowerCase().includes(ask.rep.toLowerCase())) ?
+    "Bravo ! " + ask.rep : "Réponse attendue : " + ask.rep;
+  document.getElementById("quiz-synthese-res").textContent = result;
+}
+const schemaData = [
+  {x:160, y:80, w:130, h:52, zone:"Variables", bulle:"Stockent des données : nombre, texte, booléen...", color:"#2154bb"},
+  {x:320, y:160, w:130, h:52, zone:"Boucles", bulle:"Répètent les actions sur la liste, le tableau ou tant qu’un test est positif.", color:"#f5a623"},
+  {x:475, y:71, w:130, h:52, zone:"Fonctions", bulle:"Blocs de code réutilisables, avec ou sans paramètres. Permettent d’organiser le programme.", color:"#167c2b"},
+  {x:650, y:80, w:130, h:52, zone:"Tableau/Liste", bulle:"Plusieurs valeurs numérotées : pour stocker, trier ou parcourir facilement.", color:"#e06359"},
+  {x:530, y:185, w:180, h:45, zone:"Fichier", bulle:"Permet la sauvegarde, la lecture, l’archivage (logs, CSV, texte…)", color:"#79acee"},
+  {x:330, y:30, w:100, h:35, zone:"Si/If", bulle:"Contrôle les choix et les parcours dans le code", color:"#243552"}
+];
+var canvas = document.getElementById("schema");
+var ctx = canvas.getContext("2d");
+function drawSchema() {
+  ctx.clearRect(0,0,900,240);
+  ctx.font="17px Arial";
+  ctx.fillStyle="#243552";
+  ctx.fillText("Schéma : principaux blocs d’un programme simple — liens entre variables, boucles, fonctions, tableaux et fichiers.",45,60);
+  for(let d of schemaData){
+    ctx.fillStyle=d.color; ctx.globalAlpha=0.18; ctx.fillRect(d.x,d.y,d.w,d.h); ctx.globalAlpha=1.0;
+    ctx.strokeStyle="#333"; ctx.lineWidth=2; ctx.strokeRect(d.x,d.y,d.w,d.h);
+    ctx.fillStyle="#243552"; ctx.font="bold 19px Arial"; ctx.fillText(d.zone, d.x+15, d.y+28);
+  }
+  // Flèches, liens
+  ctx.strokeStyle="#2154bb"; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(210,132); ctx.lineTo(370,190); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(550,122); ctx.lineTo(610,130); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(350,62); ctx.lineTo(200,80); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(380,192); ctx.lineTo(530,207); ctx.stroke();
+}
+drawSchema();
+canvas.addEventListener('mousemove', function(e){
+  var rect = canvas.getBoundingClientRect();
+  var x = e.clientX - rect.left, y = e.clientY - rect.top;
+  var bulle = document.getElementById("info-bulle"); let found = false;
+  for(let d of schemaData){
+    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
+      bulle.style.left = (rect.left + d.x + 33) + "px";
+      bulle.style.top = (rect.top + d.y + 10) + "px";
+      bulle.style.display = "block"; bulle.innerHTML = d.bulle; found=true; break;
+    }
+  }
+  if(!found) bulle.style.display="none";
+});
+canvas.addEventListener('click', function(e){
+  var rect = canvas.getBoundingClientRect();
+  var x = e.clientX - rect.left, y = e.clientY - rect.top;
+  for(let d of schemaData){
+    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
+      alert(d.bulle.replace(/<br>/g,"\n")); break;
+    }
+  }
+});
+function afficheReponseNSI1() { document.getElementById("exo-reponse-nsi1").style.display = "block"; }
+function quizNSI(rep) {
+  let rq = document.getElementById("rep-quiz-nsi");
+  rq.textContent = (rep === 0) ? "Bravo ! 'for' sert pour les boucles en Python." : "Non : return pour les fonctions, def pour définir.";
+}
+function quizNSI2(rep) {
+  let rq = document.getElementById("rep-quiz-nsi2");
+  rq.textContent = (rep === 1) ? "Bonne réponse : une fonction regroupe instructions et paramètres." : "Variable : contient une valeur ; Boucle : répète des actions.";
+}
+</script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Masterclass Python — Cours ultra détaillé & interactif</title>
+  <meta name="description" content="Apprends Python en profondeur : syntaxe, variables, types, fonctions, classes, gestion des erreurs, fichiers, modules, bonnes pratiques, quiz et exercices." />
+  <style>
+    body {
+      background: #f7f9fc;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #222;
+      margin: 0;
+      line-height: 1.8;
+    }
+    header {
+      background: linear-gradient(90deg, #cdeaff, #a1d4ff);
+      color: #003355;
+      padding: 45px 0 28px;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 3.2rem;
+      margin: 0 0 16px;
+      color: #002244;
+    }
+    header .intro {
+      font-size: 1.35rem;
+      font-weight: 700;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    main {
+      max-width: 1000px;
+      background: #fff;
+      margin: 55px auto 35px;
+      padding: 50px 60px;
+      border-radius: 22px;
+      box-shadow: 0 15px 48px rgba(0, 34, 68, 0.15);
+    }
+    h2 {
+      color: #002244;
+      margin-top: 55px;
+      border-bottom: 5px solid #a1d4ff;
+      padding-bottom: 12px;
+      font-size: 2.8rem;
+    }
+    h3 {
+      color: #004a99;
+      margin-top: 48px;
+      font-size: 2.0rem;
+    }
+    ul, ol {
+      margin-left: 3em;
+      margin-bottom: 2.5em;
+      font-size: 1.2rem;
+    }
+    .infos, .box-exo, .lexique, .error, .anecdote {
+      padding: 28px 36px;
+      border-radius: 12px;
+      margin: 2.5em 0;
+      font-size: 1.2rem;
+    }
+    .infos {
+      background: #d9f0ff;
+      border-left: 10px solid #3399ff;
+      color: #003355;
+    }
+    .box-exo {
+      background: #e5f3ff;
+      border-left: 11px solid #0066cc;
+      color: #002244;
+    }
+    .box-important {
+      background: #fff9e6;
+      border-left: 11px solid #ffb84d;
+    }
+    .error {
+      background: #ffdede;
+      border-left: 11px solid #cc3300;
+      color: #990000;
+    }
+    .lexique {
+      background: #bddbff;
+      border-left: 11px solid #004a99;
+      padding: 28px;
+      margin: 3em 0;
+    }
+    .anecdote {
+      background: #a9c9ff;
+      border-left: 11px solid #002244;
+      font-style: italic;
+      margin: 3em 0;
+      padding: 25px 33px;
+      color: #001a33;
+    }
+    code {
+      background: #d2e8ff;
+      padding: 0 8px;
+      border-radius: 7px;
+      font-family: 'Consolas', monospace;
+      font-size: 1.15rem;
+    }
+    pre {
+      background: #d2e8ff;
+      padding: 28px;
+      border-radius: 12px;
+      overflow-x: auto;
+      font-family: 'Consolas', monospace;
+      margin: 1.5em 0 3em;
+      font-size: 1.15rem;
+      line-height: 1.6;
+    }
+    button, .btn-expl {
+      background: #004a99;
+      color: white;
+      border: none;
+      font-weight: 900;
+      border-radius: 11px;
+      padding: 14px 26px;
+      cursor: pointer;
+      margin-right: 16px;
+      margin-top: 16px;
+      transition: background-color 0.35s ease;
+      font-size: 1.2rem;
+    }
+    button:hover, .btn-expl:hover {
+      background: #002f66;
+    }
+    .reponse {
+      margin-top: 1.6em;
+      font-weight: 900;
+      color: #002244;
+      text-align: center;
+      font-size: 1.3rem;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Masterclass Python — Cours complet & ultra détaillé</h1>
+  <div class="intro">Maîtrise Python à fond : syntaxe, types, fonctions, classes, gestion des erreurs, fichiers, programmation modulaire, bonnes pratiques, quiz et exercices.</div>
+</header>
+<main>
+
+  <section>
+    <h2>🐍 Qu’est-ce que Python ?</h2>
+    <ul>
+      <li><b>Python</b> est un langage de programmation interprété et multiplateforme, réputé pour sa syntaxe claire et sa facilité d’apprentissage.</li>
+      <li>Utilisé en science des données, web, automatisation, intelligence artificielle, jeux vidéo, applications robustes.</li>
+      <li>Créé en 1991 par Guido van Rossum, il repose sur la lisibilité du code pour faciliter la collaboration et la maintenance.</li>
+      <li>Sa large communauté et ses bibliothèques riches en font un langage versatile et puissant.</li>
+    </ul>
+    <div class="infos">
+      <p>Son design s’inspire du langage ABC et met l’accent sur une syntaxe minimaliste où l'indentation remplace les accolades, pour structurer le code visuellement.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>🔠 Syntaxe et variables en Python</h2>
+    <p>Les variables en Python n'ont pas besoin d'être déclarées explicitement : elles sont créées dès la première assignation.</p>
+    <ul>
+      <li>Les types principaux sont <code>int</code>, <code>float</code>, <code>str</code>, <code>bool</code>.</li>
+      <li>Python est fortement typé : une variable garde son type, mais le typage est dynamique.</li>
+      <li>La convention est d’utiliser le snake_case pour nommer variables et fonctions.</li>
+      <li>Tu peux assigner plusieurs variables en une ligne, et échanger facilement les valeurs : <code>a, b = b, a</code></li>
+    </ul>
+    <pre><code>age = 30
+nom = "Alice"
+taille = 1.75
+est_actif = True
+a, b = 5, 10
+a, b = b, a  # échange
+</code></pre>
+    <div class="infos">
+      <p>Le typage dynamique permet de reassigner une variable avec un type différent, mais cela peut aussi être source d’erreurs si mal géré.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>⚖️ Types de données et opérations</h2>
+    <p>Les types de base permettent de faire des opérations mathématiques, des manipulations de chaînes et des comparaisons.</p>
+    <ul>
+      <li><b>Opérateurs mathématiques :</b> <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>//</code> (division entière), <code>%</code> (modulo), <code>**</code> (puissance).</li>
+      <li><b>Opérateurs de comparaison :</b> <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>.</li>
+      <li><b>Concaténation de chaînes :</b> avec <code>+</code>, ou avec f-string pour l’interpolation.</li>
+    </ul>
+    <pre><code>x = 10 + 4 * 2
+y = 15 // 4  # 3
+z = 5 % 2   # 1
+nom = "Alice"
+message = f"Bonjour {nom} !"
+print(message)
+</code></pre>
+  </section>
+
+  <section>
+    <h2>🔀 Structures de contrôle : conditions et boucles</h2>
+    <p>Le contrôle de flux est essentiel pour prendre des décisions et répéter des actions.</p>
+    <ul>
+      <li><b>if / elif / else :</b> blocs conditionnels indentés pour exécuter le code selon des tests booléens.</li>
+      <li><b>while :</b> boucle tant que la condition est vraie.</li>
+      <li><b>for :</b> boucle sur une séquence (liste, chaîne, range...).</li>
+      <li><b>break / continue :</b> permettent d’arrêter ou sauter une itération dans une boucle.</li>
+    </ul>
+    <pre><code>age = 20
+if age &gt;= 18:
+    print("Majeur")
+elif age &gt;= 13:
+    print("Adolescent")
+else:
+    print("Enfant")
+
+for i in range(5):
+    if i == 3:
+        continue
+    print(i)
+</code></pre>
+  </section>
+
+  <section>
+    <h2>🧩 Fonctions : bloquer et réutiliser un code</h2>
+    <p>Une fonction contient un groupe d’instructions réutilisables, avec des paramètres et éventuellement une valeur retournée.</p>
+    <ul>
+      <li>Déclaration avec <code>def nom_fonction(param1, param2):</code>.</li>
+      <li>Utilisation du mot-clé <code>return</code> pour renvoyer une valeur.</li>
+      <li>Les fonctions peuvent avoir des arguments par défaut, des paramètres nommés, et accepter un nombre variable d’arguments.</li>
+    </ul>
+    <pre><code>def saluer(nom="ami"):
+    return f"Bonjour {nom} !"
+
+print(saluer())
+print(saluer("Alice"))
+</code></pre>
+  </section>
+
+  <section>
+    <h2>📚 Listes, tuples, dictionnaires et ensembles</h2>
+    <p>Python offre plusieurs structures pour stocker des collections de données.</p>
+    <ul>
+      <li><b>Liste :</b> mutable, ordonnée, modifiable (ex : <code>[1, 2, 3]</code>).</li>
+      <li><b>Tuple :</b> immuable, ordonné, plus sécurisé (ex : <code>(1, 2, 3)</code>).</li>
+      <li><b>Dictionnaire :</b> collection clé-valeur avec clés uniques (ex : <code>{"nom":"Alice", "age":30}</code>).</li>
+      <li><b>Set :</b> collection non ordonnée d’éléments uniques.</li>
+    </ul>
+    <pre><code>liste = [1, 2, 3, 4]
+tuple_ = (10, 20, 30)
+dico = {"nom": "Alice", "age": 25}
+ensemble = {1, 2, 3, 4}
+</code></pre>
+  </section>
+
+  <section>
+    <h2>🛠️ Gestion d’erreurs et exceptions</h2>
+    <p>Pour gérer les erreurs sans faire planter le programme, Python utilise les exceptions.</p>
+    <ul>
+      <li><b>try / except :</b> tenter un bloc de code, intercepter les erreurs.</li>
+      <li><b>else :</b> exécuter si pas d’erreur.</li>
+      <li><b>finally :</b> code toujours exécuté, pour nettoyage.</li>
+      <li>On peut lever des erreurs personnalisées avec <code>raise</code>.</li>
+    </ul>
+    <pre><code>try:
+    x = int(input("Entrez un nombre : "))
+except ValueError:
+    print("Ce n'est pas un nombre valide.")
+else:
+    print("Merci !")
+finally:
+    print("Fin du programme.")
+</code></pre>
+  </section>
+
+  <section>
+    <h2>📁 Lecture et écriture de fichiers</h2>
+    <p>Python facilite la manipulation de fichiers texte ou binaire pour sauvegarder ou lire des données.</p>
+    <ul>
+      <li>Ouvrir un fichier avec <code>open("fichier.txt", "r")</code> (mode lecture) ou <code>"w"</code> (mode écriture).</li>
+      <li>Utiliser <code>with</code> pour gérer correctement la fermeture automatique.</li>
+      <li>Lire tout le contenu avec <code>read()</code>, lire ligne à ligne avec <code>readline()</code> ou <code>readlines()</code>.</li>
+      <li>Écrire du texte avec <code>write()</code>.</li>
+    </ul>
+    <pre><code>with open("data.txt", "w") as f:
+    f.write("Hello World\n")
+
+with open("data.txt", "r") as f:
+    contenu = f.read()
+    print(contenu)
+</code></pre>
+  </section>
+
+  <section>
+    <h2>📦 Modules et packages</h2>
+    <p>Pour organiser et réutiliser le code, on divise souvent en modules et packages.</p>
+    <ul>
+      <li><b>Module :</b> un fichier Python (.py) contenant des fonctions, classes, variables.</li>
+      <li><b>Importer avec <code>import nom_module</code> ou <code>from nom_module import fonction</code>.</li>
+      <li><b>Package :</b> dossier contenant plusieurs modules et un fichier <code>__init__.py</code>.</li>
+      <li>Utiliser pip pour installer des packages externes (ex : numpy, pandas).</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>🔄 Programmation orientée objet (POO)</h2>
+    <p>La POO permet de modéliser des objets avec attributs (données) et méthodes (fonctions associées).</p>
+    <ul>
+      <li>Définir une classe avec <code>class NomClasse :</code>.</li>
+      <li>Créer des objets (instances) en appelant la classe.</li>
+      <li>Surcharge du constructeur <code>__init__</code> pour initialiser les objets.</li>
+      <li>Héritage, encapsulation et polymorphisme pour structurer des programmes complexes.</li>
+    </ul>
+    <pre><code>class Personne:
+    def __init__(self, nom, age):
+        self.nom = nom
+        self.age = age
+
+    def saluer(self):
+        print(f"Bonjour, je suis {self.nom}.")
+
+p = Personne("Alice", 30)
+p.saluer()
+</code></pre>
+  </section>
+
+  <section>
+    <h2>💡 Quiz : testez vos connaissances Python</h2>
+    <ul>
+      <li><b>Comment déclare-t-on une fonction en Python ?</b>
+        <button class="btn-expl" onclick="toggleQuiz('quiz1')">Voir réponse</button>
+        <span id="quiz1" style="display:none; color:#002244;">Avec <code>def nom_fonction(param):</code></span>
+      </li>
+      <li><b>Quelle est la différence entre une liste et un tuple ?</b>
+        <button class="btn-expl" onclick="toggleQuiz('quiz2')">Voir réponse</button>
+        <span id="quiz2" style="display:none; color:#002244;">La liste est modifiable, le tuple est immuable.</span>
+      </li>
+      <li><b>Comment gérer une erreur dans un bloc de code ?</b>
+        <button class="btn-expl" onclick="toggleQuiz('quiz3')">Voir réponse</button>
+        <span id="quiz3" style="display:none; color:#002244;">Avec <code>try/except</code>.</span>
+      </li>
+    </ul>
+  </section>
+
+  <section class="box-exo">
+    <h2>💡 Exercices pratiques</h2>
+    <p>1. Écris une fonction <code>facteurielle(n)</code> qui calcule la factorielle récursivement.</p>
+    <p>2. Crée un dictionnaire représentant un étudiant (nom, âge, notes) et affiche la moyenne.</p>
+    <button onclick="showExoCode()">Voir correction</button>
+    <pre id="exo-code" style="display:none; color:#002244;">
+def factorielle(n):
+    if n <= 1:
+        return 1
+    else:
+        return n * factorielle(n-1)
+
+etudiant = {
+    "nom": "Alice",
+    "age": 22,
+    "notes": [12, 14, 16]
+}
+
+moyenne = sum(etudiant["notes"]) / len(etudiant["notes"])
+print(f"Moyenne : {moyenne}")
+
+print(factorielle(5))
+</pre>
+  </section>
+
+  <section class="box-important">
+    <h2>🧠 Méthodologie & bonnes pratiques en Python</h2>
+    <ul>
+      <li>Respecte l’indentation rigoureuse à 4 espaces, élément fondamental de Python.</li>
+      <li>Choisis des noms de variables explicites et utilise des commentaires pour clarifier.</li>
+      <li>Teste tes fonctions indépendamment avec des cas simples puis complexes.</li>
+      <li>Modularise ton code en fonctions et modules pour faciliter la maintenance.</li>
+      <li>Lis la documentation officielle et explore les bibliothèques standards.</li>
+    </ul>
+  </section>
+
+  <section class="lexique">
+    <h2>📚 Lexique Python</h2>
+    <b>Variable :</b> espace mémoire nommé pour stocker une valeur.<br />
+    <b>Fonction :</b> bloc de code réutilisable, défini par <code>def</code>.<br />
+    <b>Tuple :</b> collection ordonnée et immuable.<br />
+    <b>Dictionnaire :</b> collection clé-valeur.<br />
+    <b>Exception :</b> erreur gérée avec <code>try/except</code>.<br />
+    <b>Module :</b> fichier Python que l’on peut importer.<br />
+    <b>Classe :</b> définition d’un type d’objet.<br />
+  </section>
+
+  <section class="anecdote">
+    <b>Anecdote :</b> Python a été conçu pour être un langage aussi facile à lire et écrire que l’anglais, avec un célèbre dicton “There should be one — and preferably only one — obvious way to do it”.
+  </section>
+</main>
+
+<script>
+  function toggleQuiz(id) {
+    let el = document.getElementById(id);
+    el.style.display = (el.style.display === "none" || !el.style.display) ? "inline" : "none";
+  }
+  function showExoCode() {
+    document.getElementById("exo-code").style.display = "block";
+  }
+</script>
+</body>
+</html>

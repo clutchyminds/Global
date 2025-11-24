@@ -1,0 +1,396 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Masterclass CSS — Ultime version détaillée & interactive</title>
+  <meta name="description" content="LE grand cours CSS interactif et accessible : base, couleur, position, animations, responsive, erreurs, lexique, quiz… tout est expliqué !">
+  <style>
+    body { background: #f5f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+    header { background: linear-gradient(90deg,#eef4fb,#e7fceb 80%); color: #243552; padding: 30px 0 12px; text-align: center;}
+    header h1 { font-size: 2.3rem; margin: 0 0 10px; color: #10b368;}
+    header .intro { font-size: 1.08rem;}
+    main { max-width: 990px; background: #fff; margin: 45px auto 20px; padding: 33px 48px; border-radius: 18px; box-shadow: 0 9px 28px rgba(16,179,104,0.12);}
+    h2 { color: #10b368; margin-top: 32px;}
+    h3 { color: #f5a623; margin-top: 22px;}
+    ul, ol { margin-left: 1.4em;}
+    ul.longlist li {margin-bottom:7px;}
+    .box, .infos { padding: 15px 26px; border-radius: 6px; margin: 1.2em 0; font-size: 1.06rem;}
+    .infos {background: #e7fceb; border-left: 6px solid #10b368;}
+    .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+    .step { background:#fbe9fa; border-left:5px solid #cf910c; border-radius:7px; padding:9px 15px; margin:13px 0; }
+    .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+    .error {background: #ffeaea; border-left: 7px solid #e06359;}
+    .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 13px; border-radius: 6px; margin: 1.3em 0;}
+    .anecdote {background: #e7fceb; border-left: 7px solid #10b368; font-style: italic; margin: 1em 0; padding: 12px 17px; border-radius: 6px;}
+    .source { font-size: 0.91em; color: #999; text-align: right;}
+    button, .btn-expl {background: #10b368; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 14px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
+    button:hover, .btn-expl:hover { background: #087c42;}
+    #schema { margin: 2em auto 1em; display: block; background: #e7fceb; border-radius: 8px; border: 1px solid #d1d5db;}
+    .info-bulle {display:none;position: absolute; background:#fffefc; border:1px solid #10b368; border-radius:5px;padding:10px;font-size:1rem;z-index:10; box-shadow: 0 3px 12px rgba(16,179,104,0.11);}
+    .reponse { margin-top: 0.7em; color: #10b368; font-weight: bold; text-align: center;}
+    #desc-schema { background: #e7fceb; border-radius: 6px; color: #10b368; font-weight: bold; padding: 10px; text-align: center; min-height: 25px; margin-bottom: 10px;}
+    code {background:#e8fceb; border-radius:4px; padding:0 2px;}
+    table { border-collapse:collapse; margin: 12px auto;}
+    th, td { border:1px solid #10b368; padding:7px 15px; text-align:center;}
+    th { background:#e7fceb;}
+    td.type { font-weight:bold; }
+    @media (max-width: 1100px) { main { padding: 10px 2px; } }
+    @media (max-width: 800px){
+      #schema{width:98vw;}
+      main{padding:2vw;}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Masterclass CSS — La version super détaillée & interactive</h1>
+  <div class="intro">Toutes les bases expliquées : boîtes, couleur, responsive, animations, rigole ET maîtrise les styles web comme un pro !</div>
+</header>
+<main>
+<section>
+  <h2> À quoi sert le CSS ? Grand résumé</h2>
+  <ul class="longlist">
+    <li>
+      CSS (“Cascading Style Sheets”) indique au navigateur comment <b>afficher</b> chaque élément HTML : couleur, taille, marges, contours, polices, animations, effets au survol…
+    </li>
+    <li>Sans CSS, tous les sites ressembleraient à Wikipédia sans styles (texte noir sur blanc, pas de boutons jolis, ni d’alignements ni de couleurs !)</li>
+    <li>Le CSS s’applique toujours <b>aux balises HTML</b>.</li>
+    <li>Il est “cascadant” : les styles les plus précis ou placés “après” l’emportent.</li>
+  </ul>
+  <div class="step">
+    <b>Où écrire du CSS ?</b><br>
+    – Ensemble <code>&lt;style&gt;</code> dans le <b>&lt;head&gt;</b> du HTML<br>
+    – Dans un <b>fichier .css</b> séparé et importé avec <code>&lt;link rel="stylesheet" href="mystyle.css"&gt;</code><br>
+    – Directement sur une balise : <code>&lt;h1 style="color:red;"&gt;Coucou&lt;/h1&gt;</code>
+  </div>
+</section>
+
+<section>
+  <h2>🧩 Comment ça marche ? — Structure et boîte CSS</h2>
+  <div class="infos">
+    <b>1 sélecteur = 1 ensemble de règles</b> :
+    <code>
+      h1 {<br>
+      &nbsp; color: #f5a623;<br>
+      &nbsp; font-size: 2rem;<br>
+      }
+    </code>
+    <br>
+    <b>Tout élément HTML est “dans une boîte” CSS (box-model)</b> :<br>
+    <ul>
+      <li>Contenu (texte/image…)</li>
+      <li><b>Padding</b> : marge intérieure</li>
+      <li><b>Border</b> : contour coloré, épais ou non</li>
+      <li><b>Margin</b> : espace entre la boîte et les autres éléments</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>👀 De la couleur partout ! + Les unités de taille</h2>
+  <ul class="longlist">
+    <li>
+      <b>Pour COLORER :</b>  
+      <code>color: blue;</code> (texte)  
+      odede>background-color: yellow;</code> (fond)  
+      odede>border-color: #e06359;</code> (bordure)
+    </li>
+    <li>
+      <b>Tu peux utiliser :</b>
+      - nom de couleur anglais (<code>red</code>, <code>yellowgreen</code>…)
+      - code hexadécimal (<code>#e06359</code>)
+      - <code>rgb(20,150,111)</code> ou <code>rgba(255,0,0,0.5)</code> pour la transparence !
+    </li>
+    <li>
+      <b>UNITÉS</b> :  
+      - <code>px</code> (pixels, absolut)  
+      - odede>em</code> (relatif à la police de l’élément),  
+      - <code>rem</code> (relatif à la racine du doc),  
+      - odede>%</code> (pourcent),  
+      - odede>vw</code> (viewport, largeur écran)
+    </li>
+    <li>
+      <b>Changer la police :</b> <code>font-family: Arial, sans-serif;</code>  
+      <b>Tout mettre en gras :</b> <code>font-weight:bold;</code>  
+      <b>Texte plus grand :</b> <code>font-size: 2rem;</code>
+    </li>
+  </ul>
+</section>
+
+<section>
+  <h2>🛠️ Sélecteurs et comment cibler exactement un élément</h2>
+  <table>
+    <tr><th>Sélecteur</th><th>Ce que ça vise</th><th>Exemple</th></tr>
+    <tr><td class="type">h1</td><td>Tous les titres &lt;h1&gt;</td><td><code>h1 { color: red; }</code></td></tr>
+    <tr><td class="type">.rouge</td><td>Tous les éléments avec class="rouge"</td><td><code>.rouge { color: red; }</code></td></tr>
+    <tr><td class="type">#unique</td><td>L’unique id="unique"</td><td><code>#unique { ... }</code></td></tr>
+    <tr><td class="type">div p</td><td>Tous les &lt;p&gt; DANS un &lt;div&gt;</td><td><code>div p { ... }</code></td></tr>
+    <tr><td class="type">a:hover</td><td>Un lien quand souris passe dessus</td><td><code>a:hover { ... }</code></td></tr>
+    <tr><td class="type">*</td><td>TOUS les éléments (<i>attention aux performances</i>)</td><td><code>* { box-sizing: border-box; }</code></td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>📐 Position, display, responsive : faire un site actuel</h2>
+  <div class="infos">
+    <ul>
+      <li>
+        <b>Display</b> :
+        - <code>block</code> (occupe toute la largeur : div, p…)
+        - <code>inline</code> (prend que la place du texte, ex : a, span…)
+        - <code>flex</code> (pour aligner horizontal, vertical, centrer facilement)
+      </li>
+      <li>
+        <b>Positionnement</b> :
+        - <code>position: static</code> (par défaut)
+        - odede>relative</code> (décalage selon sa position)
+        - odede>absolute</code> (par rapport au conteneur parent)
+        - <code>fixed</code> (reste visible pendant le scroll)
+        - <code>sticky</code> (se “colle” en haut en scrollant)
+      </li>
+      <li>
+        <b>Responsive ?</b>
+        Grâce aux media queries :
+        <code>@media (max-width:800px) { h1 { font-size:1.4em; } }</code>
+      </li>
+      <li>
+        <b>Centre tout :</b> <code>margin:auto</code> + <code>display:flex; justify-content:center;</code>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>💡 Quiz, trucs et astuces : base, avancé, fun !</h2>
+  <ul id="ul-synthese">
+    <li><b>Comment mettre une ombre sur une boîte ?</b>
+      <button class="btn-expl" onclick="afficheSynthese('shadow')">Déroule !</button>
+      <span id="syn-shadow" style="display:none;color:#10b368;">
+        <code>box-shadow: 5px 5px 12px #2225;</code>
+      </span>
+    </li>
+    <li><b>Changer la couleur du curseur ? </b>
+      <button class="btn-expl" onclick="afficheSynthese('cursor')">Voir !</button>
+      <span id="syn-cursor" style="display:none;color:#e06359;">
+        <code>cursor: pointer;</code> sur un bouton/élément interactif
+      </span>
+    </li>
+    <li><b>Faire un texte qui “pulse” ?</b>
+      <button class="btn-expl" onclick="afficheSynthese('ani1')">Astuce !</button>
+      <span id="syn-ani1" style="display:none;color:#f5a623;">
+        <code>
+          @keyframes pulse {<br>
+          &nbsp;0% { transform:scale(1); }<br>
+          &nbsp;50% { transform:scale(1.1);} <br>
+          &nbsp;100%{ transform:scale(1); }<br>
+          }<br>
+          .pulse { animation: pulse 1s infinite; }
+        </code>
+      </span>
+    </li>
+    <li><b>Astuce responsive :</b>
+      <button class="btn-expl" onclick="afficheSynthese('respo')">Voir code</button>
+      <span id="syn-respo" style="display:none;color:#10b368;">
+        <code>@media (max-width:600px){body {font-size:1em;background:#faf;}}</code>
+      </span>
+    </li>
+    <li><b>Deux façons de faire un bouton rond :</b>
+      <button class="btn-expl" onclick="afficheSynthese('rond')">Déroule</button>
+      <span id="syn-rond" style="display:none;color:#10b368;">
+        <code>border-radius: 50%;</code> ET largeur = hauteur ! <br>
+        <code>clip-path: circle(50%);</code>
+      </span>
+    </li>
+    <li><b>Réduire la taille d’une image au survol ?</b>
+      <button class="btn-expl" onclick="afficheSynthese('hoverimg')">Solution</button>
+      <span id="syn-hoverimg" style="display:none;color:#e06359;">
+        <code>img:hover { transform:scale(0.9); }</code>
+      </span>
+    </li>
+  </ul>
+  <div>
+    <button onclick="quizSynthese()">Quiz flash</button>
+    <span class="reponse" id="quiz-synthese-res"></span>
+  </div>
+</section>
+<section>
+  <h2>🖼️ Schéma interactif détaillé CSS</h2>
+  nvas id="schema" width="960" heightght="310"></canvas>
+  <div id="desc-schema">Survole chaque boîte : body, titre, image, bouton stylé, conteneur flex, zone responsive...</div>
+  <div id="info-bulle" class="info-bulle"></div>
+</section>
+<section class="box box-exo">
+  <h2>💡 Exercices pratiques + QCM</h2>
+  <p>Comment arrondir les coins d’une photo ?</p>
+  <button onclick="afficheReponseNSI1()">Voir code</button>
+  <div class="reponse" id="exo-reponse-nsi1" style="display:none;">
+    <code>img { border-radius: 14px; }</code>
+  </div>
+  <p>Quelle propriété rend un fond “transparent” en CSS moderne ?</p>
+  <button onclick="document.getElementById('exo2-reponse-nsi').style.display='block';">Réponse</button>
+  <div class="reponse" id="exo2-reponse-nsi" style="display:none;">
+    <code>background: rgba(255,255,255,0.5);</code>
+  </div>
+</section>
+<section class="quiz">
+  <h2>🎯 Quiz interactif ‘vrai défis CSS’</h2>
+  <p>Quelle propriété centre horizontalement un div de largeur fixe ?</p>
+  <button onclick="quizNSI(0)">margin-left: auto; margin-right: auto;</button>
+  <button onclick="quizNSI(1)">text-align: center;</button>
+  <button onclick="quizNSI(2)">float: center;</button>
+  <div class="reponse" id="rep-quiz-nsi"></div>
+  <p>Quelle syntaxe pour mettre toute la page en police Arial ?</p>
+  <button onclick="quizNSI2(0)">font-family: Arial, sans-serif;</button>
+  <button onclick="quizNSI2(1)">font: Arial;</button>
+  <button onclick="quizNSI2(2)">font-type: Arial;</button>
+  <div class="reponse" id="rep-quiz-nsi2"></div>
+</section>
+<section class="box-important">
+  <h2>🌍 Applications concrètes et idées projets CSS</h2>
+  <ul>
+    <li>Refaire YouTube/Twitter façon custom en couleur !</li>
+    <li>CV graphique, pages de présentation, portfolio responsive, landing page pro</li>
+    <li>Jeux “JS+CSS” simples (quiz, devinettes, memory, pixel art...)</li>
+    <li>Dark mode automatique (media query + variables CSS)</li>
+    <li>Animations ludiques : loader, popups, hover, transitions, sliders, etc.</li>
+  </ul>
+</section>
+<section class="error">
+  <h2>❌ Erreurs courantes expliquées</h2>
+  <ul>
+    <li>Oublier <code>;</code> à la fin d’une propriété, ou “:” entre propriété et valeur</li>
+    <li>Écrire <code>=</code> au lieu de <code>:</code> (mauvaise syntaxe !)</li>
+    <li>Mettre <code>#unique { }</code> alors que l’élément n’a pas d’id="unique"</li>
+    <li>Utiliser absolute partout, ce qui casse l’alignement responsive</li>
+    <li>Accumuler margin+padding+width sans contrôler le box-model, ça déborde…</li>
+    <li>Oublier de tester sur mobile, d’inclure l’UTF-8 dans le HTML (charset correct)</li>
+  </ul>
+</section>
+<section class="lexique">
+  <h2>📚 Lexique enrichi CSS</h2>
+  <b>Rule-set :</b> ensemble sélecteur + accolades + propriété/valeur<br>
+  <b>Box Model :</b> structure “contenu + padding + border + margin”<br>
+  <b>Opacity :</b> transparence<br>
+  <b>media query :</b> règle CSS seulement pour certains écrans<br>
+  <b>@import :</b> permet d’inclure un autre fichier CSS<br>
+  <b>Flexbox / Grid :</b> systèmes modernes de mise en page
+  <br><b>:hover, :focus, :active</b> : pseudo-classes pour intéragir avec l’utilisateur
+</section>
+<section class="anecdote">
+  <b>Anecdote & Astuces Pro</b> :  
+  Le CSS a été inventé pour séparer la structure (HTML) du style (CSS) dès 1996 !  
+  Les meilleurs sites web font du CSS “modulaire” : plein de petites classes intelligentes pour (presque) tout réutiliser.
+  <br>**Détail fun** : <code>background: repeating-linear-gradient</code> te permet même de créer des fonds “carreaux de cahier” pour réviser !
+</section>
+<section>
+  <h2>💡 Méthodologie & réflexes CSS</h2>
+  <ul>
+    <li>Lire le code HTML pour savoir quoi cibler (balise ? id ? classe ?...)</li>
+    <li>Utiliser un seul système de couleurs pour garder une harmonie</li>
+    <li>Toujours tester son site sur mobile (odede>@media</code>), sur plusieurs navigateurs</li>
+    <li>Commenter (“/* ... */”) ses fichiers CSS quand projet > 1 page</li>
+    <li>Commencer simple, puis ajouter les effets “wow” (ombre, transition, grid, responsive)</li>
+    <li>Se faire une collection de “petites classes CSS” réutilisables (<code>.btn</code>, <code>.card</code>)</li>
+  </ul>
+</section>
+</main>
+<script>
+function afficheSynthese(id) {
+  var el = document.getElementById("syn-"+id);
+  el.style.display = (el.style.display==="none"||!el.style.display) ? "inline" : "none";
+}
+function quizSynthese() {
+  let qs = [
+    {q:"Combien existe-t-il d’unités pour mesurer une taille en CSS (au moins 3, cite…) ?", rep:"px"},
+    {q:"Deux propriétés pour l’ombre d’une boîte ?", rep:"box-shadow"},
+    {q:"Quel mot-clé pour adapter à la largeur écran ?", rep:"vw"},
+    {q:"Un exemple de pseudo-classe ?", rep:":hover"},
+    {q:"Comment rendre une image circulaire ?", rep:"border-radius"}
+  ];
+  let idx = Math.floor(Math.random()*qs.length);
+  let ask = qs[idx]; let reponse = prompt(ask.q);
+  let result = (reponse && reponse.toLowerCase().includes(ask.rep.toLowerCase())) ?
+    "Bravo ! " + ask.rep : "Réponse attendue : " + ask.rep;
+  document.getElementById("quiz-synthese-res").textContent = result;
+}
+const schemaData = [
+  {x:80, y:22, w:140, h:57, zone:"body", bulle:"Contient toute la page ! Tu peux mettre fond, police, largeur etc. ici par défaut.", color:"#10b368"},
+  {x:250, y:50, w:170, h:57, zone:".box", bulle:"Boîte stylée : couleur, arrondi, ombre, padding, etc.", color:"#f5a623"},
+  {x:445, y:20, w:120, h:42, zone:"h1", bulle:"Titre, souvent gros et coloré, parfois responsive (font-size en vw/rem)", color:"#cf910c"},
+  {x:660, y:86, w:110, h:42, zone:"img", bulle:"Image custom : border-radius, ombre, transition, filtrage (css filter)...", color:"#79acee"},
+  {x:410, y:150, w:130, h:38, zone:".btn", bulle:"Bouton stylé : couleur, effet hover, curseur, arrondi.", color:"#e06359"},
+  {x:640, y:26, w:110, h:38, zone:".card", bulle:"Une 'carte' info : ombre, margin, padding, responsive obligatoire !", color:"#167c2b"},
+  {x:245, y:210, w:180, h:28, zone:"@media", bulle:"Zone responsive : change la taille/couleur sur mobile !", color:"#e06359"},
+  {x:600, y:215, w:100, h:28, zone:".pulse", bulle:"Animation CSS (keyframes, infinite, vitesse custom)", color:"#cf910c"},
+];
+var canvas = document.getElementById("schema");
+var ctx = canvas.getContext("2d");
+function drawSchema() {
+  ctx.clearRect(0,0,960,310);
+  ctx.font="18px Arial";
+  ctx.fillStyle="#243552";
+  ctx.fillText("Visualisation CSS détaillée : chaque zone stylise, aligne, anime ou adapte une partie de la page web.",100,52);
+  for(let d of schemaData){
+    ctx.fillStyle=d.color; ctx.globalAlpha=0.18; ctx.fillRect(d.x,d.y,d.w,d.h); ctx.globalAlpha=1.0;
+    ctx.strokeStyle="#10b368"; ctx.lineWidth=2; ctx.strokeRect(d.x,d.y,d.w,d.h);
+    ctx.fillStyle="#243552"; ctx.font="bold 17px Arial"; ctx.fillText(d.zone, d.x+8, d.y+26);
+  }
+  // Liaisons et cercles
+  ctx.strokeStyle="#10b368"; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(210,50); ctx.lineTo(250,78); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(565,42); ctx.lineTo(740,100); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(505,62); ctx.lineTo(528,150); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(410,178); ctx.lineTo(255,224); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(710,108); ctx.lineTo(640,38); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(715,108); ctx.lineTo(640,228); ctx.stroke();
+}
+drawSchema();
+canvas.addEventListener('mousemove', function(e){
+  var rect = canvas.getBoundingClientRect();
+  var x = e.clientX - rect.left, y = e.clientY - rect.top;
+  var bulle = document.getElementById("info-bulle"); let found = false;
+  for(let d of schemaData){
+    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
+      bulle.style.left = (rect.left + d.x + 18) + "px";
+      bulle.style.top = (rect.top + d.y + 10) + "px";
+      bulle.style.display = "block"; bulle.innerHTML = d.bulle; found=true; break;
+    }
+  }
+  if(!found) bulle.style.display="none";
+});
+canvas.addEventListener('click', function(e){
+  var rect = canvas.getBoundingClientRect();
+  var x = e.clientX - rect.left, y = e.clientY - rect.top;
+  for(let d of schemaData){
+    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
+      alert(d.bulle.replace(/<br>/g,"\n")); break;
+    }
+  }
+});
+function afficheReponseNSI1() { document.getElementById("exo-reponse-nsi1").style.display = "block"; }
+function quizSynthese() {
+  let qs = [
+    {q:"Donne trois couleurs CSS différentes", rep:"orange"},
+    {q:"Cite deux propriétés CSS du box model", rep:"margin"},
+    {q:"Comment écrire un sélecteur classe ?", rep:"."},
+    {q:"Propriété pour rendre responsive ?", rep:"media"},
+    {q:"Un mot-clé pour l’ombre ?", rep:"box-shadow"}
+  ];
+  let idx = Math.floor(Math.random()*qs.length);
+  let ask = qs[idx]; let reponse = prompt(ask.q);
+  let result = (reponse && reponse.toLowerCase().includes(ask.rep.toLowerCase())) ?
+    "Bravo ! " + ask.rep : "Réponse attendue : " + ask.rep;
+  document.getElementById("quiz-synthese-res").textContent = result;
+}
+function quizNSI(rep) {
+  let rq = document.getElementById("rep-quiz-nsi");
+  rq.textContent = (rep === 0) ? "Bravo ! margin: auto centre horizontalement." : "Astuce : text-align centre le texte, pas le bloc…";
+}
+function quizNSI2(rep) {
+  let rq = document.getElementById("rep-quiz-nsi2");
+  rq.textContent = (rep === 0) ? "Bonne réponse : c'est cette syntaxe qui garantit la police sur toute la page." : "Font-type/font, c’est faux : la syntaxe correcte, c’est font-family !";
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Masterclass NSI : Interactions homme-machine (IHM) & Web</title>
+  <meta name="description" content="Cours complet NSI sur les interactions homme-machine : interfaces, web, formulaires, accessibilité, quiz et schéma interactif.">
+  <style>
+    body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
+    header { background: linear-gradient(90deg,#eef4fb,#ffeefb 80%); color: #243552; padding: 30px 0 12px; text-align: center;}
+    header h1 { font-size: 2.3rem; margin: 0 0 10px; color: #e0639c;}
+    header .intro { font-size: 1rem;}
+    main { max-width: 950px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(224,99,156,0.12);}
+    h2 { color: #e0639c; margin-top: 32px;}
+    h3 { color: #f5a623; margin-top: 22px;}
+    ul, ol { margin-left: 1.4em;}
+    .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
+    .infos {background: #faedf4; border-left: 6px solid #e0639c;}
+    .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
+    .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
+    .error {background: #ffeaea; border-left: 7px solid #e06359;}
+    .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
+    .anecdote {background: #ffeefb; border-left: 7px solid #e0639c; font-style: italic; margin: 1em 0; padding: 12px 17px; border-radius: 6px;}
+    .source { font-size: 0.9em; color: #999; text-align: right;}
+    button, .btn-expl {background: #e0639c; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 14px; cursor: pointer; margin-right: 8px; margin-top: 7px; transition: background 0.2s;}
+    button:hover, .btn-expl:hover { background: #b40d54;}
+    #schema { margin: 2em auto 1em; display: block; background: #fffefa; border-radius: 8px; border: 1px solid #d1d5db;}
+    .info-bulle {display:none;position: absolute; background:#fffefc; border:1px solid #243552; border-radius:5px;padding:10px;font-size:1rem;z-index:10; box-shadow: 0 3px 12px rgba(224,99,156,0.09);}
+    .reponse { margin-top: 0.7em; color: #e0639c; font-weight: bold; text-align: center;}
+    #desc-schema { background: #faedf4; border-radius: 6px; color: #e0639c; font-weight: bold; padding: 10px; text-align: center; min-height: 25px; margin-bottom: 10px;}
+    table { border-collapse:collapse; margin: 10px auto;}
+    th, td { border:1px solid #e0639c; padding:7px 15px; text-align:center;}
+    th { background:#fbe9fa;}
+    td.type { font-weight:bold; }
+    @media (max-width: 900px) { main { padding: 12px 2px; } }
+  </style>
+</head>
+<body>
+<header>
+  <h1>Masterclass NSI : Interactions homme-machine (IHM) & Web</h1>
+  <div class="intro">Tout sur les interfaces (web, apps), la communication homme-machine et l’UX : science, métiers et enjeux modernes.</div>
+</header>
+<main>
+<section>
+  <h2>📚 Cours complet – Interactions homme-machine & Web</h2>
+  <p>
+    L'interaction homme-machine (IHM) désigne l'ensemble des moyens de communication entre une <b>personne</b> et une <b>machine</b> : écrans, claviers, souris, boutons, commandes vocales, formulaires, etc.
+  </p>
+  <table>
+    <tr>
+      <th>Interface</th>
+      <th>Exemple</th>
+      <th>Utilité</th>
+      <th>Ergonomie ?</th>
+    </tr>
+    <tr>
+      <td class="type">Graphique (GUI)</td>
+      <td>Boutons, menus, pages web</td>
+      <td>Navigation simple, interactive</td>
+      <td>Oui, prioritaire (UX/UI design)</td>
+    </tr>
+    <tr>
+      <td class="type">Ligne de commande</td>
+      <td>Terminal, shell</td>
+      <td>Commandes textes puissantes</td>
+      <td>Moins ergonomique/bruit d’apprentissage</td>
+    </tr>
+    <tr>
+      <td class="type">Sensorielle</td>
+      <td>Vocale, tactile, gestuelle</td>
+      <td>Accessibilité, contexte mobile</td>
+      <td>Oui (mais nécessite IA ou capteurs)</td>
+    </tr>
+    <tr>
+      <td class="type">Web (HTML/CSS/JS)</td>
+      <td>Formulaires, chats, articles, dashboards</td>
+      <td>Universalité, transversalité devices</td>
+      <td>Variable selon le design et l’accessibilité</td>
+    </tr>
+  </table>
+  <p>
+    <b>Éléments essentiels :</b>
+    <ul>
+      <li>Des <b>entrées/sorties</b> : clavier, souris, champs textes, boutons, pavés tactiles, commandes vocales</li>
+      <li>L’<b>ergonomie</b> : intuitive, rapide, accessible, agréable</li>
+      <li>L’<b>accessibilité</b> : utilisable par tous (règles ARIA), contraste, synthèse vocale</li>
+      <li>La <b>rétroaction</b> : la machine répond à l’action humaine (message d’erreur, succès, surbrillance…)</li>
+      <li>Sur le web : <b>HTML</b> (structure), <b>CSS</b> (apparence), <b>JavaScript</b> (interactions dynamiques, formulaires, menus)</li>
+      <li>Bonnes pratiques : Toujours expliquer, prévoir les erreurs de saisie, rendre attractif !</li>
+    </ul>
+    <b>Exemples sur le web :</b>
+    <ul>
+      <li>Formulaire d’inscription, recherche Google, bouton “Envoyer”</li>
+      <li>Menus déroulants, icônes cliquables, liens hypertextes</li>
+      <li>Captchas, notifications, fenêtres modales (pop-ups)</li>
+      <li>Responsive design : s’adapte à la taille de l’écran</li>
+    </ul>
+    <b>Objectif NSI</b> : Analyser, critiquer et imaginer de meilleures interfaces pour tous.
+  </p>
+</section>
+<section>
+  <h2>📋 Fiche synthèse interactive</h2>
+  <ul id="ul-synthese">
+    <li><b>À quoi sert l’ergonomie dans une interface ?</b>
+      <button class="btn-expl" onclick="afficheSynthese('ergo')">Voir explication</button>
+      <span id="syn-ergo" style="display:none;color:#167c2b;">
+        Rendre l’utilisation rapide, confortable, sans erreur. On pense à tous (jeunes, seniors, oeil daltonien, etc.)
+      </span>
+    </li>
+    <li><b>Quel langage rend une page web interactive ?</b>
+      <button class="btn-expl" onclick="afficheSynthese('js')">Réponse !</button>
+      <span id="syn-js" style="display:none;color:#e0639c;">
+        JavaScript, pour valider un formulaire, afficher des popups, animer, etc.
+      </span>
+    </li>
+    <li><b>Accessibilité, à quoi ça sert ?</b>
+      <button class="btn-expl" onclick="afficheSynthese('a11y')">Clique ici</button>
+      <span id="syn-a11y" style="display:none;color:#f5a623;">
+        Permettre à TOUS d’utiliser l’interface, même avec un handicap (malvoyant, moteur…).
+      </span>
+    </li>
+    <li><b>Trouve un exemple de rétroaction sur le web :</b>
+      <button class="btn-expl" onclick="afficheSynthese('retroaction')">Voir solution</button>
+      <span id="syn-retroaction" style="display:none;color:#243552;">
+        Message de validation, d’erreur, changement de couleur d’un bouton, “popup”.
+      </span>
+    </li>
+    <li><b>Défi : À quoi sert le responsive design sur mobile/web ?</b>
+      <button class="btn-expl" onclick="afficheSynthese('responsive')">Afficher</button>
+      <span id="syn-responsive" style="display:none;color:#1877f2;">
+        Adapter l’affichage automatique à la taille de l’écran (téléphone, tablette, PC).
+      </span>
+    </li>
+  </ul>
+  <div>
+    <button onclick="quizSynthese()">Quiz surprise</button>
+    <span class="reponse" id="quiz-synthese-res"></span>
+  </div>
+</section>
+<section>
+  <h2>🖱️ Schéma interactif IHM & Web</h2>
+  <canvas id="schema" width="900" height="240"></canvas>
+  <div id="desc-schema">Survole les zones : découvre comment une action utilisateur passe du clic à la réaction web.</div>
+  <div id="info-bulle" class="info-bulle"></div>
+</section>
+<section class="box box-exo">
+  <h2>💡 Exercices interactifs</h2>
+  <p>Si tu devais améliorer un formulaire web : que ferais-tu ?
+    <button onclick="afficheReponseNSI1()">Voir proposition</button>
+  </p>
+  <div class="reponse" id="exo-reponse-nsi1" style="display:none;">
+    Ajouter labels explicites, message d’erreur clair, grands boutons, contraste couleurs, validation instantanée.
+  </div>
+  <p>
+    Dans quelle situation l’accessibilité web est-elle essentielle ?
+    <button onclick="document.getElementById('exo2-reponse-nsi').style.display='block';">Voir solution</button>
+  </p>
+  <div class="reponse" id="exo2-reponse-nsi" style="display:none;">
+    Pour les personnes malvoyantes (lecteur d’écran), personnes âgées, ou toute situation où l’utilisateur a des besoins particuliers.
+  </div>
+</section>
+<section class="quiz">
+  <h2>🎯 Quiz rapide</h2>
+  <p>Quel langage n’est pas utilisé pour l’interface web ?</p>
+  <button onclick="quizNSI(0)">Python</button>
+  <button onclick="quizNSI(1)">HTML</button>
+  <button onclick="quizNSI(2)">CSS</button>
+  <div class="reponse" id="rep-quiz-nsi"></div>
+  <p>Comment appelle-t-on l’expérience vécue par l’utilisateur ?</p>
+  <button onclick="quizNSI2(0)">UI</button>
+  <button onclick="quizNSI2(1)">UX</button>
+  <button onclick="quizNSI2(2)">IOT</button>
+  <div class="reponse" id="rep-quiz-nsi2"></div>
+</section>
+<section class="box-important">
+  <h2>🌍 Applications concrètes</h2>
+  <ul>
+    <li>Formulaires d’inscription, chat, applis mobiles, systèmes embarqués (voiture, avion, domotique…)</li>
+    <li>Jeux vidéo : menus, HUD, interaction touch ou manette</li>
+    <li>Administrations, hôpitaux, transports : bornes, systèmes d’alerte, terminaux de paiement</li>
+    <li>Tout le Web : chaque site, chaque bouton, animation ou retour visuel…</li>
+  </ul>
+</section>
+<section class="error">
+  <h2>❌ Erreurs fréquentes à éviter</h2>
+  <ul>
+    <li>Utiliser un texte ou bouton trop petit, pas accessible</li>
+    <li>Oublier de tester l’interface sur mobile et tablette</li>
+    <li>Ne pas montrer d’erreur ou de réussite à l’utilisateur</li>
+    <li>Laisser un champ sans label ou explication</li>
+    <li>Ignorer le contraste, la couleur, ou les handicaps</li>
+  </ul>
+</section>
+<section class="lexique">
+  <h2>📚 Lexique express</h2>
+  <b>IHM / HMI :</b> Interface Homme-Machine<br>
+  <b>UI :</b> User Interface (ce que l’on voit)<br>
+  <b>UX :</b> User Experience (“ressenti” de l’utilisateur)<br>
+  <b>Accessibilité : </b> capacité d’usage universel (handicap, langue)<br>
+  <b>Formulaire : </b> zone de saisie de données (web)<br>
+  <b>Responsive : </b> adaptation à l’écran
+</section>
+<section class="rubrique">
+  <h3>📖 Anecdotes et histoire</h3>
+  <ul>
+    <li>Le premier “smiley” “:-)” a été utilisé par Scott Fahlman en 1982 dans une interface de forum !</li>
+    <li>L’IHM graphique (GUI) date de Xerox Parc, popularisé par Apple Lisa/Mac et Windows (années 80).</li>
+    <li>L’accessibilité web (normes WAI-ARIA) est devenue obligatoire pour les sites publics français depuis 2005.</li>
+    <li>Un clic mal placé peut générer des millions d’euros de pertes (vente ratée, bug, incompréhension…) !</li>
+  </ul>
+  <div class="source">Source : NSI, histoire du web, UX/UI</div>
+</section>
+<section class="anecdote">
+  <b>Astuces mémoire</b> :  
+  “UI” = “tu vois”; “UX” = “tu ressens”;  
+  “Responsive” ↔ “répond” à la taille écran.
+</section>
+<section>
+  <h2>💡 Méthodologie contrôle</h2>
+  <ul>
+    <li>Analyser une interface : repérer forces/faiblesses (lisibilité, boutons, labels, responsive…)</li>
+    <li>Être capable de proposer au moins 2 améliorations</li>
+    <li>Savoir citer les langages/technos du web (HTML, CSS, JS)</li>
+    <li>Prévoir la rétroaction (erreur/succès…) et l’accessibilité</li>
+    <li>Justifier chaque choix par l’expérience utilisateur (UX)</li>
+  </ul>
+</section>
+</main>
+<script>
+function afficheSynthese(id) {
+  var el = document.getElementById("syn-"+id);
+  if (el.style.display==="none") { el.style.display="inline"; }
+  else { el.style.display="none"; }
+}
+function quizSynthese() {
+  let qs = [
+    {q:"Vrai ou faux : UI = ce que l’on ressent ?", rep:"faux"},
+    {q:"Que veut dire ARIA sur le web ?", rep:"accessibility"},
+    {q:"Un exemple de rétroaction ?", rep:"erreur"},
+    {q:"Le trio des langages du web pour l’interface ?", rep:"html"}
+  ];
+  let idx = Math.floor(Math.random()*qs.length);
+  let ask = qs[idx]; let reponse = prompt(ask.q);
+  let result = (reponse && reponse.toLowerCase().includes(ask.rep.toLowerCase())) ?
+    "Bravo ! " + ask.rep : "Réponse attendue : " + ask.rep;
+  document.getElementById("quiz-synthese-res").textContent = result;
+}
+const schemaData = [
+  {x:70, y:80, w:150, h:55, zone:"Utilisateur", bulle:"L’humain fournit données, clique, tape, réagit à l’écran, parle.", color:"#e0639c"},
+  {x:280, y:140, w:240, h:55, zone:"Interface", bulle:"Zone graphique : boutons, champs, menus, formulaires, images, infos…", color:"#f5a623"},
+  {x:580, y:100, w:220, h:55, zone:"Code", bulle:"HTML–CSS–JS<br>Logique : valider saisie, traitement, retour/me…", color:"#79acee"},
+  {x:470, y:210, w:220, h:38, zone:"Retour/Feedback", bulle:"La machine réagit : couleur, message, son, changement de page, animation…", color:"#167c2b"},
+];
+var canvas = document.getElementById("schema");
+var ctx = canvas.getContext("2d");
+function drawSchema() {
+  ctx.clearRect(0,0,900,240);
+  ctx.font="17px Arial";
+  ctx.fillStyle="#243552";
+  ctx.fillText("Schéma : du clic utilisateur à la réaction web ou logicielle (boucle IHM) :",180,60);
+  for(let d of schemaData){
+    ctx.fillStyle=d.color; ctx.globalAlpha=0.19; ctx.fillRect(d.x,d.y,d.w,d.h); ctx.globalAlpha=1.0;
+    ctx.strokeStyle="#333"; ctx.lineWidth=2; ctx.strokeRect(d.x,d.y,d.w,d.h);
+    ctx.fillStyle="#243552"; ctx.font="bold 19px Arial"; ctx.fillText(d.zone, d.x+13, d.y+28);
+  }
+  // Flèches d'interaction
+  ctx.strokeStyle="#e0639c"; ctx.lineWidth=2.5;
+  // Utilisateur → Interface
+  ctx.beginPath(); ctx.moveTo(220,112); ctx.lineTo(280,167); ctx.stroke();
+  // Interface → Code
+  ctx.beginPath(); ctx.moveTo(520,167); ctx.lineTo(580,127); ctx.stroke();
+  // Code → Feedback
+  ctx.beginPath(); ctx.moveTo(690,127); ctx.lineTo(600,210); ctx.stroke();
+  // Feedback → Utilisateur
+  ctx.beginPath(); ctx.moveTo(470,229); ctx.lineTo(120,135); ctx.stroke();
+}
+drawSchema();
+canvas.addEventListener('mousemove', function(e){
+  var rect = canvas.getBoundingClientRect();
+  var x = e.clientX - rect.left, y = e.clientY - rect.top;
+  var bulle = document.getElementById("info-bulle"); let found = false;
+  for(let d of schemaData){
+    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
+      bulle.style.left = (rect.left + d.x + 33) + "px";
+      bulle.style.top = (rect.top + d.y + 10) + "px";
+      bulle.style.display = "block"; bulle.innerHTML = d.bulle; found=true; break;
+    }
+  }
+  if(!found) bulle.style.display="none";
+});
+canvas.addEventListener('click', function(e){
+  var rect = canvas.getBoundingClientRect();
+  var x = e.clientX - rect.left, y = e.clientY - rect.top;
+  for(let d of schemaData){
+    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
+      alert(d.bulle.replace(/<br>/g,"\n")); break;
+    }
+  }
+});
+function afficheReponseNSI1() { document.getElementById("exo-reponse-nsi1").style.display = "block"; }
+function quizNSI(rep) {
+  let rq = document.getElementById("rep-quiz-nsi");
+  rq.textContent = (rep === 0) ? "Bonne réponse : Python est côté serveur ou script, pas pour l’interface web." : "Pas tout à fait (HTML/CSS sont pour l'UI web).";
+}
+function quizNSI2(rep) {
+  let rq = document.getElementById("rep-quiz-nsi2");
+  rq.textContent = (rep === 1) ? "Bravo : UX (User Experience), c’est le ressenti de l’utilisateur." : "UI = ce qu’on voit ; IOT = objets connectés.";
+}
+</script>
+</body>
+</html>
+
