@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Acidité, basicité, oxydoréduction — Espèces chimiques environnement</title>
+  <meta name="description" content="Cours interactif lycée — Espèces chimiques (pH, acide, base, oxydoréduction), exos, QCM, fiches, LaTeX, schémas, astuces.">
+  <style>
+    body{background:#f6f8fa;font-family:'Segoe UI',Arial,sans-serif;color:#222;margin:0;}
+    header{background:linear-gradient(90deg,#eef4fb,#deffe4 80%);color:#243552;padding:30px 0 12px;text-align:center;}
+    header h1{font-size:2.2rem;margin:0 0 8px;color:#1877f2;}
+    header .intro{font-size:1.09rem;}
+    main{max-width:950px;background:#fff;margin:45px auto 20px;padding:36px 60px;border-radius:20px;box-shadow:0 9px 28px rgba(24,119,242,0.12);}
+    h2{color:#1877f2;margin-top:34px;}
+    h3{color:#f5a623;margin-top:27px;}
+    ul,ol{margin-left:2em;margin-bottom:0.8em;}
+    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.06rem;}
+    .infos{background:#e7f3fa;border-left:7px solid #1877f2;}
+    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;}
+    .box-important{background:#fff7ec;border-left:8px solid #f5a623;}
+    .error{background:#ffeaea;border-left:8px solid #e06359;}
+    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;}
+    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;}
+    .source{font-size:0.88em;color:#999;text-align:right;margin-top:10px;}
+    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s;font-size:1em;}
+    button:hover{background:#145ac3;}
+    .reponse{margin-top:0.7em;color:#1877f2;font-weight:bold;text-align:center;}
+    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;}
+    #schema-ph {margin:1.2em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #e7f3f7;}
+    .qcm-block{margin-bottom:2.3em;}
+    input[type='text'],textarea{border-radius:5px;border:1px solid #ccc;padding:5px;margin-top:6px;}
+    .flex-exercices{display:flex;flex-wrap:wrap;}
+    .exo-block{flex:1 1 310px;margin-right:2%;min-width:330px;}
+    .exo-block:last-child{margin-right:0;}
+    .popup{display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.17);padding:35px;width:340px;z-index:2000;}
+    .popup h3{color:#1877f2;}
+    .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(40,61,102,0.23);z-index:1800;}
+    .show{display:block;}
+    .scoreQCM{font-weight:bold;color:#167c2b;}
+    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;}
+    @media (max-width:1040px){main{padding:8px 2px;}}
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<header>
+  <h1>Espèces chimiques environnement : acidité, basicité, oxydoréduction</h1>
+  <div class="intro">Tout comprendre sur le pH, les acides/bases dans l'eau, les couples oxydant/réducteur : cours détaillé, QCM et exos interactifs, fiches, LaTeX, lexique, astuces !</div>
+</header>
+<main>
+  <section class="box infos">
+    <h2>🌱 Pourquoi ce thème ? – Enjeux environnementaux</h2>
+    <ul>
+      <li>L’acidité ou la basicité d’une eau, d’un sol ou de l’air conditionne la vie : le pH des rivières, l’acidité des pluies, le traitement de l’eau potable…</li>
+      <li>L’oxydoréduction intervient dans la dépollution, la corrosion, la respiration !</li>
+      <li>Maîtriser ces notions, c’est comprendre (et agir sur) l'environnement chimique !</li>
+      <button onclick="openPopup('popup-appli')">Exemples concrets</button>
+    </ul>
+  </section>
+  
+  <section>
+    <h2>🔬 1. Acidité, Basicité & pH</h2>
+    <ul>
+      <li><b>Le pH mesure l’acidité d'une solution</b>.<br>
+        <b>Acide</b> : donne des ions H<sup>+</sup>, <b>base</b> : capte des ions H<sup>+</sup> ou libère des ions OH<sup>-</sup>.
+      </li>
+      <li>pH = 7 : neutre (exemple : eau pure). pH &lt; 7 : acide ; pH &gt; 7 : basique.</li>
+      <li>
+        <b>Formule de définition :</b><br>
+        \( \mathrm{pH} = -\log_{10} [\mathrm{H}^+] \) (avec \([\mathrm{H}^+]\) en mol·L⁻¹)
+      </li>
+      <li>
+        <b>Exemple :</b> une eau contient \([\mathrm{H}^+]=1{,}0\times10^{-5}\) mol·L⁻¹ :<br>
+        <button onclick="openPopup('popup-exemple-ph')">Voir calcul</button>
+      </li>
+      <li>
+        <b>Mélange acide/base :</b> chaque fois que H<sup>+</sup> rencontre OH<sup>-</sup>, il y a neutralisation : <span class="btn-lex" onclick="openPopup('popup-neut')">Voir équation</span>
+      </li>
+    </ul>
+    <canvas id="schema-ph" width="390" height="90"></canvas>
+    <div class="infos" style="text-align:center"><b>Schéma : échelle du pH et position des espèces naturelles (pluie, mer, sol, …)</b></div>
+    <div class="anecdote">Anecdote : Le pH de la pluie à Bordeaux en 1800 était ≃6, aujourd'hui parfois &lt;5 (pollution acide) !</div>
+  </section>
+  
+  <section>
+    <h2>🧪 2. Couples acide/base et réactions acido-basiques</h2>
+    <ul>
+      <li>Un <b>acide</b> HA peut donner un <b>proton</b> (\(\ce{H+}\)) à l’eau ou à un autre réactif.</li>
+      <li>Un <b>couple acide/base</b> : \(\ce{HA/A^-}\), (ex : \(\ce{H2O/OH^-}\), \(\ce{HCO3^-/CO3^{2-}}\)).</li>
+      <li>
+        <b>Équation de réaction acido-basique :</b> <br>
+        \(\ce{HA + H2O <=> A^- + H3O^+}\)
+      </li>
+      <li>
+        <b>Exemple réaction de neutralisation : </b><br>
+        \(\ce{HCl + NaOH -> NaCl + H2O}\)
+      </li>
+      <li>
+        <span class="btn-lex" onclick="openPopup('popup-lexique-couple')">Lexique couples acide/base</span>
+      </li>
+    </ul>
+  </section>
+  
+  <section>
+    <h2>⚡ 3. Réactions d’oxydoréduction</h2>
+    <ul>
+      <li>
+        <b>Déf :</b> échange d’électrons entre un <b>oxydant</b> (capte e<sup>-</sup>) et un <b>réducteur</b> (donne e<sup>-</sup>).
+      </li>
+      <li>
+        <b>Couple oxydant/réducteur</b> : \(\ce{Ox/Red}\) — ex : \(\ce{Fe^{3+}/Fe^{2+}}\), \(\ce{Cl2/Cl^-}\), \(\ce{O2/H2O}\)
+      </li>
+      <li>
+        <b>Écriture générale :</b> <br>
+        \(\ce{Ox + ne^- <=> Red}\)
+      </li>
+      <li>
+        <b>Exemple :</b> corrosion du fer<br>
+        \(\ce{Fe + 2H^+ -> Fe^{2+} + H2}\)
+        <button onclick="openPopup('popup-oxydo')">Voir bilan</button>
+      </li>
+      <li>
+        <span class="btn-lex" onclick="openPopup('popup-lexique-oxydo')">Lexique oxydoréduction</span>
+      </li>
+    </ul>
+  </section>
+  
+  <section>
+    <h2>📑 Exercices interactifs</h2>
+    <div class="flex-exercices">
+      <div class="box-exo exo-block">
+        <b>Ex 1 — Calcul de pH</b><br>
+        Un ruisseau a \([\mathrm{H}^+] = 2{,}0 \times 10^{-6}\) mol/L. Calcule le pH.
+        <input type="text" id="exo1" placeholder="pH ... (2 chiffres)">
+        <button onclick="checkExo(1)">Valider</button>
+        <div class="reponse" id="rep-exo1"></div>
+      </div>
+      <div class="box-exo exo-block">
+        <b>Ex 2 — Nature d'une eau</b><br>
+        Une eau de pluie a un pH de 5,4. Est-elle acide, basique ou neutre ?
+        <input type="text" id="exo2" placeholder="...">
+        <button onclick="checkExo(2)">Valider</button>
+        <div class="reponse" id="rep-exo2"></div>
+      </div>
+      <div class="box-exo exo-block">
+        <b>Ex 3 — Couple oxydant/réducteur</b><br>
+        Donne le couple oxydant/réducteur de l’ion permanganate (\(\ce{MnO4^-}\)).
+        <input type="text" id="exo3" placeholder="...">
+        <button onclick="checkExo(3)">Valider</button>
+        <div class="reponse" id="rep-exo3"></div>
+      </div>
+    </div>
+    <button onclick="resetExos()">Effacer mes réponses</button>
+  </section>
+  
+  <section class="qcm-block">
+    <h2>🎯 QCM interactif (score immédiat !)</h2>
+    <div id="qcm-interactif"></div>
+    <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
+    <button onclick="reloadQCM()">Recommencer le QCM</button>
+  </section>
+  
+  <section class="box-important">
+    <h2>🔖 Fiche de révision rapide</h2>
+    <div class="fiche">
+      <ul>
+        <li>pH = -log\(_{10}\) [H<sup>+</sup>] / [H<sup>+</sup>] = 10^\(-{\textrm{pH}}\)</li>
+        <li>Acide : donneur de H<sup>+</sup> ; Base : accepteur de H<sup>+</sup> ou donneur de OH<sup>-</sup></li>
+        <li>Couple acide/base : HA/A⁻,  couple redox : Ox/Red</li>
+        <li>Oxydant = gagne électrons, réducteur = perd électrons</li>
+        <li>Neutralisation : H<sup>+</sup> + OH<sup>-</sup> → H<sub>2</sub>O</li>
+      </ul>
+    </div>
+  </section>
+  <section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+      <li>Oublier que pH est sans unité, <b>toujours entre 0 et 14 environ</b></li>
+      <li>Confondre “acide fait baisser pH”, “base fait monter pH”</li>
+      <li>Écrire une réaction sans équilibrer charges et masses (voir ionique !)</li>
+      <li>Croire que “oxydant = O₂” (non : voir les couples !)</li>
+    </ul>
+  </section>
+  <section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <ul>
+      <li><b>pH</b> : mesure l’acidité, -log([H⁺])</li>
+      <li><b>Acide</b> : donne un proton H⁺</li>
+      <li><b>Base</b> : capte un proton H⁺ ou donne OH⁻</li>
+      <li><b>Oxydant</b> : capte e<sup>-</sup>, <b>Réducteur</b> : cède e<sup>-</sup></li>
+      <li><b>Couple</b> : \(\ce{HA/A^-}\) ou \(\ce{Ox/Red}\)</li>
+    </ul>
+  </section>
+  <section>
+    <h2>🗒️ Tes propres notes (sauvegarde locale)</h2>
+    <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
+    <button onclick="saveNotes()">Enregistrer</button>
+    <span id="savemsg" style="color:#4caf50;font-weight:bold;"></span>
+  </section>
+  <section class="source">Sources : cours lycée, manuels, éduscol, chimie environnement, BAC 2025.</section>
+</main>
+<!-- Popups/Emergents -->
+<div class="overlay" id="overlay"></div>
+<div class="popup" id="popup-appli"><h3>Enjeux environnementaux</h3>
+<p>- pH des fleuves : influence sur la vie aquatique<br>- Traitement de l’eau potable (base, chlore)<br>- Pluie acide (<span style="color:#f5a623">SO₂/NO₂</span>), oxydation des métaux (corrosion), etc.</p>
+<button onclick="closePopup()">Fermer</button>
+</div>
+<div class="popup" id="popup-exemple-ph"><h3>Calcul du pH :</h3>
+<p>Si [H⁺] = 1,0×10⁻⁵ : pH = -log(1×10⁻⁵) = 5<br><b>Donc solution acide.</b></p>
+<button onclick="closePopup()">Fermer</button></div>
+<div class="popup" id="popup-neut"><h3>Neutralisation</h3>
+<p>\(\ce{H+ + OH- -> H2O}\)</p>
+<button onclick="closePopup()">Fermer</button></div>
+<div class="popup" id="popup-lexique-couple"><h3>Couples acide/base (exemples)</h3>
+<ul>
+  <li>\(\ce{HNO3/NO3^-}\)</li><li>\(\ce{H2CO3/HCO3^-}\)</li><li>\(\ce{NH4^+/NH3}\)</li>
+</ul>
+<button onclick="closePopup()">Fermer</button></div>
+<div class="popup" id="popup-oxydo"><h3>Exemple bilan oxydo</h3>
+\(\ce{Fe + 2H+ -> Fe^{2+} + H2}\)<br>Fer s’oxyde (Fe \(\rightarrow\) Fe²⁺), H⁺ se réduit (H⁺ \(\rightarrow\) H₂).
+<button onclick="closePopup()">Fermer</button></div>
+<div class="popup" id="popup-lexique-oxydo"><h3>Couples oxydoreduction (exemples)</h3>
+<ul>
+  <li>\(\ce{Cl2/Cl^-}\)</li><li>\(\ce{O2/H2O}\)</li><li>\(\ce{Fe^{3+}/Fe^{2+}}\)</li>
+</ul>
+<button onclick="closePopup()">Fermer</button></div>
+
+<script>
+function reloadMathJax(){if(window.MathJax){window.MathJax.typesetPromise();}}
+// Popups/lexique
+function openPopup(id){document.getElementById('overlay').classList.add("show");document.getElementById(id).classList.add("show");}
+function closePopup(){document.getElementById('overlay').classList.remove("show");var popups=document.querySelectorAll('.popup');popups.forEach(function(p){p.classList.remove('show');});}
+function saveNotes(){localStorage.setItem("mesNotesPC_AcideOxy",document.getElementById("notes").value);document.getElementById("savemsg").textContent="✔️ Enregistré !";setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);}
+if(localStorage.getItem("mesNotesPC_AcideOxy")){document.getElementById("notes").value=localStorage.getItem("mesNotesPC_AcideOxy");}
+// Schéma du pH
+function drawPh(){
+  var c=document.getElementById('schema-ph');if(!c)return;var x=c.getContext('2d');
+  x.clearRect(0,0,390,90);
+  for(let i=0;i<=14;i++){
+    let pos=20+i*22;x.fillStyle=`hsl(${220-i*13},71%,65%)`; x.fillRect(pos,50,20,27);
+    if(i%2==0||i==7) {x.fillStyle="#333";x.fillText(i,pos+6,80);}
+  }
+  x.fillStyle="#f5a623"; x.font="16px Arial"; x.fillText("Acide",18,43); x.fillStyle="#4caf50";x.fillText("Neutre",160,43);
+  x.fillStyle="#168b37"; x.fillText("Basique",290,43);
+}
+drawPh();
+const qcmData=[
+{
+  question:"Le pH de l’eau pure à 25°C est :",
+  choices:["7","14","0"],
+  correct:0,
+  explanation:"L’eau pure est neutre : pH=7."
+},
+{
+  question:"Une solution basique a pH…",
+  choices:["<7","=7",">7"],
+  correct:2,
+  explanation:"Basique si pH > 7."
+},
+{
+  question:"Le couple oxydant/réducteur du dioxygène est…",
+  choices:["O2/H2O","O2/H2","O2/O3"],
+  correct:0,
+  explanation:"Dioxygène : O2/H2O"
+},
+{
+  question:"Équation de neutralisation ?",
+  choices:["H+ + OH- → H2O","H+ + Cl- → HCl","OH- + Na+ → NaOH"],
+  correct:0,
+  explanation:"H+ + OH- → H2O."
+}
+];
+let qcmScore=0;
+let qcmDone=Array(qcmData.length).fill(false);
+function displayQCM(){
+  let html="";
+  for(let i=0;i<qcmData.length;i++){
+    html += `<div style="margin-bottom:1em"><b>Q${i+1} :</b> <span>\\(${qcmData[i].question}\\)</span><br>`;
+    for(let j=0;j<qcmData[i].choices.length;j++){
+      html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+    }
+    html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
+  }
+  document.getElementById("qcm-interactif").innerHTML=html;document.getElementById("qcm-score").innerHTML="";qcmScore=0;qcmDone=Array(qcmData.length).fill(false);reloadMathJax();
+}
+displayQCM();
+function checkQCM(qnum,num){
+  if(qcmDone[qnum])return;
+  if(num==qcmData[qnum].correct){
+    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#168b24;font-weight:bold">Bonne réponse !</span><br><span style="font-size:0.98em;">${qcmData[qnum].explanation}</span>`;
+    qcmScore++;
+  }else{
+    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#c21c5c;font-weight:bold">Faux !</span>  <br><span>${qcmData[qnum].explanation}</span>`;
+  }
+  qcmDone[qnum]=true;
+  document.getElementById("qcm-score").innerHTML="Score : "+qcmScore+"/"+qcmData.length;reloadMathJax();
+}
+function reloadQCM(){displayQCM();}
+function checkExo(ex){
+  let rep=document.getElementById('exo'+ex).value.replace(",",".");
+  if(ex==1){
+    let pv=-Math.log10(2E-6),v=Math.round(pv*100)/100;
+    let good=Math.abs(Number(rep)-v)<0.06;
+    document.getElementById('rep-exo1').innerHTML = good?`Bravo ! pH ≈ 5,70`:"Faux. pH = -log(2E-6) ≈ 5,70";
+  }
+  if(ex==2){
+    rep=rep.trim().toLowerCase();
+    let good = rep.includes("acide");
+    document.getElementById('rep-exo2').innerHTML=good?"Correct : pH<7 donc eau acide":"Faux : pH<7, l’eau est acide.";
+  }
+  if(ex==3){
+    rep=rep.trim().toLowerCase();
+    let good = rep.includes("mno4") && rep.includes("mn2+");
+    document.getElementById('rep-exo3').innerHTML = good ? "Parfait : MnO₄⁻/Mn²⁺" : "Couple : MnO₄⁻/Mn²⁺";
+  }
+  reloadMathJax();
+}
+function resetExos() {
+  ["exo1", "exo2", "exo3"].forEach(id => {
+    document.getElementById(id).value = "";
+  });
+  ["rep-exo1", "rep-exo2", "rep-exo3"].forEach(id => {
+    document.getElementById(id).textContent = "";
+  });
+}
+
+setTimeout(reloadMathJax, 180);
+</script>
+</body>
+</html>

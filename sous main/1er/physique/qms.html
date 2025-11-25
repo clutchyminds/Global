@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Quantités de matière, mole, concentration, dilution</title>
+  <meta name="description" content="Cours interactif Physique-Chimie : quantités de matière, mole, concentration, dilution. Cours détaillé, QCM, exos corrigés, fiche, LaTeX, interactivité.">
+  <style>
+    body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin:0; }
+    header { background: linear-gradient(90deg,#eef4fb,#deffe4 80%); color:#243552; padding:30px 0 12px; text-align:center;}
+    header h1 {font-size:2.3rem; margin:0 0 8px; color:#1877f2;}
+    header .intro {font-size:1.09rem;}
+    main {max-width:900px; background:#fff; margin:45px auto 20px; padding:36px 60px; border-radius:20px; box-shadow:0 9px 28px rgba(24,119,242,0.12);}
+    h2 {color:#1877f2; margin-top:34px;}
+    h3 {color:#f5a623; margin-top:27px;}
+    ul, ol {margin-left:2em; margin-bottom:0.8em;}
+    .box, .infos {padding:15px 23px; border-radius:9px; margin:1.3em 0; font-size:1.05rem;}
+    .infos {background:#e7f3fa; border-left:7px solid #1877f2;}
+    .box-exo {background:#e5ffe7; border-left:7px solid #167c2b;}
+    .box-important{background:#fff7ec; border-left:8px solid #f5a623;}
+    .error{background:#ffeaea; border-left:8px solid #e06359;}
+    .lexique{background:#f7fafd; border-left:8px solid #243552; padding:13px; border-radius:8px; margin:1.2em 0;}
+    .anecdote{background:#e7ffe7; border-left:8px solid #167c2b; font-style:italic; margin:1em 0; padding:14px 20px; border-radius:8px;}
+    .source{font-size:0.88em; color:#999; text-align:right; margin-top:10px;}
+    button{background:#1877f2; color:#fff; font-weight:bold; border:none; border-radius:7px; padding:9px 18px; cursor:pointer; margin-right:8px; margin-top:8px; transition: background 0.2s; font-size:1em;}
+    button:hover{background:#145ac3;}
+    .reponse{margin-top:0.7em; color:#1877f2; font-weight:bold; text-align:center;}
+    .fiche{background:#eeffe5; border-left:8px solid #4caf50; margin:1.3em 0; padding:16px 26px; border-radius:10px;}
+    #schema-dilution {margin:1.2em auto; display:block; background:#e7f3f7; border-radius:10px; border:1px solid #d1d5db; box-shadow:0 3px 10px #e7f3f7;}
+    .qcm-block{margin-bottom:2.3em;}
+    input[type='text'], textarea{border-radius:5px;border:1px solid #ccc;padding:5px;margin-top:6px;}
+    .flex-exercices{display:flex;flex-wrap:wrap;}
+    .exo-block{flex:1 1 310px;margin-right:2%;min-width:330px;}
+    .exo-block:last-child{margin-right:0;}
+    .popup{display:none; position:fixed; top:40%; left:50%; transform:translate(-50%,-50%); background:#fff; border-radius:20px; box-shadow:0 10px 34px rgba(24,119,242,0.17); padding:35px; width:340px; z-index:2000;}
+    .popup h3{color:#1877f2;}
+    .overlay{display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(40,61,102,0.23); z-index:1800;}
+    .show{display:block;}
+    .scoreQCM{font-weight:bold;color:#167c2b;}
+    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;}
+    @media (max-width: 900px){ main{padding:12px 2px;}}
+  </style>
+  <!-- MathJax -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<header>
+  <h1>Quantités de matière, mole, concentration, dilution</h1>
+  <div class="intro">Cours interactif complet : maîtriser quantité de matière, calculs de mole, concentration en solution, dilution. QCM, exos corrigés, LaTeX dynamique, méthodo, tout inclus !</div>
+</header>
+<main>
+  <section class="box infos">
+    <h2>📚 Introduction & objectifs</h2>
+    <ul>
+      <li>Comprendre et calculer la <b>quantité de matière</b> en mole, la <b>concentration</b> d’une solution et gérer toute <b>dilution</b>.</li>
+      <li>Savoir reconnaître tous les symboles, unités, et appliquer les principales formules.</li>
+      <li>Analyser et justifier ses calculs, identifier les pièges courants.</li>
+      <button onclick="openPopup('popup-mole')">Astuce : À quoi sert la mole ?</button>
+    </ul>
+  </section>
+  
+  <section>
+    <h2>🎯 1. Définitions essentielles</h2>
+    <ul>
+      <li><b>Quantité de matière</b> (\(n\)) : nombre de <b>moles</b> de particules (atomes, ions, molécules) dans un échantillon.<br><b>Unité :</b> la mole (\(\mathrm{mol}\))</li>
+      <li><b>Mole</b> : correspond à \(6{,}02 \times 10^{23}\) entités chimiques, soit le <i>nombre d’Avogadro</i> (\(N_A\)).</li>
+      <li><b>Masse molaire</b> (\(M\)) : masse d’une mole (g·mol\(^{-1}\)).<br>La masse d’un « paquet de 1 mol ».</li>
+      <li><b>Concentration molaire</b> (\(C\)) : nombre de moles par litre de solution (\(\mathrm{mol·L}^{-1}\)).</li>
+      <li><b>Dilution</b> : opération permettant d’obtenir une solution moins concentrée (solution fille) à partir d’une solution mère plus concentrée.</li>
+      <button onclick="openPopup('popup-lexique')">Lexique & formules clé</button>
+    </ul>
+  </section>
+  
+  <section class="box-important">
+    <h2>💡 Formules fondamentales (LaTeX MathJax)</h2>
+    <span style="font-size:1.1em">
+      <span class="btn-lex" onclick="openPopup('lex-n')">Quantité de matière</span> :  \(n = \dfrac{m}{M}\) <br>
+      <span class="btn-lex" onclick="openPopup('lex-C')">Concentration molaire</span> :  \(C = \dfrac{n}{V}\),  \(C = \dfrac{m}{M \times V}\)<br>
+      <span class="btn-lex" onclick="openPopup('lex-dil')">Dilution</span> :  \(C_1 \times V_1 = C_2 \times V_2\)
+    </span>
+  </section>
+  
+  <section>
+    <h2>🧪 2. Mise en pratique : exemples expliqués</h2>
+    <ul>
+      <li>
+        <b>Exemple</b> : Masse d’1 mol de \(\ce{NaCl}\)? \(M = 23,0 + 35,5 = 58,5\,g·mol^{-1}\), donc \(1\,mol = 58,5\,g\).
+      </li>
+      <li>
+        <b>Exemple</b> : Nombre de mole dans 20 g de glucose (\(M = 180\,g·mol^{-1}\)): \(n = 20/180 ≈ 0,11\,mol\)
+        <button onclick="openPopup('popup-exemple1')">Voir détail</button>
+      </li>
+      <li>
+        <b>Préparation d’une solution</b> : dissoudre le soluté pesé, compléter au volume voulu.<br>
+        <i>On ne verse JAMAIS l’eau d’un coup : d’abord le soluté, un peu de solvant, dissoudre, puis compléter par petites additions.</i>
+      </li>
+    </ul>
+    <canvas id="schema-dilution" width="400" height="120"></canvas>
+    <div class="infos" style="text-align:center"><b>Schéma de dilution : solution mère (concentrée) → solution fille (diluée)</b></div>
+  </section>
+  
+  <section>
+    <h2>🔍 3. Dilution : principe et calculs</h2>
+    <ul>
+      <li>
+        Pour diluer, on prélève un volume \(V_1\) de solution mère (\(C_1\)), on complète jusqu'à un volume total \(V_2\) (solution fille \(C_2\)).<br>
+        <span style="display:block;text-align:center;margin:7px 0;">
+          \(C_1 \times V_1 = C_2 \times V_2\)
+        </span>
+      </li>
+      <li>Tous les volumes doivent être dans la même unité (L ou mL, cohérent partout).</li>
+      <li>
+        <b>Exemple</b> : On veut 100 mL à 0,020 mol·L\(^{-1}\) à partir de 0,10 mol·L\(^{-1}\)?
+        <button onclick="openPopup('popup-dilution')">Voir calcul</button>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>📑 Exercices interactifs</h2>
+    <div class="flex-exercices">
+      <div class="box-exo exo-block">
+        <b>Ex 1 – Quantité de matière (classique)</b><br>
+        On a 12 g de \(\ce{NaCl}\) (\(M=58,5\,g·mol^{-1}\)). Combien de moles ?
+        <input type="text" id="exo1" placeholder="... mol (2 chiffres)">
+        <button onclick="checkExo(1)">Valider</button>
+        <div class="reponse" id="rep-exo1"></div>
+      </div>
+      <div class="box-exo exo-block">
+        <b>Ex 2 – Concentration :</b><br>
+        3 g d'acide citrique (\(M=192\,g·mol^{-1}\)) sont dissous dans 150 mL. Donne la concentration (mol·L\(^{-1}\)).
+        <input type="text" id="exo2" placeholder="... (2 chiffres)">
+        <button onclick="checkExo(2)">Valider</button>
+        <div class="reponse" id="rep-exo2"></div>
+      </div>
+      <div class="box-exo exo-block">
+        <b>Ex 3 – Dilution</b><br>
+        On a une solution mère \(C_1=0,50\) mol·L\(^{-1}\), on veut \(25\,mL\) à \(C_2=0,025\) mol·L\(^{-1}\).<br>
+        Quel volume de mère faut-il prélever?
+        <input type="text" id="exo3" placeholder="... mL">
+        <button onclick="checkExo(3)">Valider</button>
+        <div class="reponse" id="rep-exo3"></div>
+      </div>
+    </div>
+    <button onclick="resetExos()">Effacer mes réponses</button>
+  </section>
+
+  <section class="qcm-block">
+    <h2>🎯 QCM interactif (score immédiat !)</h2>
+    <div id="qcm-interactif"></div>
+    <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
+    <button onclick="reloadQCM()">Recommencer le QCM</button>
+  </section>
+  
+  <section class="box-important">
+    <h2>🔖 Fiche de révision rapide</h2>
+    <div class="fiche">
+      <ul>
+        <li>\(n = \dfrac{m}{M}\) ou \(n = C \cdot V\)</li>
+        <li>\(\text{Mole} = 6{,}02 \cdot 10^{23}\) entités (\(N_A\))</li>
+        <li>\(C= \dfrac{n}{V}\) (V en L)</li>
+        <li>\(\text{Dilution} : \ C_1V_1 = C_2V_2\)</li>
+        <li>Toujours homogénéiser les unités (L, mL, g, etc.)</li>
+        <li>Arrondir à 2 chiffres (math “scolaire”)</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+      <li>Oublier de convertir les masses en grammes et les volumes en litres.</li>
+      <li>Inverser les rôles de \(V_1\) et \(V_2\).</li>
+      <li>Confondre nombre d’entités et quantité de matière.</li>
+      <li>Mal écrire/arrondir l’unité finale.</li>
+    </ul>
+  </section>
+  
+  <section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <ul>
+      <li><b>Mole</b> : paquet de \(6{,}02\times10^{23}\) entités.</li>
+      <li><b>Concentration molaire (C)</b> : nbre de moles par litre.</li>
+      <li><b>Masse molaire (M)</b> : masse d’une mole.</li>
+      <li><b>Dilution</b> : action de diminuer la concentration.</li>
+    </ul>
+  </section>
+  
+  <section>
+    <h2>🗒️ Tes propres notes (sauvegarde locale)</h2>
+    <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
+    <button onclick="saveNotes()">Enregistrer</button>
+    <span id="savemsg" style="color:#4caf50;font-weight:bold;"></span>
+  </section>
+  
+  <section class="source">Sources : cours lycée, manuels, éduscol, BAC PC 2025.</section>
+</main>
+<!-- Popups/Overlays -->
+<div class="overlay" id="overlay"></div>
+<div class="popup" id="popup-mole"><h3>Astuce Mole</h3>
+<b>La mole, c’est le “paquet chimique” : comme la douzaine pour les œufs mais XXL !<br>1 mol = \(6{,}02 \times 10^{23}\) particules.</b>
+<button onclick="closePopup()">Fermer</button>
+</div>
+<div class="popup" id="popup-exemple1"><h3>Calcul explicité</h3>
+20g de glucose (\(M=180\))<br>
+\(n = \dfrac{20}{180} = 0{,}111...\) mol (soit ~0,11 mol)
+<button onclick="closePopup()">Fermer</button>
+</div>
+<div class="popup" id="popup-dilution"><h3>Détail dilution</h3>
+\(C_1V_1 = C_2V_2 \to V_1 = \frac{C_2 \times V_2}{C_1} = \frac{0,020 \times 100}{0,10} = 20\) mL <br>
+Prélève 20 mL de mère, complète à 100 mL.
+<button onclick="closePopup()">Fermer</button>
+</div>
+<div class="popup" id="popup-lexique"><h3>Lexique-formules</h3>
+<ul>
+  <li>\(n=\dfrac{m}{M}\), \(C=\dfrac{n}{V}\), \(C_1V_1=C_2V_2\)</li>
+  <li>\(M\) masse molaire, \(N_A\) nombre d'Avogadro.</li>
+</ul>
+<button onclick="closePopup()">Fermer</button>
+</div>
+<div class="popup" id="lex-n"><h3>n, quantité de matière</h3>
+nombre de moles dans ton échantillon.<br>Unité : mole (\(mol\))
+<button onclick="closePopup()">Fermer</button>
+</div>
+<div class="popup" id="lex-C"><h3>C, concentration molaire</h3>
+\(C = \dfrac{n}{V}\) (V en L)
+<button onclick="closePopup()">Fermer</button>
+</div>
+<div class="popup" id="lex-dil"><h3>Dilution : C₁V₁ = C₂V₂</h3>
+Permet de savoir quel volume de solution mère prélever pour obtenir la concentration et le volume voulu.
+<button onclick="closePopup()">Fermer</button>
+</div>
+
+<script>
+function reloadMathJax(){if(window.MathJax){window.MathJax.typesetPromise();}}
+// Popups/lexique
+function openPopup(id){document.getElementById('overlay').classList.add("show");document.getElementById(id).classList.add("show");}
+function closePopup(){document.getElementById('overlay').classList.remove("show");var popups=document.querySelectorAll('.popup');popups.forEach(function(p){p.classList.remove('show');});}
+// Persistance des notes
+function saveNotes(){localStorage.setItem("mesNotesPC_QteMatiere", document.getElementById("notes").value);document.getElementById("savemsg").textContent="✔️ Enregistré !";setTimeout(()=>{document.getElementById("savemsg").textContent="";}, 1100);}
+if(localStorage.getItem("mesNotesPC_QteMatiere")){document.getElementById("notes").value=localStorage.getItem("mesNotesPC_QteMatiere");}
+// Schéma dilution
+function drawDilution(){
+  var c = document.getElementById('schema-dilution');
+  if (!c) return;
+  var x = c.getContext('2d'); x.clearRect(0,0,400,120);
+  x.fillStyle="#b9f7d9"; x.fillRect(45,50,50,60);//sol mère
+  x.strokeStyle="#1877f2"; x.strokeRect(45,50,50,60);
+  x.fillStyle="#333"; x.fillText("Sol. mère", 45, 45);
+  x.fillStyle="#1877f2";
+  x.beginPath(); x.moveTo(85,75); x.lineTo(170,75); x.lineTo(170,58); x.lineTo(182,80); x.lineTo(170,102); x.lineTo(170,85); x.lineTo(85,85); x.fill();
+  x.fillStyle="#92e7e6"; x.fillRect(220,30,70,90); // sol fille
+  x.strokeStyle="#167c2b"; x.strokeRect(220,30,70,90);
+  x.fillStyle="#333"; x.fillText("Sol. fille", 224,28);
+  x.fillStyle="#555"; x.fillText("Eau ajoutée",124,110);
+  x.fillStyle="#243552"; x.fillText("Pipette",120,63);
+}
+drawDilution();
+
+const qcmData = [
+  {
+    question: "La formule de la quantité de matière est :",
+    choices: ["n = m/M", "n = M/m", "n = m × M"],
+    correct: 0,
+    explanation: "n = m/M"
+  },
+  {
+    question: "La concentration C en mol·L⁻¹ de 2 mol dans 0,5 L est :",
+    choices: ["4", "1", "0,25"],
+    correct: 0,
+    explanation: "C = n/V = 2/0.5 = 4"
+  },
+  {
+    question: "Pour une dilution, la formule à utiliser est :",
+    choices: ["C₁V₁ = C₂V₂", "C₁ + V₁ = C₂ + V₂", "C₁/V₁ = C₂/V₂"],
+    correct: 0,
+    explanation: "C₁V₁=C₂V₂"
+  },
+  {
+    question: "La masse molaire de NaCl (Na=23, Cl=35,5) ?",
+    choices: ["58,5", "23", "35,5"],
+    correct: 0,
+    explanation: "M(NaCl)=23+35,5=58,5"
+  }
+];
+let qcmScore = 0;
+let qcmDone = Array(qcmData.length).fill(false);
+function displayQCM(){
+  let html = "";
+  for(let i=0;i<qcmData.length;i++){
+    html += `<div style="margin-bottom:1em"><b>Q${i+1} :</b> <span>\( ${qcmData[i].question} \)</span><br>`;
+    for(let j=0;j<qcmData[i].choices.length;j++){
+      html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+    }
+    html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
+  }
+  document.getElementById("qcm-interactif").innerHTML = html;
+  document.getElementById("qcm-score").innerHTML = "";
+  qcmScore = 0;qcmDone = Array(qcmData.length).fill(false); reloadMathJax();
+}
+displayQCM();
+function checkQCM(qnum, num){
+  if(qcmDone[qnum]) return;
+  if(num==qcmData[qnum].correct){
+    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#168b24;font-weight:bold">Bonne réponse !</span><br><span style="font-size:0.98em;">${qcmData[qnum].explanation}</span>`;
+    qcmScore++;
+  }else{
+    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#c21c5c;font-weight:bold">Faux !</span>  <br><span>${qcmData[qnum].explanation}</span>`;
+  }
+  qcmDone[qnum]=true;
+  document.getElementById("qcm-score").innerHTML = "Score : " + qcmScore + "/" + qcmData.length;
+  reloadMathJax();
+}
+function reloadQCM(){displayQCM();}
+
+function checkExo(ex){
+  let rep;
+  if(ex==1){
+    rep = document.getElementById('exo1').value.replace(",",".");
+    let v = Math.round((12/58.5)*100)/100;
+    let good = (Math.abs(Number(rep)-v)<0.03);
+    document.getElementById('rep-exo1').innerHTML = good ? `Bravo ! n = 12/58,5 = ${v} mol` : "Faux. n = m/M = 12/58,5 ≈ 0,21 mol";
+  }
+  if(ex==2){
+    rep = document.getElementById('exo2').value.replace(",",".");
+    let n = (3/192), C=n/0.150, v=Math.round(C*100)/100;
+    let good = (Math.abs(Number(rep)-v)<0.02);
+    document.getElementById('rep-exo2').innerHTML = good ? `Correct : C = 0,021/0,15 = ${v} mol/L` : "Faux. n=0,016 mol, donc C=0,021/0,15 ≈ 0,14 mol/L";
+  }
+  if(ex==3){
+    rep = document.getElementById('exo3').value.replace(",",".");
+    let v = (0.025*25/0.5); // C2*V2/C1
+    let good = (Math.abs(Number(rep)-1.25)<0.10);
+    document.getElementById('rep-exo3').innerHTML = good ? `Parfait : il faut prélever 1,25 mL de mère !` : "Faux : V1 = (0,025×25)/0,5 = 1,25 mL";
+  }
+  reloadMathJax();
+}
+function resetExos(){["exo1","exo2","exo3"].forEach(id=>{document.getElementById(id).value="";});["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{document.getElementById(id).textContent="";});}
+setTimeout(reloadMathJax, 180);
+</script>
+</body>
+</html>

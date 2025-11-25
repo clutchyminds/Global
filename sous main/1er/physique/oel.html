@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Ondes et lumière : spectre, réflexion, réfraction, dispersion</title>
+  <meta name="description" content="Cours interactif lycée : ondes et lumière (spectre, réflexion, réfraction, dispersion), QCM, exos, schéma, LaTeX, fiche, lexique, notes.">
+  <style>
+    body{background:#f6f8fa;font-family:'Segoe UI',Arial,sans-serif;color:#222;margin:0;}
+    header{background:linear-gradient(90deg,#eef4fb,#deffe4 80%);color:#243552;padding:30px 0 12px;text-align:center;}
+    header h1{font-size:2.2rem;margin:0 0 8px;color:#1877f2;}
+    header .intro{font-size:1.09rem;}
+    main{max-width:970px;background:#fff;margin:45px auto 20px;padding:36px 60px;border-radius:20px;box-shadow:0 9px 28px rgba(24,119,242,0.12);}
+    h2,h3{color:#1877f2;margin-top:34px;}
+    h3{color:#f5a623;}
+    ul,ol{margin-left:2em;margin-bottom:0.8em;}
+    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.06rem;}
+    .infos{background:#e7f3fa;border-left:7px solid #1877f2;}
+    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;}
+    .box-important{background:#fff7ec;border-left:8px solid #f5a623;}
+    .error{background:#ffeaea;border-left:8px solid #e06359;}
+    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;}
+    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;}
+    .source{font-size:0.88em;color:#999;text-align:right;margin-top:10px;}
+    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s;font-size:1em;}
+    button:hover{background:#145ac3;}
+    .reponse{margin-top:0.7em;color:#1877f2;font-weight:bold;text-align:center;}
+    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;}
+    #schema-lumiere{margin:1.2em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #e7f3f7;}
+    input[type='text'],textarea{border-radius:5px;border:1px solid #ccc;padding:5px;margin-top:6px;}
+    .flex-exercices{display:flex;flex-wrap:wrap;}
+    .exo-block{flex:1 1 310px;margin-right:2%;min-width:330px;}
+    .exo-block:last-child{margin-right:0;}
+    .popup{display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.17);padding:35px;width:340px;z-index:2000;}
+    .popup h3{color:#1877f2;}
+    .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(40,61,102,0.23);z-index:1800;}
+    .show{display:block;}
+    .scoreQCM{font-weight:bold;color:#167c2b;}
+    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;}
+    .qcm-block{margin-bottom:2.3em;}
+    @media (max-width:1040px){main{padding:8px 2px;}}
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<header>
+  <h1>Ondes et lumière : spectre, réflexion, réfraction, dispersion</h1>
+  <div class="intro">Tout sur la lumière et les ondes : spectre, lois, schéma rayons, QCM, exos, LaTeX, fiche, lexique, popups, sauvegarde notes !</div>
+</header>
+<main>
+  <section class="box infos">
+    <h2>📚 Objectifs</h2>
+    <ul>
+      <li>Comprendre la nature ondulatoire de la lumière</li>
+      <li>Décomposer le spectre visible et connaître le spectre électromagnétique</li>
+      <li>Savoir expliquer la réflexion, la réfraction, la dispersion</li>
+      <button onclick="openPopup('popup-appli')">Applications concrètes</button>
+    </ul>
+  </section>
+  <section>
+    <h2>🌈 1. Spectre</h2>
+    <ul>
+      <li>
+        <b>Le spectre électromagnétique</b> : radio, micro-ondes, IR, visible, UV, X, gamma
+      </li>
+      <li>
+        <b>Spectre visible</b> (pour l’œil humain) : 400-780 nm (violet à rouge)
+      </li>
+      <li>
+        <b>Chaque couleur = une longueur d’onde λ propre</b>
+      </li>
+      <li>
+        <button onclick="openPopup('popup-spectre')">Voir représentation</button>
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>🔁 2. Réflexion & Réfraction</h2>
+    <ul>
+      <li>
+        <b>Réflexion :</b> retour du rayon lumineux sur une surface (loi : angle réfléchi = angle d’incidence)
+      </li>
+      <li>
+        <b>Réfraction :</b> changement de direction d’un rayon lumineux passant d’un milieu à un autre (air → eau…)
+      </li>
+      <li>
+        <b>Loi de Snell-Descartes :</b> 
+        \[
+        n_1 \sin i_1 = n_2 \sin i_2
+        \]
+        où \(n\) = indice optique ; \(i\) = angle d’incidence/réfraction
+      </li>
+      <li>
+        <button onclick="openPopup('popup-reflexion')">Voir schéma/règles</button>
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>🌠 3. Dispersion</h2>
+    <ul>
+      <li>
+        <b>Dispersion :</b> séparation des couleurs par réfraction (ex : prisme, arc-en-ciel)
+      </li>
+      <li>
+        Chaque couleur dévie différemment : indice \(n\) dépend de \(λ\)
+      </li>
+      <li>
+        <button onclick="openPopup('popup-disp')">Voir schéma dispersion</button>
+      </li>
+    </ul>
+    <canvas id="schema-lumiere" width="510" height="140"></canvas>
+    <div class="infos" style="text-align:center;">Schéma : réflexion, réfraction, dispersion par prisme</div>
+  </section>
+  <section>
+    <h2>📑 Exercices interactifs</h2>
+    <div class="flex-exercices">
+      <div class="box-exo exo-block">
+        <b>Ex 1 – Loi de Snell-Descartes</b><br>
+        Un rayon arrive de l’air (\( n_1=1 \)), vers l’eau (\( n_2=1,33 \)), sous \( i_1 = 30^\circ \). Calculer \( i_2 \).
+        <input type="text" id="exo1" placeholder="... ° (arrondi)">
+        <button onclick="checkExo(1)">Valider</button>
+        <div class="reponse" id="rep-exo1"></div>
+      </div>
+      <div class="box-exo exo-block">
+        <b>Ex 2 – Spectre visible</b><br>
+        Quelle couleur correspond à \(λ=480\) nm ?
+        <input type="text" id="exo2" placeholder="...">
+        <button onclick="checkExo(2)">Valider</button>
+        <div class="reponse" id="rep-exo2"></div>
+      </div>
+      <div class="box-exo exo-block">
+        <b>Ex 3 – Dispersion</b><br>
+        Dans un prisme, quelle couleur est la plus déviée ? 
+        <input type="text" id="exo3" placeholder="...">
+        <button onclick="checkExo(3)">Valider</button>
+        <div class="reponse" id="rep-exo3"></div>
+      </div>
+    </div>
+    <button onclick="resetExos()">Effacer mes réponses</button>
+  </section>
+  <section class="qcm-block">
+    <h2>🎯 QCM interactif (score immédiat !)</h2>
+    <div id="qcm-interactif"></div>
+    <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
+    <button onclick="reloadQCM()">Recommencer le QCM</button>
+  </section>
+  <section class="box-important">
+    <h2>🔖 Fiche de révision rapide</h2>
+    <div class="fiche">
+      <ul>
+        <li>Spectre visible : λ ≈ 400-780 nm (violet-rouge)</li>
+        <li>Réflexion : \(i_1 = i_1'\), même angle</li>
+        <li>Réfraction : \(n_1 \sin i_1 = n_2 \sin i_2\)</li>
+        <li>Dispersion : plus λ est court (violet), plus la lumière dévie dans un prisme</li>
+        <li>Toujours représenter/schématiser la lumière avec les angles</li>
+      </ul>
+    </div>
+  </section>
+  <section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+      <li>Confondre angle d’incidence et angle de réfraction</li>
+      <li>Oublier la dépendance de \(n\) à \(λ\) pour la dispersion</li>
+      <li>Mal placer/réfléchir les couleurs (violet + dévié, rouge - dévié)</li>
+      <li>Utiliser cos/au lieu de sin dans la loi de réfraction</li>
+      <li>Ne pas convertir angle en degré/radian selon contexte</li>
+    </ul>
+  </section>
+  <section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <ul>
+      <li><b>Spectre</b> : ensemble des longueurs d’ondes présentes dans une lumière</li>
+      <li><b>Indice (n)</b> : grandeur rendant compte de la vitesse dans un milieu</li>
+      <li><b>Réflexion</b> : retour d’un rayon à la surface</li>
+      <li><b>Réfraction</b> : déviation lors du changement de milieu</li>
+      <li><b>Dispersion</b> : séparation des couleurs par différence d’indice</li>
+    </ul>
+  </section>
+  <section>
+    <h2>🗒️ Tes propres notes (sauvegarde locale)</h2>
+    <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
+    <button onclick="saveNotes()">Enregistrer</button>
+    <span id="savemsg" style="color:#4caf50;font-weight:bold;"></span>
+  </section>
+  <section class="source">Sources : cours lycée, manuels, BAC 2025, fiches optique/ondes INJS.</section>
+</main>
+<div class="overlay" id="overlay"></div>
+<div class="popup" id="popup-appli"><h3>Applications</h3>
+Prisme, arc-en-ciel, fibre optique, miroirs, lunettes, instruments optiques, CDD (CD), analyse spectrale...
+<button onclick="closePopup()">Fermer</button></div>
+<div class="popup" id="popup-spectre"><h3>Représentation spectre</h3>
+Du rouge (λ ~ 780 nm) au violet (λ ~ 400 nm), spectre visible ⟶ IR/UV.
+<button onclick="closePopup()">Fermer</button></div>
+<div class="popup" id="popup-reflexion"><h3>Réflexion & Réfraction</h3>
+Toujours représenter surface, angle d’incidence, angle réfléchi, angle réfracté. Attention : l’angle est mesuré à la normale.
+<button onclick="closePopup()">Fermer</button></div>
+<div class="popup" id="popup-disp"><h3>Schéma dispersion</h3>
+Dans le prisme, rayon entrant → spectre arc-en-ciel sortant : violet + dévié, rouge - dévié.
+<button onclick="closePopup()">Fermer</button></div>
+<script>
+function reloadMathJax(){if(window.MathJax){window.MathJax.typesetPromise();}}
+function openPopup(id){document.getElementById('overlay').classList.add("show");document.getElementById(id).classList.add("show");}
+function closePopup(){document.getElementById('overlay').classList.remove("show");var popups=document.querySelectorAll('.popup');popups.forEach(function(p){p.classList.remove('show');});}
+function saveNotes(){localStorage.setItem("notesLumiere",document.getElementById("notes").value);document.getElementById("savemsg").textContent="✔️ Enregistré !";setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);}
+if(localStorage.getItem("notesLumiere")){document.getElementById("notes").value=localStorage.getItem("notesLumiere");}
+// Schéma : réflexion, réfraction, dispersion
+function drawLumiere(){
+  var c=document.getElementById('schema-lumiere');if(!c)return;var x=c.getContext('2d');
+  x.clearRect(0,0,510,140);
+  // Prisme
+  x.strokeStyle="#999";x.lineWidth=2;x.beginPath();x.moveTo(170,110);x.lineTo(230,30);x.lineTo(290,110);x.lineTo(170,110);x.stroke();
+  x.fillStyle="#f3aa3f";x.globalAlpha=0.32;x.beginPath();x.moveTo(170,110);x.lineTo(230,30);x.lineTo(290,110);x.closePath();x.fill();x.globalAlpha=1;
+  // Rayon incident
+  x.strokeStyle="#1877f2";x.lineWidth=3;x.beginPath();x.moveTo(85,95);x.lineTo(170,90);x.stroke();
+  // Rayon réfléchi
+  x.strokeStyle="#167c2b";x.lineWidth=2;x.beginPath();x.moveTo(170,90);x.lineTo(130,40);x.stroke();
+  // Rayons réfractés/dispersés
+  var colors=["#f00","#f66","#fa0","#ff0","#0ef","#07f","#60f"],lambdas=[305,315,325,335,345,355,365];
+  for(let i=0;i<colors.length;i++){
+    x.strokeStyle=colors[i];x.lineWidth=3-i/4;
+    x.beginPath();x.moveTo(229,62+lambdas[i]/32);x.lineTo(400,40+18*i);x.stroke();
+  }
+  // Noms
+  x.fillStyle="#1877f2";x.font="14px Arial";x.fillText("Incident",86,87);
+  x.fillStyle="#167c2b";x.fillText("Réfléchi",115,47);
+  x.fillStyle="#999";x.fillText("Prisme",222,125);
+  x.fillStyle="#a00";x.fillText("Rouge",405,48);
+  x.fillStyle="#349bfa";x.fillText("Violet",400,150-35);
+}
+drawLumiere();
+const qcmData=[
+{
+  question:"Loi de réfraction : n₁sin i₁ = ... ?",
+  choices:["n₂sin i₂","1/n₂sin i₂","n₂/i₂"],
+  correct:0,
+  explanation:"Loi de Snell-Descartes"
+},
+{
+  question:"Couleur λ=650 nm (=...)",
+  choices:["rouge","vert","violet"],
+  correct:0,
+  explanation:"Rouge : λ long"
+},
+{
+  question:"Dans le prisme, la couleur + déviée est",
+  choices:["violet","rouge","vert"],
+  correct:0,
+  explanation:"Violet : λ court, n + grand donc + dévié"
+},
+{
+  question:"Réflexion : l’angle réfléchi...",
+  choices:["= angle incidence","est tjs 90°","dépend du matériau"],
+  correct:0,
+  explanation:"Angle incidence = réfléchi !"
+}
+];
+let qcmScore=0,qcmDone=Array(qcmData.length).fill(false);
+function displayQCM(){
+  let html="";
+  for(let i=0;i<qcmData.length;i++){
+    html += `<div style="margin-bottom:1em"><b>Q${i+1} :</b> <span>\\(${qcmData[i].question}\\)</span><br>`;
+    for(let j=0;j<qcmData[i].choices.length;j++){
+      html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+    }
+    html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
+  }
+  document.getElementById("qcm-interactif").innerHTML=html;document.getElementById("qcm-score").innerHTML="";qcmScore=0;qcmDone=Array(qcmData.length).fill(false);reloadMathJax();
+}
+displayQCM();
+function checkQCM(qnum,num){
+  if(qcmDone[qnum])return;
+  if(num==qcmData[qnum].correct){
+    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#168b24;font-weight:bold">Bonne réponse !</span><br><span style="font-size:0.98em;">${qcmData[qnum].explanation}</span>`;
+    qcmScore++;
+  }else{
+    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#c21c5c;font-weight:bold">Faux !</span>  <br><span>${qcmData[qnum].explanation}</span>`;
+  }
+  qcmDone[qnum]=true;
+  document.getElementById("qcm-score").innerHTML="Score : "+qcmScore+"/"+qcmData.length;reloadMathJax();
+}
+function reloadQCM(){displayQCM();}
+function checkExo(ex){
+  let rep=document.getElementById('exo'+ex).value.replace(",",".").trim().toLowerCase();
+  if(ex==1){
+    // i1 = 30°, n1=1, n2=1,33
+    let rad = Math.PI/180;
+    let val = Math.asin((1/1.33)*Math.sin(30*rad))/rad;
+    let good=Math.abs(Number(rep)-val)<1.5;
+    document.getElementById('rep-exo1').innerHTML = good?`Bravo : i₂ ≈ 22°`:"Faux : i₂ ≈ 22°";
+  }
+  if(ex==2){
+    let good=rep.includes("bleu")||rep.includes("cyan");
+    document.getElementById('rep-exo2').innerHTML = good?"Correct : λ=480 nm → bleu/cyan":"Faux : λ=480 nm = bleu";
+  }
+  if(ex==3){
+    let good=rep.includes("violet");
+    document.getElementById('rep-exo3').innerHTML = good?"Exact : le violet est le + dévié !":"Non. La couleur la + déviée est le violet.";
+  }
+  reloadMathJax();
+}
+function resetExos(){["exo1","exo2","exo3"].forEach(id=>{let el=document.getElementById(id);if(el)el.value="";});["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{let el=document.getElementById(id);if(el)el.textContent="";});}
+setTimeout(reloadMathJax,180);
+</script>
+</body>
+</html>

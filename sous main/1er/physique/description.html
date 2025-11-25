@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Description du mouvement : repérage, référentiel, trajectoire, vitesse</title>
+  <meta name="description" content="Cours interactif lycée : mouvements (repérage, référentiel, trajectoire, vitesse), QCM, exos, schéma canvas, LaTeX, fiche, lexique, sauvegarde notes.">
+  <style>
+    body{background:#f6f8fa;font-family:'Segoe UI',Arial,sans-serif;color:#222;margin:0;}
+    header{background:linear-gradient(90deg,#eef4fb,#deffe4 80%);color:#243552;padding:30px 0 12px;text-align:center;}
+    header h1{font-size:2.2rem;margin:0 0 8px;color:#1877f2;}
+    header .intro{font-size:1.09rem;}
+    main{max-width:960px;background:#fff;margin:45px auto 20px;padding:36px 60px;border-radius:20px;box-shadow:0 9px 28px rgba(24,119,242,0.12);}
+    h2{color:#1877f2;margin-top:34px;}
+    h3{color:#f5a623;margin-top:27px;}
+    ul,ol{margin-left:2em;margin-bottom:0.8em;}
+    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.06rem;}
+    .infos{background:#e7f3fa;border-left:7px solid #1877f2;}
+    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;}
+    .box-important{background:#fff7ec;border-left:8px solid #f5a623;}
+    .error{background:#ffeaea;border-left:8px solid #e06359;}
+    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;}
+    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;}
+    .source{font-size:0.88em;color:#999;text-align:right;margin-top:10px;}
+    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s;font-size:1em;}
+    button:hover{background:#145ac3;}
+    .reponse{margin-top:0.7em;color:#1877f2;font-weight:bold;text-align:center;}
+    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;}
+    #schema-mouv {margin:1.2em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #e7f3f7;}
+    input[type='text'],textarea{border-radius:5px;border:1px solid #ccc;padding:5px;margin-top:6px;}
+    .flex-exercices{display:flex;flex-wrap:wrap;}
+    .exo-block{flex:1 1 310px;margin-right:2%;min-width:330px;}
+    .exo-block:last-child{margin-right:0;}
+    .popup{display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.17);padding:35px;width:340px;z-index:2000;}
+    .popup h3{color:#1877f2;}
+    .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(40,61,102,0.23);z-index:1800;}
+    .show{display:block;}
+    .scoreQCM{font-weight:bold;color:#167c2b;}
+    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;}
+    .qcm-block{margin-bottom:2.3em;}
+    @media (max-width:1040px){main{padding:8px 2px;}}
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<header>
+  <h1>Description du mouvement : repérage, référentiel, trajectoire, vitesse</h1>
+  <div class="intro">Maîtrise le mouvement en physique : repérage, référentiel, trajectoires, vitesses et QCM, exercices, schéma interactif, LaTeX, notes sauvegardées !</div>
+</header>
+<main>
+  <section class="box infos">
+    <h2>📚 Objectifs – Pourquoi ce chapitre ?</h2>
+    <ul>
+      <li>Décrire les mouvements (translation, rotation, ...), choisir et utiliser un référentiel adapté.</li>
+      <li>Comprendre la notion de repérage (coordonnées, abscisse, temps), trajectoire et vitesse.</li>
+      <li>Maîtriser le vocabulaire, utiliser les formules en contrôle, éviter les pièges classiques.</li>
+      <button onclick="openPopup('popup-appli')">Exemple : applications concrètes</button>
+    </ul>
+  </section>
+  
+  <section>
+    <h2>📍 1. Repérage et référentiel</h2>
+    <ul>
+      <li><b>Repérer un point</b> : il faut indiquer sa position par des coordonnées (abscisse, ordonnée, 3D : x, y, z) et une date (t).</li>
+      <li>On utilise un <b>référentiel</b>, qui définit l’origine, les axes et le “décor” où le mouvement est observé.<br>
+      Ex : référentiel terrestre (sol), référentiel géocentrique (centre Terre), référentiel héliocentrique (centre Soleil).
+      </li>
+      <li>
+        <b>Repérage en 1D :</b><br>Position : \(x(t)\), temps : \(t\)
+      </li>
+      <li>
+        <b>Repérage en 2D :</b><br>Position : \(x(t),\ y(t)\)
+      </li>
+      <li>
+        <b>Repérage en 3D :</b><br>Position : \(x(t),\ y(t),\ z(t)\)
+      </li>
+      <li>
+        <span class="btn-lex" onclick="openPopup('popup-lexique-rep')">Lexique repérage</span>
+      </li>
+    </ul>
+  </section>
+  
+  <section>
+    <h2>🗺️ 2. Trajectoire</h2>
+    <ul>
+      <li><b>Trajectoire</b> : ensemble des positions successives du système au cours du mouvement (dessin du chemin parcouru).</li>
+      <li>
+        <b>Type de trajectoire :</b> <br>
+        - <b>Rectiligne</b> : ligne droite<br>
+        - <b>Circulaire</b> : cercle<br>
+        - <b>Parabolique</b>, <b>elliptique</b>, etc. selon le contexte
+      </li>
+      <li>La forme dépend du système et du référentiel choisi !</li>
+      <button onclick="openPopup('popup-sch-trajectoire')">Schéma trajectoire</button>
+    </ul>
+    <canvas id="schema-mouv" width="430" height="130"></canvas>
+    <div class="infos" style="text-align:center"><b>Schéma : exemple trajectoires (rectiligne, circulaire, parabolique)</b></div>
+  </section>
+  
+  <section>
+    <h2>🏃‍♂️ 3. Vitesse et calculs</h2>
+    <ul>
+      <li>
+        <b>Vitesse instantanée</b> en 1D : <br>
+        \(v(t) = \dfrac{dx}{dt}\) (dérivée de la position), unité : m·s⁻¹
+      </li>
+      <li>
+        <b>Vitesse moyenne</b> : \(v_{moy} = \dfrac{\Delta x}{\Delta t}\), soit \(\dfrac{x_{fin}-x_{départ}}{t_{fin}-t_{départ}}\)
+      </li>
+      <li>
+        <b>Vecteur vitesse</b> en 2D ou 3D : \(\vec{v}(t)\)
+      </li>
+      <li>
+        <b>Mouvement uniforme</b> : vitesse constante<br>
+        <b>Mouvement accéléré</b> : la vitesse change (accélération : \(a=\dfrac{dv}{dt}\))
+      </li>
+      <button onclick="openPopup('popup-vitesse')">Astuce calcul vitesse</button>
+    </ul>
+  </section>
+  
+  <section>
+    <h2>📑 Exercices interactifs</h2>
+    <div class="flex-exercices">
+      <div class="box-exo exo-block">
+        <b>Ex 1 – Repérage</b><br>
+        Un train est à la position \(x_0 = 2500\) m à la date \(t_0 = 0\) s. Il arrive à \(x_1 = 5500\) m à la date \(t_1 = 100\)s.<br>
+        Donne la vitesse moyenne.
+        <input type="text" id="exo1" placeholder="... m/s">
+        <button onclick="checkExo(1)">Valider</button>
+        <div class="reponse" id="rep-exo1"></div>
+      </div>
+      <div class="box-exo exo-block">
+        <b>Ex 2 – Trajectoire</b><br>
+        Cite deux exemples de référentiel pour décrire une balle lancée. 
+        <input type="text" id="exo2" placeholder="...">
+        <button onclick="checkExo(2)">Valider</button>
+        <div class="reponse" id="rep-exo2"></div>
+      </div>
+      <div class="box-exo exo-block">
+        <b>Ex 3 – Vitesse instantanée</b><br>
+        Pour \(x(t) = 4t + 7\), calcule la vitesse instantanée.
+        <input type="text" id="exo3" placeholder="...">
+        <button onclick="checkExo(3)">Valider</button>
+        <div class="reponse" id="rep-exo3"></div>
+      </div>
+    </div>
+    <button onclick="resetExos()">Effacer mes réponses</button>
+  </section>
+
+  <section class="qcm-block">
+    <h2>🎯 QCM interactif (score immédiat !)</h2>
+    <div id="qcm-interactif"></div>
+    <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
+    <button onclick="reloadQCM()">Recommencer le QCM</button>
+  </section>
+
+  <section class="box-important">
+    <h2>🔖 Fiche de révision rapide</h2>
+    <div class="fiche">
+      <ul>
+        <li><b>Repérage</b> : position (x, y, z) et date (t) dans un référentiel</li>
+        <li><b>Référentiel</b> : “décor” d’observation, origine + axes</li>
+        <li><b>Trajectoire</b> : chemin parcouru ; forme dépend du mouvement</li>
+        <li><b>Vitesse instantanée</b> : \(v(t)=\dfrac{dx}{dt}\)</li>
+        <li><b>Vitesse moyenne</b> : \(v_{moy}=\dfrac{\Delta x}{\Delta t}\)</li>
+        <li><b>Mouvement uniforme</b> : vitesse constante ; accéléré : vitesse variable</li>
+      </ul>
+    </div>
+  </section>
+  <section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+      <li>Confondre trajectoire (chemin) et intervalle (distance)</li>
+      <li>Oublier de préciser le référentiel</li>
+      <li>Se tromper d’unité pour vitesse ou position</li>
+      <li>Confondre vitesse instantanée et vitesse moyenne</li>
+    </ul>
+  </section>
+  <section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <ul>
+      <li><b>Référentiel</b> : système utilisé pour mesurer le mouvement</li>
+      <li><b>Position</b> : coordonnées dans le repère</li>
+      <li><b>Trajectoire</b> : ensemble des positions successives</li>
+      <li><b>Vitesse</b> : variation de position par unité de temps</li>
+      <li><b>Accélération</b> : variation de vitesse</li>
+    </ul>
+  </section>
+  <section>
+    <h2>🗒️ Tes propres notes (sauvegarde locale)</h2>
+    <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
+    <button onclick="saveNotes()">Enregistrer</button>
+    <span id="savemsg" style="color:#4caf50;font-weight:bold;"></span>
+  </section>
+  <section class="source">Sources : cours lycée, manuels, BAC 2025, fiches PC. </section>
+</main>
+<!-- Popups/Emergents -->
+<div class="overlay" id="overlay"></div>
+<div class="popup" id="popup-appli"><h3>Applications concrètes</h3>
+Repérer le mouvement : voiture dans un virage (référentiel terrestre), planète (référentiel héliocentrique), drone (référentiel lié au sol ou à lui-même)…
+<button onclick="closePopup()">Fermer</button>
+</div>
+<div class="popup" id="popup-sch-trajectoire"><h3>Schéma trajectoire</h3>
+Exemples : ligne droite = rectiligne, cercle = circulaire, parabole = trajectoire balistique.<br>Le choix du référentiel change tout !
+<button onclick="closePopup()">Fermer</button>
+</div>
+<div class="popup" id="popup-vitesse"><h3>Astuce vitesse</h3>
+La vitesse est toujours “variation” : \(\Delta x / \Delta t\) ou dérivée de la position.<br>Ne jamais oublier l’unité m/s !
+<button onclick="closePopup()">Fermer</button>
+</div>
+<div class="popup" id="popup-lexique-rep"><h3>Lexique repérage</h3>
+<b>Référentiel</b> : Origine + axes<br>
+<b>Repérage temporel</b> : connaître “quand” et “où” le système est.<br>
+<b>Coordonnées</b> : valeurs (x, y, z).
+<button onclick="closePopup()">Fermer</button>
+</div>
+
+<script>
+function reloadMathJax(){if(window.MathJax){window.MathJax.typesetPromise();}}
+// Popups/lexique
+function openPopup(id){document.getElementById('overlay').classList.add("show");document.getElementById(id).classList.add("show");}
+function closePopup(){document.getElementById('overlay').classList.remove("show");var popups=document.querySelectorAll('.popup');popups.forEach(function(p){p.classList.remove('show');});}
+function saveNotes(){localStorage.setItem("notesMouvement",document.getElementById("notes").value);document.getElementById("savemsg").textContent="✔️ Enregistré !";setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);}
+if(localStorage.getItem("notesMouvement")){document.getElementById("notes").value=localStorage.getItem("notesMouvement");}
+// Schéma du mouvement
+function drawMouv(){
+  var c=document.getElementById('schema-mouv');if(!c)return;var x=c.getContext('2d');
+  x.clearRect(0,0,430,130);
+  // Trajectoire rectiligne
+  x.strokeStyle="#1877f2";x.lineWidth=4;x.beginPath();x.moveTo(30,115);x.lineTo(140,35);x.stroke();
+  x.font="15px Arial";x.fillStyle="#1877f2";x.fillText("Rectiligne",60,25);
+  // Trajectoire circulaire
+  x.strokeStyle="#f5a623";x.lineWidth=3;x.beginPath();x.arc(240,75,35,0,2*Math.PI);x.stroke();
+  x.fillStyle="#f5a623";x.fillText("Circulaire",215,120);
+  // Trajectoire parabolique
+  x.strokeStyle="#243552";x.lineWidth=2.5;x.beginPath();
+  for(let t=0;t<=50;t++){
+    let xPos=320+t*2;
+    let yPos=110-(t/2)-(t*t/47);
+    if(t===0)x.moveTo(xPos,yPos);else x.lineTo(xPos,yPos);
+  }
+  x.stroke();
+  x.fillStyle="#243552";x.fillText("Parabolique",355,80);
+  // Origine et axes
+  x.fillStyle="#222";
+  x.beginPath();x.arc(28,117,5,0,2*Math.PI);x.fill();
+  x.fillText("Origine",7,127);
+  x.strokeStyle="#888";x.lineWidth=1.2;x.beginPath();x.moveTo(28,117);x.lineTo(28,22);x.stroke();
+  x.beginPath();x.moveTo(28,117);x.lineTo(425,117);x.stroke();
+  x.fillText("x",420,127); x.fillText("y",17,25);
+}
+drawMouv();
+// QCM
+const qcmData=[
+{
+  question:"Le repérage d’un mouvement nécessite :",
+  choices:["Un référentiel et une date","Un compas carton","Seulement une origine"],
+  correct:0,
+  explanation:"Il faut référentiel ET instant."
+},
+{
+  question:"La vitesse moyenne se calcule par :",
+  choices:["∆x/∆t","x×t","dx/dt"],
+  correct:0,
+  explanation:"∆x/∆t pour la moyenne ! dx/dt = instantanée."
+},
+{
+  question:"Si x(t)=3t+5, sa vitesse instantanée vaut :",
+  choices:["3","5","t"],
+  correct:0,
+  explanation:"Dérivée : dx/dt = 3"
+},
+{
+  question:"La trajectoire d’un satellite autour de la Terre est généralement :",
+  choices:["Rectiligne","Circulaire ou elliptique","Parabolique"],
+  correct:1,
+  explanation:"Elliptique/circulaire selon vitesse/orbite."
+}
+];
+let qcmScore=0;
+let qcmDone=Array(qcmData.length).fill(false);
+function displayQCM(){
+  let html="";
+  for(let i=0;i<qcmData.length;i++){
+    html += `<div style="margin-bottom:1em"><b>Q${i+1} :</b> <span>\\(${qcmData[i].question}\\)</span><br>`;
+    for(let j=0;j<qcmData[i].choices.length;j++){
+      html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+    }
+    html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
+  }
+  document.getElementById("qcm-interactif").innerHTML=html;document.getElementById("qcm-score").innerHTML="";qcmScore=0;qcmDone=Array(qcmData.length).fill(false);reloadMathJax();
+}
+displayQCM();
+function checkQCM(qnum,num){
+  if(qcmDone[qnum])return;
+  if(num==qcmData[qnum].correct){
+    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#168b24;font-weight:bold">Bonne réponse !</span><br><span style="font-size:0.98em;">${qcmData[qnum].explanation}</span>`;
+    qcmScore++;
+  }else{
+    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#c21c5c;font-weight:bold">Faux !</span>  <br><span>${qcmData[qnum].explanation}</span>`;
+  }
+  qcmDone[qnum]=true;
+  document.getElementById("qcm-score").innerHTML="Score : "+qcmScore+"/"+qcmData.length;reloadMathJax();
+}
+function reloadQCM(){displayQCM();}
+function checkExo(ex){
+  let rep=document.getElementById('exo'+ex).value.replace(",",".");
+  if(ex==1){
+    let v=(5500-2500)/100;
+    let good=Math.abs(Number(rep)-v)<0.06;
+    document.getElementById('rep-exo1').innerHTML = good?`Bravo ! v = (5500-2500)/100 = 30 m/s`:"Faux. v = (5500-2500)/100 = 30 m/s";
+  }
+  if(ex==2){
+    rep=rep.trim().toLowerCase();
+    let good = rep.includes("terrestre")||rep.includes("sol")||rep.includes("géocentrique")||rep.includes("centre");
+    document.getElementById('rep-exo2').innerHTML=good?"Correct : référentiel terrestre, géocentrique, héliocentrique …":"Faux : référentiel du sol, géo/héliocentrique.";
+  }
+  if(ex==3){
+    rep=rep.trim();
+    let good = rep=="4"||rep=="4m/s"||rep=="4 m/s"||rep=="v=4";
+    document.getElementById('rep-exo3').innerHTML = good ? "Correct : la dérivée de x(t)=4t+7 est 4 m/s (mouvement uniforme)" : "Faux : la vitesse instantanée v=4 m/s";
+  }
+  reloadMathJax();
+}
+function resetExos() {
+  ["exo1","exo2","exo3"].forEach(function(id) {
+    var el = document.getElementById(id);
+    if(el) el.value = "";
+  });
+  ["rep-exo1","rep-exo2","rep-exo3"].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.textContent = "";
+  });
+}
+setTimeout(reloadMathJax, 180);
+
+</script>
+</body>
+</html>

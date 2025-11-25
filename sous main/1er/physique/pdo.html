@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Propagation des ondes : mécaniques, électromagnétiques</title>
+  <meta name="description" content="Cours interactif lycée : propagation des ondes, mécanique, électromagnétique, formules, schéma, QCM, exos, LaTeX, fiche, lexique, notes.">
+  <style>
+    body{background:#f6f8fa;font-family:'Segoe UI',Arial,sans-serif;color:#222;margin:0;}
+    header{background:linear-gradient(90deg,#eef4fb,#deffe4 80%);color:#243552;padding:30px 0 12px;text-align:center;}
+    header h1{font-size:2.2rem;margin:0 0 8px;color:#1877f2;}
+    header .intro{font-size:1.09rem;}
+    main{max-width:970px;background:#fff;margin:45px auto 20px;padding:36px 60px;border-radius:20px;box-shadow:0 9px 28px rgba(24,119,242,0.12);}
+    h2,h3{color:#1877f2;margin-top:34px;}
+    h3{color:#f5a623;}
+    ul,ol{margin-left:2em;margin-bottom:0.8em;}
+    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.06rem;}
+    .infos{background:#e7f3fa;border-left:7px solid #1877f2;}
+    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;}
+    .box-important{background:#fff7ec;border-left:8px solid #f5a623;}
+    .error{background:#ffeaea;border-left:8px solid #e06359;}
+    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;}
+    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;}
+    .source{font-size:0.88em;color:#999;text-align:right;margin-top:10px;}
+    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s;font-size:1em;}
+    button:hover{background:#145ac3;}
+    .reponse{margin-top:0.7em;color:#1877f2;font-weight:bold;text-align:center;}
+    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;}
+    #schema-onde{margin:1.2em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #e7f3f7;}
+    input[type='text'],textarea{border-radius:5px;border:1px solid #ccc;padding:5px;margin-top:6px;}
+    .flex-exercices{display:flex;flex-wrap:wrap;}
+    .exo-block{flex:1 1 310px;margin-right:2%;min-width:330px;}
+    .exo-block:last-child{margin-right:0;}
+    .popup{display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.17);padding:35px;width:340px;z-index:2000;}
+    .popup h3{color:#1877f2;}
+    .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(40,61,102,0.23);z-index:1800;}
+    .show{display:block;}
+    .scoreQCM{font-weight:bold;color:#167c2b;}
+    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;}
+    .qcm-block{margin-bottom:2.3em;}
+    @media (max-width:1040px){main{padding:8px 2px;}}
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<header>
+  <h1>Propagation des ondes : mécaniques et électromagnétiques</h1>
+  <div class="intro">Cours interactif sur les ondes : propagation, vitesse, caractéristiques, schéma, QCM, exos, LaTeX, fiche, lexique, notes…</div>
+</header>
+<main>
+  <section class="box infos">
+    <h2>📚 Objectifs</h2>
+    <ul>
+      <li>Comprendre et modéliser la propagation d’une onde mécanique ou électromagnétique</li>
+      <li>Maîtriser les grandeurs : amplitude, célérité, fréquence, longueur d’onde, période</li>
+      <li>Savoir résoudre les exercices type : calcul vitesse, fréquence, interpréter un schéma</li>
+      <button onclick="openPopup('popup-appli')">Applications concrètes</button>
+    </ul>
+  </section>
+  
+  <section>
+    <h2>🌊 1. Onde mécanique</h2>
+    <ul>
+      <li>
+        <b>Déf.</b> : perturbation qui se propage dans la matière (ex : corde, son, vague…)
+      </li>
+      <li>
+        <b>Caractéristiques principales</b> :
+        <ul>
+          <li>Amplitude : hauteur du signal</li>
+          <li>Fréquence (\( f \)), période (\( T \)), relation : \( f = 1/T \)</li>
+          <li>Célérité (\( v \)) : vitesse de propagation (\( v = \lambda \cdot f \))</li>
+          <li>Longueur d’onde (\( \lambda \ )) : distance parcourue par l’onde en une période</li>
+        </ul>
+      </li>
+      <li>
+        <span class="btn-lex" onclick="openPopup('popup-lexique-meca')">Lexique mécanique</span>
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>💡 2. Onde électromagnétique</h2>
+    <ul>
+      <li>
+        <b>Déf.</b> : onde qui se propage SANS support matériel (ex : lumière, radio, micro-ondes, rayons X…)
+      </li>
+      <li>
+        <b>Caractéristiques</b> :
+        <ul>
+          <li>Célérité fixe dans le vide : \( c = 3,00 \times 10^8~m/s \)</li>
+          <li>Longueur d’onde (\( \lambda \)), fréquence (\( f \ ))</li>
+          <li>Relation : \( c = \lambda \cdot f \)</li>
+        </ul>
+      </li>
+      <li>
+        <span class="btn-lex" onclick="openPopup('popup-lexique-em')">Lexique électromagnétique</span>
+      </li>
+    </ul>
+    <canvas id="schema-onde" width="480" height="140"></canvas>
+    <div class="infos" style="text-align:center;"><b>Schéma : onde mécanique (corde) + onde électromagnétique (lumière)</b></div>
+  </section>
+  
+  <section>
+    <h2>📑 Exercices interactifs</h2>
+    <div class="flex-exercices">
+      <div class="box-exo exo-block">
+        <b>Ex 1 — Son dans l’air</b><br>
+        Calculer la longueur d’onde d’un son de fréquence 440 Hz (vitesse dans l’air : 340 m/s).
+        <input type="text" id="exo1" placeholder="... m">
+        <button onclick="checkExo(1)">Valider</button>
+        <div class="reponse" id="rep-exo1"></div>
+      </div>
+      <div class="box-exo exo-block">
+        <b>Ex 2 — Lumière rouge</b><br>
+        Calcule la fréquence d’une lumière de longueur d’onde 650 nm (célérité 3,0×10⁸ m/s).
+        <input type="text" id="exo2" placeholder="... Hz">
+        <button onclick="checkExo(2)">Valider</button>
+        <div class="reponse" id="rep-exo2"></div>
+      </div>
+      <div class="box-exo exo-block">
+        <b>Ex 3 — Interprétation graphique</b><br>
+        La durée d’une “bosse” sur une corde est 5 ms. Déduis la période.
+        <input type="text" id="exo3" placeholder="... s">
+        <button onclick="checkExo(3)">Valider</button>
+        <div class="reponse" id="rep-exo3"></div>
+      </div>
+    </div>
+    <button onclick="resetExos()">Effacer mes réponses</button>
+  </section>
+  <section class="qcm-block">
+    <h2>🎯 QCM interactif (score immédiat !)</h2>
+    <div id="qcm-interactif"></div>
+    <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
+    <button onclick="reloadQCM()">Recommencer le QCM</button>
+  </section>
+  <section class="box-important">
+    <h2>🔖 Fiche de révision rapide</h2>
+    <div class="fiche">
+      <ul>
+        <li>Onde mécanique : nécessite un support (corde, eau, air…)</li>
+        <li>Onde électromagnétique : pas de support, vitesse = c</li>
+        <li>Relation vitesse-longueur-fréquence : \(v = \lambda \cdot f\), \(c = \lambda \cdot f\)</li>
+        <li>Fréquence = 1/période</li>
+        <li>Longueur d’onde = distance parcourue en 1 période</li>
+      </ul>
+    </div>
+  </section>
+  <section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+      <li>Confondre onde mécanique (son, corde) et électromagnétique (lumière)</li>
+      <li>Oublier unités (fréquence Hz, longueur d’onde m ou nm, période s)</li>
+      <li>Inverser formule vitesse/fréquence/longueur</li>
+      <li>Ne pas identifier le support de propagation</li>
+      <li>Mal lire la période sur le graphique</li>
+    </ul>
+  </section>
+  <section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <ul>
+      <li><b>Onde</b> : perturbation qui se propage (transfert d’énergie, pas de matière)</li>
+      <li><b>Célérité</b> : vitesse de propagation (mécanique : v, électromagnétique : c)</li>
+      <li><b>Amplitude</b> : “hauteur” de l’onde</li>
+      <li><b>Fréquence (f)</b> : nombre d’oscillations par seconde (Hz)</li>
+      <li><b>Période (T)</b> : durée d’une oscillation (s)</li>
+      <li><b>Longueur d’onde (\(\lambda\))</b> : distance parcourue en une période (m)</li>
+    </ul>
+  </section>
+  <section>
+    <h2>🗒️ Tes propres notes (sauvegarde locale)</h2>
+    <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
+    <button onclick="saveNotes()">Enregistrer</button>
+    <span id="savemsg" style="color:#4caf50;font-weight:bold;"></span>
+  </section>
+  <section class="source">Sources : cours lycée, manuels, BAC PC 2025, fiches ondes INJS.</section>
+</main>
+<div class="overlay" id="overlay"></div>
+<div class="popup" id="popup-appli"><h3>Applications</h3>
+Son (ondes mécaniques), radio, lumière, IR, micro-ondes, rayons X (ondes électromagnétiques), séismes, télécommunications…
+<button onclick="closePopup()">Fermer</button></div>
+<div class="popup" id="popup-lexique-meca"><h3>Lexique mécanique</h3>
+Onde transverse/longitudinale, amplitude, fréquence, période, vitesse. Ex : corde, ressort, son.
+<button onclick="closePopup()">Fermer</button></div>
+<div class="popup" id="popup-lexique-em"><h3>Lexique électromagnétique</h3>
+Spectre : radio, micro-ondes, IR, visible, UV, X, gamma. Célérité = c dans le vide.
+<button onclick="closePopup()">Fermer</button></div>
+<script>
+function reloadMathJax(){if(window.MathJax){window.MathJax.typesetPromise();}}
+function openPopup(id){document.getElementById('overlay').classList.add("show");document.getElementById(id).classList.add("show");}
+function closePopup(){document.getElementById('overlay').classList.remove("show");var popups=document.querySelectorAll('.popup');popups.forEach(function(p){p.classList.remove('show');});}
+function saveNotes(){localStorage.setItem("notesOndes",document.getElementById("notes").value);document.getElementById("savemsg").textContent="✔️ Enregistré !";setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);}
+if(localStorage.getItem("notesOndes")){document.getElementById("notes").value=localStorage.getItem("notesOndes");}
+// Schéma ondes
+function drawOnde(){
+  var c=document.getElementById('schema-onde');if(!c)return;var x=c.getContext('2d');
+  x.clearRect(0,0,480,140);
+  // Onde mécanique (corde)
+  x.strokeStyle="#1877f2";x.lineWidth=3;x.beginPath();
+  for(var i=0;i<=480;i++){
+    var y=45-18*Math.sin(2*Math.PI*i/120);
+    if(i==0)x.moveTo(i, y);else x.lineTo(i, y);
+  }
+  x.stroke();x.fillStyle="#1877f2";x.font="14px Arial";x.fillText("Corde (mécanique)",40,32);
+  // Onde électromagnétique approximative
+  x.strokeStyle="#e06359";x.setLineDash([8,5]);
+  x.beginPath();
+  for(var i=0;i<=480;i++){
+    var y=120-14*Math.cos(2*Math.PI*i/110);
+    if(i==0)x.moveTo(i, y);else x.lineTo(i, y);
+  }
+  x.stroke();x.setLineDash([]);
+  x.fillStyle="#e06359";x.fillText("Lumière (EM)",60,135);
+  // Amplitude
+  x.strokeStyle="#f5a623";x.beginPath();x.moveTo(150,45);x.lineTo(150,27);x.stroke();
+  x.fillStyle="#f5a623";x.fillText("A",155,29);
+  // Longueur d’onde (lambda)
+  x.strokeStyle="#4caf50";x.lineWidth=2;x.beginPath();x.moveTo(190,80);x.lineTo(310,80);x.stroke();
+  x.fillStyle="#4caf50";x.font="17px Arial";x.fillText("λ",250,95);
+}
+drawOnde();
+const qcmData=[
+{
+  question:"La vitesse d’une onde mécanique =",
+  choices:["λ × f","λ / f","f × t"],
+  correct:0,
+  explanation:"Relation fondamentale : v=λ×f"
+},
+{
+  question:"Une onde électromagnétique : propagation ?",
+  choices:["Besoin d’un support","Dans le vide","Sûrement dans l’air seulement"],
+  correct:1,
+  explanation:"EM : pas de support, c dans le vide !"
+},
+{
+  question:"La fréquence de la lumière jaune (λ=600nm, c=3,0×10⁸) ?",
+  choices:["5×10¹⁴Hz","600Hz","3×10⁸Hz"],
+  correct:0,
+  explanation:"f=c/λ≈5×10¹⁴ Hz"
+},
+{
+  question:"Période T = ...",
+  choices:["1/f","λ×f","1/λ"],
+  correct:0,
+  explanation:"T=1/f"
+}
+];
+let qcmScore=0,qcmDone=Array(qcmData.length).fill(false);
+function displayQCM(){
+  let html="";
+  for(let i=0;i<qcmData.length;i++){
+    html += `<div style="margin-bottom:1em"><b>Q${i+1} :</b> <span>\\(${qcmData[i].question}\\)</span><br>`;
+    for(let j=0;j<qcmData[i].choices.length;j++){
+      html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+    }
+    html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
+  }
+  document.getElementById("qcm-interactif").innerHTML=html;document.getElementById("qcm-score").innerHTML="";qcmScore=0;qcmDone=Array(qcmData.length).fill(false);reloadMathJax();
+}
+displayQCM();
+function checkQCM(qnum,num){
+  if(qcmDone[qnum])return;
+  if(num==qcmData[qnum].correct){
+    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#168b24;font-weight:bold">Bonne réponse !</span><br><span style="font-size:0.98em;">${qcmData[qnum].explanation}</span>`;
+    qcmScore++;
+  }else{
+    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#c21c5c;font-weight:bold">Faux !</span>  <br><span>${qcmData[qnum].explanation}</span>`;
+  }
+  qcmDone[qnum]=true;
+  document.getElementById("qcm-score").innerHTML="Score : "+qcmScore+"/"+qcmData.length;reloadMathJax();
+}
+function reloadQCM(){displayQCM();}
+function checkExo(ex){
+  let rep=document.getElementById('exo'+ex).value.replace(",",".");
+  if(ex==1){
+    let v=340/440;
+    let good=Math.abs(Number(rep)-v)<0.05;
+    document.getElementById('rep-exo1').innerHTML = good?`Bravo : λ=v/f=340/440 ≈ 0,77 m`:"Faux. λ=340/440 ≈ 0,77";
+  }
+  if(ex==2){
+    let v=3e8/6.5e-7;
+    let good=Math.abs(Number(rep)-v)<2e12;
+    document.getElementById('rep-exo2').innerHTML = good?`Bonne réponse : f = c/λ = 3×10⁸ / 6,5×10⁻⁷ ≈ 4,6×10¹⁴ Hz`:"Faux. Fréq = 4,6×10¹⁴ Hz";
+  }
+  if(ex==3){
+    let good=Math.abs(Number(rep)-0.005)<0.001||rep=="0,005"||rep.includes("5ms");
+    document.getElementById('rep-exo3').innerHTML = good?`Exact : période = durée = 5 ms = 0,005 s`:"Faux. Période : 0,005 s";
+  }
+  reloadMathJax();
+}
+function resetExos(){["exo1","exo2","exo3"].forEach(id=>{let el=document.getElementById(id);if(el)el.value="";});["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{let el=document.getElementById(id);if(el)el.textContent="";});}
+setTimeout(reloadMathJax,180);
+</script>
+</body>
+</html>

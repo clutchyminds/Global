@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Conservation et transferts d’énergie : bilan, rendu, rendement</title>
+  <meta name="description" content="Cours interactif lycée : bilan énergétique, transferts, conservation, rendement, schéma, QCM, exos, LaTeX, fiche, lexique, notes.">
+  <style>
+    body{background:#f6f8fa;font-family:'Segoe UI',Arial,sans-serif;color:#222;margin:0;}
+    header{background:linear-gradient(90deg,#eef4fb,#deffe4 80%);color:#243552;padding:30px 0 12px;text-align:center;}
+    header h1{font-size:2.2rem;margin:0 0 8px;color:#1877f2;}
+    header .intro{font-size:1.09rem;}
+    main{max-width:970px;background:#fff;margin:45px auto 20px;padding:36px 60px;border-radius:20px;box-shadow:0 9px 28px rgba(24,119,242,0.12);}
+    h2,h3{color:#1877f2;margin-top:34px;}
+    h3{color:#f5a623;}
+    ul,ol{margin-left:2em;margin-bottom:0.8em;}
+    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.06rem;}
+    .infos{background:#e7f3fa;border-left:7px solid #1877f2;}
+    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;}
+    .box-important{background:#fff7ec;border-left:8px solid #f5a623;}
+    .error{background:#ffeaea;border-left:8px solid #e06359;}
+    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;}
+    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;}
+    .source{font-size:0.88em;color:#999;text-align:right;margin-top:10px;}
+    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s;font-size:1em;}
+    button:hover{background:#145ac3;}
+    .reponse{margin-top:0.7em;color:#1877f2;font-weight:bold;text-align:center;}
+    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;}
+    #schema-bilan{margin:1.2em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #e7f3f7;}
+    input[type='text'],textarea{border-radius:5px;border:1px solid #ccc;padding:5px;margin-top:6px;}
+    .flex-exercices{display:flex;flex-wrap:wrap;}
+    .exo-block{flex:1 1 310px;margin-right:2%;min-width:330px;}
+    .exo-block:last-child{margin-right:0;}
+    .popup{display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.17);padding:35px;width:340px;z-index:2000;}
+    .popup h3{color:#1877f2;}
+    .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(40,61,102,0.23);z-index:1800;}
+    .show{display:block;}
+    .scoreQCM{font-weight:bold;color:#167c2b;}
+    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;}
+    .qcm-block{margin-bottom:2.3em;}
+    @media (max-width:1040px){main{padding:8px 2px;}}
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<header>
+  <h1>Conservation et transferts d’énergie : bilan, rendu, rendement</h1>
+  <div class="intro">Maîtrise les transferts et la conservation d’énergie : bilan énergétique, rendement, calculs et schéma, QCM, exos et sauvegarde des notes. LaTeX/MathJax, fiche & lexique + erreurs types.</div>
+</header>
+<main>
+  <section class="box infos">
+    <h2>📚 Objectifs</h2>
+    <ul>
+      <li>Comprendre la conservation de l’énergie, son transfert d’une forme à l’autre</li>
+      <li>Savoir établir un bilan énergétique et calculer le rendement</li>
+      <li>Réussir tous les exercices type : moteurs, lampes, transformations, machines</li>
+      <button onclick="openPopup('popup-appli')">Applications concrètes</button>
+    </ul>
+  </section>
+  <section>
+    <h2>🔋 1. Principe de conservation de l’énergie</h2>
+    <ul>
+      <li>
+        <b>L’énergie ne se crée ni ne se perd, elle se transforme ou est transférée.</b>
+      </li>
+      <li>
+        <b>Bilan énergétique</b> : faire le total des énergies “entrantes”, “sortantes” et “dissipées”.<br>
+        <b>Formule :</b> \( E_{\text{entrée}} = E_{\text{utilisée}} + E_{\text{dissipée}} \)
+      </li>
+      <li>
+        <button onclick="openPopup('popup-bilan')">Schéma bilan énergétique</button>
+      </li>
+    </ul>
+    <canvas id="schema-bilan" width="510" height="150"></canvas>
+    <div class="infos" style="text-align:center;"><b>Schéma : bilan énergétique (machine, moteur, ampoule...)</b></div>
+  </section>
+  <section>
+    <h2>⚡ 2. Transferts et rendements</h2>
+    <ul>
+      <li>
+        <b>Transfert d’énergie</b> : passage d’une forme à l’autre (chaleur, électricité, mouvement, lumière...)
+      </li>
+      <li>
+        <b>Rendement (\(\eta\))</b> : rapport entre l’énergie récupérée/utilisée utile (\(E_u\)) et l’énergie consommée/apportée (\(E_i\))
+        <br>
+        <b>Formule :</b> \( \eta = \frac{E_u}{E_i} \)
+        <ul>
+          <li>\( \eta \) entre 0 et 1 (ou 0 et 100 %)</li>
+          <li>Plus le système est “performant”, plus \(\eta\) est proche de 1 (100%)</li>
+        </ul>
+      </li>
+      <li>
+        <button onclick="openPopup('popup-rend')">Astuce rendement</button>
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>🧩 3. Applications</h2>
+    <ul>
+      <li><b>Lampe à incandescence</b> : beaucoup d’énergie dissipée en chaleur (faible rendement)</li>
+      <li><b>Moteur thermique</b> : part utile (mouvement), part dissipée (échappement, chaleur)</li>
+      <li><b>Centrale électrique</b> : transformation énergie primaire → énergie finale utilisable</li>
+      <li>
+        <span class="btn-lex" onclick="openPopup('popup-lexique-rend')">Lexique rendements</span>
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>📑 Exercices interactifs</h2>
+    <div class="flex-exercices">
+      <div class="box-exo exo-block">
+        <b>Ex 1 — Bilan énergétique lampe</b><br>
+        Une lampe consomme 120 J, émet 12 J de lumière. Rendement ?
+        <input type="text" id="exo1" placeholder="... % ou ...">
+        <button onclick="checkExo(1)">Valider</button>
+        <div class="reponse" id="rep-exo1"></div>
+      </div>
+      <div class="box-exo exo-block">
+        <b>Ex 2 — Énergie dissipée</b><br>
+        Un moteur reçoit 100 J et fournit 60 J de mouvement. Quelle énergie dissipée ?
+        <input type="text" id="exo2" placeholder="... J">
+        <button onclick="checkExo(2)">Valider</button>
+        <div class="reponse" id="rep-exo2"></div>
+      </div>
+      <div class="box-exo exo-block">
+        <b>Ex 3 — Interprétation rendement</b><br>
+        Si le rendement d’un moteur est de 40 %, que signifie ce chiffre ?
+        <input type="text" id="exo3" placeholder="...">
+        <button onclick="checkExo(3)">Valider</button>
+        <div class="reponse" id="rep-exo3"></div>
+      </div>
+    </div>
+    <button onclick="resetExos()">Effacer mes réponses</button>
+  </section>
+  <section class="qcm-block">
+    <h2>🎯 QCM interactif (score immédiat !)</h2>
+    <div id="qcm-interactif"></div>
+    <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
+    <button onclick="reloadQCM()">Recommencer le QCM</button>
+  </section>
+  <section class="box-important">
+    <h2>🔖 Fiche de révision rapide</h2>
+    <div class="fiche">
+      <ul>
+        <li>Bilan : \(E_{entrée}=E_{utile}+E_{dissipée}\)</li>
+        <li>Transformation : pas de création/perte, que des transferts/dissipations</li>
+        <li>Rendement : \( \eta = \frac{E_u}{E_i} \), entre 0 et 1 (ou 0 et 100 %)</li>
+        <li>Rendement faible = système “gaspille”, rendement élevé = système “performant”</li>
+        <li>Énergie dissipée : souvent chaleur ou “pertes” non utiles</li>
+      </ul>
+    </div>
+  </section>
+  <section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+      <li>Confondre énergie consommée, utile, dissipée</li>
+      <li>Mal interpréter rendement : toujours \( E_{utile}/E_{entrée} \)</li>
+      <li>Oublier que le rendement n’atteint jamais 100 % (pertes toujours présentes)</li>
+      <li>Oublier l’unité ou confondre % et fraction</li>
+      <li>Mal faire le bilan (addition/soustraction)</li>
+    </ul>
+  </section>
+  <section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <ul>
+      <li><b>Bilan énergétique</b> : somme entrée = utile + dissipée</li>
+      <li><b>Transfert</b> : passage énergie d’une forme à l’autre</li>
+      <li><b>Rendement (\(\eta\))</b> : part de l’énergie effectivement utilisée/récupérée</li>
+      <li><b>Dissipation</b> : pertes (chaleur, vibrations, non utile)</li>
+      <li><b>Système isolé</b> : total constant (loi conservation)</li>
+    </ul>
+  </section>
+  <section>
+    <h2>🗒️ Tes propres notes (sauvegarde locale)</h2>
+    <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
+    <button onclick="saveNotes()">Enregistrer</button>
+    <span id="savemsg" style="color:#4caf50;font-weight:bold;"></span>
+  </section>
+  <section class="source">Sources : cours lycée, manuels, BAC 2025, fiches PC.</section>
+</main>
+<div class="overlay" id="overlay"></div>
+<div class="popup" id="popup-appli"><h3>Applications</h3>
+<ul>
+<li>Centrale électrique (rendement <50%)</li>
+<li>Lampes LED (rendement ++)</li>
+<li>Moteur thermique, éolienne, ampoule, appareil électrique, chauffage...</li>
+</ul>
+<button onclick="closePopup()">Fermer</button></div>
+<div class="popup" id="popup-bilan"><h3>Schéma bilan énergétique</h3>
+Entrée (énergie consommée) → utile (lumière, mouvement...) + dissipée (pertes, chaleur).
+<button onclick="closePopup()">Fermer</button></div>
+<div class="popup" id="popup-rend"><h3>Astuce rendement</h3>
+Formule : \( \eta = \frac{E_{utile}}{E_{entrée}} \)<br>
+Toujours ≤1 (ou ≤100 %). Ex : 0,2 = 20 % (énergie utile seulement).
+<button onclick="closePopup()">Fermer</button></div>
+<div class="popup" id="popup-lexique-rend"><h3>Lexique rendement</h3>
+<b>Rendement</b>: efficacité du transfert<br>
+<b>Entrée/sortie/dissipée</b> : toujours faire le bilan !<br>
+<b>Pertes</b> : souvent chaleur, bruit, mouvement non désiré
+<button onclick="closePopup()">Fermer</button>
+</div>
+<script>
+function reloadMathJax(){if(window.MathJax){window.MathJax.typesetPromise();}}
+function openPopup(id){document.getElementById('overlay').classList.add("show");document.getElementById(id).classList.add("show");}
+function closePopup(){document.getElementById('overlay').classList.remove("show");var popups=document.querySelectorAll('.popup');popups.forEach(function(p){p.classList.remove('show');});}
+function saveNotes(){localStorage.setItem("notesRendement",document.getElementById("notes").value);document.getElementById("savemsg").textContent="✔️ Enregistré !";setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);}
+if(localStorage.getItem("notesRendement")){document.getElementById("notes").value=localStorage.getItem("notesRendement");}
+// Schéma bilan énergétique
+function drawBilan(){
+  var c=document.getElementById('schema-bilan');if(!c)return;var x=c.getContext('2d');
+  x.clearRect(0,0,510,150);
+  // Flèche entrée
+  x.strokeStyle="#1877f2";x.lineWidth=4;x.beginPath();x.moveTo(30,75);x.lineTo(105,75);x.stroke();
+  x.fillStyle="#1877f2";x.beginPath();x.moveTo(105,75);x.lineTo(95,68);x.lineTo(95,82);x.fill();
+  x.font="15px Arial";x.fillText("Entrée",35,67);
+  // Rect utile
+  x.fillStyle="#4caf50";x.fillRect(105,63,80,34);x.strokeStyle="#167c2b";x.strokeRect(105,63,80,34);
+  x.fillStyle="#fff";x.fillText("Énergie utile",115,85);
+  // Flèche dissipée
+  x.strokeStyle="#e06359";x.lineWidth=4;x.beginPath();x.moveTo(185,80);x.lineTo(285,40);x.stroke();
+  x.fillStyle="#e06359";x.beginPath();x.moveTo(285,40);x.lineTo(275,35);x.lineTo(280,45);x.fill();
+  x.fillStyle="#e06359";x.fillText("Dissipée",255,34);
+  // Flèche sortie
+  x.strokeStyle="#243552";x.lineWidth=4;x.beginPath();x.moveTo(185,92);x.lineTo(285,130);x.stroke();
+  x.fillStyle="#243552";x.beginPath();x.moveTo(285,130);x.lineTo(280,120);x.lineTo(295,120);x.fill();
+  x.fillStyle="#243552";x.fillText("Sortie",255,133);
+}
+drawBilan();
+const qcmData=[
+{
+  question:"Le rendement d’une ampoule = \(\\frac{E_{lumière}}{E_{consommée}}\). Pour 12J sur 120J ?",
+  choices:["0,1","0,12","10"],
+  correct:1,
+  explanation:"Rendement = 12/120 = 0,10 = 10 % !"
+},
+{
+  question:"Un moteur reçoit 150 J, en rend 60 J, le reste est :",
+  choices:["Dissipé","Rendement","Travail utile"],
+  correct:0,
+  explanation:"E_dissipée = 90J"
+},
+{
+  question:"Rendement à 100 %, cela signifie :",
+  choices:["Aucune perte","Chaleur non dissipée","Transforme toute l’énergie en utile"],
+  correct:0,
+  explanation:"Cas idéal = impossible en réalité."
+},
+{
+  question:"Le rendement d’une machine est toujours",
+  choices:["<100 %","=100 %",">100 %"],
+  correct:0,
+  explanation:"Toujours <100% (pertes)."
+}
+];
+let qcmScore=0,qcmDone=Array(qcmData.length).fill(false);
+function displayQCM(){
+  let html="";
+  for(let i=0;i<qcmData.length;i++){
+    html += `<div style="margin-bottom:1em"><b>Q${i+1} :</b> <span>\\(${qcmData[i].question}\\)</span><br>`;
+    for(let j=0;j<qcmData[i].choices.length;j++){
+      html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+    }
+    html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
+  }
+  document.getElementById("qcm-interactif").innerHTML=html;document.getElementById("qcm-score").innerHTML="";qcmScore=0;qcmDone=Array(qcmData.length).fill(false);reloadMathJax();
+}
+displayQCM();
+function checkQCM(qnum,num){
+  if(qcmDone[qnum])return;
+  if(num==qcmData[qnum].correct){
+    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#168b24;font-weight:bold">Bonne réponse !</span><br><span style="font-size:0.98em;">${qcmData[qnum].explanation}</span>`;
+    qcmScore++;
+  }else{
+    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#c21c5c;font-weight:bold">Faux !</span>  <br><span>${qcmData[qnum].explanation}</span>`;
+  }
+  qcmDone[qnum]=true;
+  document.getElementById("qcm-score").innerHTML="Score : "+qcmScore+"/"+qcmData.length;reloadMathJax();
+}
+function reloadQCM(){displayQCM();}
+function checkExo(ex){
+  let rep=document.getElementById('exo'+ex).value.replace(",",".");
+  if(ex==1){
+    let eta=12/120, good=Math.abs(Number(rep)-eta)<0.06||rep.trim()=="10"||rep.trim()=="10%";
+    document.getElementById('rep-exo1').innerHTML = good?`Bravo : rendement = 12/120 = 0,10 = 10 %`:"Faux. Résultats attendus : 0,10 ou 10 %";
+  }
+  if(ex==2){
+    let diss=100-60, good=Math.abs(Number(rep)-diss)<5||rep.trim()=="40"||rep.trim()=="40j";
+    document.getElementById('rep-exo2').innerHTML = good?`Exact : 100-60=40J dissipés`:"Faux. Dissipation : 100-60=40J";
+  }
+  if(ex==3){
+    rep=rep.trim().toLowerCase();
+    let good=rep.includes("utile")||rep.includes("transfère")||rep.includes("rend")||rep.includes("40%")||rep.includes("60% dissipé");
+    document.getElementById('rep-exo3').innerHTML = good?`Bonne réponse : 40% de l'énergie reçue produit un travail utile (le reste est dissipé).`:"Faux. 40% = utilité, le reste = perte.";
+  }
+  reloadMathJax();
+}
+function resetExos(){["exo1","exo2","exo3"].forEach(id=>{let el=document.getElementById(id);if(el)el.value="";});["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{let el=document.getElementById(id);if(el)el.textContent="";});}
+setTimeout(reloadMathJax,180);
+</script>
+</body>
+</html>

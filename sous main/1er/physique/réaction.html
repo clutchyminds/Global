@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Réactions chimiques : équations, bilans, avancement</title>
+  <meta name="description" content="Cours interactif Réactions chimiques : équation-bilan, avancement, réactif limitant, schéma, QCM, exos, LaTeX, fiche et astuces lycée Première PC.">
+  <style>
+    body{background:#f6f8fa;font-family:'Segoe UI',Arial,sans-serif;color:#222;margin:0;}
+    header{background:linear-gradient(90deg,#eef4fb,#deffe4 80%);color:#243552;padding:30px 0 12px;text-align:center;}
+    header h1{font-size:2.3rem;margin:0 0 8px;color:#1877f2;}
+    header .intro{font-size:1.09rem;}
+    main{max-width:950px;background:#fff;margin:45px auto 20px;padding:36px 60px;border-radius:20px;box-shadow:0 9px 28px rgba(24,119,242,0.12);}
+    h2{color:#1877f2;margin-top:34px;}
+    h3{color:#f5a623;margin-top:27px;}
+    ul, ol{margin-left:2em;margin-bottom:0.8em;}
+    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.05rem;}
+    .infos{background:#e7f3fa;border-left:7px solid #1877f2;}
+    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;}
+    .box-important{background:#fff7ec;border-left:8px solid #f5a623;}
+    .error{background:#ffeaea;border-left:8px solid #e06359;}
+    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;}
+    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;}
+    .source{font-size:0.88em;color:#999;text-align:right;margin-top:10px;}
+    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s;font-size:1em;}
+    button:hover{background:#145ac3;}
+    .reponse{margin-top:0.7em;color:#1877f2;font-weight:bold;text-align:center;}
+    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;}
+    #schema-bilan{margin:1.2em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #e7f3f7;}
+    .qcm-block{margin-bottom:2.3em;}
+    input[type='text'],textarea{border-radius:5px;border:1px solid #ccc;padding:5px;margin-top:6px;}
+    .flex-exercices{display:flex;flex-wrap:wrap;}
+    .exo-block{flex:1 1 310px;margin-right:2%;min-width:330px;}
+    .exo-block:last-child{margin-right:0;}
+    .popup{display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.17);padding:35px;width:340px;z-index:2000;}
+    .popup h3{color:#1877f2;}
+    .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(40,61,102,0.23);z-index:1800;}
+    .show{display:block;}
+    .scoreQCM{font-weight:bold;color:#167c2b;}
+    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;}
+    @media (max-width:1040px){main{padding:11px 2px;}}
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<header>
+  <h1>Réactions chimiques : équations, bilans, avancement</h1>
+  <div class="intro">Cours interactif lycée : savoir écrire et équilibrer une équation chimique, dresser le bilan, calculer l’avancement, identifier le réactif limitant, réussir tout exercice du contrôle !</div>
+</header>
+<main>
+  <section class="box infos">
+    <h2>📚 Introduction & objectifs</h2>
+    <ul>
+      <li>Comprendre ce qu’est une <b>réaction chimique</b>&nbsp;: passage de réactifs à des produits, transformation de la matière.</li>
+      <li>Savoir écrire et équilibrer <b>une équation chimique</b> (bilan).</li>
+      <li>Calculer <b>l’avancement</b> : suivre la quantité d’espèces transformées pendant la réaction.</li>
+      <li>Déterminer le <b>réactif limitant</b>, rendre compte de la transformation totale ou non.</li>
+      <button onclick="openPopup('popup-equation')">Rappel sur l'équation-bilan</button>
+    </ul>
+  </section>
+  
+  <section>
+    <h2>✏️ 1. Équation de réaction & bilan</h2>
+    <ul>
+      <li>Une <b>réaction chimique</b> met en jeu des <b>réactifs</b> qui se transforment en <b>produits</b>.<br>
+          Ex : combustion du méthane : <span style="font-weight:bold">\\(\ce{CH4 + 2 O2 -> CO2 + 2 H2O}\\)</span>
+      </li>
+      <li>L’<b>équation-bilan</b> doit être <b>équilibrée</b> : même nombre d’atomes de chaque espèce de part et d’autre.</li>
+      <li>
+          <b>Équilibre l’équation :</b><br>
+          \\(\ce{H2 + O2 -> H2O}\\) ➔ <span class="btn-lex" onclick="openPopup('popup-eq-exo')">Voir correction</span>
+      </li>
+      <li><b>Étapes :</b> écrire l’état physique (s, l, g, aq), équilibrer les atomes, vérifier la charge (si ions).</li>
+    </ul>
+    <canvas id="schema-bilan" width="410" height="100"></canvas>
+    <div class="infos" style="text-align:center"><b>Schéma : principe d’un bilan réactionnel (avant, pendant, après réaction)</b></div>
+    <div class="anecdote">Anecdote : “Lavoisier disait déjà en 1789 : <b>"Rien ne se perd, rien ne se crée, tout se transforme"</b> — le bilan, c’est la chimie du réel !</div>
+  </section>
+  
+  <section>
+    <h2>🔢 2. Suivi d’avancement d’une réaction</h2>
+    <ul>
+      <li><b>Avancement</b> (<span style="color:#1877f2;font-weight:bold">x</span>) : grandeur qui indique la quantité de matière (en mol) ayant effectivement réagi à un instant donné.</li>
+      <li><b>Tableau d’avancement</b> : outil pour suivre l’évolution des quantités (avant, en cours, après réaction).</li>
+      <li>
+        <b>Exemple</b> :<br>
+        \\(\ce{N2 + 3 H2 -> 2 NH3}\\)<br>
+        <button onclick="openPopup('popup-avancement')">Rappel tableau d’avancement</button>
+      </li>
+      <li>
+        <b>Formule générale :</b>
+        <br>Si : \\(aA + bB \longrightarrow cC + dD\\)<br>
+        alors <span style="font-weight:bold">\\(\frac{n_{A0}}{a},\frac{n_{B0}}{b}, …\\)</span>
+        <br>Le réactif limitant est celui pour lequel <span style="color:#e06359">\\(x_{max}\\)</span> est le plus petit.
+        <br>
+        <span class="btn-lex" onclick="openPopup('popup-formule-x')">Formule d'avancement max</span>
+      </li>
+    </ul>
+  </section>
+  
+  <section>
+    <h2>🧪 3. Réactif limitant, transformation totale/partielle</h2>
+    <ul>
+      <li>Le <b>réactif limitant</b> est celui qui s’épuise en premier. Il “bloque” l’avancement maximal.</li>
+      <li>
+        <b>Transformation totale</b> : tout le réactif limitant est consommé, il ne reste que l’excès d’autre(s) réactif(s).
+      </li>
+      <li>
+        <b>Transformation non totale</b> (équilibre) : lorsque la réaction s’arrête avant l’épuisement d’au moins un réactif.
+      </li>
+    </ul>
+    <button onclick="openPopup('popup-lim')">Astuce pour trouver le limitant</button>
+  </section>
+  
+  <section>
+    <h2>📑 Exercices interactifs</h2>
+    <div class="flex-exercices">
+      <div class="box-exo exo-block">
+        <b>Ex 1 – Équilibrer</b><br>
+        Soit l’équation : \\(\ce{Fe + O2 -> Fe2O3}\\).<br>
+        Écris-la correctement équilibrée.<br>
+        <input type="text" id="exo1" placeholder="...">
+        <button onclick="checkExo(1)">Valider</button>
+        <div class="reponse" id="rep-exo1"></div>
+      </div>
+      <div class="box-exo exo-block">
+        <b>Ex 2 – Avancement maximum</b><br>
+        On mélange 0,30 mol de H2 et 0,21 mol de O2.<br>
+        Pour la réaction : \\(\ce{2 H2 + O2 -> 2 H2O}\\)<br>
+        Quel est le réactif limitant ?
+        <input type="text" id="exo2" placeholder="...">
+        <button onclick="checkExo(2)">Valider</button>
+        <div class="reponse" id="rep-exo2"></div>
+      </div>
+      <div class="box-exo exo-block">
+        <b>Ex 3 – Quantité produite</b><br>
+        Même réaction. Combien de mol d’eau (\(\ce{H2O}\)) formée à la fin ?
+        <input type="text" id="exo3" placeholder="... mol">
+        <button onclick="checkExo(3)">Valider</button>
+        <div class="reponse" id="rep-exo3"></div>
+      </div>
+    </div>
+    <button onclick="resetExos()">Effacer mes réponses</button>
+  </section>
+  
+  <section class="qcm-block">
+    <h2>🎯 QCM interactif (score immédiat !)</h2>
+    <div id="qcm-interactif"></div>
+    <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
+    <button onclick="reloadQCM()">Recommencer le QCM</button>
+  </section>
+  
+  <section class="box-important">
+    <h2>🔖 Fiche de révision rapide</h2>
+    <div class="fiche">
+      <ul>
+        <li>Écriture-bilan : réactifs à gauche, produits à droite, équilibre obligatoire</li>
+        <li>Tableau d’avancement : suit quantité de chaque espèce à chaque étape</li>
+        <li>Avancement max : \\(x_{max} = \min( n_{A0}/a, n_{B0}/b, ... )\\)</li>
+        <li>Réactif limitant : celui qui “manque” le premier</li>
+        <li>Formule d’avancement : \\(n_i = n_{i,0} + \nu_i \cdot x\\) (\\(\nu_i\\) = coef stœchiométrique, négatif si réactif)</li>
+      </ul>
+    </div>
+  </section>
+  <section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+      <li>Ne pas équilibrer ou oublier un coefficient dans l’équation</li>
+      <li>Se tromper dans les signes (réactifs négatifs, produits positifs dans l’avancement !)</li>
+      <li>Oublier la notion de “limite” du réactif limitant</li>
+      <li>Confondre “transformation totale”/“non totale” (équilibre dynamique)</li>
+    </ul>
+  </section>
+  <section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <ul>
+      <li><b>Équation-bilan</b>&nbsp;: équilibre réactifs/produits (coefficients stœchiométriques)</li>
+      <li><b>Avancement (x)</b>&nbsp;: “mole-règle” de la réaction</li>
+      <li><b>Réactif limitant</b>&nbsp;: qui s’épuise en premier</li>
+      <li><b>Transformation totale</b> : atteint quand tous les limitants sont consommés</li>
+    </ul>
+  </section>
+  <section>
+    <h2>🗒️ Tes propres notes (sauvegarde locale)</h2>
+    <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
+    <button onclick="saveNotes()">Enregistrer</button>
+    <span id="savemsg" style="color:#4caf50;font-weight:bold;"></span>
+  </section>
+  <section class="source">Sources : cours lycée, manuels, fiches BAC 2025, chimie-fr.</section>
+</main>
+<!-- Popups/Overlays -->
+<div class="overlay" id="overlay"></div>
+<div class="popup" id="popup-equation"><h3>Équation-bilan</h3>
+<b>Réactifs à gauche, produits à droite, coefficients obligatoires pour égaler chaque atome.</b><br>Contrôle : compte les atomes chaque côté !
+<button onclick="closePopup()">Fermer</button>
+</div>
+<div class="popup" id="popup-eq-exo"><h3>Correction</h3>
+H₂ + O₂ → H₂O<br>
+Équilibré : <b>2H₂ + O₂ → 2H₂O</b>
+<button onclick="closePopup()">Fermer</button>
+</div>
+<div class="popup" id="popup-avancement"><h3>Tableau d’avancement</h3>
+<table border="1" style="width:98%;font-size:0.95em"><tr><th></th><th>N₂</th><th>H₂</th><th>NH₃</th></tr>
+<tr><td>État initial</td><td>n₀</td><td>3n₀</td><td>0</td></tr>
+<tr><td>En cours</td><td>n₀-x</td><td>3n₀-3x</td><td>2x</td></tr>
+<tr><td>État final</td><td>n₀-xₘₐₓ</td><td>3n₀-3xₘₐₓ</td><td>2xₘₐₓ</td></tr>
+</table>
+<button onclick="closePopup()">Fermer</button>
+</div>
+<div class="popup" id="popup-formule-x"><h3>Avancement maximal</h3>
+\(x_{max} = \min\left(\dfrac{n_{A,0}}{a},\dfrac{n_{B,0}}{b},... \right)\)
+<button onclick="closePopup()">Fermer</button>
+</div>
+<div class="popup" id="popup-lim"><h3>Astuce réactif limitant</h3>
+Calcule \(\dfrac{n_{i,0}}{coefficient~de~l’équation}\) pour chaque réactif. Le plus petit → limitant !
+<button onclick="closePopup()">Fermer</button>
+</div>
+
+<script>
+function reloadMathJax(){if(window.MathJax){window.MathJax.typesetPromise();}}
+function openPopup(id){document.getElementById('overlay').classList.add("show");document.getElementById(id).classList.add("show");}
+function closePopup(){document.getElementById('overlay').classList.remove("show");var popups=document.querySelectorAll('.popup');popups.forEach(function(p){p.classList.remove('show');});}
+function saveNotes(){localStorage.setItem("mesNotesPC_Reactions", document.getElementById("notes").value);document.getElementById("savemsg").textContent="✔️ Enregistré !";setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);}
+if(localStorage.getItem("mesNotesPC_Reactions")){document.getElementById("notes").value=localStorage.getItem("mesNotesPC_Reactions");}
+// Schéma bilan
+function drawBilan(){
+  var c=document.getElementById('schema-bilan');if(!c)return;var x=c.getContext('2d');
+  x.clearRect(0,0,410,100);
+  x.fillStyle="#f5a623"; x.font="16px Arial"; x.fillText("AVANT",10,20); x.fillStyle="#1877f2";x.fillText("APRES",325,20);
+  x.fillStyle="#b8ecfd";x.fillRect(15,35,40,55);x.strokeRect(15,35,40,55);
+  x.fillStyle="#167c2b";x.font="12px Arial";x.fillText("Réactifs",18,50);
+  x.beginPath();x.moveTo(55,62);x.lineTo(160,62);x.lineTo(160,47);x.lineTo(170,65.5);x.lineTo(160,80);x.lineTo(160,67);x.lineTo(55,67);x.fillStyle="#b9f7d9";x.fill();
+  x.fillStyle="#243552";x.font="13px Arial";x.fillText("Réaction",110,55);
+  x.fillStyle="#f3aa3f";x.fillRect(320,35,48,55);x.strokeRect(320,35,48,55);
+  x.fillStyle="#f86699";x.font="12px Arial";x.fillText("Produits",325,50);
+}
+drawBilan();
+
+const qcmData = [
+  {
+    question: "Quel est l’avancement max pour 0,2 mol A et 0,6 mol B avec \\(\\ce{A + 3B -> ... }\\)?",
+    choices: ["0.2", "0.066", "0.6"],
+    correct: 1,
+    explanation: "xₘₐₓ = min(0.2/1 ; 0.6/3) = min(0.2 ; 0.2) = 0.2. 0.6/3=0.2 donc ici les deux limitants."
+  },
+  {
+    question: "Qu’est-ce qu’un réactif limitant ?",
+    choices: ["Celui qui ne réagit pas", "Celui qui s’épuise en 1er", "Le plus abondant"],
+    correct: 1,
+    explanation: "Limitant = totalité consommée, 'bloque' la réaction."
+  },
+  {
+    question: "Dans \\(\\ce{2H2 + O2 -> 2H2O}\\), si on a n(H2)=0.3, n(O2)=0.21, qui limite ?",
+    choices: ["H2", "O2", "Les deux"],
+    correct: 0,
+    explanation: "xₘₐₓ=min(0.3/2, 0.21/1)=min(0,15;0,21)=0,15 donc H₂ limitant."
+  },
+  {
+    question: "À quoi sert un tableau d’avancement ?",
+    choices: ["Compter les molécules", "Suivre quantitativement l’évolution d’une réaction", "Équilibrer l’équation"],
+    correct: 1,
+    explanation: "Permet de justifier le bilan, les calculs, le réactif limitant."
+  }
+];
+let qcmScore = 0;
+let qcmDone = Array(qcmData.length).fill(false);
+function displayQCM(){
+  let html = "";
+  for(let i=0;i<qcmData.length;i++){
+    html += `<div style="margin-bottom:1em"><b>Q${i+1} :</b> <span>\\(${qcmData[i].question}\\)</span><br>`;
+    for(let j=0;j<qcmData[i].choices.length;j++){
+      html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+    }
+    html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
+  }
+  document.getElementById("qcm-interactif").innerHTML = html;
+  document.getElementById("qcm-score").innerHTML = "";
+  qcmScore = 0;qcmDone = Array(qcmData.length).fill(false); reloadMathJax();
+}
+displayQCM();
+function checkQCM(qnum, num){
+  if(qcmDone[qnum]) return;
+  if(num==qcmData[qnum].correct){
+    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#168b24;font-weight:bold">Bonne réponse !</span><br><span style="font-size:0.98em;">${qcmData[qnum].explanation}</span>`;
+    qcmScore++;
+  }else{
+    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#c21c5c;font-weight:bold">Faux !</span>  <br><span>${qcmData[qnum].explanation}</span>`;
+  }
+  qcmDone[qnum]=true;
+  document.getElementById("qcm-score").innerHTML = "Score : " + qcmScore + "/" + qcmData.length;
+  reloadMathJax();
+}
+function reloadQCM(){displayQCM();}
+
+function checkExo(ex){
+  let rep = document.getElementById('exo'+ex).value.trim().replace(/\s/g,"").replace(/=/g,"");
+  if(ex==1){
+    let good = /4Fe\+3O2[-=]>2Fe2O3/i.test(rep)||/4fe\+3o2.*2fe2o3/i.test(rep);
+    document.getElementById('rep-exo1').innerHTML = good ?
+      "Correct : <b>4 Fe + 3 O₂ → 2 Fe₂O₃</b>" :
+      "Faux. Il fallait équilibrer : 4Fe + 3O₂ → 2Fe₂O₃";
+  }
+  if(ex==2){
+    rep = rep.toLowerCase();
+    let good = rep.includes("h2") || rep.includes("h₂"); // H₂ limitant
+    document.getElementById('rep-exo2').innerHTML = good ?
+      "Correct : H₂ est le limitant car 0,3/2=0,15 ; 0,21/1=0,21 donc H₂." :
+      "Faux. xₘₐₓ= min(0,3/2;0,21/1) → H₂ limitant.";
+  }
+  if(ex==3){
+    rep = rep.toLowerCase();
+    let good = rep==="0.3"||rep==="0,3"||rep==="0.15"||rep==="0,15"||rep.includes("0,3mol")||rep.includes("0,15mol")||rep.includes("0.3mol")||rep.includes("0.15mol");
+    document.getElementById('rep-exo3').innerHTML = "Le bon résultat est x=0.15 mol d’eau (<b>H₂ limitant donc 2×x=0.3 mol H₂O produits</b>).";
+  }
+  reloadMathJax();
+}
+function resetExos(){["exo1","exo2","exo3"].forEach(id=>{document.getElementById(id).value="";});["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{document.getElementById(id).textContent="";});}
+setTimeout(reloadMathJax, 180);
+</script>
+</body>
+</html>

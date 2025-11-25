@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Applications : circuits électriques, phénomènes mécaniques</title>
+  <meta name="description" content="Cours interactif : circuits électriques (loi d’Ohm, puissance), phénomènes mécaniques, QCM, exos, schéma, LaTeX, fiche, lexique, notes.">
+  <style>
+    body{background:#f6f8fa;font-family:'Segoe UI',Arial,sans-serif;color:#222;margin:0;}
+    header{background:linear-gradient(90deg,#eef4fb,#deffe4 80%);color:#243552;padding:30px 0 12px;text-align:center;}
+    header h1{font-size:2.2rem;margin:0 0 8px;color:#1877f2;}
+    header .intro{font-size:1.09rem;}
+    main{max-width:970px;background:#fff;margin:45px auto 20px;padding:36px 60px;border-radius:20px;box-shadow:0 9px 28px rgba(24,119,242,0.12);}
+    h2,h3{color:#1877f2;margin-top:34px;}
+    h3{color:#f5a623;}
+    ul,ol{margin-left:2em;margin-bottom:0.8em;}
+    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.06rem;}
+    .infos{background:#e7f3fa;border-left:7px solid #1877f2;}
+    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;}
+    .box-important{background:#fff7ec;border-left:8px solid #f5a623;}
+    .error{background:#ffeaea;border-left:8px solid #e06359;}
+    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;}
+    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;}
+    .source{font-size:0.88em;color:#999;text-align:right;margin-top:10px;}
+    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s;font-size:1em;}
+    button:hover{background:#145ac3;}
+    .reponse{margin-top:0.7em;color:#1877f2;font-weight:bold;text-align:center;}
+    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;}
+    #schema-circuit{margin:1.2em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #e7f3f7;}
+    input[type='text'],textarea{border-radius:5px;border:1px solid #ccc;padding:5px;margin-top:6px;}
+    .flex-exercices{display:flex;flex-wrap:wrap;}
+    .exo-block{flex:1 1 310px;margin-right:2%;min-width:330px;}
+    .exo-block:last-child{margin-right:0;}
+    .popup{display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.17);padding:35px;width:340px;z-index:2000;}
+    .popup h3{color:#1877f2;}
+    .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(40,61,102,0.23);z-index:1800;}
+    .show{display:block;}
+    .scoreQCM{font-weight:bold;color:#167c2b;}
+    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;}
+    .qcm-block{margin-bottom:2.3em;}
+    @media (max-width:1040px){main{padding:8px 2px;}}
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<header>
+  <h1>Applications : circuits électriques, phénomènes mécaniques</h1>
+  <div class="intro">Cours interactif : circuits, lois de l’électricité, phénomènes mécaniques, montages types, calculs LaTeX, schéma, QCM, exos, fiche, lexique, notes persos.</div>
+</header>
+<main>
+  <section class="box infos">
+    <h2>📚 Objectifs</h2>
+    <ul>
+      <li>Maîtriser les lois des circuits électriques (Ohm, association, puissance), leur application pratique</li>
+      <li>Appliquer la mécanique dans les situations réelles : force, énergie, rendement, équilibre</li>
+      <li>Savoir résoudre des exercices de montage, de bilan ou d’équilibre</li>
+      <button onclick="openPopup('popup-appli')">Exemples d'applications</button>
+    </ul>
+  </section>
+  <section>
+    <h2>🔌 1. Circuits électriques simples : lois fondamentales</h2>
+    <ul>
+      <li>
+        <b>Loi d’Ohm :</b> \( U = R \times I \)
+        <ul>
+          <li>U : tension (en volt, V)</li>
+          <li>I : intensité (ampère, A)</li>
+          <li>R : résistance (ohm, Ω)</li>
+        </ul>
+      </li>
+      <li>
+        <b>Loi des mailles</b> : la somme des tensions dans une boucle = 0
+      </li>
+      <li>
+        <b>Association de résistances</b> :
+        <ul>
+          <li>Série : \( R_{eq}=R_1+R_2+\ldots \)</li>
+          <li>Parallèle : \( \frac{1}{R_{eq}} = \frac{1}{R_1} + \frac{1}{R_2} + \ldots \)</li>
+        </ul>
+      </li>
+      <li>
+        <b>Puissance électrique</b> : \( P=U \times I \) (Watt, W)
+      </li>
+      <li>
+        <button onclick="openPopup('popup-lexiq-electricite')">Lexique électrique</button>
+      </li>
+    </ul>
+    <canvas id="schema-circuit" width="480" height="130"></canvas>
+    <div class="infos" style="text-align:center;"><b>Schéma : circuit série avec générateur, résistance, ampoule</b></div>
+  </section>
+  <section>
+    <h2>⚙️ 2. Phénomènes mécaniques : forces et équilibre</h2>
+    <ul>
+      <li>
+        <b>Équilibre statique</b> : la somme des forces et des moments = 0
+      </li>
+      <li>
+        <b>Combinaison de forces</b> : addition vectorielle (mécanique, balances, poulies…)
+      </li>
+      <li>
+        <b>Puissance mécanique</b> : \( P = F \cdot v \) (force × vitesse)
+      </li>
+      <li>
+        <span class="btn-lex" onclick="openPopup('popup-lexiq-meca')">Lexique mécanique</span>
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h2>📑 Exercices interactifs</h2>
+    <div class="flex-exercices">
+      <div class="box-exo exo-block">
+        <b>Ex 1 — Loi d’Ohm</b><br>
+        Quelle est l’intensité traversant une résistance de 100 Ω sous 12 V ?
+        <input type="text" id="exo1" placeholder="... A">
+        <button onclick="checkExo(1)">Valider</button>
+        <div class="reponse" id="rep-exo1"></div>
+      </div>
+      <div class="box-exo exo-block">
+        <b>Ex 2 — Puissance d’une ampoule</b><br>
+        Une lampe fonctionne sous 230 V et consomme 0,4 A. Puissance ?
+        <input type="text" id="exo2" placeholder="... W">
+        <button onclick="checkExo(2)">Valider</button>
+        <div class="reponse" id="rep-exo2"></div>
+      </div>
+      <div class="box-exo exo-block">
+        <b>Ex 3 — Addition de forces</b><br>
+        Deux forces de 5 N et 12 N sont perpendiculaires. Valeur de la résultante ?
+        <input type="text" id="exo3" placeholder="... N">
+        <button onclick="checkExo(3)">Valider</button>
+        <div class="reponse" id="rep-exo3"></div>
+      </div>
+    </div>
+    <button onclick="resetExos()">Effacer mes réponses</button>
+  </section>
+  <section class="qcm-block">
+    <h2>🎯 QCM interactif (score immédiat !)</h2>
+    <div id="qcm-interactif"></div>
+    <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
+    <button onclick="reloadQCM()">Recommencer le QCM</button>
+  </section>
+  <section class="box-important">
+    <h2>🔖 Fiche de révision rapide</h2>
+    <div class="fiche">
+      <ul>
+        <li>Loi d’Ohm : \( U = R \times I \)</li>
+        <li>Association résistances série/parallèle : formules ci-dessus</li>
+        <li>Puissance électrique : \(P = U \times I\)</li>
+        <li>Équilibre : \(\sum F = 0\), \(\sum \text{moments} = 0\)</li>
+        <li>Résultante forces perpendiculaires : Pythagore</li>
+      </ul>
+    </div>
+  </section>
+  <section class="error">
+    <h2>❌ Erreurs fréquentes à éviter</h2>
+    <ul>
+      <li>Confondre tension (V), intensité (A) et résistance (Ω)</li>
+      <li>Omettre les unités dans les calculs électriques et mécaniques</li>
+      <li>Oublier que la loi d’Ohm ne s’applique pas à tous les composants</li>
+      <li>Ne pas représenter les forces sur un schéma</li>
+      <li>Mal appliquer la règle du parallélogramme (résultante forces non colinéaires)</li>
+    </ul>
+  </section>
+  <section class="lexique">
+    <h2>📚 Lexique express</h2>
+    <ul>
+      <li><b>Tension (U)</b> : différence de potentiel (V)</li>
+      <li><b>Intensité (I)</b> : courant (A)</li>
+      <li><b>Résistance (R)</b> : opposition (Ω)</li>
+      <li><b>Puissance (P)</b> : en Watt (W)</li>
+      <li><b>Force, résultante</b>, <b>équilibre</b> : voir ci-dessus</li>
+    </ul>
+  </section>
+  <section>
+    <h2>🗒️ Tes propres notes (sauvegarde locale)</h2>
+    <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
+    <button onclick="saveNotes()">Enregistrer</button>
+    <span id="savemsg" style="color:#4caf50;font-weight:bold;"></span>
+  </section>
+  <section class="source">Sources : cours lycée, manuels, BAC 2025, fiches PC, INJS.</section>
+</main>
+<div class="overlay" id="overlay"></div>
+<div class="popup" id="popup-appli"><h3>Applications</h3>
+Montage lampe + générateur, grille-pain, poêle électrique, levier, balances, ponts, moteurs, dispositifs d’équilibre.
+<button onclick="closePopup()">Fermer</button></div>
+<div class="popup" id="popup-lexiq-electricite"><h3>Lexique électricité</h3>
+<b>Tension (V)</b> : “pression” électrique<br>
+<b>Intensité (A)</b> : débit d’électrons<br>
+<b>Résistance (Ω)</b> : “freinage” des électrons<br>
+<b>Puissance (W)</b> : énergie/joule délivrée chaque seconde
+<button onclick="closePopup()">Fermer</button></div>
+<div class="popup" id="popup-lexiq-meca"><h3>Lexique mécanique</h3>
+<b>Force</b> (N), <b>poussée</b>, <b>traction</b> : agent du mouvement<br>
+<b>Résultante</b> : force équivalente à plusieurs autres<br>
+<b>Moment</b> : effet de rotation
+<button onclick="closePopup()">Fermer</button></div>
+<script>
+function reloadMathJax(){if(window.MathJax){window.MathJax.typesetPromise();}}
+function openPopup(id){document.getElementById('overlay').classList.add("show");document.getElementById(id).classList.add("show");}
+function closePopup(){document.getElementById('overlay').classList.remove("show");var popups=document.querySelectorAll('.popup');popups.forEach(function(p){p.classList.remove('show');});}
+function saveNotes(){localStorage.setItem("notesCircuitsMeca",document.getElementById("notes").value);document.getElementById("savemsg").textContent="✔️ Enregistré !";setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);}
+if(localStorage.getItem("notesCircuitsMeca")){document.getElementById("notes").value=localStorage.getItem("notesCircuitsMeca");}
+// Schéma circuit simple
+function drawCircuit(){
+  var c=document.getElementById('schema-circuit');if(!c)return;var x=c.getContext('2d');
+  x.clearRect(0,0,480,130);
+  // Générateur
+  x.strokeStyle="#1877f2";x.lineWidth=3;
+  x.beginPath();x.moveTo(50,65);x.lineTo(120,65);x.stroke();
+  x.fillStyle="#1877f2";x.fillRect(120,57,12,16);x.fillStyle="#fff";x.font="15px Arial";x.fillText("G",122,72);
+  // fil, résistance
+  x.strokeStyle="#e06359";x.beginPath();x.moveTo(132,65);x.lineTo(210,65);x.stroke();
+  x.fillStyle="#e06359";x.fillRect(210,55,20,20);x.fillStyle="#fff";x.fillText("R",215,72);
+  // fil, ampoule
+  x.strokeStyle="#f3aa3f";x.beginPath();x.moveTo(230,65);x.lineTo(350,65);x.stroke();
+  x.beginPath();x.arc(380,65,30,0,2*Math.PI);x.strokeStyle="#f5a623";x.lineWidth=4;x.stroke();
+  x.fillStyle="#fff";x.font="16px Arial";x.fillText("Ampoule",350,100);
+  // retour circuit
+  x.strokeStyle="#999";x.lineWidth=2;x.beginPath();x.moveTo(80,65);x.lineTo(80,120);x.lineTo(380,120);x.lineTo(380,95);x.stroke();
+}
+drawCircuit();
+const qcmData=[
+{
+  question:"La loi d’Ohm : \\(U=...?\\)",
+  choices:["R×I","I/R","U×R"],
+  correct:0,
+  explanation:"U = R×I"
+},
+{
+  question:"Une résistance série : équivalent =",
+  choices:["R1+R2","(R1×R2)/(R1+R2)","1/R1+1/R2"],
+  correct:0,
+  explanation:"Additionne en série"
+},
+{
+  question:"Puissance délivrée par 10 V et 2 A :",
+  choices:["20 W","0,2 W","5 W"],
+  correct:0,
+  explanation:"P=U×I = 20W"
+},
+{
+  question:"Deux forces perpendiculaires de 3N et 4N. Résultante ?",
+  choices:["5N","7N","1N"],
+  correct:0,
+  explanation:"Pythagore : racine(3²+4²)=5N"
+}
+];
+let qcmScore=0,qcmDone=Array(qcmData.length).fill(false);
+function displayQCM(){
+  let html="";
+  for(let i=0;i<qcmData.length;i++){
+    html += `<div style="margin-bottom:1em"><b>Q${i+1} :</b> <span>\\(${qcmData[i].question}\\)</span><br>`;
+    for(let j=0;j<qcmData[i].choices.length;j++){
+      html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+    }
+    html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
+  }
+  document.getElementById("qcm-interactif").innerHTML=html;document.getElementById("qcm-score").innerHTML="";qcmScore=0;qcmDone=Array(qcmData.length).fill(false);reloadMathJax();
+}
+displayQCM();
+function checkQCM(qnum,num){
+  if(qcmDone[qnum])return;
+  if(num==qcmData[qnum].correct){
+    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#168b24;font-weight:bold">Bonne réponse !</span><br><span style="font-size:0.98em;">${qcmData[qnum].explanation}</span>`;
+    qcmScore++;
+  }else{
+    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#c21c5c;font-weight:bold">Faux !</span>  <br><span>${qcmData[qnum].explanation}</span>`;
+  }
+  qcmDone[qnum]=true;
+  document.getElementById("qcm-score").innerHTML="Score : "+qcmScore+"/"+qcmData.length;reloadMathJax();
+}
+function reloadQCM(){displayQCM();}
+function checkExo(ex){
+  let rep=document.getElementById('exo'+ex).value.replace(",",".");
+  if(ex==1){
+    let v=12/100;
+    let good=Math.abs(Number(rep)-v)<0.08;
+    document.getElementById('rep-exo1').innerHTML = good?`Bravo : I=U/R=12/100=0,12 A`:"Faux : I=12/100=0,12";
+  }
+  if(ex==2){
+    let v=230*0.4, good=Math.abs(Number(rep)-v)<4;
+    document.getElementById('rep-exo2').innerHTML = good?`Bonne réponse : P=230×0,4=92 W`:"Faux. P=U×I=92W";
+  }
+  if(ex==3){
+    let res=Math.sqrt(25+144), good=Math.abs(Number(rep)-13)<1.4;
+    document.getElementById('rep-exo3').innerHTML = good?`Bonne réponse : racine(25+144)=13N`:"Faux. Résultat : 13N";
+  }
+  reloadMathJax();
+}
+function resetExos(){["exo1","exo2","exo3"].forEach(id=>{let el=document.getElementById(id);if(el)el.value="";});["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{let el=document.getElementById(id);if(el)el.textContent="";});}
+setTimeout(reloadMathJax,180);
+</script>
+</body>
+</html>
