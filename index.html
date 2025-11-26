@@ -4,6 +4,31 @@
   <meta charset="UTF-8" />
   <title>Accueil - Global</title>
   <style>
+    /* === Loader stylé === */
+    #loader {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #121212;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .loader-circle {
+      width: 80px;
+      height: 80px;
+      border: 10px solid transparent;
+      border-top: 10px solid #29d8ff;
+      border-radius: 50%;
+      animation: spin 1.2s linear infinite;
+      box-shadow: 0 0 15px #29d8ff;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* === Ton style d’origine === */
     body {
       font-family: Arial, sans-serif;
       background-color: #f0f0f0;
@@ -85,59 +110,74 @@
   </style>
 </head>
 <body>
-  <div class="top-banner">
-    Global - Accueil
-    <nav class="nav-bar">
-      <a href="index.html">Accueil</a>
-      <a href="apropos.html">À propos</a>
-    </nav>
+  <!-- Loader stylé placé avant le reste -->
+  <div id="loader">
+    <div class="loader-circle"></div>
   </div>
-  <div class="page-padding">
-    <div class="icon-container">
-      <a href="main-cour.html" class="icon">
-        <img src="img/cour.png" alt="Site 1" />
-        <span>cour</span>
-      </a>
-      <a href="main-mes projets.html" class="icon">
-        <img src="img/projets.png" alt="Site 2" />
-        <span>Mes Projets</span>
-      </a>
-      <a href="main-SMP.html" class="icon">
-        <img src="img/SMP.jpeg" alt="Site 3" />
-        <span>SMP</span>
-      </a>
-      <a href="main-jeux.html" class="icon">
-        <img src="img/Jeux.jpeg" alt="Site 3" />
-        <span>jeux</span>
-      </a>
-      <a href="main-tuto.html" class="icon">
-        <img src="img/tuto.jpeg" alt="Site 3" />
-        <span>tuto</span>
-      </a>
-      <a href="fractal.html" class="icon">
-        <img src="img/fractal.png" alt="Site 3" />
-        <span>Fractal</span>
-      </a>
-      <a href="QR.html" class="icon">
-        <img src="img/QR.png" alt="Site 3" />
-        <span>QR code Personalisable</span>
-      </a>
-      <a href="exportpdf.html" class="icon">
-        <img src="img/exportpdf.png" alt="Site 3" />
-        <span>Exportation en PDF</span>
-      </a>
 
-    <!-- génère un boutton -->
-     
+  <!-- L’ensemble de ta page enveloppé dans un conteneur -->
+  <div id="main-content" style="display:none;">
+    <div class="top-banner">
+      Global - Accueil
+      <nav class="nav-bar">
+        <a href="index.html">Accueil</a>
+        <a href="apropos.html">À propos</a>
+      </nav>
     </div>
+    <div class="page-padding">
+      <div class="icon-container">
+        <a href="main-cour.html" class="icon">
+          <img src="img/cour.png" alt="Site 1" />
+          <span>cour</span>
+        </a>
+        <a href="main-mes projets.html" class="icon">
+          <img src="img/projets.png" alt="Site 2" />
+          <span>Mes Projets</span>
+        </a>
+        <a href="main-SMP.html" class="icon">
+          <img src="img/SMP.jpeg" alt="Site 3" />
+          <span>SMP</span>
+        </a>
+        <a href="main-jeux.html" class="icon">
+          <img src="img/Jeux.jpeg" alt="Site 3" />
+          <span>jeux</span>
+        </a>
+        <a href="main-tuto.html" class="icon">
+          <img src="img/tuto.jpeg" alt="Site 3" />
+          <span>tuto</span>
+        </a>
+        <a href="fractal.html" class="icon">
+          <img src="img/fractal.png" alt="Site 3" />
+          <span>Fractal</span>
+        </a>
+        <a href="QR.html" class="icon">
+          <img src="img/QR.png" alt="Site 3" />
+          <span>QR code Personalisable</span>
+        </a>
+        <a href="exportpdf.html" class="icon">
+          <img src="img/exportpdf.png" alt="Site 3" />
+          <span>Exportation en PDF</span>
+        </a>
+        <!-- génère un boutton -->
+      </div>
+    </div>
+    <div class="bottom-footer">
+      ©Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Comptenu : Perplexity (ia) VISITEUR :
+      <a href="https://www.hitwebcounter.com/" target="_blank">
+        <img src="https://hitwebcounter.com/counter/counter.php?page=21458336&style=0024&nbdigits=5&type=page&initCount=0" title="Free Tools" Alt="Free Tools" border="0" />
+      </a>
+    </div>
+    <!-- Injection du header commun -->
+    <script type="module" src="/load-header.js"></script>
+    <!-- Auth globale et logique du menu -->
+    <script type="module" src="/auth.js"></script>
   </div>
-  <div class="bottom-footer">
-    ©Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Comptenu : Perplexity (ia) VISITEUR : <a href="https://www.hitwebcounter.com/" target="_blank"><img src="https://hitwebcounter.com/counter/counter.php?page=21458336&style=0024&nbdigits=5&type=page&initCount=0" title="Free Tools" Alt="Free Tools"   border="0" /></a>
-
-  </div>
-  <!-- Injection du header commun -->
-  <script type="module" src="/load-header.js"></script>
-  <!-- Auth globale et logique du menu -->
-  <script type="module" src="/auth.js"></script>
+  <!-- Script pour effet "hyper cool" -->
+  <script>
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('main-content').style.display = 'block';
+    }, 5000);
+  </script>
 </body>
 </html>
