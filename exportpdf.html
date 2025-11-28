@@ -2,78 +2,514 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Bloc-notes avec image et PDF</title>
+  <title>Bloc-notes riche avec image & PDF</title>
+  <!-- jsPDF + html2canvas pour rendu fidèle -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
-    /* Style identique à l’outil précédent, raccourci ici */
-    body {font-family: Arial,sans-serif; background:#f0f0f0; margin:0;}
-    .container {background:#fff;max-width:580px;margin:35px auto 16px auto;border-radius:18px;box-shadow:0 2px 14px #bbb;padding:35px 22px 30px 22px; text-align:center;}
-    textarea {width:98%;min-height:220px;max-height:520px;border-radius:13px;border:1.5px solid #b7dbf7;padding:13px;font-size:1.07rem;resize:vertical;margin-bottom:18px;}
-    .export-btn {background:#33bf40;color:#fff;border:none;border-radius:10px;font-weight:bold;padding:10px 30px;font-size:1.13rem;cursor:pointer;margin-bottom:10px;transition:background .19s;box-shadow:0 1px 6px #71c58933;}
+    * { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --blue-light:#29d8ff;
+      --blue-main:#007BFF;
+    }
+
+    body {
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#031633 40%,#001a3b 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before {
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader {
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud {
+      position:relative;
+      width:min(520px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(56,189,248,0.26),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(56,189,248,0.8);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(56,189,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+      pointer-events:none;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#7dd3fc;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#7dd3fc,transparent);
+      box-shadow:0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#22c1c3,#29d8ff,#007bff);
+      box-shadow:0 0 18px rgba(56,189,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#a5b4fc;
+      opacity:0.9;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(56,189,248,0.12) 45%,
+          rgba(56,189,248,0.35) 50%,
+          rgba(56,189,248,0.12) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+      pointer-events:none;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#c4f1ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .container {
+      background:
+        radial-gradient(circle at 0 0, rgba(255,255,255,0.16), transparent 60%),
+        linear-gradient(145deg, rgba(15,23,42,0.96), rgba(15,23,42,0.9));
+      max-width: 720px;
+      margin: 28px auto 20px auto;
+      border-radius: 18px;
+      box-shadow:
+        0 18px 40px rgba(15,23,42,0.95),
+        0 0 0 1px rgba(15,23,42,1);
+      padding: 24px 22px 26px 22px;
+      text-align: center;
+      color: #e5f1ff;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(148,163,184,0.7);
+    }
+    h2{margin:0 0 12px 0;}
+
+    .toolbar {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      justify-content:center;
+      margin-bottom:8px;
+    }
+    .toolbar button {
+      min-width:34px;
+      padding:6px 10px;
+      border-radius:7px;
+      border:1px solid #b7dbf7;
+      background:#e7f3ff;
+      font-size:0.9rem;
+      cursor:pointer;
+      font-weight:600;
+      color:#1f2937;
+      transition:background 0.15s,border-color 0.15s,color 0.15s;
+    }
+    .toolbar button:hover {
+      background:#007BFF;
+      border-color:#0057b8;
+      color:#fff;
+    }
+
+    #editor {
+      width:100%;
+      min-height:220px;
+      max-height:520px;
+      border-radius:13px;
+      border:1.5px solid #b7dbf7;
+      padding:13px;
+      font-size:1.05rem;
+      margin-bottom:14px;
+      text-align:left;
+      overflow-y:auto;
+      background:#020617;
+      color:#e5f1ff;
+    }
+    #editor:focus {
+      outline:none;
+      border-color:#38bdf8;
+      box-shadow:
+        0 0 0 1px rgba(56,189,248,0.9),
+        0 8px 18px rgba(15,23,42,1);
+    }
+    #editor img {
+      max-width:50%;
+      border-radius:8px;
+      margin:4px;
+    }
+
+    .img-row {
+      margin: 6px 0 12px 0;
+      color:#cbd5ff;
+    }
+
+    .export-btn {
+      background:#33bf40;
+      color:#fff;
+      border:none;
+      border-radius:10px;
+      font-weight:bold;
+      padding:10px 30px;
+      font-size:1.13rem;
+      cursor:pointer;
+      margin-bottom:10px;
+      transition:background .19s;
+      box-shadow:0 1px 6px #71c58933;
+    }
     .export-btn:hover {background:#22912b;}
-    .notification {color:#007BFF;margin:8px auto 10px auto;font-weight:500;font-size:1rem;letter-spacing:.1px;min-height:18px;}
-    .img-preview {margin-top:10px;max-width:90%;max-height:210px;border-radius:12px;box-shadow:0 1px 6px #ccc;}
+
+    .notification {
+      color:#7dd3fc;
+      margin:8px auto 10px auto;
+      font-weight:500;
+      font-size:1rem;
+      letter-spacing:.1px;
+      min-height:18px;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Bloc-notes avec image & PDF</h2>
-    <textarea id="notesInput" placeholder="Tape ici tes notes, idées, résumés, listes…"></textarea>
-    <br>
-    <input type="file" id="imgInput" accept="image/*">
-    <div id="imgContainer"></div>
-    <br>
-    <button class="export-btn" onclick="exportPDF()">Exporter en PDF</button>
-    <div class="notification" id="notif"></div>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//NOTES-ENGINE</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Connexion</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Éditeur riche · Images positionnées · Export PDF
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement de l’éditeur de notes enrichies...</div>
+        <div class="terminal-line">[OK]  Gestion du gras, italique, souligné et listes.</div>
+        <div class="terminal-line">[IMG] Insertion et déplacement des images dans le texte.</div>
+        <div class="terminal-line">[PDF] Capture de la mise en page pour le rendu PDF.</div>
+        <div class="terminal-line">[OK]  Bloc-notes prêt à être utilisé.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
+    </div>
   </div>
+
+  <div id="main-content">
+    <div class="container">
+      <h2>Bloc-notes riche avec image & PDF</h2>
+
+      <div class="toolbar">
+        <button type="button" onclick="format('bold')" title="Gras"><b>B</b></button>
+        <button type="button" onclick="format('italic')" title="Italique"><i>I</i></button>
+        <button type="button" onclick="format('underline')" title="Souligner"><u>U</u></button>
+        <button type="button" onclick="format('insertUnorderedList')" title="Liste à puces">• Liste</button>
+        <button type="button" onclick="format('insertOrderedList')" title="Liste numérotée">1. Liste</button>
+        <button type="button" onclick="removeFormat()" title="Effacer la mise en forme">Effacer format</button>
+      </div>
+
+      <div id="editor" contenteditable="true"></div>
+
+      <div class="img-row">
+        <input type="file" id="imgInput" accept="image/*">
+        <span> (l’image est insérée au curseur et reste à sa place dans le PDF)</span>
+      </div>
+
+      <button class="export-btn" onclick="exportPDF()">Exporter en PDF</button>
+      <div class="notification" id="notif"></div>
+    </div>
+  </div>
+
   <script>
-    let imgDataUrl = null;
-    document.getElementById('imgInput').addEventListener('change', function(e){
+    const editor = document.getElementById('editor');
+    const imgInput = document.getElementById('imgInput');
+    let draggedImg = null;
+
+    imgInput.addEventListener('change', function(e){
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = function(ev){
-        imgDataUrl = ev.target.result;
-        const imgEl = document.createElement('img');
-        imgEl.src = imgDataUrl;
-        imgEl.className = "img-preview";
-        imgEl.onload = ()=>{};
-        const cont = document.getElementById('imgContainer');
-        cont.innerHTML = ""; cont.appendChild(imgEl);
+        const img = document.createElement('img');
+        img.src = ev.target.result;
+        img.draggable = true;
+        img.addEventListener('dragstart', onImgDragStart);
+        insertNodeAtCursor(img);
       };
       reader.readAsDataURL(file);
+      imgInput.value = "";
     });
 
-    function exportPDF() {
-      const texte = document.getElementById('notesInput').value.trim();
-      if (!texte && !imgDataUrl) { notif("Rien à exporter !"); return; }
+    function onImgDragStart(e){
+      draggedImg = e.target;
+    }
+
+    editor.addEventListener('dragover', e => {
+      e.preventDefault();
+    });
+    editor.addEventListener('drop', e => {
+      e.preventDefault();
+      if (!draggedImg) return;
+      const range = caretRangeFromPoint(e.clientX, e.clientY);
+      if (range) range.insertNode(draggedImg);
+      draggedImg = null;
+    });
+
+    function caretRangeFromPoint(x,y){
+      if (document.caretRangeFromPoint) {
+        return document.caretRangeFromPoint(x,y);
+      } else if (document.caretPositionFromPoint) {
+        const pos = document.caretPositionFromPoint(x,y);
+        const range = document.createRange();
+        range.setStart(pos.offsetNode,pos.offset);
+        range.collapse();
+        return range;
+      }
+      return null;
+    }
+
+    function insertNodeAtCursor(node){
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) {
+        editor.appendChild(node);
+        return;
+      }
+      const range = sel.getRangeAt(0);
+      range.deleteContents();
+      range.insertNode(node);
+      range.setStartAfter(node);
+      range.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range);
+      editor.focus();
+    }
+
+    function format(cmd) {
+      document.execCommand(cmd, false, null);
+      editor.focus();
+    }
+    function removeFormat() {
+      document.execCommand('removeFormat', false, null);
+      editor.focus();
+    }
+
+    async function exportPDF() {
+      const html = editor.innerHTML.trim();
+      if (!html) { notif("Rien à exporter !"); return; }
+
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      let y = 18;
-      // Ajoute texte
-      if (texte) {
-        const lines = doc.splitTextToSize(texte, 180);
-        doc.setFontSize(13);
-        lines.forEach(line => {
-          if (y > 275) { doc.addPage(); y = 18; }
-          doc.text(line, 16, y);
-          y += 8;
-        });
+      const doc = new jsPDF('p','mm','a4');
+
+      // Capture l’éditeur en image via html2canvas
+      const canvas = await html2canvas(editor, {
+        backgroundColor: '#ffffff'
+      });
+      const imgData = canvas.toDataURL('image/png');
+
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const imgWidth = pageWidth - 20; // marges
+      const imgHeight = canvas.height * imgWidth / canvas.width;
+
+      let position = 10;
+      if (imgHeight <= pageHeight - 20) {
+        doc.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+      } else {
+        // si très grand, on découpe en plusieurs pages
+        let remaining = imgHeight;
+        let y = 10;
+        let sX = 0;
+        let sY = 0;
+        const pxPageHeight = canvas.height * ( (pageHeight-20) / imgHeight );
+
+        while (remaining > 0) {
+          const pageCanvas = document.createElement('canvas');
+          pageCanvas.width = canvas.width;
+          pageCanvas.height = pxPageHeight;
+          const ctx = pageCanvas.getContext('2d');
+          ctx.drawImage(canvas, 0, sY, canvas.width, pxPageHeight, 0, 0, canvas.width, pxPageHeight);
+          const pageData = pageCanvas.toDataURL('image/png');
+          doc.addImage(pageData, 'PNG', 10, 10, imgWidth, pageHeight-20);
+          remaining -= (pageHeight-20);
+          sY += pxPageHeight;
+          if (remaining > 0) doc.addPage();
+        }
       }
-      // Ajoute image
-      if (imgDataUrl) {
-        if (y > 230) { doc.addPage(); y = 18; }
-        doc.addImage(imgDataUrl, 'JPEG', 15, y+7, 180, 0); // Taille auto hauteur
-        y += 70;
-      }
+
       doc.save("notes.pdf");
       notif("Export PDF téléchargé !");
     }
-    function notif(msg) {
+
+    function notif(msg){
       const el = document.getElementById('notif');
       el.textContent = msg;
-      setTimeout(()=>{el.textContent='';}, 1900);
+      setTimeout(()=>{el.textContent='';},1900);
     }
+
+    setTimeout(()=>{
+      const loader = document.getElementById('loader');
+      const main = document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },4000);
   </script>
 </body>
 </html>

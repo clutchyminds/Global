@@ -2,310 +2,768 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Masterclass NSI : Interactions homme-machine (IHM) & Web</title>
+  <title>Global - NSI · IHM & Web</title>
   <meta name="description" content="Cours complet NSI sur les interactions homme-machine : interfaces, web, formulaires, accessibilité, quiz et schéma interactif.">
   <style>
-    body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
-    header { background: linear-gradient(90deg,#eef4fb,#ffeefb 80%); color: #243552; padding: 30px 0 12px; text-align: center;}
-    header h1 { font-size: 2.3rem; margin: 0 0 10px; color: #e0639c;}
-    header .intro { font-size: 1rem;}
-    main { max-width: 950px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(224,99,156,0.12);}
-    h2 { color: #e0639c; margin-top: 32px;}
-    h3 { color: #f5a623; margin-top: 22px;}
-    ul, ol { margin-left: 1.4em;}
-    .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
-    .infos {background: #faedf4; border-left: 6px solid #e0639c;}
-    .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
-    .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
-    .error {background: #ffeaea; border-left: 7px solid #e06359;}
-    .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
-    .anecdote {background: #ffeefb; border-left: 7px solid #e0639c; font-style: italic; margin: 1em 0; padding: 12px 17px; border-radius: 6px;}
-    .source { font-size: 0.9em; color: #999; text-align: right;}
-    button, .btn-expl {background: #e0639c; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 14px; cursor: pointer; margin-right: 8px; margin-top: 7px; transition: background 0.2s;}
-    button:hover, .btn-expl:hover { background: #b40d54;}
-    #schema { margin: 2em auto 1em; display: block; background: #fffefa; border-radius: 8px; border: 1px solid #d1d5db;}
-    .info-bulle {display:none;position: absolute; background:#fffefc; border:1px solid #243552; border-radius:5px;padding:10px;font-size:1rem;z-index:10; box-shadow: 0 3px 12px rgba(224,99,156,0.09);}
-    .reponse { margin-top: 0.7em; color: #e0639c; font-weight: bold; text-align: center;}
-    #desc-schema { background: #faedf4; border-radius: 6px; color: #e0639c; font-weight: bold; padding: 10px; text-align: center; min-height: 25px; margin-bottom: 10px;}
-    table { border-collapse:collapse; margin: 10px auto;}
-    th, td { border:1px solid #e0639c; padding:7px 15px; text-align:center;}
-    th { background:#fbe9fa;}
-    td.type { font-weight:bold; }
-    @media (max-width: 900px) { main { padding: 12px 2px; } }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --pink-main:#e0639c;
+      --blue-main:#1877f2;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(244,114,182,0.22), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#111827 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(540px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(244,114,182,0.35),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(244,114,182,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(244,114,182,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#fce7f3;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#f9a8d4,transparent);
+      box-shadow:0 0 12px rgba(244,114,182,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#f9a8d4;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(244,114,182,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#f9a8d4,#ec4899,#a855f7);
+      box-shadow:0 0 18px rgba(244,114,182,0.9);
+      animation:barProgress 2.1s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#fce7f3;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(244,114,182,0.2) 45%,
+          rgba(244,114,182,0.45) 50%,
+          rgba(244,114,182,0.2) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#f9a8d4;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(224,99,156,0.95),rgba(59,130,246,0.95));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#f9fafb;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:230px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#fbcfe8;
+      box-shadow:0 0 12px rgba(251,207,232,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:950px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:18px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:30px 30px 32px;
+      color:#e5f1ff;
+    }
+
+    h1,h2{
+      color:#fce7f3;
+      margin-bottom:10px;
+    }
+    h3{
+      color:#fde68a;
+      margin-top:22px;
+      margin-bottom:10px;
+    }
+    h2{margin-top:32px;font-size:1.45rem;}
+    p,li{font-size:0.98rem;line-height:1.6;}
+    ul,ol{margin-left:1.4em;margin-bottom:1.5em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      padding:12px 20px;
+      border-radius:6px;
+      margin:1.1em 0;
+      font-size:0.97rem;
+    }
+    .infos{
+      background:#faedf4;
+      border-left:6px solid #e0639c;
+      color:#3b0764;
+    }
+    .box-exo{
+      background:#e5ffe7;
+      border-left:7px solid #167c2b;
+      color:#052e16;
+    }
+    .box-important{
+      background:#fff7ec;
+      border-left:7px solid #f5a623;
+      color:#3b2710;
+    }
+    .error{
+      background:#ffeaea;
+      border-left:7px solid #e06359;
+      color:#7f1d1d;
+    }
+    .lexique{
+      background:#f7fafd;
+      border-left:7px solid #243552;
+      padding:12px;
+      color:#0f172a;
+    }
+    .anecdote{
+      background:#ffeefb;
+      border-left:7px solid #e0639c;
+      font-style:italic;
+      padding:12px 17px;
+      color:#4a044e;
+    }
+
+    #schema{
+      margin:2em auto 1em;
+      display:block;
+      background:#fffefa;
+      border-radius:8px;
+      border:1px solid #d1d5db;
+    }
+    .info-bulle{
+      display:none;
+      position:absolute;
+      background:#fffefc;
+      border:1px solid #243552;
+      border-radius:5px;
+      padding:10px;
+      font-size:1rem;
+      z-index:10;
+      box-shadow:0 3px 12px rgba(224,99,156,0.2);
+      max-width:260px;
+      color:#111827;
+    }
+    .reponse{
+      margin-top:0.7em;
+      color:#f9a8d4;
+      font-weight:bold;
+      text-align:center;
+      font-size:0.95rem;
+    }
+    #desc-schema{
+      background:#faedf4;
+      border-radius:6px;
+      color:#e0639c;
+      font-weight:bold;
+      padding:10px;
+      text-align:center;
+      min-height:25px;
+      margin-bottom:10px;
+    }
+    table{
+      border-collapse:collapse;
+      margin:10px auto;
+      background:#020617;
+      color:#e5e7eb;
+    }
+    th,td{
+      border:1px solid #e0639c;
+      padding:7px 15px;
+      text-align:center;
+    }
+    th{
+      background:#fbe9fa;
+      color:#4a044e;
+    }
+    td.type{font-weight:bold;}
+    button,.btn-expl{
+      background:#e0639c;
+      color:#fff;
+      font-weight:bold;
+      border:none;
+      border-radius:6px;
+      padding:8px 14px;
+      cursor:pointer;
+      margin-right:8px;
+      margin-top:7px;
+      transition:background 0.2s,transform 0.15s;
+    }
+    button:hover,.btn-expl:hover{
+      background:#b40d54;
+      transform:translateY(-1px);
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
   </style>
 </head>
 <body>
-<header>
-  <h1>Masterclass NSI : Interactions homme-machine (IHM) & Web</h1>
-  <div class="intro">Tout sur les interfaces (web, apps), la communication homme-machine et l’UX : science, métiers et enjeux modernes.</div>
-</header>
-<main>
-<section>
-  <h2>📚 Cours complet – Interactions homme-machine & Web</h2>
-  <p>
-    L'interaction homme-machine (IHM) désigne l'ensemble des moyens de communication entre une <b>personne</b> et une <b>machine</b> : écrans, claviers, souris, boutons, commandes vocales, formulaires, etc.
-  </p>
-  <table>
-    <tr>
-      <th>Interface</th>
-      <th>Exemple</th>
-      <th>Utilité</th>
-      <th>Ergonomie ?</th>
-    </tr>
-    <tr>
-      <td class="type">Graphique (GUI)</td>
-      <td>Boutons, menus, pages web</td>
-      <td>Navigation simple, interactive</td>
-      <td>Oui, prioritaire (UX/UI design)</td>
-    </tr>
-    <tr>
-      <td class="type">Ligne de commande</td>
-      <td>Terminal, shell</td>
-      <td>Commandes textes puissantes</td>
-      <td>Moins ergonomique/bruit d’apprentissage</td>
-    </tr>
-    <tr>
-      <td class="type">Sensorielle</td>
-      <td>Vocale, tactile, gestuelle</td>
-      <td>Accessibilité, contexte mobile</td>
-      <td>Oui (mais nécessite IA ou capteurs)</td>
-    </tr>
-    <tr>
-      <td class="type">Web (HTML/CSS/JS)</td>
-      <td>Formulaires, chats, articles, dashboards</td>
-      <td>Universalité, transversalité devices</td>
-      <td>Variable selon le design et l’accessibilité</td>
-    </tr>
-  </table>
-  <p>
-    <b>Éléments essentiels :</b>
-    <ul>
-      <li>Des <b>entrées/sorties</b> : clavier, souris, champs textes, boutons, pavés tactiles, commandes vocales</li>
-      <li>L’<b>ergonomie</b> : intuitive, rapide, accessible, agréable</li>
-      <li>L’<b>accessibilité</b> : utilisable par tous (règles ARIA), contraste, synthèse vocale</li>
-      <li>La <b>rétroaction</b> : la machine répond à l’action humaine (message d’erreur, succès, surbrillance…)</li>
-      <li>Sur le web : <b>HTML</b> (structure), <b>CSS</b> (apparence), <b>JavaScript</b> (interactions dynamiques, formulaires, menus)</li>
-      <li>Bonnes pratiques : Toujours expliquer, prévoir les erreurs de saisie, rendre attractif !</li>
-    </ul>
-    <b>Exemples sur le web :</b>
-    <ul>
-      <li>Formulaire d’inscription, recherche Google, bouton “Envoyer”</li>
-      <li>Menus déroulants, icônes cliquables, liens hypertextes</li>
-      <li>Captchas, notifications, fenêtres modales (pop-ups)</li>
-      <li>Responsive design : s’adapte à la taille de l’écran</li>
-    </ul>
-    <b>Objectif NSI</b> : Analyser, critiquer et imaginer de meilleures interfaces pour tous.
-  </p>
-</section>
-<section>
-  <h2>📋 Fiche synthèse interactive</h2>
-  <ul id="ul-synthese">
-    <li><b>À quoi sert l’ergonomie dans une interface ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('ergo')">Voir explication</button>
-      <span id="syn-ergo" style="display:none;color:#167c2b;">
-        Rendre l’utilisation rapide, confortable, sans erreur. On pense à tous (jeunes, seniors, oeil daltonien, etc.)
-      </span>
-    </li>
-    <li><b>Quel langage rend une page web interactive ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('js')">Réponse !</button>
-      <span id="syn-js" style="display:none;color:#e0639c;">
-        JavaScript, pour valider un formulaire, afficher des popups, animer, etc.
-      </span>
-    </li>
-    <li><b>Accessibilité, à quoi ça sert ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('a11y')">Clique ici</button>
-      <span id="syn-a11y" style="display:none;color:#f5a623;">
-        Permettre à TOUS d’utiliser l’interface, même avec un handicap (malvoyant, moteur…).
-      </span>
-    </li>
-    <li><b>Trouve un exemple de rétroaction sur le web :</b>
-      <button class="btn-expl" onclick="afficheSynthese('retroaction')">Voir solution</button>
-      <span id="syn-retroaction" style="display:none;color:#243552;">
-        Message de validation, d’erreur, changement de couleur d’un bouton, “popup”.
-      </span>
-    </li>
-    <li><b>Défi : À quoi sert le responsive design sur mobile/web ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('responsive')">Afficher</button>
-      <span id="syn-responsive" style="display:none;color:#1877f2;">
-        Adapter l’affichage automatique à la taille de l’écran (téléphone, tablette, PC).
-      </span>
-    </li>
-  </ul>
-  <div>
-    <button onclick="quizSynthese()">Quiz surprise</button>
-    <span class="reponse" id="quiz-synthese-res"></span>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//nsi-IHM-WEB</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Interactions homme-machine · interfaces web, ergonomie, accessibilité, UX et boucles de feedback.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Mise en place des blocs : Utilisateur, Interface, Code, Feedback...</div>
+        <div class="terminal-line">[IHM] Chargement des définitions IHM, UI, UX, accessibilité et responsive.</div>
+        <div class="terminal-line">[OK]  Prêt : fiche interactive, schéma et quiz pour réussir la spécialité NSI.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
+    </div>
   </div>
-</section>
-<section>
-  <h2>🖱️ Schéma interactif IHM & Web</h2>
-  <canvas id="schema" width="900" height="240"></canvas>
-  <div id="desc-schema">Survole les zones : découvre comment une action utilisateur passe du clic à la réaction web.</div>
-  <div id="info-bulle" class="info-bulle"></div>
-</section>
-<section class="box box-exo">
-  <h2>💡 Exercices interactifs</h2>
-  <p>Si tu devais améliorer un formulaire web : que ferais-tu ?
-    <button onclick="afficheReponseNSI1()">Voir proposition</button>
-  </p>
-  <div class="reponse" id="exo-reponse-nsi1" style="display:none;">
-    Ajouter labels explicites, message d’erreur clair, grands boutons, contraste couleurs, validation instantanée.
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - NSI
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="content-card">
+        <h1>Masterclass NSI : Interactions homme-machine (IHM) & Web</h1>
+        <div class="intro" style="color:#fce7f3;margin-bottom:6px;">
+          Tout sur les interfaces (web, apps), la communication homme‑machine et l’UX : science, métiers et enjeux.
+        </div>
+
+        <main>
+          <section>
+            <h2>📚 Cours complet – IHM & Web</h2>
+            <p>L’IHM englobe tous les moyens de communication entre un humain et une machine : écrans, formulaires, boutons, commandes vocales, etc.</p>
+            <table>
+              <tr>
+                <th>Interface</th>
+                <th>Exemple</th>
+                <th>Utilité</th>
+                <th>Ergonomie ?</th>
+              </tr>
+              <tr>
+                <td class="type">Graphique (GUI)</td>
+                <td>Boutons, menus, pages web</td>
+                <td>Navigation visuelle et intuitive</td>
+                <td>UX/UI prioritaires</td>
+              </tr>
+              <tr>
+                <td class="type">Ligne de commande</td>
+                <td>Terminal, shell</td>
+                <td>Très puissant, texte seul</td>
+                <td>Moins accessible pour débutants</td>
+              </tr>
+              <tr>
+                <td class="type">Sensorielle</td>
+                <td>Vocale, tactile, gestuelle</td>
+                <td>Mobile, accessibilité, IoT</td>
+                <td>Dépend de capteurs et d’IA</td>
+              </tr>
+              <tr>
+                <td class="type">Web (HTML/CSS/JS)</td>
+                <td>Formulaires, chats, dashboards</td>
+                <td>Accessible via navigateur</td>
+                <td>Varie selon design et accessibilité</td>
+              </tr>
+            </table>
+          </section>
+
+          <section>
+            <h2>📋 Fiche synthèse interactive</h2>
+            <ul id="ul-synthese">
+              <li><b>Rôle de l’ergonomie ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('ergo')">Voir explication</button>
+                <span id="syn-ergo" style="display:none;color:#16a34a;">
+                  Rendre l’interface simple, rapide, agréable, en limitant les erreurs et la fatigue pour tous les publics.
+                </span>
+              </li>
+              <li><b>Langage pour l’interactivité web ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('js')">Réponse</button>
+                <span id="syn-js" style="display:none;color:#e0639c;">
+                  JavaScript : validation de formulaires, animations, menus dynamiques, chat, etc.
+                </span>
+              </li>
+              <li><b>Accessibilité, pourquoi ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('a11y')">Voir</button>
+                <span id="syn-a11y" style="display:none;color:#f5a623;">
+                  Pour que les personnes en situation de handicap puissent utiliser l’interface (lecteurs d’écran, navigation clavier...).
+                </span>
+              </li>
+              <li><b>Exemple de rétroaction ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('retroaction')">Afficher</button>
+                <span id="syn-retroaction" style="display:none;color:#111827;">
+                  Message d’erreur ou de succès, surbrillance d’un champ, changement de couleur d’un bouton.
+                </span>
+              </li>
+              <li><b>But du responsive design ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('responsive')">Voir</button>
+                <span id="syn-responsive" style="display:none;color:#1877f2;">
+                  Adapter automatiquement l’interface à la taille de l’écran (mobile, tablette, PC).
+                </span>
+              </li>
+            </ul>
+            <div>
+              <button onclick="quizSynthese()">Quiz surprise</button>
+              <span class="reponse" id="quiz-synthese-res"></span>
+            </div>
+          </section>
+
+          <section>
+            <h2>🖱️ Schéma interactif IHM & Web</h2>
+            anvas id="schema" width="900" height="240"></canvas>
+            <div id="desc-schema">Survole les zones pour suivre le chemin : action utilisateur → interface → code → feedback.</div>
+            <div id="info-bulle" class="info-bulle"></div>
+          </section>
+
+          <section class="box-exo">
+            <h2>💡 Exercices interactifs</h2>
+            <p>Comment améliorer un formulaire web ?</p>
+            <button onclick="afficheReponseNSI1()">Voir proposition</button>
+            <div class="reponse" id="exo-reponse-nsi1" style="display:none;">
+              Ajouter des labels clairs, des messages d’erreur précis, un bon contraste, des champs assez grands et une validation immédiate.
+            </div>
+            <p>Dans quelles situations l’accessibilité est-elle cruciale ?</p>
+            <button onclick="document.getElementById('exo2-reponse-nsi').style.display='block';">Voir solution</button>
+            <div class="reponse" id="exo2-reponse-nsi" style="display:none;">
+              Pour les personnes malvoyantes, âgées, dyslexiques, ou pour tout utilisateur dans des conditions difficiles (écran petit, forte lumière...).
+            </div>
+          </section>
+
+          <section class="quiz">
+            <h2>🎯 Quiz rapide</h2>
+            <p>Quel langage n’est pas un langage d’interface web côté client ?</p>
+            <button onclick="quizNSI(0)">Python</button>
+            <button onclick="quizNSI(1)">HTML</button>
+            <button onclick="quizNSI(2)">CSS</button>
+            <div class="reponse" id="rep-quiz-nsi"></div>
+
+            <p>Comment nomme-t-on l’expérience ressentie par l’utilisateur ?</p>
+            <button onclick="quizNSI2(0)">UI</button>
+            <button onclick="quizNSI2(1)">UX</button>
+            <button onclick="quizNSI2(2)">IoT</button>
+            <div class="reponse" id="rep-quiz-nsi2"></div>
+          </section>
+
+          <section class="box-important">
+            <h2>🌍 Applications concrètes</h2>
+            <ul>
+              <li>Sites et applis web, jeux vidéo, interfaces de voiture, domotique.</li>
+              <li>Bornes d’accueil, systèmes hospitaliers, transports en commun.</li>
+              <li>Tout ce qui affiche un écran et réagit à un clic, un geste, une voix.</li>
+            </ul>
+          </section>
+
+          <section class="error">
+            <h2>❌ Erreurs fréquentes à éviter</h2>
+            <ul>
+              <li>Texte trop petit ou peu contrasté.</li>
+              <li>Absence de feedback après une action (clic, validation).</li>
+              <li>Interface non testée sur mobile.</li>
+              <li>Champs de formulaire sans label explicite.</li>
+            </ul>
+          </section>
+
+          <section class="lexique">
+            <h2>📚 Lexique express</h2>
+            <b>IHM / HMI</b> : Interface Homme‑Machine.<br>
+            <b>UI</b> : User Interface (ce que l’on voit, boutons, couleurs, layout).<br>
+            <b>UX</b> : User Experience (ressenti global de l’utilisateur).<br>
+            <b>Accessibilité</b> : capacité d’une interface à être utilisable par tous.<br>
+            <b>Formulaire</b> : zone de saisie de données (champs, boutons).<br>
+            <b>Responsive</b> : mise en page adaptative selon l’écran.
+          </section>
+
+          <section class="anecdote">
+            <b>Astuces mémoire :</b> “UI” = interface visible, “UX” = ce que tu ressens. “Responsive” = l’interface répond à la taille d’écran.
+          </section>
+
+          <section>
+            <h2>💡 Méthodologie contrôle</h2>
+            <ul>
+              <li>Analyser une interface : lisibilité, actions possibles, feedback, accessibilité.</li>
+              <li>Proposer au moins deux améliorations ergonomiques.</li>
+              <li>Savoir citer HTML/CSS/JS et leur rôle dans le web.</li>
+              <li>Relier chaque choix au confort de l’utilisateur (UX).</li>
+            </ul>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
+    </div>
   </div>
-  <p>
-    Dans quelle situation l’accessibilité web est-elle essentielle ?
-    <button onclick="document.getElementById('exo2-reponse-nsi').style.display='block';">Voir solution</button>
-  </p>
-  <div class="reponse" id="exo2-reponse-nsi" style="display:none;">
-    Pour les personnes malvoyantes (lecteur d’écran), personnes âgées, ou toute situation où l’utilisateur a des besoins particuliers.
-  </div>
-</section>
-<section class="quiz">
-  <h2>🎯 Quiz rapide</h2>
-  <p>Quel langage n’est pas utilisé pour l’interface web ?</p>
-  <button onclick="quizNSI(0)">Python</button>
-  <button onclick="quizNSI(1)">HTML</button>
-  <button onclick="quizNSI(2)">CSS</button>
-  <div class="reponse" id="rep-quiz-nsi"></div>
-  <p>Comment appelle-t-on l’expérience vécue par l’utilisateur ?</p>
-  <button onclick="quizNSI2(0)">UI</button>
-  <button onclick="quizNSI2(1)">UX</button>
-  <button onclick="quizNSI2(2)">IOT</button>
-  <div class="reponse" id="rep-quiz-nsi2"></div>
-</section>
-<section class="box-important">
-  <h2>🌍 Applications concrètes</h2>
-  <ul>
-    <li>Formulaires d’inscription, chat, applis mobiles, systèmes embarqués (voiture, avion, domotique…)</li>
-    <li>Jeux vidéo : menus, HUD, interaction touch ou manette</li>
-    <li>Administrations, hôpitaux, transports : bornes, systèmes d’alerte, terminaux de paiement</li>
-    <li>Tout le Web : chaque site, chaque bouton, animation ou retour visuel…</li>
-  </ul>
-</section>
-<section class="error">
-  <h2>❌ Erreurs fréquentes à éviter</h2>
-  <ul>
-    <li>Utiliser un texte ou bouton trop petit, pas accessible</li>
-    <li>Oublier de tester l’interface sur mobile et tablette</li>
-    <li>Ne pas montrer d’erreur ou de réussite à l’utilisateur</li>
-    <li>Laisser un champ sans label ou explication</li>
-    <li>Ignorer le contraste, la couleur, ou les handicaps</li>
-  </ul>
-</section>
-<section class="lexique">
-  <h2>📚 Lexique express</h2>
-  <b>IHM / HMI :</b> Interface Homme-Machine<br>
-  <b>UI :</b> User Interface (ce que l’on voit)<br>
-  <b>UX :</b> User Experience (“ressenti” de l’utilisateur)<br>
-  <b>Accessibilité : </b> capacité d’usage universel (handicap, langue)<br>
-  <b>Formulaire : </b> zone de saisie de données (web)<br>
-  <b>Responsive : </b> adaptation à l’écran
-</section>
-<section class="rubrique">
-  <h3>📖 Anecdotes et histoire</h3>
-  <ul>
-    <li>Le premier “smiley” “:-)” a été utilisé par Scott Fahlman en 1982 dans une interface de forum !</li>
-    <li>L’IHM graphique (GUI) date de Xerox Parc, popularisé par Apple Lisa/Mac et Windows (années 80).</li>
-    <li>L’accessibilité web (normes WAI-ARIA) est devenue obligatoire pour les sites publics français depuis 2005.</li>
-    <li>Un clic mal placé peut générer des millions d’euros de pertes (vente ratée, bug, incompréhension…) !</li>
-  </ul>
-  <div class="source">Source : NSI, histoire du web, UX/UI</div>
-</section>
-<section class="anecdote">
-  <b>Astuces mémoire</b> :  
-  “UI” = “tu vois”; “UX” = “tu ressens”;  
-  “Responsive” ↔ “répond” à la taille écran.
-</section>
-<section>
-  <h2>💡 Méthodologie contrôle</h2>
-  <ul>
-    <li>Analyser une interface : repérer forces/faiblesses (lisibilité, boutons, labels, responsive…)</li>
-    <li>Être capable de proposer au moins 2 améliorations</li>
-    <li>Savoir citer les langages/technos du web (HTML, CSS, JS)</li>
-    <li>Prévoir la rétroaction (erreur/succès…) et l’accessibilité</li>
-    <li>Justifier chaque choix par l’expérience utilisateur (UX)</li>
-  </ul>
-</section>
-</main>
-<script>
-function afficheSynthese(id) {
-  var el = document.getElementById("syn-"+id);
-  if (el.style.display==="none") { el.style.display="inline"; }
-  else { el.style.display="none"; }
-}
-function quizSynthese() {
-  let qs = [
-    {q:"Vrai ou faux : UI = ce que l’on ressent ?", rep:"faux"},
-    {q:"Que veut dire ARIA sur le web ?", rep:"accessibility"},
-    {q:"Un exemple de rétroaction ?", rep:"erreur"},
-    {q:"Le trio des langages du web pour l’interface ?", rep:"html"}
-  ];
-  let idx = Math.floor(Math.random()*qs.length);
-  let ask = qs[idx]; let reponse = prompt(ask.q);
-  let result = (reponse && reponse.toLowerCase().includes(ask.rep.toLowerCase())) ?
-    "Bravo ! " + ask.rep : "Réponse attendue : " + ask.rep;
-  document.getElementById("quiz-synthese-res").textContent = result;
-}
-const schemaData = [
-  {x:70, y:80, w:150, h:55, zone:"Utilisateur", bulle:"L’humain fournit données, clique, tape, réagit à l’écran, parle.", color:"#e0639c"},
-  {x:280, y:140, w:240, h:55, zone:"Interface", bulle:"Zone graphique : boutons, champs, menus, formulaires, images, infos…", color:"#f5a623"},
-  {x:580, y:100, w:220, h:55, zone:"Code", bulle:"HTML–CSS–JS<br>Logique : valider saisie, traitement, retour/me…", color:"#79acee"},
-  {x:470, y:210, w:220, h:38, zone:"Retour/Feedback", bulle:"La machine réagit : couleur, message, son, changement de page, animation…", color:"#167c2b"},
-];
-var canvas = document.getElementById("schema");
-var ctx = canvas.getContext("2d");
-function drawSchema() {
-  ctx.clearRect(0,0,900,240);
-  ctx.font="17px Arial";
-  ctx.fillStyle="#243552";
-  ctx.fillText("Schéma : du clic utilisateur à la réaction web ou logicielle (boucle IHM) :",180,60);
-  for(let d of schemaData){
-    ctx.fillStyle=d.color; ctx.globalAlpha=0.19; ctx.fillRect(d.x,d.y,d.w,d.h); ctx.globalAlpha=1.0;
-    ctx.strokeStyle="#333"; ctx.lineWidth=2; ctx.strokeRect(d.x,d.y,d.w,d.h);
-    ctx.fillStyle="#243552"; ctx.font="bold 19px Arial"; ctx.fillText(d.zone, d.x+13, d.y+28);
-  }
-  // Flèches d'interaction
-  ctx.strokeStyle="#e0639c"; ctx.lineWidth=2.5;
-  // Utilisateur → Interface
-  ctx.beginPath(); ctx.moveTo(220,112); ctx.lineTo(280,167); ctx.stroke();
-  // Interface → Code
-  ctx.beginPath(); ctx.moveTo(520,167); ctx.lineTo(580,127); ctx.stroke();
-  // Code → Feedback
-  ctx.beginPath(); ctx.moveTo(690,127); ctx.lineTo(600,210); ctx.stroke();
-  // Feedback → Utilisateur
-  ctx.beginPath(); ctx.moveTo(470,229); ctx.lineTo(120,135); ctx.stroke();
-}
-drawSchema();
-canvas.addEventListener('mousemove', function(e){
-  var rect = canvas.getBoundingClientRect();
-  var x = e.clientX - rect.left, y = e.clientY - rect.top;
-  var bulle = document.getElementById("info-bulle"); let found = false;
-  for(let d of schemaData){
-    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
-      bulle.style.left = (rect.left + d.x + 33) + "px";
-      bulle.style.top = (rect.top + d.y + 10) + "px";
-      bulle.style.display = "block"; bulle.innerHTML = d.bulle; found=true; break;
+
+  <script>
+    // Masquer le loader après 3 secondes[web:38][web:2][web:29][web:12]
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
+
+    function afficheSynthese(id) {
+      var el = document.getElementById("syn-"+id);
+      el.style.display = (el.style.display==="none" || !el.style.display) ? "inline" : "none";
     }
-  }
-  if(!found) bulle.style.display="none";
-});
-canvas.addEventListener('click', function(e){
-  var rect = canvas.getBoundingClientRect();
-  var x = e.clientX - rect.left, y = e.clientY - rect.top;
-  for(let d of schemaData){
-    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
-      alert(d.bulle.replace(/<br>/g,"\n")); break;
+
+    function quizSynthese() {
+      let qs = [
+        {q:"Vrai ou faux : UI = ce que l’on ressent ?", rep:"faux"},
+        {q:"Que signifie ARIA sur le web ?", rep:"access"},
+        {q:"Donne un exemple de feedback.", rep:"erreur"},
+        {q:"Langage de base pour la structure web ?", rep:"html"}
+      ];
+      let idx = Math.floor(Math.random()*qs.length);
+      let ask = qs[idx];
+      let reponse = prompt(ask.q);
+      let ok = reponse && reponse.toLowerCase().includes(ask.rep.toLowerCase());
+      document.getElementById("quiz-synthese-res").textContent =
+        ok ? "Bravo ! "+ask.rep : "Réponse attendue : "+ask.rep;
     }
-  }
-});
-function afficheReponseNSI1() { document.getElementById("exo-reponse-nsi1").style.display = "block"; }
-function quizNSI(rep) {
-  let rq = document.getElementById("rep-quiz-nsi");
-  rq.textContent = (rep === 0) ? "Bonne réponse : Python est côté serveur ou script, pas pour l’interface web." : "Pas tout à fait (HTML/CSS sont pour l'UI web).";
-}
-function quizNSI2(rep) {
-  let rq = document.getElementById("rep-quiz-nsi2");
-  rq.textContent = (rep === 1) ? "Bravo : UX (User Experience), c’est le ressenti de l’utilisateur." : "UI = ce qu’on voit ; IOT = objets connectés.";
-}
-</script>
+
+    const schemaData = [
+      {x:70,  y:80,  w:150, h:55, zone:"Utilisateur", bulle:"Humain : clique, tape, parle, touche l’écran.", color:"#e0639c"},
+      {x:280, y:140, w:240, h:55, zone:"Interface", bulle:"Ce qu’il voit : boutons, champs, menus, formulaires, images, textes.", color:"#f5a623"},
+      {x:580, y:100, w:220, h:55, zone:"Code", bulle:"HTML/CSS/JS traitent l’action, valident et décident de la réponse.", color:"#60a5fa"},
+      {x:470, y:210, w:220, h:38, zone:"Feedback", bulle:"Retour : message, couleur, son, redirection, animation.", color:"#16a34a"},
+    ];
+
+    var canvas = document.getElementById("schema");
+    var ctx = canvas.getContext("2d");
+
+    function drawSchema() {
+      ctx.clearRect(0,0,900,240);
+      ctx.font="17px Arial";
+      ctx.fillStyle="#243552";
+      ctx.fillText("Boucle IHM : action utilisateur → interface → code → retour à l’utilisateur.",165,55);
+
+      for(let d of schemaData){
+        ctx.fillStyle=d.color; ctx.globalAlpha=0.19;
+        ctx.fillRect(d.x,d.y,d.w,d.h);
+        ctx.globalAlpha=1.0;
+        ctx.strokeStyle="#333"; ctx.lineWidth=2;
+        ctx.strokeRect(d.x,d.y,d.w,d.h);
+        ctx.fillStyle="#243552"; ctx.font="bold 19px Arial";
+        ctx.fillText(d.zone, d.x+13, d.y+30);
+      }
+
+      ctx.strokeStyle="#e0639c"; ctx.lineWidth=2.5;
+      ctx.beginPath(); ctx.moveTo(220,112); ctx.lineTo(280,167); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(520,167); ctx.lineTo(580,127); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(690,127); ctx.lineTo(600,210); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(470,229); ctx.lineTo(120,135); ctx.stroke();
+    }
+    drawSchema();
+
+    canvas.addEventListener('mousemove', function(e){
+      var rect = canvas.getBoundingClientRect();
+      var x = e.clientX - rect.left, y = e.clientY - rect.top;
+      var bulle = document.getElementById("info-bulle"); let found = false;
+      for(let d of schemaData){
+        if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
+          bulle.style.left = (rect.left + d.x + 33) + "px";
+          bulle.style.top  = (rect.top + d.y + 10) + "px";
+          bulle.style.display = "block"; bulle.innerHTML = d.bulle;
+          found=true; break;
+        }
+      }
+      if(!found) bulle.style.display="none";
+    });
+
+    canvas.addEventListener('click', function(e){
+      var rect = canvas.getBoundingClientRect();
+      var x = e.clientX - rect.left, y = e.clientY - rect.top;
+      for(let d of schemaData){
+        if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
+          alert(d.bulle.replace(/<br>/g,"\n")); break;
+        }
+      }
+    });
+
+    function afficheReponseNSI1() {
+      document.getElementById("exo-reponse-nsi1").style.display = "block";
+    }
+    function quizNSI(rep) {
+      let rq = document.getElementById("rep-quiz-nsi");
+      rq.textContent = (rep === 0)
+        ? "Bonne réponse : Python n’est pas un langage d’interface web côté client."
+        : "Non : HTML et CSS sont bien utilisés pour l’interface web.";
+    }
+    function quizNSI2(rep) {
+      let rq = document.getElementById("rep-quiz-nsi2");
+      rq.textContent = (rep === 1)
+        ? "Exact : UX désigne l’expérience vécue par l’utilisateur."
+        : "UI = interface visuelle, IoT = objets connectés.";
+    }
+  </script>
 </body>
 </html>
-

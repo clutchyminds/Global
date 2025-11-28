@@ -2,341 +2,673 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Quantités de matière, mole, concentration, dilution</title>
+  <title>Global - Chimie · Quantités de matière, mole, concentration, dilution</title>
   <meta name="description" content="Cours interactif Physique-Chimie : quantités de matière, mole, concentration, dilution. Cours détaillé, QCM, exos corrigés, fiche, LaTeX, interactivité.">
   <style>
-    body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin:0; }
-    header { background: linear-gradient(90deg,#eef4fb,#deffe4 80%); color:#243552; padding:30px 0 12px; text-align:center;}
-    header h1 {font-size:2.3rem; margin:0 0 8px; color:#1877f2;}
-    header .intro {font-size:1.09rem;}
-    main {max-width:900px; background:#fff; margin:45px auto 20px; padding:36px 60px; border-radius:20px; box-shadow:0 9px 28px rgba(24,119,242,0.12);}
-    h2 {color:#1877f2; margin-top:34px;}
-    h3 {color:#f5a623; margin-top:27px;}
-    ul, ol {margin-left:2em; margin-bottom:0.8em;}
-    .box, .infos {padding:15px 23px; border-radius:9px; margin:1.3em 0; font-size:1.05rem;}
-    .infos {background:#e7f3fa; border-left:7px solid #1877f2;}
-    .box-exo {background:#e5ffe7; border-left:7px solid #167c2b;}
-    .box-important{background:#fff7ec; border-left:8px solid #f5a623;}
-    .error{background:#ffeaea; border-left:8px solid #e06359;}
-    .lexique{background:#f7fafd; border-left:8px solid #243552; padding:13px; border-radius:8px; margin:1.2em 0;}
-    .anecdote{background:#e7ffe7; border-left:8px solid #167c2b; font-style:italic; margin:1em 0; padding:14px 20px; border-radius:8px;}
-    .source{font-size:0.88em; color:#999; text-align:right; margin-top:10px;}
-    button{background:#1877f2; color:#fff; font-weight:bold; border:none; border-radius:7px; padding:9px 18px; cursor:pointer; margin-right:8px; margin-top:8px; transition: background 0.2s; font-size:1em;}
-    button:hover{background:#145ac3;}
-    .reponse{margin-top:0.7em; color:#1877f2; font-weight:bold; text-align:center;}
-    .fiche{background:#eeffe5; border-left:8px solid #4caf50; margin:1.3em 0; padding:16px 26px; border-radius:10px;}
-    #schema-dilution {margin:1.2em auto; display:block; background:#e7f3f7; border-radius:10px; border:1px solid #d1d5db; box-shadow:0 3px 10px #e7f3f7;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.15), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(59,130,246,0.25), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#0b1120 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#020617 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(560px,90vw);
+      padding:26px 26px 30px;
+      border-radius:20px;
+      background:
+        radial-gradient(circle at 0 0,rgba(59,130,246,0.35),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(59,130,246,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.95),
+        0 0 35px rgba(59,130,246,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.5) 1px,
+        rgba(15,23,42,0.95) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#dbeafe;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:280px;
+      height:2px;
+      background:linear-gradient(90deg,#bfdbfe,transparent);
+      box-shadow:0 0 14px rgba(59,130,246,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#bfdbfe;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(59,130,246,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#22c55e,#60a5fa,#a855f7);
+      box-shadow:0 0 18px rgba(59,130,246,0.9);
+      animation:barProgress 2.1s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#e5e7eb;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(59,130,246,0.25) 45%,
+          rgba(59,130,246,0.6) 50%,
+          rgba(59,130,246,0.25) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.92),rgba(15,23,42,1));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#bfdbfe;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(24,119,242,0.95),rgba(34,197,94,0.95));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#f9fafb;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:260px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#bfdbfe;
+      box-shadow:0 0 12px rgba(191,219,254,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    main.page{
+      max-width:900px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:20px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:36px 60px 32px;
+      color:#e5f1ff;
+    }
+    @media (max-width:900px){main.page{padding:16px 8px;}}
+
+    header.inner{background:none;padding:0;margin:0 0 8px 0;text-align:left;box-shadow:none;color:inherit;}
+    h1{font-size:2.1rem;margin-bottom:8px;color:#e5f1ff;}
+    header.inner .intro{font-size:1.02rem;}
+
+    h2{color:#e5f1ff;margin-top:34px;}
+    h3{color:#f5a623;margin-top:27px;}
+    ul,ol{margin-left:2em;margin-bottom:0.8em;}
+    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.02rem;}
+    .infos{background:#e7f3fa;border-left:7px solid #1877f2;color:#0f172a;}
+    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;color:#052e16;}
+    .box-important{background:#fff7ec;border-left:8px solid #f5a623;color:#3b2710;}
+    .error{background:#ffeaea;border-left:8px solid #e06359;color:#7f1d1d;}
+    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;color:#0f172a;}
+    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;color:#064e3b;}
+    .source{font-size:0.88em;color:#9ca3af;text-align:right;margin-top:10px;}
+
+    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s,transform 0.15s;font-size:1em;}
+    button:hover{background:#145ac3;transform:translateY(-1px);}
+    .reponse{margin-top:0.7em;color:#bfdbfe;font-weight:bold;text-align:center;}
+    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;color:#064e3b;}
+    #schema-dilution{margin:1.2em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #020617;}
     .qcm-block{margin-bottom:2.3em;}
-    input[type='text'], textarea{border-radius:5px;border:1px solid #ccc;padding:5px;margin-top:6px;}
+    input[type='text'],textarea{border-radius:5px;border:1px solid #6b7280;padding:5px;margin-top:6px;background:#020617;color:#e5e7eb;}
     .flex-exercices{display:flex;flex-wrap:wrap;}
     .exo-block{flex:1 1 310px;margin-right:2%;min-width:330px;}
     .exo-block:last-child{margin-right:0;}
-    .popup{display:none; position:fixed; top:40%; left:50%; transform:translate(-50%,-50%); background:#fff; border-radius:20px; box-shadow:0 10px 34px rgba(24,119,242,0.17); padding:35px; width:340px; z-index:2000;}
-    .popup h3{color:#1877f2;}
-    .overlay{display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(40,61,102,0.23); z-index:1800;}
+    .popup{display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#020617;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.4);padding:30px;width:340px;z-index:2000;border:1px solid #1d4ed8;color:#e5e7eb;}
+    .popup h3{color:#60a5fa;}
+    .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(15,23,42,0.7);z-index:1800;}
     .show{display:block;}
-    .scoreQCM{font-weight:bold;color:#167c2b;}
-    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;}
-    @media (max-width: 900px){ main{padding:12px 2px;}}
+    .scoreQCM{font-weight:bold;color:#bbf7d0;}
+    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;border-radius:999px;cursor:pointer;}
+    .note-area{width:100%;min-height:60px;margin-top:8px;}
   </style>
-  <!-- MathJax -->
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-  <h1>Quantités de matière, mole, concentration, dilution</h1>
-  <div class="intro">Cours interactif complet : maîtriser quantité de matière, calculs de mole, concentration en solution, dilution. QCM, exos corrigés, LaTeX dynamique, méthodo, tout inclus !</div>
-</header>
-<main>
-  <section class="box infos">
-    <h2>📚 Introduction & objectifs</h2>
-    <ul>
-      <li>Comprendre et calculer la <b>quantité de matière</b> en mole, la <b>concentration</b> d’une solution et gérer toute <b>dilution</b>.</li>
-      <li>Savoir reconnaître tous les symboles, unités, et appliquer les principales formules.</li>
-      <li>Analyser et justifier ses calculs, identifier les pièges courants.</li>
-      <button onclick="openPopup('popup-mole')">Astuce : À quoi sert la mole ?</button>
-    </ul>
-  </section>
-  
-  <section>
-    <h2>🎯 1. Définitions essentielles</h2>
-    <ul>
-      <li><b>Quantité de matière</b> (\(n\)) : nombre de <b>moles</b> de particules (atomes, ions, molécules) dans un échantillon.<br><b>Unité :</b> la mole (\(\mathrm{mol}\))</li>
-      <li><b>Mole</b> : correspond à \(6{,}02 \times 10^{23}\) entités chimiques, soit le <i>nombre d’Avogadro</i> (\(N_A\)).</li>
-      <li><b>Masse molaire</b> (\(M\)) : masse d’une mole (g·mol\(^{-1}\)).<br>La masse d’un « paquet de 1 mol ».</li>
-      <li><b>Concentration molaire</b> (\(C\)) : nombre de moles par litre de solution (\(\mathrm{mol·L}^{-1}\)).</li>
-      <li><b>Dilution</b> : opération permettant d’obtenir une solution moins concentrée (solution fille) à partir d’une solution mère plus concentrée.</li>
-      <button onclick="openPopup('popup-lexique')">Lexique & formules clé</button>
-    </ul>
-  </section>
-  
-  <section class="box-important">
-    <h2>💡 Formules fondamentales (LaTeX MathJax)</h2>
-    <span style="font-size:1.1em">
-      <span class="btn-lex" onclick="openPopup('lex-n')">Quantité de matière</span> :  \(n = \dfrac{m}{M}\) <br>
-      <span class="btn-lex" onclick="openPopup('lex-C')">Concentration molaire</span> :  \(C = \dfrac{n}{V}\),  \(C = \dfrac{m}{M \times V}\)<br>
-      <span class="btn-lex" onclick="openPopup('lex-dil')">Dilution</span> :  \(C_1 \times V_1 = C_2 \times V_2\)
-    </span>
-  </section>
-  
-  <section>
-    <h2>🧪 2. Mise en pratique : exemples expliqués</h2>
-    <ul>
-      <li>
-        <b>Exemple</b> : Masse d’1 mol de \(\ce{NaCl}\)? \(M = 23,0 + 35,5 = 58,5\,g·mol^{-1}\), donc \(1\,mol = 58,5\,g\).
-      </li>
-      <li>
-        <b>Exemple</b> : Nombre de mole dans 20 g de glucose (\(M = 180\,g·mol^{-1}\)): \(n = 20/180 ≈ 0,11\,mol\)
-        <button onclick="openPopup('popup-exemple1')">Voir détail</button>
-      </li>
-      <li>
-        <b>Préparation d’une solution</b> : dissoudre le soluté pesé, compléter au volume voulu.<br>
-        <i>On ne verse JAMAIS l’eau d’un coup : d’abord le soluté, un peu de solvant, dissoudre, puis compléter par petites additions.</i>
-      </li>
-    </ul>
-    <canvas id="schema-dilution" width="400" height="120"></canvas>
-    <div class="infos" style="text-align:center"><b>Schéma de dilution : solution mère (concentrée) → solution fille (diluée)</b></div>
-  </section>
-  
-  <section>
-    <h2>🔍 3. Dilution : principe et calculs</h2>
-    <ul>
-      <li>
-        Pour diluer, on prélève un volume \(V_1\) de solution mère (\(C_1\)), on complète jusqu'à un volume total \(V_2\) (solution fille \(C_2\)).<br>
-        <span style="display:block;text-align:center;margin:7px 0;">
-          \(C_1 \times V_1 = C_2 \times V_2\)
-        </span>
-      </li>
-      <li>Tous les volumes doivent être dans la même unité (L ou mL, cohérent partout).</li>
-      <li>
-        <b>Exemple</b> : On veut 100 mL à 0,020 mol·L\(^{-1}\) à partir de 0,10 mol·L\(^{-1}\)?
-        <button onclick="openPopup('popup-dilution')">Voir calcul</button>
-      </li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>📑 Exercices interactifs</h2>
-    <div class="flex-exercices">
-      <div class="box-exo exo-block">
-        <b>Ex 1 – Quantité de matière (classique)</b><br>
-        On a 12 g de \(\ce{NaCl}\) (\(M=58,5\,g·mol^{-1}\)). Combien de moles ?
-        <input type="text" id="exo1" placeholder="... mol (2 chiffres)">
-        <button onclick="checkExo(1)">Valider</button>
-        <div class="reponse" id="rep-exo1"></div>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//chim-MOLE</div>
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
       </div>
-      <div class="box-exo exo-block">
-        <b>Ex 2 – Concentration :</b><br>
-        3 g d'acide citrique (\(M=192\,g·mol^{-1}\)) sont dissous dans 150 mL. Donne la concentration (mol·L\(^{-1}\)).
-        <input type="text" id="exo2" placeholder="... (2 chiffres)">
-        <button onclick="checkExo(2)">Valider</button>
-        <div class="reponse" id="rep-exo2"></div>
+      <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+      <div class="loader-subtext">
+        Quantité de matière, mole, concentration en solution et dilution (n = m/M, C = n/V, C₁V₁ = C₂V₂).[web:138][web:140][web:139][web:146][web:147]
       </div>
-      <div class="box-exo exo-block">
-        <b>Ex 3 – Dilution</b><br>
-        On a une solution mère \(C_1=0,50\) mol·L\(^{-1}\), on veut \(25\,mL\) à \(C_2=0,025\) mol·L\(^{-1}\).<br>
-        Quel volume de mère faut-il prélever?
-        <input type="text" id="exo3" placeholder="... mL">
-        <button onclick="checkExo(3)">Valider</button>
-        <div class="reponse" id="rep-exo3"></div>
+      <div class="loader-terminal">
+        <div class="terminal-line">[n] n = m/M ou n = C·V pour relier masse, quantité et solution.[web:138][web:140][web:146]</div>
+        <div class="terminal-line">[C] C = n/V, en mol·L⁻¹ pour les solutions aqueuses.[web:140][web:146]</div>
+        <div class="terminal-line">[DIL] Dilution : C₁V₁ = C₂V₂ pour passer de la solution mère à la fille.[web:139][web:145]</div>
+        <div class="terminal-line terminal-cursor">_</div>
       </div>
+      <div class="loader-scan"></div>
     </div>
-    <button onclick="resetExos()">Effacer mes réponses</button>
-  </section>
+  </div>
 
-  <section class="qcm-block">
-    <h2>🎯 QCM interactif (score immédiat !)</h2>
-    <div id="qcm-interactif"></div>
-    <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
-    <button onclick="reloadQCM()">Recommencer le QCM</button>
-  </section>
-  
-  <section class="box-important">
-    <h2>🔖 Fiche de révision rapide</h2>
-    <div class="fiche">
-      <ul>
-        <li>\(n = \dfrac{m}{M}\) ou \(n = C \cdot V\)</li>
-        <li>\(\text{Mole} = 6{,}02 \cdot 10^{23}\) entités (\(N_A\))</li>
-        <li>\(C= \dfrac{n}{V}\) (V en L)</li>
-        <li>\(\text{Dilution} : \ C_1V_1 = C_2V_2\)</li>
-        <li>Toujours homogénéiser les unités (L, mL, g, etc.)</li>
-        <li>Arrondir à 2 chiffres (math “scolaire”)</li>
-      </ul>
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Chimie
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
     </div>
-  </section>
 
-  <section class="error">
-    <h2>❌ Erreurs fréquentes à éviter</h2>
-    <ul>
-      <li>Oublier de convertir les masses en grammes et les volumes en litres.</li>
-      <li>Inverser les rôles de \(V_1\) et \(V_2\).</li>
-      <li>Confondre nombre d’entités et quantité de matière.</li>
-      <li>Mal écrire/arrondir l’unité finale.</li>
-    </ul>
-  </section>
-  
-  <section class="lexique">
-    <h2>📚 Lexique express</h2>
-    <ul>
-      <li><b>Mole</b> : paquet de \(6{,}02\times10^{23}\) entités.</li>
-      <li><b>Concentration molaire (C)</b> : nbre de moles par litre.</li>
-      <li><b>Masse molaire (M)</b> : masse d’une mole.</li>
-      <li><b>Dilution</b> : action de diminuer la concentration.</li>
-    </ul>
-  </section>
-  
-  <section>
-    <h2>🗒️ Tes propres notes (sauvegarde locale)</h2>
-    <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
-    <button onclick="saveNotes()">Enregistrer</button>
-    <span id="savemsg" style="color:#4caf50;font-weight:bold;"></span>
-  </section>
-  
-  <section class="source">Sources : cours lycée, manuels, éduscol, BAC PC 2025.</section>
-</main>
-<!-- Popups/Overlays -->
-<div class="overlay" id="overlay"></div>
-<div class="popup" id="popup-mole"><h3>Astuce Mole</h3>
-<b>La mole, c’est le “paquet chimique” : comme la douzaine pour les œufs mais XXL !<br>1 mol = \(6{,}02 \times 10^{23}\) particules.</b>
-<button onclick="closePopup()">Fermer</button>
-</div>
-<div class="popup" id="popup-exemple1"><h3>Calcul explicité</h3>
-20g de glucose (\(M=180\))<br>
-\(n = \dfrac{20}{180} = 0{,}111...\) mol (soit ~0,11 mol)
-<button onclick="closePopup()">Fermer</button>
-</div>
-<div class="popup" id="popup-dilution"><h3>Détail dilution</h3>
-\(C_1V_1 = C_2V_2 \to V_1 = \frac{C_2 \times V_2}{C_1} = \frac{0,020 \times 100}{0,10} = 20\) mL <br>
-Prélève 20 mL de mère, complète à 100 mL.
-<button onclick="closePopup()">Fermer</button>
-</div>
-<div class="popup" id="popup-lexique"><h3>Lexique-formules</h3>
-<ul>
-  <li>\(n=\dfrac{m}{M}\), \(C=\dfrac{n}{V}\), \(C_1V_1=C_2V_2\)</li>
-  <li>\(M\) masse molaire, \(N_A\) nombre d'Avogadro.</li>
-</ul>
-<button onclick="closePopup()">Fermer</button>
-</div>
-<div class="popup" id="lex-n"><h3>n, quantité de matière</h3>
-nombre de moles dans ton échantillon.<br>Unité : mole (\(mol\))
-<button onclick="closePopup()">Fermer</button>
-</div>
-<div class="popup" id="lex-C"><h3>C, concentration molaire</h3>
-\(C = \dfrac{n}{V}\) (V en L)
-<button onclick="closePopup()">Fermer</button>
-</div>
-<div class="popup" id="lex-dil"><h3>Dilution : C₁V₁ = C₂V₂</h3>
-Permet de savoir quel volume de solution mère prélever pour obtenir la concentration et le volume voulu.
-<button onclick="closePopup()">Fermer</button>
-</div>
+    <div class="page-padding">
+      <main class="page">
+        <header class="inner">
+          <h1>Quantités de matière, mole, concentration, dilution</h1>
+          <div class="intro">
+            Quantité de matière, nombre de moles, concentration molaire et dilution avec exemples, QCM et exercices corrigés.[web:138][web:140][web:139][web:146][web:147]
+          </div>
+        </header>
 
-<script>
-function reloadMathJax(){if(window.MathJax){window.MathJax.typesetPromise();}}
-// Popups/lexique
-function openPopup(id){document.getElementById('overlay').classList.add("show");document.getElementById(id).classList.add("show");}
-function closePopup(){document.getElementById('overlay').classList.remove("show");var popups=document.querySelectorAll('.popup');popups.forEach(function(p){p.classList.remove('show');});}
-// Persistance des notes
-function saveNotes(){localStorage.setItem("mesNotesPC_QteMatiere", document.getElementById("notes").value);document.getElementById("savemsg").textContent="✔️ Enregistré !";setTimeout(()=>{document.getElementById("savemsg").textContent="";}, 1100);}
-if(localStorage.getItem("mesNotesPC_QteMatiere")){document.getElementById("notes").value=localStorage.getItem("mesNotesPC_QteMatiere");}
-// Schéma dilution
-function drawDilution(){
-  var c = document.getElementById('schema-dilution');
-  if (!c) return;
-  var x = c.getContext('2d'); x.clearRect(0,0,400,120);
-  x.fillStyle="#b9f7d9"; x.fillRect(45,50,50,60);//sol mère
-  x.strokeStyle="#1877f2"; x.strokeRect(45,50,50,60);
-  x.fillStyle="#333"; x.fillText("Sol. mère", 45, 45);
-  x.fillStyle="#1877f2";
-  x.beginPath(); x.moveTo(85,75); x.lineTo(170,75); x.lineTo(170,58); x.lineTo(182,80); x.lineTo(170,102); x.lineTo(170,85); x.lineTo(85,85); x.fill();
-  x.fillStyle="#92e7e6"; x.fillRect(220,30,70,90); // sol fille
-  x.strokeStyle="#167c2b"; x.strokeRect(220,30,70,90);
-  x.fillStyle="#333"; x.fillText("Sol. fille", 224,28);
-  x.fillStyle="#555"; x.fillText("Eau ajoutée",124,110);
-  x.fillStyle="#243552"; x.fillText("Pipette",120,63);
-}
-drawDilution();
+        <section class="box infos">
+          <h2>📚 Introduction & objectifs</h2>
+          <ul>
+            <li>Calculer une quantité de matière à partir d’une masse ou d’une concentration.[web:138][web:140][web:146]</li>
+            <li>Exprimer correctement une concentration molaire et gérer une dilution.[web:139][web:146][web:145]</li>
+          </ul>
+          <button onclick="openPopup('popup-mole')">Astuce : À quoi sert la mole ?</button>
+        </section>
 
-const qcmData = [
-  {
-    question: "La formule de la quantité de matière est :",
-    choices: ["n = m/M", "n = M/m", "n = m × M"],
-    correct: 0,
-    explanation: "n = m/M"
-  },
-  {
-    question: "La concentration C en mol·L⁻¹ de 2 mol dans 0,5 L est :",
-    choices: ["4", "1", "0,25"],
-    correct: 0,
-    explanation: "C = n/V = 2/0.5 = 4"
-  },
-  {
-    question: "Pour une dilution, la formule à utiliser est :",
-    choices: ["C₁V₁ = C₂V₂", "C₁ + V₁ = C₂ + V₂", "C₁/V₁ = C₂/V₂"],
-    correct: 0,
-    explanation: "C₁V₁=C₂V₂"
-  },
-  {
-    question: "La masse molaire de NaCl (Na=23, Cl=35,5) ?",
-    choices: ["58,5", "23", "35,5"],
-    correct: 0,
-    explanation: "M(NaCl)=23+35,5=58,5"
-  }
-];
-let qcmScore = 0;
-let qcmDone = Array(qcmData.length).fill(false);
-function displayQCM(){
-  let html = "";
-  for(let i=0;i<qcmData.length;i++){
-    html += `<div style="margin-bottom:1em"><b>Q${i+1} :</b> <span>\( ${qcmData[i].question} \)</span><br>`;
-    for(let j=0;j<qcmData[i].choices.length;j++){
-      html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+        <section>
+          <h2>🎯 1. Définitions essentielles</h2>
+          <ul>
+            <li>Quantité de matière n : nombre de moles d’une espèce dans un échantillon (en mol).[web:138][web:140]</li>
+            <li>Une mole correspond à \(6{,}02×10^{23}\) entités (nombre d’Avogadro \(N_A\)).[web:138][web:140]</li>
+            <li>Masse molaire M : masse d’une mole d’espèce chimique (en g·mol⁻¹).[web:138][web:140][web:146]</li>
+            <li>Concentration molaire C : quantité de matière par litre de solution (mol·L⁻¹).[web:140][web:139][web:146]</li>
+            <li>Dilution : préparation d’une solution fille moins concentrée à partir d’une solution mère plus concentrée.[web:139][web:145]</li>
+          </ul>
+          <button onclick="openPopup('popup-lexique')">Lexique & formules clé</button>
+        </section>
+
+        <section class="box-important">
+          <h2>💡 Formules fondamentales</h2>
+          <div class="fiche">
+            <ul>
+              <li>Quantité de matière : \(n = \dfrac{m}{M}\) ou \(n = C·V\).[web:138][web:140][web:146]</li>
+              <li>Concentration molaire : \(C = \dfrac{n}{V}\).[web:140][web:146]</li>
+              <li>Dilution : \(C_1 V_1 = C_2 V_2\).[web:139][web:145]</li>
+            </ul>
+          </div>
+        </section>
+
+        <section>
+          <h2>🧪 2. Exemples de calculs</h2>
+          <ul>
+            <li>Masse molaire de NaCl : M(NaCl) = 23,0 + 35,5 = 58,5 g·mol⁻¹.[web:138][web:147]</li>
+            <li>Pour 20 g de glucose de masse molaire 180 g·mol⁻¹, n = 20/180 ≈ 0,11 mol.[web:138][web:140]</li>
+          </ul>
+          <canvas id="schema-dilution" width="400" height="120"></canvas>
+          <div class="infos" style="text-align:center">Dilution : solution mère concentrée → solution fille plus diluée.</div>
+        </section>
+
+        <section>
+          <h2>🔍 3. Dilution : principe</h2>
+          <ul>
+            <li>Égalité des moles de soluté avant et après dilution : \(n_1 = n_2\), d’où \(C_1V_1 = C_2V_2\).[web:139][web:145]</li>
+            <li>Tous les volumes doivent être dans la même unité, souvent en L ou tous en mL.[web:139][web:146]</li>
+          </ul>
+          <button onclick="openPopup('popup-dilution')">Exemple de dilution</button>
+        </section>
+
+        <section>
+          <h2>📑 Exercices interactifs</h2>
+          <div class="flex-exercices">
+            <div class="box-exo exo-block">
+              <b>Ex 1 – Quantité de matière</b><br>
+              12 g de NaCl (M = 58,5 g·mol⁻¹) : combien de moles ?[web:138][web:147]
+              <input type="text" id="exo1" placeholder="... mol">
+              <button onclick="checkExo(1)">Valider</button>
+              <div class="reponse" id="rep-exo1"></div>
+            </div>
+            <div class="box-exo exo-block">
+              <b>Ex 2 – Concentration</b><br>
+              3 g d’acide citrique (M = 192 g·mol⁻¹) dans 150 mL de solution, C en mol·L⁻¹ ?[web:140][web:146]
+              <input type="text" id="exo2" placeholder="... mol·L⁻¹">
+              <button onclick="checkExo(2)">Valider</button>
+              <div class="reponse" id="rep-exo2"></div>
+            </div>
+            <div class="box-exo exo-block">
+              <b>Ex 3 – Dilution</b><br>
+              C₁ = 0,50 mol·L⁻¹, C₂ = 0,025 mol·L⁻¹, V₂ = 25 mL. Quel volume V₁ de solution mère ?[web:139][web:145]
+              <input type="text" id="exo3" placeholder="... mL">
+              <button onclick="checkExo(3)">Valider</button>
+              <div class="reponse" id="rep-exo3"></div>
+            </div>
+          </div>
+          <button onclick="resetExos()">Effacer mes réponses</button>
+        </section>
+
+        <section class="qcm-block">
+          <h2>🎯 QCM interactif</h2>
+          <div id="qcm-interactif"></div>
+          <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
+          <button onclick="reloadQCM()">Recommencer le QCM</button>
+        </section>
+
+        <section class="box-important">
+          <h2>🔖 Fiche de révision rapide</h2>
+          <div class="fiche">
+            <ul>
+              <li>\(n = \dfrac{m}{M}\) ou \(n = C·V\).[web:138][web:140][web:146]</li>
+              <li>\(C = \dfrac{n}{V}\) (V en L, C en mol·L⁻¹).[web:140][web:146]</li>
+              <li>Dilution : \(C_1V_1 = C_2V_2\).[web:139][web:145]</li>
+              <li>1 mol = \(6{,}02×10^{23}\) entités (nombre d’Avogadro).[web:138][web:140]</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes</h2>
+          <ul>
+            <li>Oublier d’exprimer V en L dans les formules avec C (mol·L⁻¹).[web:139][web:140][web:146][web:144]</li>
+            <li>Confondre masse m et masse molaire M (g vs g·mol⁻¹).[web:138][web:140][web:147]</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique express</h2>
+          Mole, quantité de matière, masse molaire, concentration molaire, solution mère/fille, dilution.[web:138][web:139][web:140][web:146]
+        </section>
+
+        <section>
+          <h2>🗒️ Tes propres notes</h2>
+          <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
+          <button onclick="saveNotes()">Enregistrer</button>
+          <span id="savemsg" style="color:#4ade80;font-weight:bold;"></span>
+        </section>
+
+        <section class="source">
+          Sources : cours lycée, manuels et ressources d’exercices sur la mole et la dilution.[web:138][web:139][web:140][web:146][web:147]
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Popups -->
+  <div class="overlay" id="overlay"></div>
+
+  <div class="popup" id="popup-mole">
+    <h3>Astuce Mole</h3>
+    La mole est un « paquet chimique » : comme une douzaine, mais contenant \(6{,}02×10^{23}\) entités.[web:138][web:140]
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <div class="popup" id="popup-exemple1">
+    <h3>Calcul explicité</h3>
+    Pour 20 g de glucose (\(M=180\ g·mol^{-1}\)) : \(n = 20/180 ≈ 0,11\) mol.[web:138][web:140]
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <div class="popup" id="popup-dilution">
+    <h3>Exemple de dilution</h3>
+    Pour obtenir 100 mL à 0,020 mol·L⁻¹ à partir d’une solution à 0,10 mol·L⁻¹ : \(V_1 = C_2V_2/C_1 = (0,020×100)/0,10 = 20\) mL.[web:139][web:145]
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <div class="popup" id="popup-lexique">
+    <h3>Formules principales</h3>
+    n = m/M ; C = n/V ; C₁V₁ = C₂V₂ ; l’unité de C est mol·L⁻¹.[web:138][web:140][web:139][web:146]
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <script>
+    // petites fonctions utilitaires
+    function round2(x){
+      return Math.round(x * 100) / 100;
     }
-    html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
-  }
-  document.getElementById("qcm-interactif").innerHTML = html;
-  document.getElementById("qcm-score").innerHTML = "";
-  qcmScore = 0;qcmDone = Array(qcmData.length).fill(false); reloadMathJax();
-}
-displayQCM();
-function checkQCM(qnum, num){
-  if(qcmDone[qnum]) return;
-  if(num==qcmData[qnum].correct){
-    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#168b24;font-weight:bold">Bonne réponse !</span><br><span style="font-size:0.98em;">${qcmData[qnum].explanation}</span>`;
-    qcmScore++;
-  }else{
-    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#c21c5c;font-weight:bold">Faux !</span>  <br><span>${qcmData[qnum].explanation}</span>`;
-  }
-  qcmDone[qnum]=true;
-  document.getElementById("qcm-score").innerHTML = "Score : " + qcmScore + "/" + qcmData.length;
-  reloadMathJax();
-}
-function reloadQCM(){displayQCM();}
+    function toFr(x){
+      return x.toString().replace('.', ',');
+    }
 
-function checkExo(ex){
-  let rep;
-  if(ex==1){
-    rep = document.getElementById('exo1').value.replace(",",".");
-    let v = Math.round((12/58.5)*100)/100;
-    let good = (Math.abs(Number(rep)-v)<0.03);
-    document.getElementById('rep-exo1').innerHTML = good ? `Bravo ! n = 12/58,5 = ${v} mol` : "Faux. n = m/M = 12/58,5 ≈ 0,21 mol";
-  }
-  if(ex==2){
-    rep = document.getElementById('exo2').value.replace(",",".");
-    let n = (3/192), C=n/0.150, v=Math.round(C*100)/100;
-    let good = (Math.abs(Number(rep)-v)<0.02);
-    document.getElementById('rep-exo2').innerHTML = good ? `Correct : C = 0,021/0,15 = ${v} mol/L` : "Faux. n=0,016 mol, donc C=0,021/0,15 ≈ 0,14 mol/L";
-  }
-  if(ex==3){
-    rep = document.getElementById('exo3').value.replace(",",".");
-    let v = (0.025*25/0.5); // C2*V2/C1
-    let good = (Math.abs(Number(rep)-1.25)<0.10);
-    document.getElementById('rep-exo3').innerHTML = good ? `Parfait : il faut prélever 1,25 mL de mère !` : "Faux : V1 = (0,025×25)/0,5 = 1,25 mL";
-  }
-  reloadMathJax();
-}
-function resetExos(){["exo1","exo2","exo3"].forEach(id=>{document.getElementById(id).value="";});["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{document.getElementById(id).textContent="";});}
-setTimeout(reloadMathJax, 180);
-</script>
+    // Loader + MathJax[web:24]
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+      if(window.MathJax && MathJax.typesetPromise){MathJax.typesetPromise();}
+    },3000);
+
+    function reloadMathJax(){
+      if(window.MathJax && MathJax.typesetPromise){MathJax.typesetPromise();}
+    }
+
+    function openPopup(id){
+      document.getElementById('overlay').classList.add("show");
+      document.getElementById(id).classList.add("show");
+      reloadMathJax();
+    }
+    function closePopup(){
+      document.getElementById('overlay').classList.remove("show");
+      document.querySelectorAll('.popup').forEach(p=>p.classList.remove('show'));
+    }
+
+    function saveNotes(){
+      localStorage.setItem("mesNotesPC_QteMatiere_global",document.getElementById("notes").value);
+      document.getElementById("savemsg").textContent="Enregistré";
+      setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);
+    }
+    if(localStorage.getItem("mesNotesPC_QteMatiere_global")){
+      document.getElementById("notes").value=localStorage.getItem("mesNotesPC_QteMatiere_global");
+    }
+
+    function drawDilution(){
+      var c=document.getElementById('schema-dilution');if(!c)return;
+      var x=c.getContext('2d');
+      x.clearRect(0,0,400,120);
+      x.fillStyle="#bbf7d0";x.fillRect(45,50,50,60);
+      x.strokeStyle="#1d4ed8";x.strokeRect(45,50,50,60);
+      x.fillStyle="#0f172a";x.fillText("Mère",48,45);
+
+      x.strokeStyle="#38bdf8";x.fillStyle="#38bdf8";
+      x.beginPath();x.moveTo(95,75);x.lineTo(170,75);x.lineTo(170,60);x.lineTo(182,80);x.lineTo(170,100);x.lineTo(170,85);x.lineTo(95,85);x.closePath();x.fill();
+      x.fillStyle="#0f172a";x.fillText("Prélèvement",110,60);
+
+      x.fillStyle="#a5f3fc";x.fillRect(230,30,70,90);
+      x.strokeStyle="#16a34a";x.strokeRect(230,30,70,90);
+      x.fillStyle="#0f172a";x.fillText("Fille",235,28);
+      x.fillStyle="#6b7280";x.fillText("Eau ajoutée",215,120);
+    }
+    drawDilution();
+
+    const qcmData=[
+      {question:"Formule de la quantité de matière :",choices:["n = m/M","n = M/m","n = m×M"],correct:0,explanation:"n = m/M (m en g, M en g·mol⁻¹, n en mol).[web:138][web:140][web:146]"},
+      {question:"Concentration d’une solution de 2 mol dans 0,50 L :",choices:["4 mol·L⁻¹","1 mol·L⁻¹","0,25 mol·L⁻¹"],correct:0,explanation:"C = n/V = 2/0,5 = 4 mol·L⁻¹.[web:140]"},
+      {question:"Dilution : relation correcte :",choices:["C₁V₁ = C₂V₂","C₁+V₁ = C₂+V₂","C₁/V₁ = C₂/V₂"],correct:0,explanation:"On conserve la quantité de matière de soluté : C₁V₁ = C₂V₂.[web:139][web:145]"},
+      {question:"Unité de la concentration molaire :",choices:["mol·L⁻¹","g","L/mol"],correct:0,explanation:"La concentration molaire s’exprime en mol·L⁻¹.[web:140][web:146][web:144]"}
+    ];
+    let qcmScore=0,qcmDone=Array(qcmData.length).fill(false);
+
+    function displayQCM(){
+      let html="";
+      for(let i=0;i<qcmData.length;i++){
+        html+=`<div style="margin-bottom:1em"><b>Q${i+1} :</b> ${qcmData[i].question}<br>`;
+        for(let j=0;j<qcmData[i].choices.length;j++){
+          html+=`<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+        }
+        html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
+      }
+      document.getElementById("qcm-interactif").innerHTML=html;
+      document.getElementById("qcm-score").innerHTML="";
+      qcmScore=0;qcmDone=Array(qcmData.length).fill(false);
+      reloadMathJax();
+    }
+    displayQCM();
+
+    function checkQCM(qnum,num){
+      if(qcmDone[qnum])return;
+      if(num===qcmData[qnum].correct){
+        document.getElementById('qcm-r'+qnum).innerHTML=
+          `<span style="color:#16a34a;font-weight:bold">Bonne réponse !</span><br>${qcmData[qnum].explanation}`;
+        qcmScore++;
+      }else{
+        document.getElementById('qcm-r'+qnum).innerHTML=
+          `<span style="color:#e11d48;font-weight:bold">Faux.</span><br>${qcmData[qnum].explanation}`;
+      }
+      qcmDone[qnum]=true;
+      document.getElementById("qcm-score").innerHTML="Score : "+qcmScore+"/"+qcmData.length;
+      reloadMathJax();
+    }
+    function reloadQCM(){displayQCM();}
+
+    function checkExo(ex){
+      if(ex===1){
+        let rep = document.getElementById('exo1').value.trim().replace(/,/g,'.');
+        let repNum = Number(rep);
+        let v = round2(12/58.5); // ≈ 0.21
+        let ok = !isNaN(repNum) && Math.abs(repNum - v) < 0.03;
+        document.getElementById('rep-exo1').innerHTML = ok
+          ? `Bravo : n = 12/58,5 ≈ ${toFr(v)} mol.`
+          : "Faux : n = m/M = 12/58,5 ≈ 0,21 mol.";
+      }
+      if(ex===2){
+        let rep = document.getElementById('exo2').value.trim().replace(/,/g,'.');
+        let repNum = Number(rep);
+        let n = 3/192;
+        let C = n/0.150;
+        let v = round2(C); // ≈ 0.14
+        let ok = !isNaN(repNum) && Math.abs(repNum - v) < 0.02;
+        document.getElementById('rep-exo2').innerHTML = ok
+          ? `Correct : C ≈ ${toFr(v)} mol·L⁻¹.`
+          : "Faux : C ≈ 0,14 mol·L⁻¹ (n = 3/192, V = 0,150 L).";
+      }
+      if(ex===3){
+        let rep = document.getElementById('exo3').value.trim().replace(/,/g,'.');
+        let repNum = Number(rep);
+        let val = 0.025 * 25 / 0.5; // 1.25
+        let ok = !isNaN(repNum) && Math.abs(repNum - val) < 0.1;
+        document.getElementById('rep-exo3').innerHTML = ok
+          ? "Parfait : V₁ ≈ 1,25 mL de solution mère."
+          : "Faux : V₁ = (0,025×25)/0,50 = 1,25 mL.";
+      }
+      reloadMathJax();
+    }
+
+    function resetExos(){
+      ["exo1","exo2","exo3"].forEach(id=>{let e=document.getElementById(id);if(e)e.value="";});
+      ["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{let e=document.getElementById(id);if(e)e.textContent="";});
+    }
+
+    setTimeout(reloadMathJax,200);
+  </script>
 </body>
 </html>

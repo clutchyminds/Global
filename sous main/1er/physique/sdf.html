@@ -2,303 +2,645 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Statique des fluides : pression, forces dans les fluides</title>
+  <title>Global - Physique · Statique des fluides</title>
   <meta name="description" content="Cours interactif lycée : pression, statique des fluides, forces, schéma, QCM, exos, LaTeX, fiche, lexique, prises de notes.">
   <style>
-    body{background:#f6f8fa;font-family:'Segoe UI',Arial,sans-serif;color:#222;margin:0;}
-    header{background:linear-gradient(90deg,#eef4fb,#deffe4 80%);color:#243552;padding:30px 0 12px;text-align:center;}
-    header h1{font-size:2.2rem;margin:0 0 8px;color:#1877f2;}
-    header .intro{font-size:1.09rem;}
-    main{max-width:970px;background:#fff;margin:45px auto 20px;padding:36px 60px;border-radius:20px;box-shadow:0 9px 28px rgba(24,119,242,0.12);}
-    h2,h3{color:#1877f2;margin-top:34px;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.15), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(59,130,246,0.25), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#0b1120 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#020617 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(560px,90vw);
+      padding:26px 26px 30px;
+      border-radius:20px;
+      background:
+        radial-gradient(circle at 0 0,rgba(59,130,246,0.35),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(59,130,246,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.95),
+        0 0 35px rgba(59,130,246,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.5) 1px,
+        rgba(15,23,42,0.95) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#dbeafe;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:280px;
+      height:2px;
+      background:linear-gradient(90deg,#bfdbfe,transparent);
+      box-shadow:0 0 14px rgba(59,130,246,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#bfdbfe;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(59,130,246,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#22c55e,#60a5fa,#a855f7);
+      box-shadow:0 0 18px rgba(59,130,246,0.9);
+      animation:barProgress 2.1s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#e5e7eb;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(59,130,246,0.25) 45%,
+          rgba(59,130,246,0.6) 50%,
+          rgba(59,130,246,0.25) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.92),rgba(15,23,42,1));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#bfdbfe;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(24,119,242,0.95),rgba(34,197,94,0.95));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#f9fafb;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:260px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#bfdbfe;
+      box-shadow:0 0 12px rgba(191,219,254,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    main.page{
+      max-width:970px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:20px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:36px 60px 32px;
+      color:#e5f1ff;
+    }
+    @media (max-width:1040px){main.page{padding:12px 8px;}}
+
+    header.inner{background:none;padding:0;margin:0 0 8px 0;text-align:left;box-shadow:none;color:inherit;}
+    h1{font-size:2.1rem;margin-bottom:8px;color:#e5f1ff;}
+    header.inner .intro{font-size:1.02rem;}
+
+    h2,h3{color:#e5f1ff;margin-top:34px;}
     h3{color:#f5a623;}
     ul,ol{margin-left:2em;margin-bottom:0.8em;}
-    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.06rem;}
-    .infos{background:#e7f3fa;border-left:7px solid #1877f2;}
-    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;}
-    .box-important{background:#fff7ec;border-left:8px solid #f5a623;}
-    .error{background:#ffeaea;border-left:8px solid #e06359;}
-    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;}
-    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;}
-    .source{font-size:0.88em;color:#999;text-align:right;margin-top:10px;}
-    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s;font-size:1em;}
-    button:hover{background:#145ac3;}
-    .reponse{margin-top:0.7em;color:#1877f2;font-weight:bold;text-align:center;}
-    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;}
-    #schema-fluide{margin:1.2em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #e7f3f7;}
-    input[type='text'],textarea{border-radius:5px;border:1px solid #ccc;padding:5px;margin-top:6px;}
+    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.02rem;}
+    .infos{background:#e7f3fa;border-left:7px solid #1877f2;color:#0f172a;}
+    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;color:#052e16;}
+    .box-important{background:#fff7ec;border-left:8px solid #f5a623;color:#3b2710;}
+    .error{background:#ffeaea;border-left:8px solid #e06359;color:#7f1d1d;}
+    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;color:#0f172a;}
+    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;color:#064e3b;}
+    .source{font-size:0.88em;color:#9ca3af;text-align:right;margin-top:10px;}
+
+    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s,transform 0.15s;font-size:1em;}
+    button:hover{background:#145ac3;transform:translateY(-1px);}
+    .reponse{margin-top:0.7em;color:#bfdbfe;font-weight:bold;text-align:center;}
+    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;color:#064e3b;}
+    #schema-fluide{margin:1.2em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #020617;}
+    input[type='text'],textarea{border-radius:5px;border:1px solid #6b7280;padding:5px;margin-top:6px;background:#020617;color:#e5e7eb;}
     .flex-exercices{display:flex;flex-wrap:wrap;}
     .exo-block{flex:1 1 310px;margin-right:2%;min-width:330px;}
     .exo-block:last-child{margin-right:0;}
-    .popup{display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.17);padding:35px;width:340px;z-index:2000;}
-    .popup h3{color:#1877f2;}
-    .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(40,61,102,0.23);z-index:1800;}
+    .popup{display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#020617;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.4);padding:30px;width:340px;z-index:2000;border:1px solid #1d4ed8;color:#e5e7eb;}
+    .popup h3{color:#60a5fa;}
+    .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(15,23,42,0.7);z-index:1800;}
     .show{display:block;}
-    .scoreQCM{font-weight:bold;color:#167c2b;}
-    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;}
-    .qcm-block{margin-bottom:2.3em;}
-    @media (max-width:1040px){main{padding:8px 2px;}}
+    .scoreQCM{font-weight:bold;color:#bbf7d0;}
+    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;border-radius:999px;cursor:pointer;}
+    .note-area{width:100%;min-height:60px;margin-top:8px;}
   </style>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-  <h1>Statique des fluides : pression, forces dans les fluides</h1>
-  <div class="intro">Cours ultra-détaillé : recueille toutes les notions sur la pression, les forces dans l’eau et l’air, schéma interactif, QCM, exos, LaTeX, lexique, fiches, erreurs types et zone de notes !</div>
-</header>
-<main>
-  <section class="box infos">
-    <h2>📚 Objectifs</h2>
-    <ul>
-      <li>Comprendre ce qu’est la pression, comment elle se mesure et se calcule dans les fluides (liquides et gaz)</li>
-      <li>Appliquer les formules, reconnaître les forces exercées sur des parois ou objets immergés</li>
-      <li>Savoir résoudre des situations courantes : plongée sous-marine, pression atmosphérique, barrage, etc.</li>
-      <button onclick="openPopup('popup-appli')">Applications concrètes</button>
-    </ul>
-  </section>
-  <section>
-    <h2>🧑‍🔬 1. Pression : définition et unité</h2>
-    <ul>
-      <li><b>Pression (p)</b> – grandeur qui caractérise l’action d’un fluide sur une surface</li>
-      <li>Formule fondamentale : \( p = \dfrac{F}{S} \)
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//phys-FLUIDES</div>
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+      <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+      <div class="loader-subtext">
+        Pression, loi fondamentale p = p₀+ρgh, forces sur parois et applications (barrage, plongée, baromètre).
+      </div>
+      <div class="loader-terminal">
+        <div class="terminal-line">[P] Pression : p = F/S, Pa = N·m⁻².</div>
+        <div class="terminal-line">[FLUIDE] Dans un liquide : p = p₀ + ρ g h.</div>
+        <div class="terminal-line">[FORCE] Force sur une surface : F = p·S.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+      <div class="loader-scan"></div>
+    </div>
+  </div>
+
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Physique
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <main class="page">
+        <header class="inner">
+          <h1>Statique des fluides : pression, forces dans les fluides</h1>
+          <div class="intro">
+            Pression dans les liquides et gaz, formule p = F/S, loi p = p₀+ρgh, forces sur parois, QCM et exercices.
+          </div>
+        </header>
+
+        <section class="box infos">
+          <h2>📚 Objectifs</h2>
           <ul>
-            <li>F : force exercée (en Newton, N)</li>
-            <li>S : surface (en m²)</li>
+            <li>Comprendre la définition et les unités de la pression dans les fluides.</li>
+            <li>Appliquer \(p = p_0 + \rho g h\) et \(F = pS\) dans des situations types.</li>
           </ul>
-      </li>
-      <li>Unité SI : le Pascal (Pa), 1 Pa = 1 N·m<sup>−2</sup></li>
-      <li>
-        <b>Pression atmosphérique</b> : environ 101 325 Pa (=1 bar)</li>
-      <li>
-        <button onclick="openPopup('popup-unites')">Astuce unités</button>
-      </li>
-    </ul>
-  </section>
-  <section>
-    <h2>🌊 2. Pression dans un liquide : loi fondamentale</h2>
-    <ul>
-      <li>
-        <b>Formule de la pression (fluide au repos)</b> :<br>
-        \( p = p_0 + \rho g h \)
-        <ul>
-          <li>\( p_0 \) : pression à la surface du liquide</li>
-          <li>\( \rho \) : masse volumique du liquide (kg·m⁻³)</li>
-          <li>\( g \) : gravité (9,8 m·s⁻²)</li>
-          <li>\( h \) : profondeur (m)</li>
-        </ul>
-      </li>
-      <li>
-        <b>Loi de Pascal</b> : toute variation de pression appliquée en un point d’un liquide se transmet intégralement à tous les points.
-      </li>
-      <li>
-        <button onclick="openPopup('popup-sch-fluides')">Voir schéma pression liquide</button>
-      </li>
-    </ul>
-    <canvas id="schema-fluide" width="470" height="140"></canvas>
-    <div class="infos" style="text-align:center"><b>Schéma : pression selon la profondeur dans une cuve, force sur la paroi</b></div>
-  </section>
-  <section>
-    <h2>🧮 3. Forces exercées sur un objet ou une paroi</h2>
-    <ul>
-      <li>La force exercée par un fluide sur une paroi : \( F = p \times S \)</li>
-      <li>Plus on descend, plus la pression (et donc la force) augmente</li>
-      <li>Exemple : barrage, sous-marin, plongée : danger de la pression élevée au fond !</li>
-      <li>
-        <button onclick="openPopup('popup-pascal')">Astuce : loi de Pascal</button>
-      </li>
-    </ul>
-  </section>
-  <section>
-    <h2>📑 Exercices interactifs</h2>
-    <div class="flex-exercices">
-      <div class="box-exo exo-block">
-        <b>Ex 1 — Pression d’eau</b><br>
-        Calcule la pression exercée par 2 m d’eau sur le fond (ρ = 1000 kg/m³, g = 9,8).
-        <input type="text" id="exo1" placeholder="... Pa">
-        <button onclick="checkExo(1)">Valider</button>
-        <div class="reponse" id="rep-exo1"></div>
-      </div>
-      <div class="box-exo exo-block">
-        <b>Ex 2 — Force sur une porte</b><br>
-        Une vanne de barrage mesure 2 m² et subit une pression de 30 000 Pa. Calcule la force.
-        <input type="text" id="exo2" placeholder="... N">
-        <button onclick="checkExo(2)">Valider</button>
-        <div class="reponse" id="rep-exo2"></div>
-      </div>
-      <div class="box-exo exo-block">
-        <b>Ex 3 — Pression atmosphérique</b><br>
-        Donne la valeur de la pression atmosphérique au niveau de la mer.
-        <input type="text" id="exo3" placeholder="... Pa">
-        <button onclick="checkExo(3)">Valider</button>
-        <div class="reponse" id="rep-exo3"></div>
-      </div>
+          <button onclick="openPopup('popup-appli')">Applications concrètes</button>
+        </section>
+
+        <section>
+          <h2>🧑‍🔬 1. Pression : définition et unité</h2>
+          <ul>
+            <li>Pression \(p = F/S\) avec F en N et S en m² (Pa = N·m⁻²).</li>
+            <li>Pression atmosphérique au niveau de la mer ≈ 101 325 Pa ≈ 1 bar.</li>
+          </ul>
+          <button onclick="openPopup('popup-unites')">Astuce unités</button>
+        </section>
+
+        <section>
+          <h2>🌊 2. Pression dans un liquide</h2>
+          <ul>
+            <li>Dans un liquide au repos : \(p = p_0 + \rho g h\) (p augmente avec la profondeur h et la masse volumique ρ).</li>
+            <li>Loi de Pascal : une variation de pression se transmet à tout le liquide.</li>
+          </ul>
+          <button onclick="openPopup('popup-sch-fluides')">Schéma pression liquide</button>
+          anvas id="schema-fluide" width="470" height="140"></canvas>
+          <div class="infos" style="text-align:center">Pression croissante avec la profondeur et force sur la paroi.</div>
+        </section>
+
+        <section>
+          <h2>🧮 3. Forces sur une paroi</h2>
+          <ul>
+            <li>Force exercée par un fluide : \(F = p \times S\).</li>
+            <li>La force augmente avec la profondeur (via p) et avec la surface S.</li>
+          </ul>
+          <button onclick="openPopup('popup-pascal')">Rappel loi de Pascal</button>
+        </section>
+
+        <section>
+          <h2>📑 Exercices interactifs</h2>
+          <div class="flex-exercices">
+            <div class="box-exo exo-block">
+              <b>Ex 1 — Pression d’eau</b><br>
+              Pression au fond d’une colonne d’eau de 2 m (ρ=1000 kg·m⁻³, g=9,8) ?
+              <input type="text" id="exo1" placeholder="... Pa">
+              <button onclick="checkExo(1)">Valider</button>
+              <div class="reponse" id="rep-exo1"></div>
+            </div>
+            <div class="box-exo exo-block">
+              <b>Ex 2 — Force sur une porte</b><br>
+              Vanne de 2 m² sous p = 30 000 Pa. Calculer F.
+              <input type="text" id="exo2" placeholder="... N">
+              <button onclick="checkExo(2)">Valider</button>
+              <div class="reponse" id="rep-exo2"></div>
+            </div>
+            <div class="box-exo exo-block">
+              <b>Ex 3 — Pression atmosphérique</b><br>
+              Donne la valeur de la pression atmosphérique au niveau de la mer.
+              <input type="text" id="exo3" placeholder="... Pa">
+              <button onclick="checkExo(3)">Valider</button>
+              <div class="reponse" id="rep-exo3"></div>
+            </div>
+          </div>
+          <button onclick="resetExos()">Effacer mes réponses</button>
+        </section>
+
+        <section class="qcm-block">
+          <h2>🎯 QCM interactif</h2>
+          <div id="qcm-interactif"></div>
+          <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
+          <button onclick="reloadQCM()">Recommencer le QCM</button>
+        </section>
+
+        <section class="box-important">
+          <h2>🔖 Fiche de révision rapide</h2>
+          <div class="fiche">
+            <ul>
+              <li>Pression : \(p = F/S\), unité Pa.</li>
+              <li>Liquide au repos : \(p = p_0 + \rho g h\).</li>
+              <li>Force sur paroi : \(F = p S\).</li>
+              <li>Pression atmosphérique ≈ \(1{,}0×10^5\) Pa.</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes</h2>
+          <ul>
+            <li>Oublier la profondeur h dans p = p₀+ρgh.</li>
+            <li>Confondre Pa, bar, atm, hPa, N et m².</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique express</h2>
+          Pression, force, masse volumique, loi de Pascal, pression atmosphérique.
+        </section>
+
+        <section>
+          <h2>🗒️ Tes propres notes</h2>
+          <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
+          <button onclick="saveNotes()">Enregistrer</button>
+          <span id="savemsg" style="color:#4ade80;font-weight:bold;"></span>
+        </section>
+
+        <section class="source">Sources : cours lycée, manuels et fiches de statique des fluides.</section>
+      </main>
     </div>
-    <button onclick="resetExos()">Effacer mes réponses</button>
-  </section>
-  <section class="qcm-block">
-    <h2>🎯 QCM interactif (score immédiat !)</h2>
-    <div id="qcm-interactif"></div>
-    <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
-    <button onclick="reloadQCM()">Recommencer le QCM</button>
-  </section>
-  <section class="box-important">
-    <h2>🔖 Fiche de révision rapide</h2>
-    <div class="fiche">
-      <ul>
-        <li>Pression \( p = \dfrac{F}{S} \), unité : Pa = N·m⁻²</li>
-        <li>Loi fondamentale : \( p = p_0+\rho g h \) dans les liquides</li>
-        <li>Loi de Pascal : transmission intégrale de toute variation de pression</li>
-        <li>Force fluide sur paroi : \( F = p \times S \)</li>
-        <li>Pression atmosphérique : 1 bar = 101 325 Pa</li>
-      </ul>
-    </div>
-  </section>
-  <section class="error">
-    <h2>❌ Erreurs fréquentes à éviter</h2>
-    <ul>
-      <li>Oublier la profondeur dans le calcul de pression liquide</li>
-      <li>Confondre unité (Pa, bar, atm, m², N…)</li>
-      <li>Calculer force sans multiplier par la surface</li>
-      <li>Penser que la pression est la même partout (elle dépend du point de mesure, surtout sous l’eau !)</li>
-    </ul>
-  </section>
-  <section class="lexique">
-    <h2>📚 Lexique express</h2>
-    <ul>
-      <li><b>Pression</b> : action d’un fluide sur une surface (Pa, N·m⁻²)</li>
-      <li><b>Force</b> : poussée exercée sur une paroi ou corps (N, peut être vectorielle)</li>
-      <li><b>Masse volumique (\(\rho\))</b> : masse/volume d’un liquide ou gaz</li>
-      <li><b>Loi de Pascal</b> : transmission de pression dans les liquides</li>
-      <li><b>Pression atmosphérique</b> : pression exercée par l’air (“1 atm” = 101 325 Pa)</li>
-    </ul>
-  </section>
-  <section>
-    <h2>🗒️ Tes propres notes (sauvegarde locale)</h2>
-    <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
-    <button onclick="saveNotes()">Enregistrer</button>
-    <span id="savemsg" style="color:#4caf50;font-weight:bold;"></span>
-  </section>
-  <section class="source">Sources : cours lycée, manuels, BAC 2025, fiches PC.</section>
-</main>
-<div class="overlay" id="overlay"></div>
-<div class="popup" id="popup-appli"><h3>Applications</h3>
-<ul>
-<li>Baromètre (pression atmosphérique)</li>
-<li>Barrage hydraulique (force sur la surface)</li>
-<li>Plongée (pression sous l’eau)</li>
-<li>Siphon, vase communicant, air comprimé…</li>
-</ul>
-<button onclick="closePopup()">Fermer</button></div>
-<div class="popup" id="popup-unites"><h3>Astuce unités</h3>
-1 bar = 100 000 Pa | 1 atm = 101 325 Pa | 1 hPa = 100 Pa | 1 N = 1 Pa·m²
-<button onclick="closePopup()">Fermer</button></div>
-<div class="popup" id="popup-sch-fluides"><h3>Schéma pression liquide</h3>
-La pression augmente avec la profondeur : p = p₀+ρgh<br>Plus le liquide est dense, plus la pression est forte à profondeur donnée.
-<button onclick="closePopup()">Fermer</button></div>
-<div class="popup" id="popup-pascal"><h3>Loi de Pascal</h3>
-Toute augmentation de pression en un point d’un liquide se transmet à tout le liquide : fondation de la presse hydraulique !
-<button onclick="closePopup()">Fermer</button></div>
-<script>
-function reloadMathJax(){if(window.MathJax){window.MathJax.typesetPromise();}}
-function openPopup(id){document.getElementById('overlay').classList.add("show");document.getElementById(id).classList.add("show");}
-function closePopup(){document.getElementById('overlay').classList.remove("show");var popups=document.querySelectorAll('.popup');popups.forEach(function(p){p.classList.remove('show');});}
-function saveNotes(){localStorage.setItem("notesFluides",document.getElementById("notes").value);document.getElementById("savemsg").textContent="✔️ Enregistré !";setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);}
-if(localStorage.getItem("notesFluides")){document.getElementById("notes").value=localStorage.getItem("notesFluides");}
-// Schéma fluide pression profondeur
-function drawFluide(){
-  var c=document.getElementById('schema-fluide');if(!c)return;var x=c.getContext('2d');
-  x.clearRect(0,0,470,140);
-  // Bassin d'eau
-  x.fillStyle="#a2d5f9";x.fillRect(60,30,110,90);x.strokeStyle="#1877f2";x.lineWidth=2;x.strokeRect(60,30,110,90);
-  x.fillStyle="#243552";x.font="15px Arial";x.fillText("Eau",110,55);
-  // Solide immergé
-  x.fillStyle="#f3aa3f";x.beginPath();x.arc(115,90,13,0,2*Math.PI);x.fill();
-  x.fillStyle="#167c2b";x.fillText("Solide",128,105);
-  // Flèches pression
-  for(let h=0;h<=80;h+=40){
-    x.strokeStyle="#e06359";x.lineWidth=3;x.beginPath();x.moveTo(170,30+h);x.lineTo(215,30+h);x.stroke();
-    x.fillStyle="#e06359";x.beginPath();x.moveTo(215,30+h);x.lineTo(210,25+h);x.lineTo(210,35+h);x.fill();
-    x.fillStyle="#e06359";x.fillText("p"+(h==0? "₀":"")+ (h==40?"₂":h==80?"₃":""),218,35+h);
-  }
-  // Pression atmosphérique en haut
-  x.fillStyle="#4caf50";x.fillText("p₀ = pression atmosphérique",75,15);
-  // Force sur la paroi
-  x.strokeStyle="#167c2b";x.lineWidth=4;x.beginPath();x.moveTo(60,115);x.lineTo(30,115);x.stroke();
-  x.fillStyle="#167c2b";x.beginPath();x.moveTo(30,115);x.lineTo(40,110);x.lineTo(40,120);x.fill();
-  x.fillStyle="#167c2b";x.fillText("Force F",10,125);
-}
-drawFluide();
-const qcmData=[
-{
-  question:"La pression exercée par un liquide dépend :",
-  choices:["De la profondeur et de la masse volumique","Du volume du récipient","Du diamètre du solide immergé"],
-  correct:0,
-  explanation:"p=p₀+ρgh, dépend de h et ρ."
-},
-{
-  question:"L’unité SI de la pression :",
-  choices:["Bar","Pascal","N"],
-  correct:1,
-  explanation:"Pa = N/m²"
-},
-{
-  question:"La loi de Pascal concerne :",
-  choices:["Les solides","Les gaz","Les liquides au repos"],
-  correct:2,
-  explanation:"La variation de pression = partout dans le liquide."
-},
-{
-  question:"Si la pression est de 10 000 Pa sur 3 m², la force vaut :",
-  choices:["30 000 N","333 N","10 000/3 N"],
-  correct:0,
-  explanation:"F = p×S = 10 000×3 = 30 000 N"
-}
-];
-let qcmScore=0,qcmDone=Array(qcmData.length).fill(false);
-function displayQCM(){
-  let html="";
-  for(let i=0;i<qcmData.length;i++){
-    html += `<div style="margin-bottom:1em"><b>Q${i+1} :</b> <span>\\(${qcmData[i].question}\\)</span><br>`;
-    for(let j=0;j<qcmData[i].choices.length;j++){
-      html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+
+  <div class="popup" id="popup-appli">
+    <h3>Applications</h3>
+    Baromètre, barrages, plongée, siphons, vases communicants, air comprimé.
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <div class="popup" id="popup-unites">
+    <h3>Astuce unités</h3>
+    1 bar = 100 000 Pa ; 1 atm ≈ 101 325 Pa ; 1 hPa = 100 Pa ; 1 N = 1 Pa·m².
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <div class="popup" id="popup-sch-fluides">
+    <h3>Schéma pression liquide</h3>
+    La pression augmente avec la profondeur : \(p = p_0+ρgh\). Plus ρ est grande, plus p augmente vite.
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <div class="popup" id="popup-pascal">
+    <h3>Loi de Pascal</h3>
+    Toute variation de pression appliquée en un point d’un liquide se transmet à tous les points du liquide.
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <script>
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+      if(window.MathJax && MathJax.typesetPromise){MathJax.typesetPromise();}
+    },3000);
+
+    function reloadMathJax(){
+      if(window.MathJax && MathJax.typesetPromise){MathJax.typesetPromise();}
     }
-    html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
-  }
-  document.getElementById("qcm-interactif").innerHTML=html;document.getElementById("qcm-score").innerHTML="";qcmScore=0;qcmDone=Array(qcmData.length).fill(false);reloadMathJax();
-}
-displayQCM();
-function checkQCM(qnum,num){
-  if(qcmDone[qnum])return;
-  if(num==qcmData[qnum].correct){
-    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#168b24;font-weight:bold">Bonne réponse !</span><br><span style="font-size:0.98em;">${qcmData[qnum].explanation}</span>`;
-    qcmScore++;
-  }else{
-    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#c21c5c;font-weight:bold">Faux !</span>  <br><span>${qcmData[qnum].explanation}</span>`;
-  }
-  qcmDone[qnum]=true;
-  document.getElementById("qcm-score").innerHTML="Score : "+qcmScore+"/"+qcmData.length;reloadMathJax();
-}
-function reloadQCM(){displayQCM();}
-function checkExo(ex){
-  let rep=document.getElementById('exo'+ex).value.replace(",",".");
-  if(ex==1){
-    let v=1000*9.8*2;
-    let good=Math.abs(Number(rep)-v)<400;
-    document.getElementById('rep-exo1').innerHTML = good?`Bravo : p = 1000×9,8×2 = 19 600 Pa`:"Faux. Résultat = 19 600 Pa (ρgh)";
-  }
-  if(ex==2){
-    let good=Math.abs(Number(rep)-60000)<3000;
-    document.getElementById('rep-exo2').innerHTML = good?`Bonne réponse : F = 30 000×2 = 60 000 N`:"Faux. F = p×S = 30 000×2 = 60 000N";
-  }
-  if(ex==3){
-    let good=rep.includes("101325")||rep.includes("101 325")||rep.includes("1.01325e5")||rep.includes("1bar")||rep.includes("bar");
-    document.getElementById('rep-exo3').innerHTML = good?"Correct : pression atmosphérique = 101 325 Pa":"Faux : 101 325 Pa au niveau mer.";
-  }
-  reloadMathJax();
-}
-function resetExos(){["exo1","exo2","exo3"].forEach(id=>{let el=document.getElementById(id);if(el)el.value="";});["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{let el=document.getElementById(id);if(el)el.textContent="";});}
-setTimeout(reloadMathJax,180);
-</script>
+    function openPopup(id){
+      document.getElementById('overlay').classList.add("show");
+      document.getElementById(id).classList.add("show");
+      reloadMathJax();
+    }
+    function closePopup(){
+      document.getElementById('overlay').classList.remove("show");
+      document.querySelectorAll('.popup').forEach(p=>p.classList.remove('show'));
+    }
+    function saveNotes(){
+      localStorage.setItem("notesFluides_global",document.getElementById("notes").value);
+      document.getElementById("savemsg").textContent="Enregistré";
+      setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);
+    }
+    if(localStorage.getItem("notesFluides_global")){
+      document.getElementById("notes").value=localStorage.getItem("notesFluides_global");
+    }
+
+    function drawFluide(){
+      var c=document.getElementById('schema-fluide');if(!c)return;
+      var x=c.getContext('2d');
+      x.clearRect(0,0,470,140);
+      x.fillStyle="#7dd3fc";x.fillRect(60,30,110,90);
+      x.strokeStyle="#1d4ed8";x.lineWidth=2;x.strokeRect(60,30,110,90);
+      x.fillStyle="#0f172a";x.font="15px Arial";x.fillText("Eau",110,55);
+
+      x.fillStyle="#fbbf24";x.beginPath();x.arc(115,90,13,0,2*Math.PI);x.fill();
+      x.fillStyle="#16a34a";x.fillText("Solide",130,105);
+
+      for(let h=0;h<=80;h+=40){
+        x.strokeStyle="#ef4444";x.lineWidth=3;
+        x.beginPath();x.moveTo(170,30+h);x.lineTo(215,30+h);x.stroke();
+        x.fillStyle="#ef4444";
+        x.beginPath();x.moveTo(215,30+h);x.lineTo(210,25+h);x.lineTo(210,35+h);x.fill();
+        x.fillText(h===0?"p₀":(h===40?"p₂":"p₃"),220,35+h);
+      }
+
+      x.fillStyle="#22c55e";x.fillText("p₀ = pression atmosphérique",75,18);
+
+      x.strokeStyle="#22c55e";x.lineWidth=4;
+      x.beginPath();x.moveTo(60,115);x.lineTo(30,115);x.stroke();
+      x.fillStyle="#22c55e";
+      x.beginPath();x.moveTo(30,115);x.lineTo(40,110);x.lineTo(40,120);x.fill();
+      x.fillText("F",15,127);
+    }
+    drawFluide();
+
+    const qcmData=[
+      {question:"La pression dans un liquide au repos dépend de :",choices:["la profondeur et ρ","le volume du récipient","la masse du solide"],correct:0,explanation:"p = p₀+ρgh : dépend de ρ et h, pas de la forme du récipient."},
+      {question:"Unité SI de la pression :",choices:["bar","Pa","N"],correct:1,explanation:"Le Pascal (Pa) est l’unité SI, 1 Pa = 1 N·m⁻²."},
+      {question:"La loi de Pascal concerne :",choices:["les solides","les liquides au repos","les gaz en mouvement"],correct:1,explanation:"Elle s’applique aux liquides au repos (presse hydraulique, etc.)."},
+      {question:"Si p=10 000 Pa sur S=3 m², F vaut :",choices:["30 000 N","333 N","10 000/3 N"],correct:0,explanation:"F = pS = 10 000 × 3 = 30 000 N."}
+    ];
+    let qcmScore=0,qcmDone=Array(qcmData.length).fill(false);
+    function displayQCM(){
+      let html="";
+      for(let i=0;i<qcmData.length;i++){
+        html+=`<div style="margin-bottom:1em"><b>Q${i+1} :</b> ${qcmData[i].question}<br>`;
+        for(let j=0;j<qcmData[i].choices.length;j++){
+          html+=`<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+        }
+        html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
+      }
+      document.getElementById("qcm-interactif").innerHTML=html;
+      document.getElementById("qcm-score").innerHTML="";
+      qcmScore=0;qcmDone=Array(qcmData.length).fill(false);
+      reloadMathJax();
+    }
+    displayQCM();
+
+    function checkQCM(qnum,num){
+      if(qcmDone[qnum])return;
+      if(num===qcmData[qnum].correct){
+        document.getElementById('qcm-r'+qnum).innerHTML=
+          `<span style="color:#16a34a;font-weight:bold">Bonne réponse !</span><br>${qcmData[qnum].explanation}`;
+        qcmScore++;
+      }else{
+        document.getElementById('qcm-r'+qnum).innerHTML=
+          `<span style="color:#e11d48;font-weight:bold">Faux.</span><br>${qcmData[qnum].explanation}`;
+      }
+      qcmDone[qnum]=true;
+      document.getElementById("qcm-score").innerHTML="Score : "+qcmScore+"/"+qcmData.length;
+      reloadMathJax();
+    }
+    function reloadQCM(){displayQCM();}
+
+    function checkExo(ex){
+      let rep=document.getElementById('exo'+ex).value.replace(",",".");
+      if(ex===1){
+        let v=1000*9.8*2;
+        let ok=Math.abs(Number(rep)-v)<400;
+        document.getElementById('rep-exo1').innerHTML = ok
+          ? "Bravo : p ≈ 1000×9,8×2 ≈ 19 600 Pa."
+          : "Faux : p ≈ 19 600 Pa (ρgh).";
+      }
+      if(ex===2){
+        let ok=Math.abs(Number(rep)-60000)<3000;
+        document.getElementById('rep-exo2').innerHTML = ok
+          ? "Bonne réponse : F = 30 000×2 = 60 000 N."
+          : "Faux : F = pS = 30 000×2 = 60 000 N.";
+      }
+      if(ex===3){
+        let val=rep.replace(/\s/g,"");
+        let ok=val.includes("101325")||val.includes("1.01325e5")||val.includes("1e5");
+        document.getElementById('rep-exo3').innerHTML = ok
+          ? "Correct : pression atmosphérique ≈ 101 325 Pa."
+          : "Faux : on prend ≈ 1,0×10⁵ Pa (101 325 Pa).";
+      }
+      reloadMathJax();
+    }
+    function resetExos(){
+      ["exo1","exo2","exo3"].forEach(id=>{let e=document.getElementById(id);if(e)e.value="";});
+      ["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{let e=document.getElementById(id);if(e)e.textContent="";});
+    }
+
+    setTimeout(reloadMathJax,200);
+  </script>
 </body>
 </html>

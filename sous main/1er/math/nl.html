@@ -1,187 +1,622 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Masterclass — Notions de listes</title>
-    <meta name="description" content="Tout sur les listes en algorithmique et Python : définitions, manipulations, schéma dynamique, quiz, exercices, applications et erreurs à éviter.">
-    <style>
-        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
-        header { background: linear-gradient(90deg,#eef4fb,#edfff9 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
-        header h1 { font-size: 2.2rem; margin: 0 0 13px; color: #1877f2;}
-        .intro { font-size: 1.01rem;}
-        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.13);}
-        h2 { color: #1877f2; margin-top: 32px;}
-        h3 { color: #f5a623; margin-top: 22px;}
-        ul, ol { margin-left: 1.4em;}
-        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
-        .infos {background: #edfff9; border-left: 6px solid #20b992;}
-        .box-exo {background: #fff7ec; border-left: 7px solid #f5a623;}
-        .box-important {background: #e5ffe7; border-left: 7px solid #167c2b;}
-        .error {background: #ffeaea; border-left: 7px solid #e06359;}
-        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
-        .anecdote {background: #e8fffc; border-left: 7px solid #27c7b3; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
-        .source { font-size: 0.9em; color: #999; text-align: right;}
-        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
-        button:hover { background: #145ac3;}
-        #schema { margin: 1em auto; display: block; background: #edfff9; border-radius: 8px; border: 1px solid #20b992;}
-        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
-        label { margin-right: 14px;}
-        @media (max-width: 768px) { main { padding: 12px 2px; } }
-    </style>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <meta charset="UTF-8">
+  <title>Global - Python · Notions de listes</title>
+  <meta name="description" content="Tout sur les listes en algorithmique et Python : définitions, manipulations, schéma dynamique, quiz, exercices, applications et erreurs à éviter.">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-main:#1877f2;
+      --violet-main:#6366f1;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(129,140,248,0.2), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#111827 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(520px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(129,140,248,0.3),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(129,140,248,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(129,140,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#c7d2fe;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#c7d2fe,transparent);
+      box-shadow:0 0 12px rgba(129,140,248,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#a5b4fc;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(129,140,248,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#c4b5fd,#6366f1,#22c55e);
+      box-shadow:0 0 18px rgba(129,140,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#e0e7ff;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(129,140,248,0.2) 45%,
+          rgba(129,140,248,0.45) 50%,
+          rgba(129,140,248,0.2) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#a5b4fc;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(24,119,242,0.9),rgba(45,212,191,0.9));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#fff;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:230px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#c7d2fe;
+      box-shadow:0 0 12px rgba(199,210,254,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:900px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:26px 26px 30px;
+      color:#e5f1ff;
+    }
+
+    h1,h2{
+      color:#bfdbfe;
+      margin-bottom:10px;
+    }
+    h3{
+      color:#facc6b;
+      margin-top:18px;
+      margin-bottom:10px;
+    }
+    h2{margin-top:26px;font-size:1.4rem;}
+    p,li{font-size:0.98rem;line-height:1.6;}
+    ul,ol{margin-left:1.3em;margin-top:0.3em;margin-bottom:0.8em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      padding:12px 18px;
+      border-radius:10px;
+      margin:1em 0;
+      font-size:0.96rem;
+    }
+    .infos{
+      background:rgba(236,253,245,0.96);
+      color:#022c22;
+      border-left:4px solid #14b8a6;
+    }
+    .box-exo{
+      background:rgba(254,249,195,0.14);
+      border-left:4px solid #facc15;
+    }
+    .box-important{
+      background:rgba(22,163,74,0.14);
+      border-left:4px solid #22c55e;
+    }
+    .error{
+      background:rgba(248,113,113,0.14);
+      border-left:4px solid #f87171;
+    }
+    .lexique{
+      background:rgba(59,130,246,0.12);
+      border-left:4px solid #7dd3fc;
+    }
+    .anecdote{
+      background:rgba(224,242,254,0.96);
+      border-left:4px solid #22c55e;
+    }
+
+    #schema{
+      margin:1em auto;
+      display:block;
+      background:#0b1725;
+      border-radius:8px;
+      border:1px solid #14b8a6;
+      padding:10px 14px;
+      font-size:0.98rem;
+    }
+    .reponse{
+      margin-top:0.7em;
+      color:#c7d2fe;
+      font-weight:bold;
+      text-align:center;
+      font-size:0.95rem;
+    }
+    label{
+      margin-right:14px;
+      font-size:0.9rem;
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+  </style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-    <h1>Masterclass — Notions de listes</h1>
-    <div class="intro">
-        Tout pour comprendre, manipuler et optimiser les listes : structure, opérations, schéma dynamique, quiz, exercices et usages en algorithmique et Python !
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//python-LISTES</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Listes Python · ajout, suppression, indices, slicing et schéma dynamique interactif.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du module Notions de listes...</div>
+        <div class="terminal-line">[DATA] Mise en place de la liste initiale L = [2, 6, 3].</div>
+        <div class="terminal-line">[OPS] Activation des opérations : ajout, suppression, longueur.</div>
+        <div class="terminal-line">[OK]  Prêt : quiz, exercices et manipulations visuelles de listes.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
     </div>
-</header>
-<main>
-<section>
-    <h2>📝 Définitions et bases</h2>
-    <div class="infos">
-        Une <b>liste</b> est une structure de données qui rassemble des éléments (nombres, chaînes, objets…) dans un ordre précis.<br>
-        En Python : <code>ma_liste = [2, 4, 7, 1]</code>
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Python
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
     </div>
-    <ul>
-        <li>Les listes peuvent contenir tout type d’éléments (même mixtes !)</li>
-        <li>L’accès à chaque élément se fait par son “indice” (commence à 0 en Python)</li>
-    </ul>
-</section>
-<section>
-    <h2>📗 Principales opérations sur les listes</h2>
-    <ul>
-        <li>Ajout d’un élément : <code>ma_liste.append(8)</code></li>
-        <li>Suppression : <code>del ma_liste[2]</code></li>
-        <li>Modification : <code>ma_liste[0] = 99</code></li>
-        <li>Longueur : <code>len(ma_liste)</code></li>
-        <li>Parcours :  
-            <code>for val in ma_liste: print(val)</code></li>
-        <li>Extraction/slicing : <code>ma_liste[1:3]</code> (sous-liste d’indices 1 à 2 inclus)</li>
-    </ul>
-    <div class="box-important">
-        Astuce : En Python, tu peux faire des listes de listes : <code>L=[[3,5],[8,10]]</code>
+
+    <div class="page-padding">
+      <div class="content-card">
+        <h1>Masterclass — Notions de listes</h1>
+        <p style="margin-bottom:1.2em;font-size:0.98rem;color:#e0e7ff;">
+          Tout pour comprendre, manipuler et optimiser les listes : structure, opérations, schéma dynamique, quiz, exercices et usages en algorithmique et en Python.
+        </p>
+
+        <section>
+          <h2>📝 Définitions et bases</h2>
+          <div class="infos">
+            Une <b>liste</b> est une structure de données qui rassemble des éléments (nombres, chaînes, objets…) dans un ordre précis.<br>
+            En Python : de>ma_liste = [2, 4, 7, 1]</code>
+          </div>
+          <ul>
+            <li>Les listes peuvent contenir tout type d’éléments, voire des types mélangés.</li>
+            <li>L’accès à chaque élément se fait par son indice, qui commence à 0 en Python.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>📗 Principales opérations sur les listes</h2>
+          <ul>
+            <li>Ajout d’un élément : de>ma_liste.append(8)</code></li>
+            <li>Suppression : de>del ma_liste[2]</code></li>
+            <li>Modification : de>ma_liste[0] = 99</code></li>
+            <li>Longueur : de>len(ma_liste)</code></li>
+            <li>Parcours : de>for val in ma_liste: print(val)</code></li>
+            <li>Extraction / slicing : de>ma_liste[1:3]</code> (indices 1 à 2 inclus).</li>
+          </ul>
+          <div class="box-important">
+            Astuce : en Python, on peut avoir des listes de listes, par exemple de>L = [[3, 5], [8, 10]]</code>.
+          </div>
+        </section>
+
+        <section>
+          <h2>🟦 Schéma dynamique — manipule ta liste</h2>
+          <label>Ajouter : <input type="number" id="addval" value="5"></label>
+          <button onclick="ajoute()">Ajouter</button>
+          <label>Enlever l’élément d’indice : <input type="number" id="delidx" value="0" min="0"></label>
+          <button onclick="enleve()">Enlever</button>
+          <div id="schema"></div>
+          <div id="desc-list"></div>
+        </section>
+
+        <section class="box-exo">
+          <h2>💡 Exercice interactif</h2>
+          <p>Soit de>L = [2, 6, 3]</code>. Ajoute 7 puis retire l’élément d’indice 1.</p>
+          <button onclick="afficheReponseList()">Voir la correction</button>
+          <div class="reponse" id="exo-reponse-list" style="display:none;">
+            Après ajout : [2, 6, 3, 7] — Après suppression de l’élément d’indice 1 : [2, 3, 7].
+          </div>
+        </section>
+
+        <section class="box-exo">
+          <h2>🔥 Exercice “expert”</h2>
+          <p>Écrire le code pour créer une liste contenant tous les nombres pairs de 2 à 16 inclus.</p>
+          <button onclick="document.getElementById('exo2-reponse-list').style.display='block';">Voir la correction</button>
+          <div class="reponse" id="exo2-reponse-list" style="display:none;">
+            de>L = [i for i in range(2, 17, 2)]</code>
+          </div>
+        </section>
+
+        <section class="quiz">
+          <h2>🎯 Quiz express</h2>
+          <p>En Python, l’indice du premier élément de la liste de>L</code> est :</p>
+          <button onclick="quizList(0)">0</button>
+          <button onclick="quizList(1)">1</button>
+          <div class="reponse" id="rep-quiz-list"></div>
+
+          <p>Pour obtenir la longueur d’une liste de>L</code> :</p>
+          <button onclick="quizList2(0)">len(L)</button>
+          <button onclick="quizList2(1)">count(L)</button>
+          <div class="reponse" id="rep-quiz-list2"></div>
+        </section>
+
+        <section class="box-important">
+          <h2>🌐 Applications concrètes</h2>
+          <ul>
+            <li>NSI / Algorithmique : stockage, parcours, filtrage de données.</li>
+            <li>Maths / Physique : calculs de séries, tableaux de valeurs, statistiques.</li>
+            <li>Programmation : base pour piles, files, tableaux multidimensionnels.</li>
+            <li>Jeux : scores, inventaires, positions d’objets, listes d’ennemis.</li>
+          </ul>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes à éviter</h2>
+          <ul>
+            <li>Oublier que l’indice commence à 0.</li>
+            <li>Accéder à un indice inexistant (erreur de>IndexError</code>).</li>
+            <li>Confondre de>append</code> et de>extend</code> (de>extend</code> parcourt l’autre liste et ajoute tous ses éléments).</li>
+            <li>Modifier la liste pendant un parcours sans précaution.</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique express</h2>
+          <b>Liste</b> : structure ordonnée et modifiable.<br>
+          <b>Indice</b> : position d’un élément dans la liste.<br>
+          <b>append</b> : ajout d’un élément à la fin.<br>
+          <b>Slicing</b> : extraction d’une sous-liste par intervalles d’indices.
+        </section>
+
+        <section class="rubrique">
+          <h3>📖 Petite histoire</h3>
+          <ul>
+            <li>Les listes programmées viennent des « tableaux » présents dans les premiers langages (Fortran, C, etc.).</li>
+            <li>Python en a fait dès le départ une structure dynamique et très souple.</li>
+            <li>Elles sont au cœur de nombreux domaines modernes : IA, bases de données, web.</li>
+          </ul>
+          <div class="source">Source : histoire de Python et des structures de données, ressources pédagogiques.</div>
+        </section>
+
+        <section class="anecdote">
+          <b>Astuce-mémoire :</b> « Commence à 0, finis à n−1 : visualise toujours les indices avant de coder. »
+        </section>
+
+        <section>
+          <h2>💡 Méthodologie pour progresser</h2>
+          <ul>
+            <li>Teste chaque opération (ajout, suppression, slicing) sur des petites listes.</li>
+            <li>Utilise le schéma interactif pour voir l’effet des modifications en direct.</li>
+            <li>Travaille le slicing pour extraire des sous-listes utiles.</li>
+            <li>Apprends à construire des listes avec des boucles et des compréhensions.</li>
+          </ul>
+        </section>
+      </div>
     </div>
-</section>
-<section>
-    <h2>🟦 Schéma dynamique — manipule ta liste !</h2>
-    <label>Ajouter : <input type="number" id="addval" value="5"></label>
-    <button onclick="ajoute()">Ajouter</button>
-    <label>Enlever l’élément d’indice : <input type="number" id="delidx" value="0" min="0"></label>
-    <button onclick="enleve()">Enlever</button>
-    <div id="schema"></div>
-    <div id="desc-list"></div>
-</section>
-<section class="box box-exo">
-    <h2>💡 Exercice interactif</h2>
-    <p>Soit <code>L = [2, 6, 3]</code>. Ajoute 7 puis retire l’élément d’indice 1.</p>
-    <button onclick="afficheReponseList()">Voir la correction</button>
-    <div class="reponse" id="exo-reponse-list" style="display:none;">
-        Après ajout : [2, 6, 3, 7]  
-        Après suppression de l’élément 1 : [2, 3, 7]
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
     </div>
-</section>
-<section class="box-exo">
-    <h2>🔥 Exercice “expert”</h2>
-    <p>Donne le code pour créer une liste contenant tous les nombres pairs de 2 à 16 inclus.</p>
-    <button onclick="document.getElementById('exo2-reponse-list').style.display='block';">Voir la correction</button>
-    <div class="reponse" id="exo2-reponse-list" style="display:none;">
-        <code>L = [i for i in range(2,17,2)]</code>
-    </div>
-</section>
-<section class="quiz">
-    <h2>🎯 Quiz express</h2>
-    <p>En Python, l’indice du premier élément de la liste <code>L</code> est :</p>
-    <button onclick="quizList(0)">0</button>
-    <button onclick="quizList(1)">1</button>
-    <div class="reponse" id="rep-quiz-list"></div>
-    <p>Pour obtenir la longueur d’une liste <code>L</code> :</p>
-    <button onclick="quizList2(0)">len(L)</button>
-    <button onclick="quizList2(1)">count(L)</button>
-    <div class="reponse" id="rep-quiz-list2"></div>
-</section>
-<section class="box-important">
-    <h2>🌐 Applications concrètes</h2>
-    <ul>
-        <li>NSI/Algorithmique : stocker et manipuler des données, parcours, filtrage</li>
-        <li>Physique/Maths : calculs d’ensemble, statistiques, séries</li>
-        <li>Info/Programmation : base des structures avancées (piles, files, tableaux multidimensionnels)</li>
-        <li>Jeux : scores, inventaires, positions d’objets en code</li>
-    </ul>
-</section>
-<section class="error">
-    <h2>❌ Erreurs fréquentes à éviter</h2>
-    <ul>
-        <li>Oublier que l’indice commence à 0</li>
-        <li>Accéder à un indice inexistant (<code>IndexError</code>)</li>
-        <li>Confondre append et extend (<code>extend</code> ajoute tous les éléments d’une autre liste, pas juste un)</li>
-        <li>Modifier la liste pendant un parcours sans précaution</li>
-    </ul>
-</section>
-<section class="lexique">
-    <h2>📚 Lexique express</h2>
-    <b>Liste</b>: structure ordonnée, modifiable<br>
-    <b>Indice</b>: position de l’élément<br>
-    <b>Append</b>: ajout d’un élément<br>
-    <b>Slicing</b>: extraction de sous-liste
-</section>
-<section class="rubrique">
-    <h3>📖 Petite histoire</h3>
-    <ul>
-        <li>Les listes informatiques dérivent des “tableaux”, déjà présents dans les premiers langages (Fortran, C…)</li>
-        <li>Python les a rendues dynamiques/customisables dès l’origine du langage</li>
-        <li>Base de la programmation moderne : IA, bases de données, web…</li>
-    </ul>
-    <div class="source">Source : histoire de Python, CNAM/INRIA</div>
-</section>
-<section class="anecdote">
-    <b>Astuce-mémoire</b>: “Commence à zéro, finit à n-1 : repère le terrain !”  
-</section>
-<section>
-    <h2>💡 Méthodologie pour progresser</h2>
-    <ul>
-        <li>Teste tous les types d’opérations sur des exemples concrets</li>
-        <li>Utilise le schéma interactif pour manipuler ta propre liste</li>
-        <li>Maîtrise le slicing pour faire des sous-listes et des tris</li>
-        <li>Apprends à construire des listes avec des boucles ou des compréhensions</li>
-    </ul>
-</section>
-</main>
-<script>
-let L = [2, 6, 3];
-function dessine() {
-    let s = '<b>Liste actuelle :</b> [' + L.join(', ') + ']';
-    document.getElementById("schema").innerHTML = s;
-    document.getElementById("desc-list").innerHTML =
-        "Longueur : "+L.length;
-    document.getElementById("delidx").max = Math.max(0, L.length-1);
-}
-function ajoute() {
-    let v = parseInt(document.getElementById("addval").value);
-    L.push(v);
-    dessine();
-}
-function enleve() {
-    let idx = parseInt(document.getElementById("delidx").value);
-    if(L.length>0 && idx>=0 && idx<L.length) {
+  </div>
+
+  <script>
+    // Masquer le loader et afficher le contenu après 3 secondes[web:28][web:2][web:29]
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
+
+    let L = [2, 6, 3];
+    function dessine() {
+      let s = "<b>Liste actuelle :</b> [" + L.join(", ") + "]";
+      document.getElementById("schema").innerHTML = s;
+      document.getElementById("desc-list").innerHTML =
+        "Longueur : " + L.length;
+      document.getElementById("delidx").max = Math.max(0, L.length - 1);
+    }
+    function ajoute() {
+      let v = parseInt(document.getElementById("addval").value);
+      if(!Number.isNaN(v)){
+        L.push(v);
+        dessine();
+      }
+    }
+    function enleve() {
+      let idx = parseInt(document.getElementById("delidx").value);
+      if(L.length > 0 && idx >= 0 && idx < L.length) {
         L.splice(idx, 1);
         dessine();
+      }
     }
-}
-function quizList(rep) {
-    let repElem = document.getElementById("rep-quiz-list");
-    repElem.textContent = (rep === 0) ? "Bonne réponse : en Python, le premier indice est 0 !" : "Faux, c’est 0 en Python.";
-}
-function quizList2(rep) {
-    let repElem = document.getElementById("rep-quiz-list2");
-    repElem.textContent = (rep === 0) ? "Correct ! len(L) donne la longueur de la liste." : "Non, en Python c’est len(L).";
-}
-function afficheReponseList() {
-    document.getElementById("exo-reponse-list").style.display = "block";
-}
-dessine();
-</script>
+    function quizList(rep) {
+      let repElem = document.getElementById("rep-quiz-list");
+      repElem.textContent = (rep === 0)
+        ? "Bonne réponse : en Python, le premier indice est 0."
+        : "Faux : l’indice du premier élément est 0 en Python.";
+    }
+    function quizList2(rep) {
+      let repElem = document.getElementById("rep-quiz-list2");
+      repElem.textContent = (rep === 0)
+        ? "Correct : len(L) renvoie la longueur de la liste."
+        : "Non : c’est len(L) qui donne la longueur, pas count(L).";
+    }
+    function afficheReponseList() {
+      document.getElementById("exo-reponse-list").style.display = "block";
+    }
+    dessine();
+  </script>
 </body>
 </html>

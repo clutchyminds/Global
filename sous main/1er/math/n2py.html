@@ -1,196 +1,636 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Masterclass — Passage du langage naturel au langage Python</title>
-    <meta name="description" content="Comment passer d’un énoncé en langage courant à du code Python : méthodologie, exemples corrigés, quiz, exercices, applications, erreurs pour la NSI et le débutant.">
-    <style>
-        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
-        header { background: linear-gradient(90deg,#eef4fb,#ffe6d0 85%); color: #243552; padding: 28px 0 12px; text-align: center;}
-        header h1 { font-size: 2.2rem; margin: 0 0 13px; color: #e4872d;}
-        .intro { font-size: 1.01rem;}
-        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(228,135,45,0.08);}
-        h2 { color: #e4872d; margin-top: 32px;}
-        h3 { color: #1877f2; margin-top: 22px;}
-        ul, ol { margin-left: 1.4em;}
-        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
-        .infos {background: #f7ebd7; border-left: 6px solid #e4872d;}
-        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
-        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
-        .error {background: #ffeaea; border-left: 7px solid #e06359;}
-        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
-        .source { font-size: 0.9em; color: #999; text-align: right;}
-        .anecdote {background: #ffeaa8; border-left: 7px solid #e4872d; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
-        button {background: #e4872d; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
-        button:hover { background: #d06d0e;}
-        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
-        label { margin-right: 14px;}
-        @media (max-width: 768px) { main { padding: 12px 2px; } }
-        pre {background: #f8f4ee; border-radius: 5px; padding: 8px 13px; margin: 5px 0; font-size: 1em;}
-    </style>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <meta charset="UTF-8">
+  <title>Global - Python · Langage naturel → code</title>
+  <meta name="description" content="Comment passer d’un énoncé en langage courant à du code Python : méthodologie, exemples corrigés, quiz, exercices, applications, erreurs pour la NSI et le débutant.">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-main:#1877f2;
+      --violet-main:#6366f1;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(129,140,248,0.2), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#111827 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(520px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(129,140,248,0.3),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(129,140,248,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(129,140,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#c7d2fe;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#c7d2fe,transparent);
+      box-shadow:0 0 12px rgba(129,140,248,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#a5b4fc;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(129,140,248,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#c4b5fd,#6366f1,#22c55e);
+      box-shadow:0 0 18px rgba(129,140,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#e0e7ff;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(129,140,248,0.2) 45%,
+          rgba(129,140,248,0.45) 50%,
+          rgba(129,140,248,0.2) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#a5b4fc;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(228,135,45,0.95),rgba(129,140,248,0.9));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#fff;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:230px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#c7d2fe;
+      box-shadow:0 0 12px rgba(199,210,254,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:900px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:26px 26px 30px;
+      color:#e5f1ff;
+    }
+
+    h1,h2{
+      color:#fbbf77;
+      margin-bottom:10px;
+    }
+    h3{
+      color:#93c5fd;
+      margin-top:18px;
+      margin-bottom:10px;
+    }
+    h2{margin-top:26px;font-size:1.4rem;}
+    p,li{font-size:0.98rem;line-height:1.6;}
+    ul,ol{margin-left:1.3em;margin-top:0.3em;margin-bottom:0.8em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      padding:12px 18px;
+      border-radius:10px;
+      margin:1em 0;
+      font-size:0.96rem;
+    }
+    .infos{
+      background:rgba(248,250,252,0.96);
+      color:#111827;
+      border-left:4px solid #e4872d;
+    }
+    .box-exo{
+      background:rgba(22,163,74,0.14);
+      border-left:4px solid #22c55e;
+    }
+    .box-important{
+      background:rgba(245,158,11,0.14);
+      border-left:4px solid #facc15;
+    }
+    .error{
+      background:rgba(248,113,113,0.14);
+      border-left:4px solid #f87171;
+    }
+    .lexique{
+      background:rgba(59,130,246,0.12);
+      border-left:4px solid #7dd3fc;
+    }
+    .anecdote{
+      background:rgba(254,243,199,0.9);
+      border-left:4px solid #e4872d;
+    }
+
+    .reponse{
+      margin-top:0.7em;
+      color:#c7d2fe;
+      font-weight:bold;
+      text-align:center;
+      font-size:0.95rem;
+    }
+    label{
+      margin-right:14px;
+      font-size:0.9rem;
+    }
+
+    pre{
+      background:#020617;
+      border-radius:6px;
+      padding:8px 13px;
+      margin:5px 0;
+      font-size:0.95rem;
+      color:#e5e7eb;
+      overflow-x:auto;
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+  </style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-    <h1>Masterclass — Du langage naturel au code Python</h1>
-    <div class="intro">
-        Comment transformer un énoncé ou un algorithme en français en un vrai code Python fonctionnel ?  
-        <b>Méthodologie, exemples interactifs, quiz et astuces pour devenir autonome !</b>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//python-LANGNAT</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Passage du langage naturel au code Python · analyse, pseudo-code, boucles, conditions.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du module Langage naturel → Python...</div>
+        <div class="terminal-line">[PARSE] Analyse des énoncés, extraction des étapes et des variables...</div>
+        <div class="terminal-line">[BUILD] Construction du pseudo-code puis traduction en boucles, tests et fonctions.</div>
+        <div class="terminal-line">[OK]  Prêt : exemples commentés, quiz rapides et exercices interactifs.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
     </div>
-</header>
-<main>
-<section>
-    <h2>📝 Définition & enjeu</h2>
-    <div class="infos">
-        Passer du langage naturel (“écrire un programme qui…”) au Python demande d’analyser l’énoncé, découper les étapes, traduire chaque action en instruction Python.
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Python
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
     </div>
-    <ul>
-        <li>En NSI, c’est ce qui permet de coder “pour de vrai” des algorithmes, des jeux, des scripts !</li>
-        <li>Ce passage est au cœur de la programmation : comprendre, décoder, reformuler.</li>
-    </ul>
-</section>
-<section>
-    <h2>📗 Étapes méthodologiques</h2>
-    <ol>
-        <li>Lire et reformuler l’énoncé en étapes simples, courtes</li>
-        <li>Déterminer les variables à utiliser</li>
-        <li>Identifier les structures nécessaires (boucles, tests, listes, fonctions…)</li>
-        <li>Traduire chaque étape ou action en instruction Python</li>
-        <li>Vérifier (mentalement/cas concrets) l’enchaînement</li>
-    </ol>
-    <div class="box-important">
-        Astuce : utiliser un papier/crayon pour poser ses idées, ou écrire un pseudo-code intermédiaire avant de rédiger le Python.
-    </div>
-</section>
-<section>
-    <h2>🟦 Exemples concrets (énoncé -> Python)</h2>
-    <b>Exemple 1 : “Afficher les 10 premiers entiers positifs”</b>
-    <pre>
-# Langage naturel : Pour n allant de 1 à 10, afficher n.
+
+    <div class="page-padding">
+      <div class="content-card">
+        <h1>Masterclass — Du langage naturel au code Python</h1>
+        <p style="margin-bottom:1.2em;font-size:0.98rem;color:#e0e7ff;">
+          Comment transformer un énoncé ou un algorithme en français en un vrai code Python fonctionnel ? 
+          Méthodologie, exemples interactifs, quiz et astuces pour devenir autonome.
+        </p>
+
+        <section>
+          <h2>📝 Définition & enjeu</h2>
+          <div class="infos">
+            Passer du langage naturel (« écrire un programme qui… ») à Python consiste à analyser l’énoncé, 
+            découper les étapes, puis traduire chaque action en instruction Python structurée.
+          </div>
+          <ul>
+            <li>En NSI, c’est ce qui permet de coder « pour de vrai » des algorithmes, des jeux, des scripts.</li>
+            <li>Ce passage est au cœur de la programmation : comprendre, décoder, reformuler.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>📗 Étapes méthodologiques</h2>
+          <ol>
+            <li>Lire et reformuler l’énoncé en étapes simples et courtes.</li>
+            <li>Déterminer les variables à utiliser.</li>
+            <li>Identifier les structures nécessaires (boucles, tests, listes, fonctions…).</li>
+            <li>Traduire chaque étape ou action en instruction Python.</li>
+            <li>Vérifier l’enchaînement avec des cas concrets simples.</li>
+          </ol>
+          <div class="box-important">
+            Astuce : utilise un brouillon ou un pseudo-code intermédiaire avant de rédiger le code Python final.
+          </div>
+        </section>
+
+        <section>
+          <h2>🟦 Exemples concrets (énoncé → Python)</h2>
+          <b>Exemple 1 : « Afficher les 10 premiers entiers positifs »</b>
+          <pre>
+# Langage naturel : Pour n allant de 1 à 10, afficher n.
 for n in range(1, 11):
-    print(n)              # Affiche 1, 2, ..., 10
-    </pre>
-    <b>Exemple 2 : “Demander l’âge d’un utilisateur et afficher s’il est majeur”</b>
-    <pre>
+    print(n)          # Affiche 1, 2, ..., 10
+          </pre>
+
+          <b>Exemple 2 : « Demander l’âge d’un utilisateur et afficher s’il est majeur »</b>
+          <pre>
 # Lire un entier, tester la condition, afficher la phrase correspondante
-age = int(input('Entrez votre âge : '))
+age = int(input("Entrez votre âge : "))
 if age >= 18:
     print("Majeur")
 else:
     print("Mineur")
-    </pre>
-    <b>Exemple 3 : “Calculer la somme des éléments d’une liste”</b>
-    <pre>
+          </pre>
+
+          <b>Exemple 3 : « Calculer la somme des éléments d’une liste »</b>
+          <pre>
 L = [2, 5, 8, 3]
 somme = 0
 for val in L:
     somme += val
 print(somme)
-    </pre>
-</section>
-<section>
-    <h2>💡 Mini schéma de passage</h2>
-    <div class="infos">
-        <b>Énoncé naturel</b> <span style="font-size:1.3em">➡️</span> <b>Étapes logiques</b> <span style="font-size:1.3em">➡️</span> <b>Code Python structuré</b><br>
-        <i>Astuce : note toujours en marges les tests, conditions, boucles, puis code-les un par un !</i>
-    </div>
-</section>
-<section class="box box-exo">
-    <h2>💡 Exercice interactif</h2>
-    <p>Écrire un programme qui affiche tous les multiples de 3 entre 1 et 20 inclus.</p>
-    <button onclick="afficheReponseLangNat()">Voir la correction</button>
-    <div class="reponse" id="exo-reponse-langnat" style="display:none;">
-        <pre>
+          </pre>
+        </section>
+
+        <section>
+          <h2>💡 Mini schéma de passage</h2>
+          <div class="infos">
+            <b>Énoncé naturel</b> ➜ <b>Étapes logiques / pseudo-code</b> ➜ <b>Code Python structuré</b><br>
+            <i>Astuce : note en marge les tests, boucles et variables, puis code-les un par un.</i>
+          </div>
+        </section>
+
+        <section class="box-exo">
+          <h2>💡 Exercice interactif</h2>
+          <p>Écrire un programme qui affiche tous les multiples de 3 entre 1 et 20 inclus.</p>
+          <button onclick="afficheReponseLangNat()">Voir la correction</button>
+          <div class="reponse" id="exo-reponse-langnat" style="display:none;">
+            <pre>
 for n in range(1, 21):
     if n % 3 == 0:
         print(n)
-        </pre>
-    </div>
-</section>
-<section class="box-exo">
-    <h2>🔥 Exercice “expert”</h2>
-    <p>Langage naturel : “Demander un nombre n à l’utilisateur, afficher tous les diviseurs de n”.</p>
-    <button onclick="document.getElementById('exo2-reponse-langnat').style.display='block';">Voir la correction</button>
-    <div class="reponse" id="exo2-reponse-langnat" style="display:none;">
-        <pre>
+            </pre>
+          </div>
+        </section>
+
+        <section class="box-exo">
+          <h2>🔥 Exercice “expert”</h2>
+          <p>Langage naturel : « Demander un nombre n à l’utilisateur, afficher tous les diviseurs de n ».</p>
+          <button onclick="document.getElementById('exo2-reponse-langnat').style.display='block';">Voir la correction</button>
+          <div class="reponse" id="exo2-reponse-langnat" style="display:none;">
+            <pre>
 n = int(input("Entrez un nombre : "))
-for d in range(1, n+1):
+for d in range(1, n + 1):
     if n % d == 0:
         print(d)
-        </pre>
+            </pre>
+          </div>
+        </section>
+
+        <section class="quiz">
+          <h2>🎯 Quiz express</h2>
+          <p>Traduction de « Répéter l’action 5 fois » :</p>
+          <button onclick="quizLangNat(0)">for i in range(5): ...</button>
+          <button onclick="quizLangNat(1)">while i &lt; 5: ...</button>
+          <div class="reponse" id="rep-quiz-langnat"></div>
+
+          <p>Traduction de « Si x est pair, afficher x » :</p>
+          <button onclick="quizLangNat2(0)">if x % 2 == 0: print(x)</button>
+          <button onclick="quizLangNat2(1)">if x/2 == 1: print(x)</button>
+          <div class="reponse" id="rep-quiz-langnat2"></div>
+        </section>
+
+        <section class="box-important">
+          <h2>🌐 Applications concrètes</h2>
+          <ul>
+            <li>NSI et algorithmique : résolution de problèmes, scripts, jeux.</li>
+            <li>Maths / Physique : simulations, modélisation, calculs répétés.</li>
+            <li>Informatique / data : traitement de données, automatisation, IA.</li>
+            <li>Vie pro : robots, tests automatiques, jeux vidéo, applis web.</li>
+          </ul>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes à éviter</h2>
+          <ul>
+            <li>Coller mot à mot au texte sans reformuler en étapes logiques.</li>
+            <li>Oublier d’initialiser les variables (somme, compteur…).</li>
+            <li>Mal traduire la condition (pair / impair, répétition / instruction unique…).</li>
+            <li>Oublier la lecture avec de>input()</code>.</li>
+            <li>Négliger l’indentation qui structure les blocs de code.</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique express</h2>
+          <b>Langage naturel</b> : texte courant, langage humain.<br>
+          <b>Algorithme</b> : suite ordonnée d’instructions finie et non ambiguë.<br>
+          <b>Pseudo-code</b> : description structurée proche du code, mais indépendante d’un langage précis.<br>
+          <b>Boucle</b> : structure qui répète un bloc d’instructions (de>for</code> ou de>while</code>).
+        </section>
+
+        <section class="rubrique">
+          <h3>📖 Petite histoire</h3>
+          <ul>
+            <li>Le passage du langage humain au code est au cœur de l’informatique théorique avec Alan Turing et l’idée de « machine universelle ».</li>
+            <li>Les langages modernes comme Python simplifient ce passage grâce à une syntaxe claire, des IDE et une large documentation.</li>
+          </ul>
+          <div class="source">Source : histoire de l’algorithmique et de la programmation, ressources de cours et encyclopédies.</div>
+        </section>
+
+        <section class="anecdote">
+          <b>Astuce-mémoire :</b> « Explique à voix haute ce que tu veux coder… puis code-le. Une phrase claire = une ou deux lignes de code. »
+        </section>
+
+        <section>
+          <h2>💡 Méthodologie pour progresser</h2>
+          <ul>
+            <li>Commence par reformuler : « Qu’est-ce que je dois faire, dans quel ordre ? ».</li>
+            <li>Découpe le problème en mini-tâches et code-les l’une après l’autre.</li>
+            <li>Teste ton code sur des petits exemples pour valider la logique.</li>
+            <li>Commente chaque bloc en te référant aux phrases de l’énoncé.</li>
+          </ul>
+        </section>
+      </div>
     </div>
-</section>
-<section class="quiz">
-    <h2>🎯 Quiz express</h2>
-    <p>Traduction de “Répéter l’action 5 fois” :</p>
-    <button onclick="quizLangNat(0)">for i in range(5): ...</button>
-    <button onclick="quizLangNat(1)">while i &lt; 5: ...</button>
-    <div class="reponse" id="rep-quiz-langnat"></div>
-    <p>Traduction de “Si x est pair, afficher x” :</p>
-    <button onclick="quizLangNat2(0)">if x % 2 == 0: print(x)</button>
-    <button onclick="quizLangNat2(1)">if x/2 == 1: print(x)</button>
-    <div class="reponse" id="rep-quiz-langnat2"></div>
-</section>
-<section class="box-important">
-    <h2>🌐 Applications concrètes</h2>
-    <ul>
-        <li>NSI & Algorithmique: résoudre des problèmes, automatiser des calculs, écrire de vrais scripts</li>
-        <li>Physique/Maths: simulation, modélisation, calculs répétés</li>
-        <li>Info/Data Science: traitement de données, automatisation, IA</li>
-        <li>Vie pro: robots, tests automatiques, jeux vidéos, apps web...</li>
-    </ul>
-</section>
-<section class="error">
-    <h2>❌ Erreurs fréquentes à éviter</h2>
-    <ul>
-        <li>Trop “coller” mot à mot à l’énoncé : toujours reformuler en étapes logiques</li>
-        <li>Oublier d’initialiser les variables (somme, compteur…)</li>
-        <li>Mal traduire la condition (ex : pair/impair, boucle/instruction unique…)</li>
-        <li>Oublier la gestion des entrées avec input()</li>
-        <li>Confondre indentation et bloc de code</li>
-    </ul>
-</section>
-<section class="lexique">
-    <h2>📚 Lexique express</h2>
-    <b>Langage naturel</b>: texte courant/humain<br>
-    <b>Algorithme</b>: suite ordonnée d'instructions<br>
-    <b>Pseudo-code</b>: version simplifiée, proche du code<br>
-    <b>Boucle</b>: répétition, “for” ou “while”
-</section>
-<section class="rubrique">
-    <h3>📖 Petite histoire</h3>
-    <ul>
-        <li>Le passage du langage humain au code est un art : il fonde l’informatique avec Alan Turing (“machine universelle”)</li>
-        <li>La programmation moderne facilite ce passage avec des langages clairs, des IDE évolués, et la documentation en ligne</li>
-    </ul>
-    <div class="source">Source : histoire de l’algorithmique, Wikipedia</div>
-</section>
-<section class="anecdote">
-    <b>Astuce-mémoire</b>: “Explique à voix haute ce que tu veux coder… puis code-le ! À chaque phrase, une ligne !"  
-</section>
-<section>
-    <h2>💡 Méthodologie pour progresser</h2>
-    <ul>
-        <li>Commence toujours par reformuler : “Qu’est-ce que je dois faire, dans quel ordre ?”</li>
-        <li>Découpe le problème en mini-tâches et code-les l’une après l’autre</li>
-        <li>Pense à tester ton code sur des petits cas concrets</li>
-        <li>Utilise des commentaires pour lier chaque étape au texte de l’énoncé</li>
-    </ul>
-</section>
-</main>
-<script>
-function quizLangNat(rep) {
-    let repElem = document.getElementById("rep-quiz-langnat");
-    repElem.textContent = (rep === 0) ? "Bonne traduction ! Boucle “for” pour répéter l’action." : "Possible, mais for...range() est plus adapté ici.";
-}
-function quizLangNat2(rep) {
-    let repElem = document.getElementById("rep-quiz-langnat2");
-    repElem.textContent = (rep === 0) ? "Exact ! x % 2 == 0 vérifie que x est pair." : "Faux, x / 2 == 1 ne teste pas la parité.";
-}
-function afficheReponseLangNat() {
-    document.getElementById("exo-reponse-langnat").style.display = "block";
-}
-</script>
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
+    </div>
+  </div>
+
+  <script>
+    // Masquer le loader et afficher le contenu après 3 secondes[web:20][web:21][web:12]
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
+
+    function quizLangNat(rep) {
+      let repElem = document.getElementById("rep-quiz-langnat");
+      repElem.textContent = (rep === 0)
+        ? "Bonne traduction ! La boucle for...range(5) répète bien 5 fois."
+        : "Possible, mais il faut gérer i soi-même ; for...range(5) est plus direct ici.";
+    }
+    function quizLangNat2(rep) {
+      let repElem = document.getElementById("rep-quiz-langnat2");
+      repElem.textContent = (rep === 0)
+        ? "Exact ! x % 2 == 0 teste que x est pair."
+        : "Faux : x / 2 == 1 ne caractérise pas les nombres pairs.";
+    }
+    function afficheReponseLangNat() {
+      document.getElementById("exo-reponse-langnat").style.display = "block";
+    }
+  </script>
 </body>
 </html>

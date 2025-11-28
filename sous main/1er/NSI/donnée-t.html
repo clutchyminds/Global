@@ -2,328 +2,797 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Masterclass NSI : Représentation des données – Types construits</title>
+  <title>Global - NSI · Types construits</title>
   <meta name="description" content="Cours complet NSI sur les types construits (listes, tableaux, tuples, ensembles, dictionnaires), synthèse interactive et quiz.">
   <style>
-    body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
-    header { background: linear-gradient(90deg,#eef4fb,#ffe7fa 80%); color: #243552; padding: 30px 0 12px; text-align: center;}
-    header h1 { font-size: 2.3rem; margin: 0 0 10px; color: #ba20b8;}
-    header .intro { font-size: 1rem;}
-    main { max-width: 950px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(186,32,184,0.12);}
-    h2 { color: #ba20b8; margin-top: 32px;}
-    h3 { color: #f5a623; margin-top: 22px;}
-    ul, ol { margin-left: 1.4em;}
-    .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
-    .infos {background: #f6eafa; border-left: 6px solid #ba20b8;}
-    .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
-    .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
-    .error {background: #ffeaea; border-left: 7px solid #e06359;}
-    .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
-    .anecdote {background: #fae7fc; border-left: 7px solid #ba20b8; font-style: italic; margin: 1em 0; padding: 12px 17px; border-radius: 6px;}
-    .source { font-size: 0.9em; color: #999; text-align: right;}
-    button, .btn-expl {background: #ba20b8; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 14px; cursor: pointer; margin-right: 8px; margin-top: 7px; transition: background 0.2s;}
-    button:hover, .btn-expl:hover { background: #870674;}
-    #schema { margin: 2em auto 1em; display: block; background: #f9f7fa; border-radius: 8px; border: 1px solid #d1d5db;}
-    .info-bulle {display:none;position: absolute; background:#fffefc; border:1px solid #243552; border-radius:5px;padding:10px;font-size:1rem;z-index:10; box-shadow: 0 3px 12px rgba(186,32,184,0.08);}
-    .reponse { margin-top: 0.7em; color: #ba20b8; font-weight: bold; text-align: center;}
-    #desc-schema { background: #f6eafa; border-radius: 6px; color: #ba20b8; font-weight: bold; padding: 10px; text-align: center; min-height: 25px; margin-bottom: 10px;}
-    table { border-collapse:collapse; margin: 10px auto;}
-    th, td { border:1px solid #ba20b8; padding:7px 15px; text-align:center;}
-    th { background:#fbe9fa;}
-    td.type { font-weight:bold; }
-    @media (max-width: 900px) { main { padding: 12px 2px; } }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --violet-main:#ba20b8;
+      --blue-main:#1877f2;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(244,114,182,0.25), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#111827 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(540px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(244,114,182,0.35),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(244,114,182,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(244,114,182,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#fce7f3;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#f9a8d4,transparent);
+      box-shadow:0 0 12px rgba(244,114,182,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#f9a8d4;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(244,114,182,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#f9a8d4,#ec4899,#a855f7);
+      box-shadow:0 0 18px rgba(244,114,182,0.9);
+      animation:barProgress 2.1s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#fce7f3;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(244,114,182,0.2) 45%,
+          rgba(244,114,182,0.45) 50%,
+          rgba(244,114,182,0.2) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#f9a8d4;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(186,32,184,0.95),rgba(59,130,246,0.95));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#f9fafb;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:230px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#fbcfe8;
+      box-shadow:0 0 12px rgba(251,207,232,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:950px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:26px 26px 30px;
+      color:#e5f1ff;
+    }
+
+    h1,h2{
+      color:#fce7f3;
+      margin-bottom:10px;
+    }
+    h3{
+      color:#fde68a;
+      margin-top:18px;
+      margin-bottom:10px;
+    }
+    h2{margin-top:26px;font-size:1.4rem;}
+    p,li{font-size:0.98rem;line-height:1.6;}
+    ul,ol{margin-left:1.3em;margin-top:0.3em;margin-bottom:0.8em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      padding:12px 20px;
+      border-radius:6px;
+      margin:1.1em 0;
+      font-size:0.97rem;
+    }
+    .infos{
+      background:#f6eafa;
+      border-left:6px solid #ba20b8;
+      color:#3b0764;
+    }
+    .box-exo{
+      background:#e5ffe7;
+      border-left:7px solid #167c2b;
+    }
+    .box-important{
+      background:#fff7ec;
+      border-left:7px solid #f5a623;
+    }
+    .error{
+      background:#fee2e2;
+      border-left:7px solid #e06359;
+    }
+    .lexique{
+      background:#f7fafd;
+      border-left:7px solid #243552;
+      padding:12px;
+    }
+    .anecdote{
+      background:#fae7fc;
+      border-left:7px solid #ba20b8;
+      font-style:italic;
+      padding:12px 17px;
+    }
+
+    #schema{
+      margin:2em auto 1em;
+      display:block;
+      background:#f9f7fa;
+      border-radius:8px;
+      border:1px solid #d1d5db;
+    }
+    .info-bulle{
+      display:none;
+      position:absolute;
+      background:#fffefc;
+      border:1px solid #243552;
+      border-radius:5px;
+      padding:10px;
+      font-size:1rem;
+      z-index:10;
+      box-shadow:0 3px 12px rgba(186,32,184,0.18);
+      max-width:260px;
+      color:#111827;
+    }
+    .reponse{
+      margin-top:0.7em;
+      color:#f9a8d4;
+      font-weight:bold;
+      text-align:center;
+      font-size:0.95rem;
+    }
+    #desc-schema{
+      background:#f6eafa;
+      border-radius:6px;
+      color:#ba20b8;
+      font-weight:bold;
+      padding:10px;
+      text-align:center;
+      min-height:25px;
+      margin-bottom:10px;
+    }
+    table{
+      border-collapse:collapse;
+      margin:10px auto;
+      background:#020617;
+      color:#e5e7eb;
+    }
+    th,td{
+      border:1px solid #ba20b8;
+      padding:7px 15px;
+      text-align:center;
+    }
+    th{
+      background:#fbe9fa;
+      color:#4a044e;
+    }
+    td.type{font-weight:bold;}
+    code{
+      background:#020617;
+      border-radius:4px;
+      padding:0 3px;
+      font-size:0.9rem;
+      color:#e5e7eb;
+    }
+    button,.btn-expl{
+      background:#ba20b8;
+      color:#fdf2ff;
+      font-weight:bold;
+      border:none;
+      border-radius:6px;
+      padding:8px 14px;
+      cursor:pointer;
+      margin-right:8px;
+      margin-top:7px;
+      transition:background 0.2s,transform 0.15s;
+    }
+    button:hover,.btn-expl:hover{
+      background:#870674;
+      transform:translateY(-1px);
+    }
+
+    @media (max-width:900px){
+      .content-card{padding:12px 6px 20px;}
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
   </style>
 </head>
 <body>
-<header>
-  <h1>Masterclass NSI : Représentation des données – Types construits</h1>
-  <div class="intro">Lis, expérimente et retiens tout sur listes, tableaux, tuples, ensembles et dictionnaires en NSI !</div>
-</header>
-<main>
-<section>
-  <h2>📚 Cours complet – Types construits en NSI</h2>
-  <p>
-    Les <b>types construits</b> permettent de regrouper plusieurs valeurs (de base ou non) dans la même variable : 
-    l’ordinateur les stocke et les manipule selon des règles précises.
-  </p>
-  <table>
-    <tr>
-      <th>Type construit</th>
-      <th>Exemple</th>
-      <th>Présentation</th>
-      <th>Opérations courantes</th>
-    </tr>
-    <tr>
-      <td class="type">Liste</td>
-      <td>[3, 6, 9]</td>
-      <td>Suite d’éléments modifiable, ordonnée.  
-        <br>Les éléments peuvent être de tout type !</td>
-      <td>Ajout (<b>append()</b>), accès par index, suppression</td>
-    </tr>
-    <tr>
-      <td class="type">Tableau</td>
-      <td>[[1,2],[3,4]]</td>
-      <td>Grille ou matrice (souvent à 2 dimensions).  
-        <br>Comme une feuille Excel !</td>
-      <td>Parcours ligne/colonne, accès rapide, efficace en calcul</td>
-    </tr>
-    <tr>
-      <td class="type">Tuple</td>
-      <td>(7, "Bordeaux")</td>
-      <td>Suite de valeurs non modifiables (immuables), ordonnées.</td>
-      <td>Indexation, stockage de coordonnées, retour multiple par fonction</td>
-    </tr>
-    <tr>
-      <td class="type">Ensemble</td>
-      <td>{1, 2, 3}</td>
-      <td>Groupe <b>non ordonné</b>, pas de doublons.</td>
-      <td>Test d’appartenance (<b>in</b>), union, intersection</td>
-    </tr>
-    <tr>
-      <td class="type">Dictionnaire</td>
-      <td>{'nom':'Jean', 'age':17}</td>
-      <td>Clés → valeurs.<br>Accès direct à chaque info (comme un annuaire)</td>
-      <td>Ajout/modif via clé, recherche rapide</td>
-    </tr>
-  </table>
-  <p>
-    <b>Pourquoi les utiliser ?</b>
-    <br>
-    - Organiser l’info : garder une collection, une table, associer noms/valeurs...
-    <br>
-    - Gagner en efficacité : traiter 1000 valeurs en une seule variable !
-    <br>
-    - Faire des traitements plus évolués : recherche, tris, parcours de données, etc.
-  </p>
-  <ul>
-    <li><b>En mémoire</b> : chaque élément est numéroté (index), ou associé à une clé (dico), les éléments sont rangés “à la suite”.</li>
-    <li> <b>Syntaxe Python :</b> 
-      <code>
-        liste = [5, 7, 6]<br>
-        matrice = [[1,2],[3,4]]<br>
-        t = (x, y)<br>
-        s = {'A', 'B'}<br>
-        d = {"clé":valeur}
-      </code>
-    </li>
-    <li>
-      Pour accéder à un élément : <b>liste[1]</b> — pour les dictionnaires : <b>d["clé"]</b>
-    </li>
-  </ul>
-  <p>
-    <b>Utilisé partout</b> : listes de courses, tableaux Excel, grille de jeu, stats de joueur, messages, configurations...
-  </p>
-</section>
-<section>
-  <h2>📋 Fiche synthèse interactive</h2>
-  <ul id="ul-synthese">
-    <li><b>Comment accéder au 3<sup>e</sup> élément d’une liste ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('indice')">Voir explication</button>
-      <span id="syn-indice" style="display:none;color:#167c2b;">
-        Utilise l’<b>indice</b> 2, car on commence à compter à 0 ! <code>ma_liste[2]</code>
-      </span>
-    </li>
-    <li><b>Quelle différence entre liste et tuple ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('tuple')">Réponse !</button>
-      <span id="syn-tuple" style="display:none;color:#f5a623;">
-        La liste est modifiable (“mutable”), le tuple non ! 
-      </span>
-    </li>
-    <li><b>Ce que stocke un dictionnaire ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('dico')">Clique ici</button>
-      <span id="syn-dico" style="display:none;color:#e06359;">
-        Des couples “clé : valeur”. Ex. : noms et numéros, mots et traductions.
-      </span>
-    </li>
-    <li><b>Défi : Un ensemble peut-il contenir 2 fois la même valeur ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('set')">Affiche la solution</button>
-      <span id="syn-set" style="display:none;color:#243552;">
-        Non, pas de doublon dans un <b>set</b>.
-      </span>
-    </li>
-    <li><b>Astuce : Comment trier une liste ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('sort')">Afficher</button>
-      <span id="syn-sort" style="display:none;color:#1877f2;">
-        Avec <code>ma_liste.sort()</code> ou <code>sorted(ma_liste)</code>.
-      </span>
-    </li>
-  </ul>
-  <div>
-    <button onclick="quizSynthese()">Quiz surprise</button>
-    <span class="reponse" id="quiz-synthese-res"></span>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//nsi-TYPES-CONSTRUITS</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Types construits NSI · listes, tableaux, tuples, ensembles, dictionnaires et schéma mémoire.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du module Représentation des données — types construits...</div>
+        <div class="terminal-line">[DATA] Configuration des structures Python : list, tuple, set, dict, matrice.</div>
+        <div class="terminal-line">[GRAPH] Schéma interactif pour visualiser chaque type en mémoire.</div>
+        <div class="terminal-line">[OK]  Prêt : cours complet, fiche synthèse, quiz et exercices NSI.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
+    </div>
   </div>
-</section>
-<section>
-  <h2>🗂️ Schéma interactif</h2>
-  <canvas id="schema" width="900" height="235"></canvas>
-  <div id="desc-schema">Survole ou clique les zones pour visualiser listes, tableaux, ensembles, tuples et dictionnaires en mémoire.</div>
-  <div id="info-bulle" class="info-bulle"></div>
-</section>
-<section class="box box-exo">
-  <h2>💡 Exercices interactifs</h2>
-  <p>Quel résultat donne <code>liste = [6,2,11]; liste[1]</code> ?
-    <button onclick="afficheReponseNSI1()">Voir la correction</button>
-  </p>
-  <div class="reponse" id="exo-reponse-nsi1" style="display:none;">
-    2 — On accède au deuxième élément (indice 1).
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - NSI
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="content-card">
+        <h1>Masterclass NSI : Représentation des données – Types construits</h1>
+        <div class="intro" style="color:#e9d5ff;margin-bottom:10px;">
+          Lis, expérimente et retiens tout sur listes, tableaux, tuples, ensembles et dictionnaires en NSI.
+        </div>
+
+        <main>
+          <section>
+            <h2>📚 Cours complet – Types construits</h2>
+            <p>
+              Les <b>types construits</b> regroupent plusieurs valeurs dans une seule variable,
+              ce qui permet de structurer les données et de les manipuler efficacement.
+            </p>
+            <table>
+              <tr>
+                <th>Type construit</th>
+                <th>Exemple</th>
+                <th>Présentation</th>
+                <th>Opérations courantes</th>
+              </tr>
+              <tr>
+                <td class="type">Liste</td>
+                <td>[3, 6, 9]</td>
+                <td>Suite ordonnée, modifiable, pouvant contenir tout type d’objets.</td>
+                <td>append(), remove(), indexation, parcours.</td>
+              </tr>
+              <tr>
+                <td class="type">Tableau</td>
+                <td>[[1,2],[3,4]]</td>
+                <td>Matrice 2D (comme un mini tableur).</td>
+                <td>Accès par ligne/colonne, double boucle, calculs.</td>
+              </tr>
+              <tr>
+                <td class="type">Tuple</td>
+                <td>(7, "Bordeaux")</td>
+                <td>Suite ordonnée non modifiable (immuable).</td>
+                <td>Indexation, retour multiple de fonctions.</td>
+              </tr>
+              <tr>
+                <td class="type">Ensemble</td>
+                <td>{1, 2, 3}</td>
+                <td>Collection non ordonnée sans doublons.</td>
+                <td>in, union, intersection, différence.</td>
+              </tr>
+              <tr>
+                <td class="type">Dictionnaire</td>
+                <td>{'nom':'Jean','age':17}</td>
+                <td>Paires clé → valeur (comme un annuaire).</td>
+                <td>Accès par clé, ajout/suppression, parcours items().</td>
+              </tr>
+            </table>
+            <p>
+              <b>Syntaxe Python :</b><br>
+              de>
+                liste = [5, 7, 6]<br>
+                matrice = [[1,2],[3,4]]<br>
+                t = (x, y)<br>
+                s = {'A', 'B'}<br>
+                d = {"clé": valeur}
+              </code>
+            </p>
+          </section>
+
+          <section>
+            <h2>📋 Fiche synthèse interactive</h2>
+            <ul id="ul-synthese">
+              <li><b>3ᵉ élément d’une liste ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('indice')">Voir</button>
+                <span id="syn-indice" style="display:none;color:#22c55e;">
+                  Index 2 (on commence à 0) : de>ma_liste[2]</code>.
+                </span>
+              </li>
+              <li><b>Liste vs tuple ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('tuple')">Réponse</button>
+                <span id="syn-tuple" style="display:none;color:#facc15;">
+                  Liste mutable, tuple immuable.
+                </span>
+              </li>
+              <li><b>Que stocke un dictionnaire ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('dico')">Voir</button>
+                <span id="syn-dico" style="display:none;color:#f97316;">
+                  Des couples clé : valeur, par exemple nom → numéro.
+                </span>
+              </li>
+              <li><b>Un ensemble accepte-t-il les doublons ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('set')">Afficher</button>
+                <span id="syn-set" style="display:none;color:#1f2937;">
+                  Non : tout doublon est supprimé automatiquement.
+                </span>
+              </li>
+              <li><b>Trier une liste ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('sort')">Voir code</button>
+                <span id="syn-sort" style="display:none;color:#60a5fa;">
+                  de>ma_liste.sort()</code> (en place) ou de>sorted(ma_liste)</code> (nouvelle liste).
+                </span>
+              </li>
+            </ul>
+            <div>
+              <button onclick="quizSynthese()">Quiz surprise</button>
+              <span class="reponse" id="quiz-synthese-res"></span>
+            </div>
+          </section>
+
+          <section>
+            <h2>🗂️ Schéma interactif</h2>
+            anvas id="schema" width="900" height="235"></canvas>
+            <div id="desc-schema">Survole ou clique les zones pour visualiser listes, tableaux, ensembles, tuples et dictionnaires.</div>
+            <div id="info-bulle" class="info-bulle"></div>
+          </section>
+
+          <section class="box-exo">
+            <h2>💡 Exercices interactifs</h2>
+            <p>Résultat de de>liste = [6,2,11]; liste[1]</code> ?</p>
+            <button onclick="afficheReponseNSI1()">Voir la correction</button>
+            <div class="reponse" id="exo-reponse-nsi1" style="display:none;">
+              2 : c’est l’élément d’indice 1 (deuxième élément).
+            </div>
+            <p>Que donne l’ensemble de>{1, 2, 2, 4}</code> ?</p>
+            <button onclick="document.getElementById('exo2-reponse-nsi').style.display='block';">Voir la correction</button>
+            <div class="reponse" id="exo2-reponse-nsi" style="display:none;">
+              {1, 2, 4} : le doublon 2 est supprimé.
+            </div>
+          </section>
+
+          <section class="quiz">
+            <h2>🎯 Quiz rapide</h2>
+            <p>Quel type associe un prénom à un numéro de téléphone ?</p>
+            <button onclick="quizNSI(0)">Ensemble</button>
+            <button onclick="quizNSI(1)">Dictionnaire</button>
+            <button onclick="quizNSI(2)">Tuple</button>
+            <div class="reponse" id="rep-quiz-nsi"></div>
+
+            <p>En Python, quelle syntaxe crée une liste vide ?</p>
+            <button onclick="quizNSI2(0)">[]</button>
+            <button onclick="quizNSI2(1)">{}</button>
+            <button onclick="quizNSI2(2)">( )</button>
+            <div class="reponse" id="rep-quiz-nsi2"></div>
+          </section>
+
+          <section class="box-important">
+            <h2>🌍 Applications concrètes</h2>
+            <ul>
+              <li>Listes de courses, collections d’objets, notes d’élèves.</li>
+              <li>Dictionnaire pour contacts, configs, traductions.</li>
+              <li>Tableaux pour images, grilles de jeux, données scientifiques.</li>
+            </ul>
+          </section>
+
+          <section class="error">
+            <h2>❌ Erreurs fréquentes</h2>
+            <ul>
+              <li>Indexer à partir de 1 au lieu de 0.</li>
+              <li>Confondre liste (ordonnée) et ensemble (non ordonné, sans doublon).</li>
+              <li>Indexer un dictionnaire avec un entier plutôt qu’une clé.</li>
+              <li>Essayer de modifier un tuple (impossible).</li>
+              <li>Oublier la syntaxe : [] pour liste, {} pour set/dict, () pour tuple.</li>
+            </ul>
+          </section>
+
+          <section class="lexique">
+            <h2>📚 Lexique express</h2>
+            <b>Liste</b> : suite ordonnée modifiable.<br>
+            <b>Tableau</b> : matrice 2D de valeurs.<br>
+            <b>Tuple</b> : suite ordonnée immuable.<br>
+            <b>Ensemble</b> : collection sans doublon, non ordonnée.<br>
+            <b>Dictionnaire</b> : couples clé : valeur.
+          </section>
+
+          <section class="anecdote">
+            <b>Astuces mémoire :</b> crochets → lisTE ; tuple = “tunique” (pas modifié après coup) ; dico = dictionnaire de téléphone (clé = nom, valeur = numéro).
+          </section>
+
+          <section>
+            <h2>💡 Méthodologie pour réussir ton contrôle</h2>
+            <ul>
+              <li>Choisir le type construit adapté (liste, tuple, set, dict, matrice).</li>
+              <li>Maîtriser la création, l’accès, la modification (si possible) et le parcours.</li>
+              <li>Justifier son choix de structure en lien avec le problème.</li>
+              <li>Faire attention aux indices et à la mutabilité.</li>
+            </ul>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
+    </div>
   </div>
-  <p>Que renvoie <code>{1, 2, 2, 4}</code> comme ensemble ?
-    <button onclick="document.getElementById('exo2-reponse-nsi').style.display='block';">Voir la correction</button>
-  </p>
-  <div class="reponse" id="exo2-reponse-nsi" style="display:none;">
-    {1, 2, 4} : les doublons sont enlevés !
-  </div>
-</section>
-<section class="quiz">
-  <h2>🎯 Quiz rapide</h2>
-  <p>Quel type construit permet d’associer un prénom à un numéro de téléphone ?</p>
-  <button onclick="quizNSI(0)">Ensemble</button>
-  <button onclick="quizNSI(1)">Dictionnaire</button>
-  <button onclick="quizNSI(2)">Tuple</button>
-  <div class="reponse" id="rep-quiz-nsi"></div>
-  <p>En Python, comment créer une liste vide ?</p>
-  <button onclick="quizNSI2(0)">[]</button>
-  <button onclick="quizNSI2(1)">{}</button>
-  <button onclick="quizNSI2(2)">( )</button>
-  <div class="reponse" id="rep-quiz-nsi2"></div>
-</section>
-<section class="box-important">
-  <h2>🌍 Applications concrètes</h2>
-  <ul>
-    <li>Listes de courses, gestion d’une classe (noms), notes d’élèves (tableau), scores de jeux (dictionnaire), “amis Facebook” (ensemble)…</li>
-    <li>Manipuler et chercher rapidement dans ses données (liste de contacts téléphone, recherche dans une base, etc.)</li>
-    <li>Stockage de données réelles : tableaux d’images ou tables (Excel…)</li>
-  </ul>
-</section>
-<section class="error">
-  <h2>❌ Erreurs fréquentes à éviter</h2>
-  <ul>
-    <li>Compter à partir de 1 : l’ordinateur commence à 0 !</li>
-    <li>Confondre liste et ensemble (liste = ordonnée, ensemble = non ordonné et pas de doublon)</li>
-    <li>Chercher un élément par index dans un dictionnaire (on utilise une <b>clé</b>)</li>
-    <li>Penser que tout ce qui ressemble à une liste permet la modification (faux pour tuple)</li>
-    <li>Oublier la syntaxe des crochets <code>[]</code> (liste), accolades <code>{}</code> (ensemble, dico), parenthèses <code>()</code> (tuple)</li>
-  </ul>
-</section>
-<section class="lexique">
-  <h2>📚 Lexique express</h2>
-  <b>Liste :</b> suite ordonnée d’éléments, modifiable<br>
-  <b>Tableau :</b> structure à 2 dimensions (matrice)<br>
-  <b>Tuple :</b> suite ordonnée et non modifiable<br>
-  <b>Ensemble :</b> collection sans doublon et non ordonnée<br>
-  <b>Dictionnaire :</b> ensemble de couples “clé : valeur”
-</section>
-<section class="rubrique">
-  <h3>📖 Anecdotes et histoire</h3>
-  <ul>
-    <li>En Python, une “liste” correspond à un “tableau dynamique” en C++ ou Java !</li>
-    <li>Le type “dictionnaire” s’appelle “hashmap” ou “map” dans d’autres langages.</li>
-    <li>Un tuple peut servir à retourner plusieurs valeurs en une seule ligne dans une fonction Python !</li>
-    <li>La recherche dans un ensemble (“set”) est souvent plus rapide que dans une liste pour les gros volumes de données.</li>
-  </ul>
-  <div class="source">Source : NSI, Python, cours de programmation</div>
-</section>
-<section class="anecdote">
-  <b>Astuces mémoire</b> :
-  Les crochets “[]” dessinent bien une “listE” (E de Éléments) ! Un tuple = “tunique” (une seule fois, non modifiable), un dico = “données indexées par Clé-Objet” !
-</section>
-<section>
-  <h2>💡 Méthodologie pour réussir ton contrôle</h2>
-  <ul>
-    <li>Trouve le type construit adapté au problème : liste pour une suite, tuple pour des coordonnées, dico pour un répertoire, tableau pour une grille…</li>
-    <li>Maîtrise la syntaxe : crochets, parenthèses ou accolades</li>
-    <li>Sache parcourir, modifier, trier ou rechercher dans la structure – écris un exemple</li>
-    <li>Justifie pourquoi ce type résout bien le problème posé</li>
-    <li>Méfie-toi des indexations (on commence à zéro), et des types non mutables (tuple) !</li>
-  </ul>
-</section>
-</main>
-<script>
-function afficheSynthese(id) {
-  var el = document.getElementById("syn-"+id);
-  if (el.style.display==="none") { el.style.display="inline"; }
-  else { el.style.display="none"; }
-}
-function quizSynthese() {
-  let qs = [
-    {q:"Avec quel symbole crée-t-on un ensemble en Python ?", rep:"{"},
-    {q:"La fonction pour trier une liste en Python ?", rep:"sort"},
-    {q:"Est-ce qu’un tuple peut changer après création ?", rep:"non"},
-    {q:"Comment accéder à la valeur associée à la clé 'nom' dans {'nom':'Alex'} ?", rep:"['nom']"}
-  ];
-  let idx = Math.floor(Math.random()*qs.length);
-  let ask = qs[idx]; let reponse = prompt(ask.q);
-  let result = (reponse && reponse.toLowerCase().includes(ask.rep.toLowerCase())) ?
-    "Bravo ! " + ask.rep : "Réponse attendue : " + ask.rep;
-  document.getElementById("quiz-synthese-res").textContent = result;
-}
-// Schéma interactif pour types construits
-const schemaData = [
-  {x:60, y:180, w:163, h:46, zone:"Liste", bulle:"Liste = plusieurs valeurs en ordre, modifiable<br>[3, 5, 1, 7]", color:"#ba20b8"},
-  {x:280, y:70, w:178, h:46, zone:"Tableau", bulle:"Tableau (matrice) = grille à 2 dimensions<br>[[1,2],[3,4]]", color:"#79acee"},
-  {x:530, y:70, w:123, h:46, zone:"Tuple", bulle:"Tuple = valeurs immuables, ordonnées<br>(20, 'Paris')", color:"#f5a623"},
-  {x:320, y:170, w:125, h:46, zone:"Ensemble", bulle:"Ensemble = valeurs sans doublon, pas d’ordre !<br>{1, 1, 2, 3} → {1,2,3}", color:"#167c2b"},
-  {x:700, y:135, w:180, h:46, zone:"Dictionnaire", bulle:"Dictionnaire = couples clé/valeur<br>{'nom':'Ada', 'âge':20}", color:"#e06359"},
-];
-var canvas = document.getElementById("schema");
-var ctx = canvas.getContext("2d");
-function drawSchema() {
-  ctx.clearRect(0,0,900,235);
-  ctx.font="17px Arial";
-  ctx.fillStyle="#243552";
-  ctx.fillText("Mémoire : chaque type construit regroupe et organise plusieurs valeurs :",160,50);
-  // Zones-types
-  for(let d of schemaData){
-    ctx.fillStyle=d.color; ctx.globalAlpha=0.18;
-    ctx.fillRect(d.x,d.y,d.w,d.h); ctx.globalAlpha=1.0;
-    ctx.strokeStyle="#333"; ctx.lineWidth=2;
-    ctx.strokeRect(d.x,d.y,d.w,d.h);
-    ctx.fillStyle="#243552"; ctx.font="bold 19px Arial";
-    ctx.fillText(d.zone, d.x+20, d.y+28);
-  }
-  // liens symboliques
-  ctx.strokeStyle="#ba20b8"; ctx.lineWidth=2;
-  ctx.beginPath();
-  ctx.moveTo(145,180); ctx.lineTo(370,170); // Liste->Ensemble
-  ctx.moveTo(480,70); ctx.lineTo(370,170); // Tableau->Ensemble
-  ctx.stroke();
-}
-drawSchema();
-canvas.addEventListener('mousemove', function(e){
-  var rect = canvas.getBoundingClientRect();
-  var x = e.clientX - rect.left, y = e.clientY - rect.top;
-  var bulle = document.getElementById("info-bulle"); let found = false;
-  for(let d of schemaData){
-    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
-      bulle.style.left = (rect.left + d.x + 33) + "px";
-      bulle.style.top = (rect.top + d.y + 15) + "px";
-      bulle.style.display = "block"; bulle.innerHTML = d.bulle;
-      found=true; break;
+
+  <script>
+    // Masquer le loader après 3 secondes[web:1][web:2][web:29][web:49]
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
+
+    function afficheSynthese(id) {
+      var el = document.getElementById("syn-"+id);
+      el.style.display = (el.style.display==="none" || !el.style.display) ? "inline" : "none";
     }
-  }
-  if(!found) bulle.style.display="none";
-});
-canvas.addEventListener('click', function(e){
-  var rect = canvas.getBoundingClientRect();
-  var x = e.clientX - rect.left, y = e.clientY - rect.top;
-  for(let d of schemaData){
-    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
-      alert(d.bulle.replace(/<br>/g,"\n")); break;
+
+    function quizSynthese() {
+      let qs = [
+        {q:"Avec quel symbole crée-t-on un ensemble en Python ?", rep:"{"},
+        {q:"Nom d’une méthode pour trier une liste ?", rep:"sort"},
+        {q:"Un tuple peut-il changer après création ?", rep:"non"},
+        {q:"Accès à la clé 'nom' dans {'nom':'Alex'} ?", rep:"['nom']"}
+      ];
+      let idx = Math.floor(Math.random()*qs.length);
+      let ask = qs[idx];
+      let reponse = prompt(ask.q);
+      let ok = reponse && reponse.toLowerCase().includes(ask.rep.toLowerCase());
+      document.getElementById("quiz-synthese-res").textContent =
+        ok ? "Bravo ! "+ask.rep : "Réponse attendue : "+ask.rep;
     }
-  }
-});
-// Exo & quiz
-function afficheReponseNSI1() {
-  document.getElementById("exo-reponse-nsi1").style.display = "block";
-}
-function quizNSI(rep) {
-  let rq = document.getElementById("rep-quiz-nsi");
-  rq.textContent = (rep === 1) ? "Bravo ! Un dico associe chaque clé à une valeur." : "Non, ce n’est pas un ensemble ni un tuple.";
-}
-function quizNSI2(rep) {
-  let rq = document.getElementById("rep-quiz-nsi2");
-  rq.textContent = (rep === 0) ? "Bonne réponse : [] est la liste vide !" : "Ce symbole ne crée pas une liste vide en Python.";
-}
-</script>
+
+    const schemaData = [
+      {x:60,  y:180, w:163, h:46, zone:"Liste", bulle:"Liste : valeurs ordonnées et modifiables\n[3, 5, 1, 7]", color:"#ba20b8"},
+      {x:280, y:70,  w:178, h:46, zone:"Tableau", bulle:"Tableau (matrice) : grille 2D\n[[1,2],[3,4]]", color:"#60a5fa"},
+      {x:530, y:70,  w:123, h:46, zone:"Tuple", bulle:"Tuple : valeurs ordonnées, non modifiables\n(20, 'Paris')", color:"#f5a623"},
+      {x:320, y:170, w:125, h:46, zone:"Ensemble", bulle:"Ensemble : pas de doublon, pas d’ordre\n{1, 1, 2, 3} → {1, 2, 3}", color:"#16a34a"},
+      {x:700, y:135, w:180, h:46, zone:"Dictionnaire", bulle:"Dictionnaire : clé → valeur\n{'nom':'Ada', 'âge':20}", color:"#e06359"},
+    ];
+
+    var canvas = document.getElementById("schema");
+    var ctx = canvas.getContext("2d");
+
+    function drawSchema() {
+      ctx.clearRect(0,0,900,235);
+      ctx.font="17px Arial";
+      ctx.fillStyle="#111827";
+      ctx.fillText("Mémoire : chaque type construit regroupe et organise plusieurs valeurs.",160,40);
+
+      for(let d of schemaData){
+        ctx.fillStyle=d.color; ctx.globalAlpha=0.18;
+        ctx.fillRect(d.x,d.y,d.w,d.h);
+        ctx.globalAlpha=1.0;
+        ctx.strokeStyle="#4b5563"; ctx.lineWidth=2;
+        ctx.strokeRect(d.x,d.y,d.w,d.h);
+        ctx.fillStyle="#111827"; ctx.font="bold 19px Arial";
+        ctx.fillText(d.zone, d.x+20, d.y+28);
+      }
+
+      ctx.strokeStyle="#ba20b8"; ctx.lineWidth=2;
+      ctx.beginPath();
+      ctx.moveTo(145,180); ctx.lineTo(370,170);
+      ctx.moveTo(480,70);  ctx.lineTo(370,170);
+      ctx.stroke();
+    }
+    drawSchema();
+
+    canvas.addEventListener('mousemove', function(e){
+      var rect = canvas.getBoundingClientRect();
+      var x = e.clientX - rect.left, y = e.clientY - rect.top;
+      var bulle = document.getElementById("info-bulle"); let found = false;
+      for(let d of schemaData){
+        if(x>=d.x && x<=d.x+d.w && y>=d.y && y<=d.y+d.h){
+          bulle.style.left = (rect.left + d.x + 33) + "px";
+          bulle.style.top  = (rect.top + d.y + 15) + "px";
+          bulle.style.display = "block";
+          bulle.innerHTML = d.bulle.replace(/\n/g,"<br>");
+          found=true; break;
+        }
+      }
+      if(!found) bulle.style.display="none";
+    });
+
+    canvas.addEventListener('click', function(e){
+      var rect = canvas.getBoundingClientRect();
+      var x = e.clientX - rect.left, y = e.clientY - rect.top;
+      for(let d of schemaData){
+        if(x>=d.x && x<=d.x+d.w && y>=d.y && y<=d.y+d.h){
+          alert(d.bulle);
+          break;
+        }
+      }
+    });
+
+    function afficheReponseNSI1() {
+      document.getElementById("exo-reponse-nsi1").style.display = "block";
+    }
+    function quizNSI(rep) {
+      let rq = document.getElementById("rep-quiz-nsi");
+      rq.textContent = (rep === 1)
+        ? "Bravo ! Un dictionnaire associe chaque clé à une valeur."
+        : "Non : ce n’est ni un ensemble ni un tuple, mais un dictionnaire.";
+    }
+    function quizNSI2(rep) {
+      let rq = document.getElementById("rep-quiz-nsi2");
+      rq.textContent = (rep === 0)
+        ? "Bonne réponse : [] crée une liste vide."
+        : "{} crée un dict (ou set) et () un tuple vide, pas une liste.";
+    }
+  </script>
 </body>
 </html>

@@ -5,62 +5,366 @@
   <title>Créateur de graphiques simples</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
+    /* ===== RESET ===== */
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
+    :root {
+      --blue-light: #29d8ff;
+      --blue-main: #007BFF;
+      --blue-dark: #004a9f;
+      --bg-dark: #050816;
+      --white: #ffffff;
+    }
+
+    /* ===== FOND GLOBAL ===== */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
+        linear-gradient(135deg, #020617 0%, #031633 40%, #001a3b 100%);
+      color: #e5f1ff;
+      margin: 0;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.09;
+      mix-blend-mode: soft-light;
+      background-image:
+        linear-gradient(0deg, rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 3px 3px, 3px 3px;
+      z-index: -1;
+    }
+
+    /* ===== LOADER HACKING GRAPHIQUES ===== */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, #0b1220 0, #020617 45%, #000 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      overflow: hidden;
+    }
+    .loader-hud {
+      position: relative;
+      width: min(520px, 90vw);
+      padding: 26px 26px 30px 26px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 0 0, rgba(56,189,248,0.26), transparent 60%),
+        linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
+      border: 1px solid rgba(56,189,248,0.8);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(56,189,248,0.7);
+      color: #e5f1ff;
+      font-family: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      overflow: hidden;
+    }
+    .loader-hud::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size: 100% 3px;
+      mix-blend-mode: soft-light;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .loader-title {
+      font-size: 0.9rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #7dd3fc;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .loader-title::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 150px;
+      height: 2px;
+      background: linear-gradient(90deg, #7dd3fc, transparent);
+      box-shadow: 0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 1rem;
+      margin-bottom: 14px;
+    }
+    .status-label {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 600;
+    }
+    .status-dots {
+      display: inline-block;
+      min-width: 18px;
+      animation: blinkDots 1s steps(2, start) infinite;
+      color: #38bdf8;
+    }
+    @keyframes blinkDots {
+      0%, 50% { opacity: 1; }
+      50.01%, 100% { opacity: 0; }
+    }
+    .loader-bar {
+      position: relative;
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.9);
+      background: rgba(15,23,42,0.9);
+      overflow: hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom: 10px;
+    }
+    .loader-bar-fill {
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      background: linear-gradient(90deg, #22c1c3, #29d8ff, #007bff);
+      box-shadow: 0 0 18px rgba(56,189,248,0.9);
+      animation: barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress {
+      0%   { width: 0%;   transform: translateX(-5%); }
+      40%  { width: 65%;  transform: translateX(0); }
+      70%  { width: 100%; transform: translateX(0); }
+      100% { width: 35%;  transform: translateX(90%); }
+    }
+    .loader-subtext {
+      font-size: 0.72rem;
+      margin-top: 4px;
+      color: #a5b4fc;
+      opacity: 0.9;
+    }
+    .loader-scan {
+      position: absolute;
+      inset: -40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(56,189,248,0.12) 45%,
+          rgba(56,189,248,0.35) 50%,
+          rgba(56,189,248,0.12) 55%,
+          transparent 100%
+        );
+      mix-blend-mode: screen;
+      animation: scanMove 2.6s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes scanMove {
+      0%   { transform: translateY(-40%); opacity: 0; }
+      10%  { opacity: 0.9; }
+      60%  { opacity: 0.9; }
+      100% { transform: translateY(40%); opacity: 0; }
+    }
+
+    /* --- terminal spécial graphiques --- */
+    .loader-terminal {
+      margin-top: 14px;
+      padding: 10px 10px 8px 10px;
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.9), rgba(15,23,42,0.98));
+      border-radius: 10px;
+      border: 1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height: 140px;
+      overflow: hidden;
+      font-size: 0.7rem;
+      line-height: 1.5;
+      color: #c4f1ff;
+      position: relative;
+    }
+    .terminal-line {
+      opacity: 0;
+      transform: translateY(6px);
+      animation: lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1) { animation-delay: 0.1s; }
+    .terminal-line:nth-child(2) { animation-delay: 0.6s; }
+    .terminal-line:nth-child(3) { animation-delay: 1.2s; }
+    .terminal-line:nth-child(4) { animation-delay: 1.9s; }
+    .terminal-line:nth-child(5) { animation-delay: 2.5s; }
+    .terminal-line:nth-child(6) { animation-delay: 3.1s; }
+    .terminal-line:nth-child(7) { animation-delay: 3.7s; }
+    .terminal-line:nth-child(8) { animation-delay: 4.3s; }
+    .terminal-line:nth-child(9) { animation-delay: 4.9s; }
+    @keyframes lineIn {
+      0%   { opacity: 0; transform: translateY(6px); }
+      8%   { opacity: 1; transform: translateY(0); }
+      70%  { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-12px); }
+    }
+    .terminal-cursor {
+      display: inline-block;
+      width: 8px;
+      animation: cursorBlink 0.6s steps(1, start) infinite;
+      color: #38bdf8;
+    }
+    @keyframes cursorBlink {
+      0%, 49%  { opacity: 1; }
+      50%,100% { opacity: 0; }
+    }
+
+    /* ===== CONTENU PRINCIPAL (fade-in) ===== */
+    #main-content {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.7s ease forwards;
+      animation-delay: 0.2s;
+      display: none;
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ===== HEADER + NAV ===== */
     .top-banner {
-      background-color: #007BFF;
-      color: white;
-      padding: 18px 0 0 0;
-      font-size: 2rem;
-      letter-spacing: 1px;
-      font-weight: bold;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background: linear-gradient(
+        135deg,
+        rgba(0, 123, 255, 0.75),
+        rgba(3, 105, 161, 0.75)
+      );
+      border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      color: var(--white);
+      padding: 18px 7vw 4px 7vw;
+      font-size: 1.9rem;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .top-banner::after {
+      content: "";
+      height: 2px;
+      width: 200px;
+      margin-top: 4px;
+      background: linear-gradient(90deg, var(--white), rgba(255,255,255,0));
+      opacity: 0.9;
     }
     .nav-bar {
       display: flex;
-      justify-content: center;
-      gap: 40px;
-      background-color: #007BFF;
-      padding: 10px 0 18px 0;
-      margin: 0;
+      justify-content: flex-start;
+      gap: 26px;
+      padding-bottom: 12px;
     }
     .nav-bar a {
-      color: white;
+      position: relative;
+      color: #e0f2ff;
       text-decoration: none;
-      font-size: 1.1rem;
+      font-size: 0.98rem;
       font-weight: 500;
-      padding: 5px 18px;
-      border-radius: 12px;
-      transition: background 0.2s, color 0.2s;
+      padding: 7px 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.24), transparent 60%);
+      border: 1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition:
+        transform 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        background 0.18s ease-out;
+    }
+    .nav-bar a::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--blue-light);
+      box-shadow: 0 0 12px rgba(41,216,255,0.9);
     }
     .nav-bar a:hover {
-      background: #0057b8;
-      color: #fffbea;
+      transform: translateY(-1px) scale(1.02);
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.5), transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148, 163, 184, 0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    /* ===== CONTENU GRAPHIQUES ===== */
+    .page-padding {
+      padding: 26px 7vw 90px 7vw;
     }
     .container {
-      background: white;
-      max-width: 520px;
-      margin: 35px auto 16px auto;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.16), transparent 60%),
+                  linear-gradient(145deg, rgba(15,23,42,0.96), rgba(15,23,42,0.9));
       border-radius: 18px;
-      box-shadow: 0 2px 14px #bbb;
-      padding: 35px 22px 30px 22px;
+      max-width: 540px;
+      margin: 35px auto 16px auto;
+      box-shadow:
+        0 18px 40px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(15,23,42,0.9);
+      padding: 26px 22px 26px 22px;
       text-align: center;
+      color: #e5f1ff;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(148,163,184,0.7);
     }
     .container h2 {
       margin-bottom: 10px;
       font-size: 1.5rem;
-      color: #007BFF;
+      color: #7dd3fc;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
     .instructions {
-      background: #e7f3ff;
-      border-left: 7px solid #007BFF;
-      padding: 15px 20px;
-      margin-bottom: 28px;
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.82), rgba(15,23,42,0.98));
+      border-left: 4px solid #38bdf8;
+      padding: 15px 16px;
+      margin-bottom: 22px;
       text-align: left;
-      border-radius: 8px;
-      font-size: 1.08rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      color: #dbeafe;
+      box-shadow: inset 0 0 12px rgba(15,23,42,1);
+    }
+    .instructions ul {
+      padding-left: 18px;
+      margin: 4px 0 0 0;
     }
     .row {
       margin-bottom: 12px;
@@ -69,21 +373,56 @@
       gap: 13px;
       flex-wrap: wrap;
     }
-    input, select {
-      padding: 8px;
-      font-size: 1rem;
-      border-radius: 10px;
-      border: 1.4px solid #ccc;
+    input, select, button[type="submit"] {
+      padding: 8px 11px;
+      font-size: 0.98rem;
+      border-radius: 12px;
+      border: 1.4px solid rgba(148,163,184,0.9);
       margin-bottom: 7px;
-      min-width: 100px;
+      min-width: 110px;
+      background: rgba(15,23,42,0.95);
+      color: #e5f1ff;
+      outline: none;
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.9),
+        0 8px 20px rgba(15,23,42,0.95);
+      transition:
+        border-color 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        background 0.18s ease-out,
+        transform 0.12s ease-out;
     }
+    input:focus, select:focus {
+      border-color: #38bdf8;
+      box-shadow:
+        0 0 0 1px rgba(56,189,248,0.9),
+        0 12px 26px rgba(15,23,42,1);
+      background: rgba(15,23,42,0.98);
+    }
+    button[type="submit"] {
+      background: linear-gradient(135deg, #22c55e, #15803d);
+      border-color: transparent;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+    }
+    button[type="submit"]:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        0 10px 22px rgba(22,163,74,0.9),
+        0 0 0 1px rgba(15,23,42,1);
+    }
+
     .chart-box {
-      background: #f8faff;
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.88), rgba(15,23,42,0.98));
       border-radius: 20px;
       margin: 23px auto 0 auto;
-      padding: 16px 7px;
-      box-shadow: 0 1.2px 6px #b3d2f7;
+      padding: 16px 10px;
+      box-shadow:
+        0 1.2px 6px #0f172a,
+        0 0 0 1px rgba(15,23,42,1);
       max-width: 430px;
+      border: 1px solid rgba(56,189,248,0.6);
     }
     .data-table {
       width: 100%;
@@ -92,103 +431,186 @@
       margin-bottom: 18px;
       font-size: 1.03rem;
       border-radius: 12px;
-      background: #f8faff;
+      background: #020617;
+      color: #e5f1ff;
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,1),
+        0 10px 24px rgba(15,23,42,0.95);
     }
     .data-table th, .data-table td {
-      border: 1.3px solid #b7dbf7;
+      border: 1.3px solid #1e3a8a;
       padding: 9px 6px;
       text-align: center;
-      border-radius: 11px !important;
     }
     .data-table th {
-      background: #007BFF;
+      background: linear-gradient(135deg,#1d4ed8,#0ea5e9);
       color: white;
     }
     .del-btn {
-      background: #e44;
+      background: #e11d48;
       border-radius: 8px;
       color: #fff;
       padding: 3px 8px;
-      font-size: 0.93em;
+      font-size: 0.9em;
       border: none;
       cursor: pointer;
+      box-shadow:
+        0 4px 10px rgba(190,24,93,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      transition:
+        transform 0.12s ease-out,
+        box-shadow 0.12s ease-out,
+        filter 0.12s ease-out;
     }
     .del-btn:hover {
-      background: #a10;
+      transform: translateY(-1px);
+      filter: brightness(1.08);
+      box-shadow:
+        0 6px 14px rgba(190,24,93,1),
+        0 0 0 1px rgba(15,23,42,1);
     }
+    .notification {
+      color: #7dd3fc;
+      margin: 8px auto 10px auto;
+      font-weight: 500;
+      font-size: 0.95rem;
+      letter-spacing: .1px;
+      min-height: 18px;
+    }
+
+    /* ===== FOOTER ===== */
     .bottom-footer {
-      background-color: #333;
-      color: #eee;
-      padding: 16px 0;
+      background: linear-gradient(
+        135deg,
+        rgba(15,23,42,0.98),
+        rgba(15,23,42,0.98)
+      );
+      color: #cbd5f5;
+      padding: 14px 7vw 12px 7vw;
       text-align: center;
-      font-size: 1rem;
+      font-size: 0.9rem;
       position: fixed;
       left: 0;
       right: 0;
       bottom: 0;
-      box-shadow: 0 -1px 8px #bbb;
+      border-top: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
     }
-    .page-padding { padding-bottom: 60px; }
-    .notification {
-      color: #007BFF;
-      margin: 8px auto 10px auto;
-      font-weight: 500;
-      font-size: 1rem;
-      letter-spacing: .1px;
-      min-height: 18px;
+    .bottom-footer a img {
+      vertical-align: middle;
+      filter: drop-shadow(0 0 6px rgba(56,189,248,0.7));
     }
+
     @media (max-width: 600px) {
-      .container { padding: 7vw 2vw; }
+      .container { padding: 7vw 4vw; }
     }
   </style>
 </head>
 <body>
-  <div class="top-banner">
-    Créateur de graphiques simples
-    <nav class="nav-bar">
-      <a href="index.html">Accueil</a>
-      <a href="apropos.html">À propos</a>
-    </nav>
-  </div>
-  <div class="page-padding">
-    <div class="container">
-      <h2>Graphiques instantanés !</h2>
-      <div class="instructions">
-        <b>Instructions :</b>
-        <ul>
-          <li>Choisis le type de graphique (<b>Barres</b> ou <b>Camembert</b>).</li>
-          <li>Ajoute tes catégories avec leur valeur numérique.</li>
-          <li>Le graphique s’affiche directement ! Tu peux modifier ou supprimer tes données à tout moment.</li>
-          <li style="color:#007BFF;">Fais une capture d’écran pour exporter ou partager ton graphique.</li>
-        </ul>
+  <!-- Loader hacking graphiques -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//CHART-ENGINE</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Connexion</span>
+        <span class="status-dots">...</span>
       </div>
-      <div class="row">
-        <select id="typeChart" onchange="drawChart()">
-          <option value="bar">Barres</option>
-          <option value="pie">Camembert</option>
-        </select>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
       </div>
-      <form id="dataForm" onsubmit="event.preventDefault(); addData();">
-        <div class="row">
-          <input type="text" id="catInput" placeholder="Catégorie" maxlength="16" required>
-          <input type="number" id="valInput" placeholder="Valeur" step="any" required>
-          <button type="submit">Ajouter</button>
-        </div>
-      </form>
-      <table class="data-table" id="dataTable" style="display:none;">
-        <thead><tr><th>Catégorie</th><th>Valeur</th><th>Suppr</th></tr></thead>
-        <tbody id="dataTabBody"></tbody>
-      </table>
-      <div class="notification" id="notif"></div>
-      <div class="chart-box"><canvas id="myChart"></canvas></div>
+
+      <div class="loader-subtext">
+        Initialisation des axes · Couleurs · Jeux de données
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du moteur de graphiques...</div>
+        <div class="terminal-line">[OK]  Bibliothèque Chart.js initialisée.</div>
+        <div class="terminal-line">[DATA] Allocation du buffer catégories/valeurs.</div>
+        <div class="terminal-line">[BAR] Préparation du rendu en barres horizontales.</div>
+        <div class="terminal-line">[PIE] Calcul des pourcentages pour le camembert...</div>
+        <div class="terminal-line">[COLOR] Attribution de la palette de couleurs dynamiques.</div>
+        <div class="terminal-line">[SCALE] Normalisation des valeurs, origine à 0.</div>
+        <div class="terminal-line">[OK]  Moteur prêt pour le dessin en temps réel.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
     </div>
   </div>
-  <div class="bottom-footer">
-    © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Comptenu : Perplexity (ia)
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Créateur de graphiques simples
+      <nav class="nav-bar">
+        <a href="index.html">Accueil</a>
+        <a href="apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="container">
+        <h2>Graphiques instantanés !</h2>
+        <div class="instructions">
+          <b>Instructions :</b>
+          <ul>
+            <li>Choisis le type de graphique <b>Barres</b> ou <b>Camembert</b>.</li>
+            <li>Ajoute tes catégories avec leur valeur numérique.</li>
+            <li>Le graphique s’affiche directement ! Tu peux modifier ou supprimer tes données à tout moment.</li>
+            <li style="color:#7dd3fc;">Fais une capture d’écran pour exporter ou partager ton graphique.</li>
+          </ul>
+        </div>
+
+        <div class="row">
+          <select id="typeChart" onchange="drawChart()">
+            <option value="bar">Barres</option>
+            <option value="pie">Camembert</option>
+          </select>
+        </div>
+
+        <form id="dataForm" onsubmit="event.preventDefault(); addData();">
+          <div class="row">
+            <input type="text" id="catInput" placeholder="Catégorie" maxlength="16" required>
+            <input type="number" id="valInput" placeholder="Valeur" step="any" required>
+            <button type="submit">Ajouter</button>
+          </div>
+        </form>
+
+        <table class="data-table" id="dataTable" style="display:none;">
+          <thead><tr><th>Catégorie</th><th>Valeur</th><th>Suppr</th></tr></thead>
+          <tbody id="dataTabBody"></tbody>
+        </table>
+
+        <div class="notification" id="notif"></div>
+        <div class="chart-box">
+          <canvas id="myChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Comptenu : Perplexity (ia)
+    </div>
   </div>
+
   <script>
+    // Masque le loader après 5 s et affiche le contenu
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      const main = document.getElementById('main-content');
+      main.style.display = 'block';
+    }, 5000);
+
     let chartData = [];
     let chart;
+
     function addData() {
       const cat = document.getElementById('catInput').value.trim();
       const val = parseFloat(document.getElementById('valInput').value);
@@ -200,6 +622,7 @@
       updateTable();
       drawChart();
     }
+
     function updateTable() {
       const tab = document.getElementById('dataTabBody');
       tab.innerHTML = '';
@@ -211,16 +634,22 @@
       });
       document.getElementById('dataTable').style.display = chartData.length ? '' : 'none';
     }
+
     function delData(i) {
       chartData.splice(i,1);
       notif('Donnée supprimée.');
-      updateTable(); drawChart();
+      updateTable();
+      drawChart();
     }
+
     function drawChart() {
       const ctx = document.getElementById('myChart').getContext('2d');
       const labels = chartData.map(d=>d.cat);
       const values = chartData.map(d=>d.val);
-      const colors = ["#16B8F3","#FDB933","#31E065","#FF516B","#FD7B0A","#A965FD","#007BFF","#009688","#FF9CEE","#2C6BFF","#FFBC42","#5ACD7D"];
+      const colors = ["#16B8F3","#FDB933","#31E065","#FF516B","#FD7B0A",
+                      "#A965FD","#007BFF","#009688","#FF9CEE","#2C6BFF",
+                      "#FFBC42","#5ACD7D"];
+
       if(chart) chart.destroy();
       chart = new Chart(ctx, {
         type: document.getElementById('typeChart').value,
@@ -233,16 +662,25 @@
             borderRadius: 9
           }]
         },
-        options: {plugins:{legend:{display:true,labels:{font:{size:16}}}}, responsive:true, 
-          scales: (document.getElementById('typeChart').value==='bar'?{y:{beginAtZero:true}}:{}) }
+        options: {
+          plugins:{
+            legend:{display:true,labels:{font:{size:16}}}
+          },
+          responsive:true,
+          scales: (document.getElementById('typeChart').value==='bar'
+            ? {y:{beginAtZero:true}}
+            : {})
+        }
       });
     }
+
     function notif(msg) {
       const el = document.getElementById('notif');
       el.textContent = msg;
       setTimeout(()=>{el.textContent='';}, 1600);
     }
-    window.onload = () => {drawChart();}
+
+    window.onload = () => { drawChart(); };
   </script>
 </body>
 </html>

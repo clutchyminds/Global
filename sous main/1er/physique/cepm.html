@@ -2,292 +2,662 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Applications : circuits électriques, phénomènes mécaniques</title>
+  <title>Global - Physique · Circuits & Mécanique</title>
   <meta name="description" content="Cours interactif : circuits électriques (loi d’Ohm, puissance), phénomènes mécaniques, QCM, exos, schéma, LaTeX, fiche, lexique, notes.">
   <style>
-    body{background:#f6f8fa;font-family:'Segoe UI',Arial,sans-serif;color:#222;margin:0;}
-    header{background:linear-gradient(90deg,#eef4fb,#deffe4 80%);color:#243552;padding:30px 0 12px;text-align:center;}
-    header h1{font-size:2.2rem;margin:0 0 8px;color:#1877f2;}
-    header .intro{font-size:1.09rem;}
-    main{max-width:970px;background:#fff;margin:45px auto 20px;padding:36px 60px;border-radius:20px;box-shadow:0 9px 28px rgba(24,119,242,0.12);}
-    h2,h3{color:#1877f2;margin-top:34px;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-main:#1877f2;
+      --green-main:#16a34a;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.15), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(45,212,191,0.25), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#111827 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#020617 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(560px,90vw);
+      padding:26px 26px 30px;
+      border-radius:20px;
+      background:
+        radial-gradient(circle at 0 0,rgba(45,212,191,0.35),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(45,212,191,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.95),
+        0 0 35px rgba(45,212,191,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.5) 1px,
+        rgba(15,23,42,0.95) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#bbf7d0;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:280px;
+      height:2px;
+      background:linear-gradient(90deg,#bbf7d0,transparent);
+      box-shadow:0 0 14px rgba(45,212,191,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#a7f3d0;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(45,212,191,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#bbf7d0,#22c55e,#4ade80);
+      box-shadow:0 0 18px rgba(45,212,191,0.9);
+      animation:barProgress 2.1s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#dcfce7;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(45,212,191,0.25) 45%,
+          rgba(45,212,191,0.6) 50%,
+          rgba(45,212,191,0.25) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.92),rgba(15,23,42,1));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#bbf7d0;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(24,119,242,0.95),rgba(34,197,94,0.95));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#f9fafb;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:260px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#bbf7d0;
+      box-shadow:0 0 12px rgba(187,247,208,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:970px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:20px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:36px 40px 32px;
+      color:#e5f1ff;
+    }
+
+    header.inner{
+      background:none;
+      padding:0;
+      margin:0 0 10px 0;
+      color:inherit;
+      text-align:left;
+      box-shadow:none;
+    }
+    h1{font-size:2.1rem;margin-bottom:8px;color:#e5f1ff;}
+    .intro{font-size:1.05rem;}
+
+    h2,h3{color:#e5f1ff;margin-top:34px;}
     h3{color:#f5a623;}
     ul,ol{margin-left:2em;margin-bottom:0.8em;}
-    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.06rem;}
-    .infos{background:#e7f3fa;border-left:7px solid #1877f2;}
-    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;}
-    .box-important{background:#fff7ec;border-left:8px solid #f5a623;}
-    .error{background:#ffeaea;border-left:8px solid #e06359;}
-    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;}
-    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;}
-    .source{font-size:0.88em;color:#999;text-align:right;margin-top:10px;}
-    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s;font-size:1em;}
-    button:hover{background:#145ac3;}
-    .reponse{margin-top:0.7em;color:#1877f2;font-weight:bold;text-align:center;}
-    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;}
-    #schema-circuit{margin:1.2em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #e7f3f7;}
-    input[type='text'],textarea{border-radius:5px;border:1px solid #ccc;padding:5px;margin-top:6px;}
+    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.02rem;}
+    .infos{background:#e7f3fa;border-left:7px solid #1877f2;color:#0f172a;}
+    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;color:#052e16;}
+    .box-important{background:#fff7ec;border-left:8px solid #f5a623;color:#3b2710;}
+    .error{background:#ffeaea;border-left:8px solid #e06359;color:#7f1d1d;}
+    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;color:#0f172a;}
+    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;color:#064e3b;}
+    .source{font-size:0.88em;color:#9ca3af;text-align:right;margin-top:10px;}
+
+    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s,transform 0.15s;font-size:1em;}
+    button:hover{background:#145ac3;transform:translateY(-1px);}
+    .reponse{margin-top:0.7em;color:#bfdbfe;font-weight:bold;text-align:center;}
+    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;color:#022c22;}
+    #schema-circuit{margin:1.2em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #020617;}
+    input[type='text'],textarea{border-radius:5px;border:1px solid #6b7280;padding:5px;margin-top:6px;background:#020617;color:#e5e7eb;}
     .flex-exercices{display:flex;flex-wrap:wrap;}
     .exo-block{flex:1 1 310px;margin-right:2%;min-width:330px;}
     .exo-block:last-child{margin-right:0;}
-    .popup{display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.17);padding:35px;width:340px;z-index:2000;}
-    .popup h3{color:#1877f2;}
-    .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(40,61,102,0.23);z-index:1800;}
+    .popup{display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#020617;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.35);padding:30px;width:340px;z-index:2000;border:1px solid #1d4ed8;color:#e5e7eb;}
+    .popup h3{color:#60a5fa;}
+    .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(15,23,42,0.7);z-index:1800;}
     .show{display:block;}
-    .scoreQCM{font-weight:bold;color:#167c2b;}
-    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;}
+    .scoreQCM{font-weight:bold;color:#bbf7d0;}
+    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;border-radius:999px;cursor:pointer;}
     .qcm-block{margin-bottom:2.3em;}
-    @media (max-width:1040px){main{padding:8px 2px;}}
+    .note-area{width:100%;min-height:120px;}
+    @media (max-width:1040px){.content-card{padding:8px 10px;}}
   </style>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-  <h1>Applications : circuits électriques, phénomènes mécaniques</h1>
-  <div class="intro">Cours interactif : circuits, lois de l’électricité, phénomènes mécaniques, montages types, calculs LaTeX, schéma, QCM, exos, fiche, lexique, notes persos.</div>
-</header>
-<main>
-  <section class="box infos">
-    <h2>📚 Objectifs</h2>
-    <ul>
-      <li>Maîtriser les lois des circuits électriques (Ohm, association, puissance), leur application pratique</li>
-      <li>Appliquer la mécanique dans les situations réelles : force, énergie, rendement, équilibre</li>
-      <li>Savoir résoudre des exercices de montage, de bilan ou d’équilibre</li>
-      <button onclick="openPopup('popup-appli')">Exemples d'applications</button>
-    </ul>
-  </section>
-  <section>
-    <h2>🔌 1. Circuits électriques simples : lois fondamentales</h2>
-    <ul>
-      <li>
-        <b>Loi d’Ohm :</b> \( U = R \times I \)
-        <ul>
-          <li>U : tension (en volt, V)</li>
-          <li>I : intensité (ampère, A)</li>
-          <li>R : résistance (ohm, Ω)</li>
-        </ul>
-      </li>
-      <li>
-        <b>Loi des mailles</b> : la somme des tensions dans une boucle = 0
-      </li>
-      <li>
-        <b>Association de résistances</b> :
-        <ul>
-          <li>Série : \( R_{eq}=R_1+R_2+\ldots \)</li>
-          <li>Parallèle : \( \frac{1}{R_{eq}} = \frac{1}{R_1} + \frac{1}{R_2} + \ldots \)</li>
-        </ul>
-      </li>
-      <li>
-        <b>Puissance électrique</b> : \( P=U \times I \) (Watt, W)
-      </li>
-      <li>
-        <button onclick="openPopup('popup-lexiq-electricite')">Lexique électrique</button>
-      </li>
-    </ul>
-    <canvas id="schema-circuit" width="480" height="130"></canvas>
-    <div class="infos" style="text-align:center;"><b>Schéma : circuit série avec générateur, résistance, ampoule</b></div>
-  </section>
-  <section>
-    <h2>⚙️ 2. Phénomènes mécaniques : forces et équilibre</h2>
-    <ul>
-      <li>
-        <b>Équilibre statique</b> : la somme des forces et des moments = 0
-      </li>
-      <li>
-        <b>Combinaison de forces</b> : addition vectorielle (mécanique, balances, poulies…)
-      </li>
-      <li>
-        <b>Puissance mécanique</b> : \( P = F \cdot v \) (force × vitesse)
-      </li>
-      <li>
-        <span class="btn-lex" onclick="openPopup('popup-lexiq-meca')">Lexique mécanique</span>
-      </li>
-    </ul>
-  </section>
-  <section>
-    <h2>📑 Exercices interactifs</h2>
-    <div class="flex-exercices">
-      <div class="box-exo exo-block">
-        <b>Ex 1 — Loi d’Ohm</b><br>
-        Quelle est l’intensité traversant une résistance de 100 Ω sous 12 V ?
-        <input type="text" id="exo1" placeholder="... A">
-        <button onclick="checkExo(1)">Valider</button>
-        <div class="reponse" id="rep-exo1"></div>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//phys-CIRCUITS-MECA</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
       </div>
-      <div class="box-exo exo-block">
-        <b>Ex 2 — Puissance d’une ampoule</b><br>
-        Une lampe fonctionne sous 230 V et consomme 0,4 A. Puissance ?
-        <input type="text" id="exo2" placeholder="... W">
-        <button onclick="checkExo(2)">Valider</button>
-        <div class="reponse" id="rep-exo2"></div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
       </div>
-      <div class="box-exo exo-block">
-        <b>Ex 3 — Addition de forces</b><br>
-        Deux forces de 5 N et 12 N sont perpendiculaires. Valeur de la résultante ?
-        <input type="text" id="exo3" placeholder="... N">
-        <button onclick="checkExo(3)">Valider</button>
-        <div class="reponse" id="rep-exo3"></div>
+
+      <div class="loader-subtext">
+        Circuits électriques, lois d’Ohm et de puissance, forces, équilibre et exercices interactifs en LaTeX.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[ELEC] Chargement des lois : Ohm, mailles, associations, puissance.</div>
+        <div class="terminal-line">[MECA] Mise en place des notions de force, résultante, moment et équilibre.</div>
+        <div class="terminal-line">[OK]  Schémas, QCM, exercices et fiche de révision prêts pour l’entraînement.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
+    </div>
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Physique
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="content-card">
+        <header class="inner">
+          <h1>Applications : circuits électriques, phénomènes mécaniques</h1>
+          <div class="intro">
+            Cours interactif : circuits, lois de l’électricité, phénomènes mécaniques, montages types, calculs, schéma, QCM, exos, fiche, lexique et notes persos.
+          </div>
+        </header>
+
+        <main>
+          <!-- Objectifs -->
+          <section class="box infos">
+            <h2>📚 Objectifs</h2>
+            <ul>
+              <li>Utiliser les lois des circuits (Ohm, mailles, puissance, associations).</li>
+              <li>Appliquer les notions mécaniques : forces, résultante, équilibre, puissance.</li>
+              <li>Savoir résoudre des montages et bilans avec unités correctes.</li>
+            </ul>
+            <button onclick="openPopup('popup-appli')">Exemples d'applications</button>
+          </section>
+
+          <!-- Circuits -->
+          <section>
+            <h2>🔌 1. Circuits électriques simples</h2>
+            <ul>
+              <li><b>Loi d’Ohm :</b> \( U = R \times I \)</li>
+              <li><b>Mailles :</b> somme algébrique des tensions d’une boucle = 0.</li>
+              <li><b>Résistances :</b> série \(R_{\mathrm{eq}} = R_1+R_2+\dots\), parallèle \(1/R_{\mathrm{eq}} = 1/R_1+1/R_2+\dots\).</li>
+              <li><b>Puissance :</b> \(P = U \times I\).</li>
+            </ul>
+            <button onclick="openPopup('popup-lexiq-electricite')">Lexique électrique</button>
+            <canvas id="schema-circuit" width="480" height="130"></canvas>
+            <div class="infos" style="text-align:center;"><b>Schéma : circuit série générateur + résistance + ampoule.</b></div>
+          </section>
+
+          <!-- Mécanique -->
+          <section>
+            <h2>⚙️ 2. Phénomènes mécaniques</h2>
+            <ul>
+              <li>Équilibre statique : \(\sum \vec F = \vec 0\) et \(\sum M = 0\).</li>
+              <li>Résultante de forces perpendiculaires : Pythagore.</li>
+              <li>Puissance mécanique : \(P = F \cdot v\).</li>
+            </ul>
+            <button class="btn-lex" onclick="openPopup('popup-lexiq-meca')">Lexique mécanique</button>
+          </section>
+
+          <!-- Exercices -->
+          <section>
+            <h2>📑 Exercices interactifs</h2>
+            <div class="flex-exercices">
+              <div class="box-exo exo-block">
+                <b>Ex 1 — Loi d’Ohm</b><br>
+                Intensité dans une résistance de 100 Ω sous 12 V :
+                <input type="text" id="exo1" placeholder="... A">
+                <button onclick="checkExo(1)">Valider</button>
+                <div class="reponse" id="rep-exo1"></div>
+              </div>
+              <div class="box-exo exo-block">
+                <b>Ex 2 — Puissance d’une lampe</b><br>
+                Lampe : 230 V et 0,4 A. Puissance ?
+                <input type="text" id="exo2" placeholder="... W">
+                <button onclick="checkExo(2)">Valider</button>
+                <div class="reponse" id="rep-exo2"></div>
+              </div>
+              <div class="box-exo exo-block">
+                <b>Ex 3 — Résultante de forces</b><br>
+                Forces de 5 N et 12 N perpendiculaires. Résultante ?
+                <input type="text" id="exo3" placeholder="... N">
+                <button onclick="checkExo(3)">Valider</button>
+                <div class="reponse" id="rep-exo3"></div>
+              </div>
+            </div>
+            <button onclick="resetExos()">Effacer mes réponses</button>
+          </section>
+
+          <!-- QCM -->
+          <section class="qcm-block">
+            <h2>🎯 QCM interactif</h2>
+            <div id="qcm-interactif"></div>
+            <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
+            <button onclick="reloadQCM()">Recommencer le QCM</button>
+          </section>
+
+          <!-- Fiche -->
+          <section class="box-important">
+            <h2>🔖 Fiche de révision</h2>
+            <div class="fiche">
+              <ul>
+                <li>Loi d’Ohm : \( U = R \times I \).</li>
+                <li>Puissance élec : \( P = U \times I \).</li>
+                <li>Série : \(R_{\mathrm{eq}} = R_1+R_2+\dots\).</li>
+                <li>Perpendiculaires : \(R = \sqrt{F_1^2+F_2^2}\).</li>
+                <li>Équilibre : \(\sum \vec F = \vec 0\), \(\sum M = 0\).</li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- Erreurs -->
+          <section class="error">
+            <h2>❌ Erreurs fréquentes</h2>
+            <ul>
+              <li>Confondre tension (V), intensité (A) et résistance (Ω).</li>
+              <li>Oublier les unités et l’écriture scientifique.</li>
+              <li>Appliquer \(U=RI\) à des composants non ohmiques.</li>
+              <li>Tracer des forces sans respecter leur direction/sens.</li>
+            </ul>
+          </section>
+
+          <!-- Lexique -->
+          <section class="lexique">
+            <h2>📚 Lexique express</h2>
+            Tension U, intensité I, résistance R, puissance P, force, résultante, moment, équilibre.
+          </section>
+
+          <!-- Notes -->
+          <section>
+            <h2>🗒️ Tes propres notes</h2>
+            <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
+            <button onclick="saveNotes()">Enregistrer</button>
+            <span id="savemsg" style="color:#4ade80;font-weight:bold;"></span>
+          </section>
+
+          <section class="source">Sources : cours lycée, manuels, sujets BAC, fiches PC.</section>
+        </main>
       </div>
     </div>
-    <button onclick="resetExos()">Effacer mes réponses</button>
-  </section>
-  <section class="qcm-block">
-    <h2>🎯 QCM interactif (score immédiat !)</h2>
-    <div id="qcm-interactif"></div>
-    <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
-    <button onclick="reloadQCM()">Recommencer le QCM</button>
-  </section>
-  <section class="box-important">
-    <h2>🔖 Fiche de révision rapide</h2>
-    <div class="fiche">
-      <ul>
-        <li>Loi d’Ohm : \( U = R \times I \)</li>
-        <li>Association résistances série/parallèle : formules ci-dessus</li>
-        <li>Puissance électrique : \(P = U \times I\)</li>
-        <li>Équilibre : \(\sum F = 0\), \(\sum \text{moments} = 0\)</li>
-        <li>Résultante forces perpendiculaires : Pythagore</li>
-      </ul>
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
     </div>
-  </section>
-  <section class="error">
-    <h2>❌ Erreurs fréquentes à éviter</h2>
-    <ul>
-      <li>Confondre tension (V), intensité (A) et résistance (Ω)</li>
-      <li>Omettre les unités dans les calculs électriques et mécaniques</li>
-      <li>Oublier que la loi d’Ohm ne s’applique pas à tous les composants</li>
-      <li>Ne pas représenter les forces sur un schéma</li>
-      <li>Mal appliquer la règle du parallélogramme (résultante forces non colinéaires)</li>
-    </ul>
-  </section>
-  <section class="lexique">
-    <h2>📚 Lexique express</h2>
-    <ul>
-      <li><b>Tension (U)</b> : différence de potentiel (V)</li>
-      <li><b>Intensité (I)</b> : courant (A)</li>
-      <li><b>Résistance (R)</b> : opposition (Ω)</li>
-      <li><b>Puissance (P)</b> : en Watt (W)</li>
-      <li><b>Force, résultante</b>, <b>équilibre</b> : voir ci-dessus</li>
-    </ul>
-  </section>
-  <section>
-    <h2>🗒️ Tes propres notes (sauvegarde locale)</h2>
-    <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
-    <button onclick="saveNotes()">Enregistrer</button>
-    <span id="savemsg" style="color:#4caf50;font-weight:bold;"></span>
-  </section>
-  <section class="source">Sources : cours lycée, manuels, BAC 2025, fiches PC, INJS.</section>
-</main>
-<div class="overlay" id="overlay"></div>
-<div class="popup" id="popup-appli"><h3>Applications</h3>
-Montage lampe + générateur, grille-pain, poêle électrique, levier, balances, ponts, moteurs, dispositifs d’équilibre.
-<button onclick="closePopup()">Fermer</button></div>
-<div class="popup" id="popup-lexiq-electricite"><h3>Lexique électricité</h3>
-<b>Tension (V)</b> : “pression” électrique<br>
-<b>Intensité (A)</b> : débit d’électrons<br>
-<b>Résistance (Ω)</b> : “freinage” des électrons<br>
-<b>Puissance (W)</b> : énergie/joule délivrée chaque seconde
-<button onclick="closePopup()">Fermer</button></div>
-<div class="popup" id="popup-lexiq-meca"><h3>Lexique mécanique</h3>
-<b>Force</b> (N), <b>poussée</b>, <b>traction</b> : agent du mouvement<br>
-<b>Résultante</b> : force équivalente à plusieurs autres<br>
-<b>Moment</b> : effet de rotation
-<button onclick="closePopup()">Fermer</button></div>
-<script>
-function reloadMathJax(){if(window.MathJax){window.MathJax.typesetPromise();}}
-function openPopup(id){document.getElementById('overlay').classList.add("show");document.getElementById(id).classList.add("show");}
-function closePopup(){document.getElementById('overlay').classList.remove("show");var popups=document.querySelectorAll('.popup');popups.forEach(function(p){p.classList.remove('show');});}
-function saveNotes(){localStorage.setItem("notesCircuitsMeca",document.getElementById("notes").value);document.getElementById("savemsg").textContent="✔️ Enregistré !";setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);}
-if(localStorage.getItem("notesCircuitsMeca")){document.getElementById("notes").value=localStorage.getItem("notesCircuitsMeca");}
-// Schéma circuit simple
-function drawCircuit(){
-  var c=document.getElementById('schema-circuit');if(!c)return;var x=c.getContext('2d');
-  x.clearRect(0,0,480,130);
-  // Générateur
-  x.strokeStyle="#1877f2";x.lineWidth=3;
-  x.beginPath();x.moveTo(50,65);x.lineTo(120,65);x.stroke();
-  x.fillStyle="#1877f2";x.fillRect(120,57,12,16);x.fillStyle="#fff";x.font="15px Arial";x.fillText("G",122,72);
-  // fil, résistance
-  x.strokeStyle="#e06359";x.beginPath();x.moveTo(132,65);x.lineTo(210,65);x.stroke();
-  x.fillStyle="#e06359";x.fillRect(210,55,20,20);x.fillStyle="#fff";x.fillText("R",215,72);
-  // fil, ampoule
-  x.strokeStyle="#f3aa3f";x.beginPath();x.moveTo(230,65);x.lineTo(350,65);x.stroke();
-  x.beginPath();x.arc(380,65,30,0,2*Math.PI);x.strokeStyle="#f5a623";x.lineWidth=4;x.stroke();
-  x.fillStyle="#fff";x.font="16px Arial";x.fillText("Ampoule",350,100);
-  // retour circuit
-  x.strokeStyle="#999";x.lineWidth=2;x.beginPath();x.moveTo(80,65);x.lineTo(80,120);x.lineTo(380,120);x.lineTo(380,95);x.stroke();
-}
-drawCircuit();
-const qcmData=[
-{
-  question:"La loi d’Ohm : \\(U=...?\\)",
-  choices:["R×I","I/R","U×R"],
-  correct:0,
-  explanation:"U = R×I"
-},
-{
-  question:"Une résistance série : équivalent =",
-  choices:["R1+R2","(R1×R2)/(R1+R2)","1/R1+1/R2"],
-  correct:0,
-  explanation:"Additionne en série"
-},
-{
-  question:"Puissance délivrée par 10 V et 2 A :",
-  choices:["20 W","0,2 W","5 W"],
-  correct:0,
-  explanation:"P=U×I = 20W"
-},
-{
-  question:"Deux forces perpendiculaires de 3N et 4N. Résultante ?",
-  choices:["5N","7N","1N"],
-  correct:0,
-  explanation:"Pythagore : racine(3²+4²)=5N"
-}
-];
-let qcmScore=0,qcmDone=Array(qcmData.length).fill(false);
-function displayQCM(){
-  let html="";
-  for(let i=0;i<qcmData.length;i++){
-    html += `<div style="margin-bottom:1em"><b>Q${i+1} :</b> <span>\\(${qcmData[i].question}\\)</span><br>`;
-    for(let j=0;j<qcmData[i].choices.length;j++){
-      html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+  </div>
+
+  <!-- Popups -->
+  <div class="overlay" id="overlay"></div>
+  <div class="popup" id="popup-appli">
+    <h3>Applications</h3>
+    Circuits de lampe, grille-pain, plaques chauffantes, leviers, balances, ponts, moteurs, systèmes d’équilibre.
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+  <div class="popup" id="popup-lexiq-electricite">
+    <h3>Lexique électricité</h3>
+    Tension : “pression” électrique (V) • Intensité : débit de charge (A) • Résistance : opposition (Ω) • Puissance : énergie par seconde (W).
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+  <div class="popup" id="popup-lexiq-meca">
+    <h3>Lexique mécanique</h3>
+    Force (N), traction, poussée • Résultante : force équivalente • Moment : effet de rotation par rapport à un point.
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <script>
+    // Masquer loader après 3 s[web:2][web:62][web:36]
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+      if(window.MathJax && MathJax.typesetPromise){MathJax.typesetPromise();}
+    },3000);
+
+    function reloadMathJax(){
+      if(window.MathJax && MathJax.typesetPromise){MathJax.typesetPromise();}
     }
-    html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
-  }
-  document.getElementById("qcm-interactif").innerHTML=html;document.getElementById("qcm-score").innerHTML="";qcmScore=0;qcmDone=Array(qcmData.length).fill(false);reloadMathJax();
-}
-displayQCM();
-function checkQCM(qnum,num){
-  if(qcmDone[qnum])return;
-  if(num==qcmData[qnum].correct){
-    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#168b24;font-weight:bold">Bonne réponse !</span><br><span style="font-size:0.98em;">${qcmData[qnum].explanation}</span>`;
-    qcmScore++;
-  }else{
-    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#c21c5c;font-weight:bold">Faux !</span>  <br><span>${qcmData[qnum].explanation}</span>`;
-  }
-  qcmDone[qnum]=true;
-  document.getElementById("qcm-score").innerHTML="Score : "+qcmScore+"/"+qcmData.length;reloadMathJax();
-}
-function reloadQCM(){displayQCM();}
-function checkExo(ex){
-  let rep=document.getElementById('exo'+ex).value.replace(",",".");
-  if(ex==1){
-    let v=12/100;
-    let good=Math.abs(Number(rep)-v)<0.08;
-    document.getElementById('rep-exo1').innerHTML = good?`Bravo : I=U/R=12/100=0,12 A`:"Faux : I=12/100=0,12";
-  }
-  if(ex==2){
-    let v=230*0.4, good=Math.abs(Number(rep)-v)<4;
-    document.getElementById('rep-exo2').innerHTML = good?`Bonne réponse : P=230×0,4=92 W`:"Faux. P=U×I=92W";
-  }
-  if(ex==3){
-    let res=Math.sqrt(25+144), good=Math.abs(Number(rep)-13)<1.4;
-    document.getElementById('rep-exo3').innerHTML = good?`Bonne réponse : racine(25+144)=13N`:"Faux. Résultat : 13N";
-  }
-  reloadMathJax();
-}
-function resetExos(){["exo1","exo2","exo3"].forEach(id=>{let el=document.getElementById(id);if(el)el.value="";});["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{let el=document.getElementById(id);if(el)el.textContent="";});}
-setTimeout(reloadMathJax,180);
-</script>
+
+    function openPopup(id){
+      document.getElementById('overlay').classList.add("show");
+      document.getElementById(id).classList.add("show");
+      reloadMathJax();
+    }
+    function closePopup(){
+      document.getElementById('overlay').classList.remove("show");
+      document.querySelectorAll('.popup').forEach(p=>p.classList.remove('show'));
+    }
+
+    function saveNotes(){
+      localStorage.setItem("notesCircuitsMeca",document.getElementById("notes").value);
+      document.getElementById("savemsg").textContent="Enregistré";
+      setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);
+    }
+    if(localStorage.getItem("notesCircuitsMeca")){
+      document.getElementById("notes").value=localStorage.getItem("notesCircuitsMeca");
+    }
+
+    // Schéma circuit
+    function drawCircuit(){
+      var c=document.getElementById('schema-circuit');if(!c)return;
+      var x=c.getContext('2d');
+      x.clearRect(0,0,480,130);
+      x.strokeStyle="#1877f2";x.lineWidth=3;
+      x.beginPath();x.moveTo(50,65);x.lineTo(120,65);x.stroke();
+      x.fillStyle="#1877f2";x.fillRect(120,57,12,16);
+      x.fillStyle="#e5e7eb";x.font="15px Arial";x.fillText("G",122,72);
+      x.strokeStyle="#e06359";x.beginPath();x.moveTo(132,65);x.lineTo(210,65);x.stroke();
+      x.fillStyle="#e06359";x.fillRect(210,55,20,20);
+      x.fillStyle="#e5e7eb";x.fillText("R",215,72);
+      x.strokeStyle="#facc15";x.beginPath();x.moveTo(230,65);x.lineTo(350,65);x.stroke();
+      x.beginPath();x.arc(380,65,30,0,2*Math.PI);
+      x.strokeStyle="#facc15";x.lineWidth=4;x.stroke();
+      x.fillStyle="#e5e7eb";x.font="16px Arial";x.fillText("Ampoule",340,110);
+      x.strokeStyle="#9ca3af";x.lineWidth=2;
+      x.beginPath();x.moveTo(80,65);x.lineTo(80,120);x.lineTo(380,120);x.lineTo(380,95);x.stroke();
+    }
+    drawCircuit();
+
+    // Exercices
+    function checkExo(ex){
+      let rep=document.getElementById('exo'+ex).value.replace(",",".");
+      if(ex==1){
+        let v=12/100, good=Math.abs(Number(rep)-v)<0.08;
+        document.getElementById('rep-exo1').innerHTML = good?
+          "Bravo : I = U/R = 12/100 ≈ 0,12 A":"Faux : I = 0,12 A";
+      }
+      if(ex==2){
+        let v=230*0.4, good=Math.abs(Number(rep)-v)<4;
+        document.getElementById('rep-exo2').innerHTML = good?
+          "Bonne réponse : P = 230 × 0,4 = 92 W":"Faux : P = 92 W";
+      }
+      if(ex==3){
+        let res=Math.sqrt(25+144), good=Math.abs(Number(rep)-13)<1.4;
+        document.getElementById('rep-exo3').innerHTML = good?
+          "Bonne réponse : √(5²+12²) = 13 N":"Faux : la résultante vaut 13 N";
+      }
+      reloadMathJax();
+    }
+    function resetExos(){
+      ["exo1","exo2","exo3"].forEach(id=>{let el=document.getElementById(id);if(el)el.value="";});
+      ["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{let el=document.getElementById(id);if(el)el.textContent="";});
+    }
+
+    // QCM
+    const qcmData=[
+      {question:"Loi d’Ohm : \\(U = ?\\)",choices:["R×I","I/R","P×R"],correct:0,exp:"U = R×I."},
+      {question:"Résistances en série :",choices:["s’additionnent","s’inversent","se multiplient"],correct:0,exp:"En série : R_eq = R1+R2+..."},
+      {question:"Puissance pour 10 V et 2 A :",choices:["20 W","0,2 W","5 W"],correct:0,exp:"P = U×I = 20 W."},
+      {question:"Résultante de 3 N et 4 N perpendiculaires :",choices:["5 N","7 N","1 N"],correct:0,exp:"Pythagore : √(3²+4²) = 5 N."}
+    ];
+    let qcmScore=0,qcmDone=Array(qcmData.length).fill(false);
+    function displayQCM(){
+      let html="";
+      for(let i=0;i<qcmData.length;i++){
+        html += `<div style="margin-bottom:1em"><b>Q${i+1} :</b> ${qcmData[i].question}<br>`;
+        for(let j=0;j<qcmData[i].choices.length;j++){
+          html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+        }
+        html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
+      }
+      document.getElementById("qcm-interactif").innerHTML=html;
+      document.getElementById("qcm-score").innerHTML="";
+      qcmScore=0;qcmDone=Array(qcmData.length).fill(false);
+      reloadMathJax();
+    }
+    displayQCM();
+    function checkQCM(qnum,num){
+      if(qcmDone[qnum])return;
+      if(num==qcmData[qnum].correct){
+        document.getElementById('qcm-r'+qnum).innerHTML =
+          `<span style="color:#16a34a;font-weight:bold">Bonne réponse !</span><br><span>${qcmData[qnum].exp}</span>`;
+        qcmScore++;
+      }else{
+        document.getElementById('qcm-r'+qnum).innerHTML =
+          `<span style="color:#e11d48;font-weight:bold">Faux.</span><br><span>${qcmData[qnum].exp}</span>`;
+      }
+      qcmDone[qnum]=true;
+      document.getElementById("qcm-score").innerHTML="Score : "+qcmScore+"/"+qcmData.length;
+      reloadMathJax();
+    }
+    function reloadQCM(){displayQCM();}
+
+    setTimeout(reloadMathJax,200);
+  </script>
 </body>
 </html>

@@ -4,202 +4,500 @@
   <meta charset="UTF-8" />
   <title>Accueil - Global</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
-      margin: 0;
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-light:#29d8ff;
+      --blue-main:#007BFF;
     }
-    .top-banner {
-      background-color: #007BFF;
-      color: white;
-      padding: 18px 0 0 0;
-      font-size: 2rem;
-      letter-spacing: 1px;
-      font-weight: bold;
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#031633 40%,#001a3b 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
     }
-    .nav-bar {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      background-color: #007BFF;
-      padding: 10px 0 18px 0;
-      margin: 0;
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
     }
-    .nav-bar a {
-      color: white;
-      text-decoration: none;
-      font-size: 1.1rem;
-      font-weight: 500;
-      padding: 5px 18px;
-      border-radius: 12px;
-      transition: background 0.2s, color 0.2s;
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
     }
-    .nav-bar a:hover {
-      background: #0057b8;
-      color: #fffbea;
+    .loader-hud{
+      position:relative;
+      width:min(520px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(56,189,248,0.26),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(56,189,248,0.8);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(56,189,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
     }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#7dd3fc;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#7dd3fc,transparent);
+      box-shadow:0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#22c1c3,#29d8ff,#007bff);
+      box-shadow:0 0 18px rgba(56,189,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#a5b4fc;
+      opacity:0.9;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(56,189,248,0.12) 45%,
+          rgba(56,189,248,0.35) 50%,
+          rgba(56,189,248,0.12) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#c4f1ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(0,123,255,0.82),rgba(3,105,161,0.82));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#fff;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:380px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:var(--blue-light);
+      box-shadow:0 0 12px rgba(41,216,255,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
     .icon-container {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0px;  /* Icônes rapprochées */
-      padding: 20px 0px 0 0px;
-      justify-items: center;
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:16px;
+      justify-items:center;
+      padding-top:10px;
     }
     .icon {
-      text-decoration: none;
-      color: #222;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      text-decoration:none;
+      color:#e5f1ff;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:14px 10px 12px;
+      border-radius:22px;
+      background:
+        radial-gradient(circle at 0 0,rgba(255,255,255,0.16),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.96),rgba(15,23,42,0.9));
+      box-shadow:
+        0 14px 32px rgba(15,23,42,0.95),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      border:1px solid rgba(148,163,184,0.7);
+      transition:transform 0.18s,box-shadow 0.18s,border-color 0.2s;
+      text-align:center;
+    }
+    .icon:hover{
+      transform:translateY(-3px) scale(1.02);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(56,189,248,0.8);
+      border-color:#38bdf8;
     }
     .icon img {
-      width: 180px;
-      height: 180px;
-      object-fit: cover;
-      border-radius: 22px;
-      border: 2.5px solid #ccc;
-      transition: border-color 0.3s, transform 0.3s;
-    }
-    .icon img:hover {
-      border-color: #007BFF;
-      transform: scale(1.08);
+      width:150px;
+      height:150px;
+      object-fit:cover;
+      border-radius:18px;
+      border:2.5px solid rgba(148,163,184,0.9);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,1),
+        0 6px 16px rgba(15,23,42,0.9);
     }
     .icon span {
-      margin-top: 17px;
-      font-weight: bold;
-      font-size: 1.15rem;
+      margin-top:10px;
+      font-weight:bold;
+      font-size:0.98rem;
     }
-    .bottom-footer {
-      background-color: #333;
-      color: #eee;
-      padding: 16px 0;
-      text-align: center;
-      font-size: 1rem;
-      position: fixed;
-      left: 0; right: 0; bottom: 0;
-      box-shadow: 0 -1px 8px #bbb;
-    }
-    .page-padding {
-      padding-bottom: 60px;
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
     }
   </style>
 </head>
 <body>
-  <div class="top-banner">
-    Global - Mathématiques Spé 1er
-    <nav class="nav-bar">
-      <a href="../../index.html">Accueil</a>
-      <a href="../../apropos.html">À propos</a>
-    </nav>
-  </div>
-  <div class="page-padding">
-    <div class="icon-container">
-      <a href="math/calculvectoriel.html" class="icon">
-        <img src="../../img/calculvectoriel.png" alt="Site 3" />
-        <span>Calcul Vectoriel</span>
-      </a>
-      <a href="math/produitscalaire.html" class="icon">
-        <img src="../../img/produitscalaire.png" alt="Site 3" />
-        <span>Produit Scalaire</span>
-      </a>
-      <a href="math/gerepl.html" class="icon">
-        <img src="../../img/gerepl.png" alt="Site 3" />
-        <span>géométrie repérée dans le plan</span>
-      </a>
-      <a href="math/equation-c.html" class="icon">
-        <img src="../../img/equation-c.png" alt="Site 3" />
-        <span>equation dans le cercle</span>
-      </a>
-      <a href="math/parabole.html" class="icon">
-        <img src="../../img/parabole.png" alt="Site 3" />
-        <span>equation dans le cercle</span>
-      </a>
-      <a href="math/esn.html" class="icon">
-        <img src="../../img/esn.png" alt="Site 3" />
-        <span>étude des suites numériques (arithmétiques et géométriques)</span>
-      </a>
-      <a href="math/fp2.html" class="icon">
-        <img src="../../img/fp2.png" alt="Site 3" />
-        <span>équations et fonctions polynômes du second degré</span>
-      </a>
-      <a href="math/nsn.html" class="icon">
-        <img src="../../img/nsn.png" alt="Site 3" />
-        <span>notion sur les suites numériques</span>
-      </a>
-      <a href="math/dérivation.html" class="icon">
-        <img src="../../img/dérivation.png" alt="Site 3" />
-        <span>dérivation</span>
-      </a>
-      <a href="math/vrgf.html" class="icon">
-        <img src="../../img/vrgf.png" alt="Site 3" />
-        <span>variations et représentations graphiques des fonctions</span>
-      </a>
-      <a href="math/fe.html" class="icon">
-        <img src="../../img/fe.png" alt="Site 3" />
-        <span>fonction exponentielle</span>
-      </a>
-      <a href="math/ft.html" class="icon">
-        <img src="../../img/ft.png" alt="Site 3" />
-        <span>fonctions trigonométriques</span>
-      </a>
-      <a href="math/pc.html" class="icon">
-        <img src="../../img/pc.png" alt="Site 3" />
-        <span>probabilités conditionnelles</span>
-      </a>
-      <a href="math/indépendance.html" class="icon">
-        <img src="../../img/indépendance.png" alt="Site 3" />
-        <span>indépendance</span>
-      </a>
-      <a href="math/va.html" class="icon">
-        <img src="../../img/va.png" alt="Site 3" />
-        <span>variables aléatoires</span>
-      </a>
-      <a href="math/mp.html" class="icon">
-        <img src="../../img/mp.png" alt="Site 3" />
-        <span>modélisation probabiliste</span>
-      </a>
-      <a href="math/espérance.html" class="icon">
-        <img src="../../img/espérance.png" alt="Site 3" />
-        <span>espérance</span>
-      </a>
-      <a href="math/Variance.html" class="icon">
-        <img src="../../img/Variance.png" alt="Site 3" />
-        <span>Variance</span>
-      </a>
-      <a href="math/nl.html" class="icon">
-        <img src="../../img/nl.png" alt="Site 3" />
-        <span>notions de listes</span>
-      </a>
-      <a href="math/n2py.html" class="icon">
-        <img src="../../img/n2py.png" alt="Site 3" />
-        <span>passage du langage naturel au langage Python</span>
-      </a>
-      <a href="math/edps.html" class="icon">
-        <img src="../../img/edps.png" alt="Site 3" />
-        <span>écriture de programmes simples</span>
-      </a>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//MATH-1ER-SPE</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Connexion</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Spé Maths 1re · Vecteurs · Suites · Probabilités
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du portail Mathématiques spé 1re...</div>
+        <div class="terminal-line">[LINK] Rattachement des chapitres : vecteurs, suites, dérivation, expo, trigo...</div>
+        <div class="terminal-line">[PROBA] Ajout des modules de probabilités et variables aléatoires.</div>
+        <div class="terminal-line">[OK]  Accès direct à chaque chapitre prêt.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
     </div>
   </div>
-  <div class="bottom-footer">
-    © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Comptenu : Perplexity (ia)
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Mathématiques Spé 1er
+      <nav class="nav-bar">
+        <a href="../../index.html">Accueil</a>
+        <a href="../../apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="icon-container">
+        <a href="math/calculvectoriel.html" class="icon">
+          <img src="../../img/calculvectoriel.png" alt="Calcul vectoriel" />
+          <span>Calcul vectoriel</span>
+        </a>
+        <a href="math/produitscalaire.html" class="icon">
+          <img src="../../img/produitscalaire.png" alt="Produit scalaire" />
+          <span>Produit scalaire</span>
+        </a>
+        <a href="math/gerepl.html" class="icon">
+          <img src="../../img/gerepl.png" alt="Géométrie repérée" />
+          <span>Géométrie repérée dans le plan</span>
+        </a>
+        <a href="math/equation-c.html" class="icon">
+          <img src="../../img/equation-c.png" alt="Équation du cercle" />
+          <span>Équation dans le cercle</span>
+        </a>
+        <a href="math/parabole.html" class="icon">
+          <img src="../../img/parabole.png" alt="Parabole" />
+          <span>Parabole</span>
+        </a>
+        <a href="math/esn.html" class="icon">
+          <img src="../../img/esn.png" alt="Suites numériques" />
+          <span>Étude des suites numériques (arithmétiques et géométriques)</span>
+        </a>
+        <a href="math/fp2.html" class="icon">
+          <img src="../../img/fp2.png" alt="Polynômes du second degré" />
+          <span>Équations et fonctions polynômes du second degré</span>
+        </a>
+        <a href="math/nsn.html" class="icon">
+          <img src="../../img/nsn.png" alt="Notions sur les suites" />
+          <span>Notions sur les suites numériques</span>
+        </a>
+        <a href="math/dérivation.html" class="icon">
+          <img src="../../img/dérivation.png" alt="Dérivation" />
+          <span>Dérivation</span>
+        </a>
+        <a href="math/vrgf.html" class="icon">
+          <img src="../../img/vrgf.png" alt="Variations et graphiques" />
+          <span>Variations et représentations graphiques des fonctions</span>
+        </a>
+        <a href="math/fe.html" class="icon">
+          <img src="../../img/fe.png" alt="Exponentielle" />
+          <span>Fonction exponentielle</span>
+        </a>
+        <a href="math/ft.html" class="icon">
+          <img src="../../img/ft.png" alt="Trigonométrie" />
+          <span>Fonctions trigonométriques</span>
+        </a>
+        <a href="math/pc.html" class="icon">
+          <img src="../../img/pc.png" alt="Probabilités conditionnelles" />
+          <span>Probabilités conditionnelles</span>
+        </a>
+        <a href="math/indépendance.html" class="icon">
+          <img src="../../img/indépendance.png" alt="Indépendance" />
+          <span>Indépendance</span>
+        </a>
+        <a href="math/va.html" class="icon">
+          <img src="../../img/va.png" alt="Variables aléatoires" />
+          <span>Variables aléatoires</span>
+        </a>
+        <a href="math/mp.html" class="icon">
+          <img src="../../img/mp.png" alt="Modélisation probabiliste" />
+          <span>Modélisation probabiliste</span>
+        </a>
+        <a href="math/espérance.html" class="icon">
+          <img src="../../img/espérance.png" alt="Espérance" />
+          <span>Espérance</span>
+        </a>
+        <a href="math/Variance.html" class="icon">
+          <img src="../../img/Variance.png" alt="Variance" />
+          <span>Variance</span>
+        </a>
+        <a href="math/nl.html" class="icon">
+          <img src="../../img/nl.png" alt="Notions de listes" />
+          <span>Notions de listes</span>
+        </a>
+        <a href="math/n2py.html" class="icon">
+          <img src="../../img/n2py.png" alt="Langage naturel vers Python" />
+          <span>Passage du langage naturel au langage Python</span>
+        </a>
+        <a href="math/edps.html" class="icon">
+          <img src="../../img/edps.png" alt="Programmes simples" />
+          <span>Écriture de programmes simples</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Comptenu : Perplexity (ia)
+    </div>
   </div>
+
+  <script>
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
+  </script>
 </body>
 </html>
-
-<!--
-équations et fonctions polynômes du second degré  img
-notions sur les suites numériques  img
-dérivation  img
-variations et représentations graphiques des fonctions  img
-fonction exponentielle  img
-fonctions trigonométriques  img
-probabilités conditionnelles  img
-indépendance  img
-variables aléatoires  img
-modélisation probabiliste  img
-espérance  img
-variance  img
-notions de listes  img
-passage du langage naturel au langage Python  img
-écriture de programmes simples  img
--->

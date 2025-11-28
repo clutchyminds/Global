@@ -1,198 +1,635 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Masterclass — Modélisation probabiliste</title>
-    <meta name="description" content="Tout sur la modélisation probabiliste : méthodes, étapes, exemples, schéma interactif, quiz, exercices, applications et erreurs à éviter pour la spé maths.">
-    <style>
-        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
-        header { background: linear-gradient(90deg,#eef4fb,#daeaff 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
-        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
-        .intro { font-size: 1.01rem;}
-        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.14);}
-        h2 { color: #1877f2; margin-top: 32px;}
-        h3 { color: #f5a623; margin-top: 22px;}
-        ul, ol { margin-left: 1.4em;}
-        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
-        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
-        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
-        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
-        .error {background: #ffeaea; border-left: 7px solid #e06359;}
-        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
-        .anecdote {background: #efe8ff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
-        .source { font-size: 0.9em; color: #999; text-align: right;}
-        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
-        button:hover { background: #145ac3;}
-        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
-        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
-        label { margin-right: 14px;}
-        @media (max-width: 768px) { main { padding: 12px 2px; } }
-    </style>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <meta charset="UTF-8">
+  <title>Global - Probas · Modélisation probabiliste</title>
+  <meta name="description" content="Tout sur la modélisation probabiliste : méthodes, étapes, exemples, schéma interactif, quiz, exercices, applications et erreurs à éviter pour la spé maths.">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-main:#1877f2;
+      --violet-main:#6366f1;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(129,140,248,0.2), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#111827 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(520px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(129,140,248,0.3),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(129,140,248,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(129,140,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#c7d2fe;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#c7d2fe,transparent);
+      box-shadow:0 0 12px rgba(129,140,248,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#a5b4fc;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(129,140,248,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#c4b5fd,#6366f1,#22c55e);
+      box-shadow:0 0 18px rgba(129,140,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#e0e7ff;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(129,140,248,0.2) 45%,
+          rgba(129,140,248,0.45) 50%,
+          rgba(129,140,248,0.2) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#a5b4fc;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(24,119,242,0.9),rgba(129,140,248,0.9));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#fff;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:230px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#c7d2fe;
+      box-shadow:0 0 12px rgba(199,210,254,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:900px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:26px 26px 30px;
+      color:#e5f1ff;
+    }
+
+    h1,h2{
+      color:#c7d2fe;
+      margin-bottom:10px;
+    }
+    h3{
+      color:#facc6b;
+      margin-top:18px;
+      margin-bottom:10px;
+    }
+    h2{margin-top:26px;font-size:1.4rem;}
+    p,li{font-size:0.98rem;line-height:1.6;}
+    ul,ol{margin-left:1.3em;margin-top:0.3em;margin-bottom:0.8em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      padding:12px 18px;
+      border-radius:10px;
+      margin:1em 0;
+      font-size:0.96rem;
+    }
+    .infos{
+      background:rgba(226,232,240,0.95);
+      color:#111827;
+      border-left:4px solid #4f46e5;
+    }
+    .box-exo{
+      background:rgba(22,163,74,0.14);
+      border-left:4px solid #22c55e;
+    }
+    .box-important{
+      background:rgba(245,158,11,0.14);
+      border-left:4px solid #facc15;
+    }
+    .error{
+      background:rgba(248,113,113,0.14);
+      border-left:4px solid #f87171;
+    }
+    .lexique{
+      background:rgba(59,130,246,0.12);
+      border-left:4px solid #7dd3fc;
+    }
+    .anecdote{
+      background:rgba(237,233,254,0.8);
+      border-left:4px solid #a855f7;
+    }
+
+    #schema{
+      margin:1em auto;
+      display:block;
+      background:#0b1725;
+      border-radius:8px;
+      border:1px solid #1f2937;
+    }
+    .reponse{
+      margin-top:0.7em;
+      color:#c7d2fe;
+      font-weight:bold;
+      text-align:center;
+      font-size:0.95rem;
+    }
+    label{
+      margin-right:14px;
+      font-size:0.9rem;
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+  </style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-    <h1>Masterclass — Modélisation probabiliste</h1>
-    <div class="intro">
-        Apprends à traduire des situations réelles en modèles de probabilité : étapes, méthodes, simulations, schéma interactif, quiz, erreurs, métiers et enjeux modernes !
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//proba-MODEL</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Modélisation probabiliste · lois, variables aléatoires, simulations et applications.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du module Modélisation probabiliste...</div>
+        <div class="terminal-line">[DEF] Mise en place de l’univers, des événements et des lois de probabilité.</div>
+        <div class="terminal-line">[SIM] Configuration de la binomiale pour les tirages pile/face.</div>
+        <div class="terminal-line">[OK]  Prêt : schéma interactif, quiz et exercices disponibles.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
     </div>
-</header>
-<main>
-<section>
-    <h2>📝 Définition et principe</h2>
-    <div class="infos">
-        La <b>modélisation probabiliste</b> consiste à représenter un phénomène aléatoire réel  
-        (jeu, expérience, système complexe…) par un modèle mathématique basé sur le hasard :  
-        - Univers probabiliste, événements, loi de probabilité, variable aléatoire...<br>
-        <b>Objectif : prévoir, simuler, ou optimiser un système incertain.</b>
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Probas
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
     </div>
-    <ul>
-        <li>Étudier la météo, tirer à pile ou face, analyser statistiques sur de gros jeux/expériences</li>
-        <li>Traduire un problème concret en termes d’issues, probabilités, variables</li>
-    </ul>
-</section>
-<section>
-    <h2>📗 Les étapes d’une modélisation probabiliste</h2>
-    <ol>
-        <li>Identifier l’expérience aléatoire (ce qui varie, ce qui est fixé)</li>
-        <li>Définir l’univers des possibles (issues, événements)</li>
-        <li>Attribuer des probabilités aux issues/événements</li>
-        <li>Choisir la <b>variable aléatoire</b> à étudier (gains, nombre de succès, etc.)</li>
-        <li>Calculer les lois, l’espérance, la variance selon le modèle choisi (binomiale, géométrique, loi uniforme…)</li>
-        <li>Avantage : on peut ensuite faire des approximations, des simulations ou des prévisions numériques.</li>
-    </ol>
-    <div class="box-important">
-        Astuce : Toujours commencer par formuler clairement la question à modéliser : “Qu’est-ce qui peut varier ? Qu’est-ce qui est aléatoire ?”
+
+    <div class="page-padding">
+      <div class="content-card">
+        <h1>Masterclass — Modélisation probabiliste</h1>
+        <p style="margin-bottom:1.2em;font-size:0.98rem;color:#e0e7ff;">
+          Apprends à traduire des situations réelles en modèles de probabilité : étapes, méthodes, simulations, schéma interactif, quiz, erreurs, métiers et enjeux modernes.
+        </p>
+
+        <section>
+          <h2>📝 Définition et principe</h2>
+          <div class="infos">
+            La <b>modélisation probabiliste</b> consiste à représenter un phénomène aléatoire réel
+            (jeu, expérience, système complexe…) par un modèle mathématique basé sur le hasard :
+            univers probabiliste, événements, loi de probabilité, variable aléatoire...<br>
+            <b>Objectif : prévoir, simuler, ou optimiser un système incertain.</b>
+          </div>
+          <ul>
+            <li>Étudier la météo, tirer à pile ou face, analyser des statistiques sur de grands nombres d’expériences.</li>
+            <li>Traduire un problème concret en termes d’issues, de probabilités et de variables aléatoires.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>📗 Les étapes d’une modélisation probabiliste</h2>
+          <ol>
+            <li>Identifier l’expérience aléatoire (ce qui varie, ce qui est fixé).</li>
+            <li>Définir l’univers des possibles (issues, événements).</li>
+            <li>Attribuer des probabilités aux issues ou aux événements.</li>
+            <li>Choisir la <b>variable aléatoire</b> à étudier (gains, nombre de succès, etc.).</li>
+            <li>Calculer les lois, l’espérance, la variance selon le modèle choisi (binomiale, géométrique, loi uniforme…).</li>
+            <li>Avantage : on peut ensuite faire des approximations, des simulations ou des prévisions numériques.</li>
+          </ol>
+          <div class="box-important">
+            Astuce : commence toujours par formuler clairement la question à modéliser : « Qu’est-ce qui peut varier ? Qu’est-ce qui est aléatoire ? ».
+          </div>
+        </section>
+
+        <section>
+          <h2>🟦 Schéma interactif — tirages, piles ou faces (simulation)</h2>
+          <label>Nombre de tirages : <input type="number" id="n" value="5" min="1" max="12"></label>
+          <label>Pile (proba) : <input type="number" id="p" value="0.5" step="0.01" min="0.01" max="0.99"></label>
+          <canvas id="schema" width="420" height="170"></canvas>
+          <div id="desc-mod"></div>
+        </section>
+
+        <section class="box box-exo">
+          <h2>💡 Exercice interactif</h2>
+          <p>On lance 5 fois une pièce équilibrée. Quelle est la probabilité d’obtenir exactement 3 piles ?</p>
+          <button onclick="afficheReponseModel()">Voir la correction</button>
+          <div class="reponse" id="exo-reponse-model" style="display:none;">
+            Modèle : \(X \sim \text{Binomiale}(5;0{,}5)\).<br>
+            \( P(X=3) = C_5^3 \times 0{,}5^3 \times 0{,}5^2 = 10 \times 0{,}125 \times 0{,}25 = 0{,}3125 \).
+          </div>
+        </section>
+
+        <section class="box-exo">
+          <h2>🔥 Exercice “expert”</h2>
+          <p>Un tir aléatoire touche une cible avec probabilité 0,2 ; on répète 8 fois.
+            Calcule l’espérance du nombre de touches.</p>
+          <button onclick="document.getElementById('exo2-reponse-model').style.display='block';">Voir la correction</button>
+          <div class="reponse" id="exo2-reponse-model" style="display:none;">
+            Loi binomiale \(X \sim B(8;0{,}2)\) ; \(E(X) = 8 \times 0{,}2 = 1{,}6\).
+          </div>
+        </section>
+
+        <section class="quiz">
+          <h2>🎯 Quiz express</h2>
+          <p>Modéliser une expérience aléatoire, c’est :</p>
+          <button onclick="quizModel(0)">Traduire en problématique de probabilité</button>
+          <button onclick="quizModel(1)">Calculer l’espérance</button>
+          <button onclick="quizModel(2)">Résoudre une équation</button>
+          <div class="reponse" id="rep-quiz-model"></div>
+
+          <p>La somme des probabilités sur toutes les issues possibles est :</p>
+          <button onclick="quizModel2(0)">N’importe quel nombre</button>
+          <button onclick="quizModel2(1)">Toujours 1</button>
+          <button onclick="quizModel2(2)">Toujours 0</button>
+          <div class="reponse" id="rep-quiz-model2"></div>
+        </section>
+
+        <section class="box-important">
+          <h2>🌐 Applications concrètes</h2>
+          <ul>
+            <li><b>Jeux / Statistiques</b> : tirages, loteries, scores sportifs.</li>
+            <li><b>Sciences</b> : génétique, physique, chimie (radioactivité, diffusion…).</li>
+            <li><b>Informatique</b> : simulation d’algorithmes, cryptographie, IA / statistique.</li>
+            <li><b>Économie</b> : estimation, assurance, gestion de risque.</li>
+          </ul>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes à éviter</h2>
+          <ul>
+            <li>Oublier de préciser la variable étudiée (par exemple \(X\)).</li>
+            <li>Mal attribuer la loi (binomiale, etc.) ou confondre les paramètres.</li>
+            <li>Penser que « hasard » = imprévisible ; un modèle donne une tendance, pas un cas unique.</li>
+            <li>Oublier que toute simulation repose sur de « vrais » tirages ou des probabilités cumulées.</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique express</h2>
+          <b>Modélisation</b> : passage d’un problème concret à un modèle mathématique.<br>
+          <b>Variable aléatoire</b> : grandeur numérique issue du hasard.<br>
+          <b>Loi</b> : distribution des probabilités.<br>
+          <b>Simulation</b> : réalisation « virtuelle » de l’expérience aléatoire.
+        </section>
+
+        <section class="rubrique">
+          <h3>📖 Petite histoire</h3>
+          <ul>
+            <li>La modélisation probabiliste émerge avec Bernoulli, Laplace et les jeux de hasard.</li>
+            <li>Elle irrigue aujourd’hui la science des données, la prise de décision et la politique de santé.</li>
+          </ul>
+          <div class="source">Source : histoire des probabilités, ressources de cours et articles de vulgarisation.</div>
+        </section>
+
+        <section class="anecdote">
+          <b>Astuce-mémoire :</b> « On ne prédit pas le prochain résultat, mais la forme globale sur des milliers d’essais. »
+        </section>
+
+        <section>
+          <h2>💡 Méthodologie pour progresser</h2>
+          <ul>
+            <li>Décris toujours précisément ce que tu veux modéliser (questions, issues).</li>
+            <li>Choisis la variable et la loi adaptées, puis visualise et interprète les résultats.</li>
+            <li>Fais varier les paramètres (\(n\), \(p\)…) pour t’entraîner avec le schéma.</li>
+            <li>Utilise la simulation pour relier le modèle abstrait aux phénomènes réels.</li>
+          </ul>
+        </section>
+      </div>
     </div>
-</section>
-<section>
-    <h2>🟦 Schéma interactif — tirages, piles ou faces (simulation)</h2>
-    <label>Nombre de tirages : <input type="number" id="n" value="5" min="1" max="12"></label>
-    <label>Pile (proba) : <input type="number" id="p" value="0.5" step="0.01" min="0.01" max="0.99"></label>
-    <canvas id="schema" width="420" height="170"></canvas>
-    <div id="desc-mod"></div>
-</section>
-<section class="box box-exo">
-    <h2>💡 Exercice interactif</h2>
-    <p>On lance 5 fois une pièce équilibrée. Quelle est la probabilité d’obtenir exactement 3 piles ?</p>
-    <button onclick="afficheReponseModel()">Voir la correction</button>
-    <div class="reponse" id="exo-reponse-model" style="display:none;">
-        Modèle : X ~ Binomiale(5;0,5).<br>
-        \( P(X=3) = C_5^3 \times 0,5^3 \times 0,5^2 = 10 \times 0,125 \times 0,25 = 0,3125 \)
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
     </div>
-</section>
-<section class="box-exo">
-    <h2>🔥 Exercice “expert”</h2>
-    <p>Un tir aléatoire touche une cible avec proba 0,2 ; on répète 8 fois.  
-      Calcule l’espérance du nombre de touches.</p>
-    <button onclick="document.getElementById('exo2-reponse-model').style.display='block';">Voir la correction</button>
-    <div class="reponse" id="exo2-reponse-model" style="display:none;">
-        Loi binomiale X~B(8;0,2) ; E(X) = 8×0,2 = 1,6.
-    </div>
-</section>
-<section class="quiz">
-    <h2>🎯 Quiz express</h2>
-    <p>Modéliser une expérience aléatoire, c’est :</p>
-    <button onclick="quizModel(0)">Traduire en problématique de probabilité</button>
-    <button onclick="quizModel(1)">Calculer l’espérance</button>
-    <button onclick="quizModel(2)">Résoudre une équation</button>
-    <div class="reponse" id="rep-quiz-model"></div>
-    <p>La somme des probabilités sur toutes les issues possibles est :</p>
-    <button onclick="quizModel2(0)">N’importe quel nombre</button>
-    <button onclick="quizModel2(1)">Toujours 1</button>
-    <button onclick="quizModel2(2)">Toujours 0</button>
-    <div class="reponse" id="rep-quiz-model2"></div>
-</section>
-<section class="box-important">
-    <h2>🌐 Applications concrètes</h2>
-    <ul>
-        <li><b>Jeux/Statistiques</b> : tirages, loteries, scores sportifs</li>
-        <li><b>Sciences</b> : génétique, physique, chimie (radioactivité, diffusion…)</li>
-        <li><b>Informatique</b> : simuler des algorithmes, cryptographie, IA/statistique</li>
-        <li><b>Économie</b> : estimation, assurance, gestion de risque</li>
-    </ul>
-</section>
-<section class="error">
-    <h2>❌ Erreurs fréquentes à éviter</h2>
-    <ul>
-        <li>Oublier de préciser la variable étudiée (X…)</li>
-        <li>Mal attribuer la loi (binomiale, etc.) ou confondre paramètres</li>
-        <li>Penser que “hasard” = imprévisible ; un modèle ne donne qu’une tendance, pas un cas unique</li>
-        <li>Ignorer que toute simulation s’appuie sur de “vrais” tirages ou probabilités cumulées</li>
-    </ul>
-</section>
-<section class="lexique">
-    <h2>📚 Lexique express</h2>
-    <b>Modélisation</b>&nbsp;: passage d’un problème concret à un modèle mathématique<br>
-    <b>Variable aléatoire</b>&nbsp;: grandeur numérique issue du hasard<br>
-    <b>Loi</b>&nbsp;: distribution des probabilités<br>
-    <b>Simulation</b>&nbsp;: réalisation “virtuelle” de l’expérience aléatoire
-</section>
-<section class="rubrique">
-    <h3>📖 Petite histoire</h3>
-    <ul>
-        <li>La modélisation probabiliste émerge avec Bernoulli, Pierre-Simon Laplace et les casinos !</li>
-        <li>Elle irrigue aujourd’hui la science des données, les décisions, la politique de santé…</li>
-    </ul>
-    <div class="source">Source: histoire des probabilités, Wikipedia</div>
-</section>
-<section class="anecdote">
-    <b>Astuce-mémoire :</b> “On ne prédit pas le prochain résultat, mais la forme globale sur des milliers d’essais !”
-</section>
-<section>
-    <h2>💡 Méthodologie pour progresser</h2>
-    <ul>
-        <li>Décris toujours précisément ce que tu veux modéliser (questions, issues)</li>
-        <li>Attribue la variable et la loi adaptée, puis visualise/évalue tes résultats</li>
-        <li>Varie les paramètres (n, p…) pour t’entrainer avec le schéma</li>
-        <li>Pense simulation pour comprendre la “vraie vie” derrière l’abstraction</li>
-    </ul>
-</section>
-</main>
-<script>
-function quizModel(rep) {
-    let repElem = document.getElementById("rep-quiz-model");
-    repElem.textContent = (rep === 0) ? "Bravo ! La modélisation, c’est traduire en modèle proba." : "Non, la modélisation précède le calcul...";
-}
-function quizModel2(rep) {
-    let repElem = document.getElementById("rep-quiz-model2");
-    repElem.textContent = (rep === 1) ? "Bonne réponse ! Toujours 1." : "Attention : la somme des probabilités sur tous les cas doit être 1.";
-}
-function afficheReponseModel() {
-    document.getElementById("exo-reponse-model").style.display = "block";
-}
-// Schéma dynamique pile/face binomiale
-function drawModel() {
-    let n = parseInt(document.getElementById("n").value);
-    let p = parseFloat(document.getElementById("p").value);
-    let canvas = document.getElementById("schema");
-    let ctx = canvas.getContext("2d");
-    ctx.clearRect(0,0,420,170);
-    ctx.font="13px Arial";
-    ctx.fillStyle="#1877f2";
-    let tot=0,xs=[];
-    for(let k=0;k<=n;k++){
-        // Binomiale
+  </div>
+
+  <script>
+    // Affichage différé : on masque le loader puis on montre le contenu après 3 s
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000); // temporisation via setTimeout[web:11][web:12]
+
+    function quizModel(rep) {
+      let repElem = document.getElementById("rep-quiz-model");
+      repElem.textContent = (rep === 0)
+        ? "Bravo ! La modélisation, c’est traduire en modèle de probabilité."
+        : "Non, la modélisation précède les calculs comme l’espérance.";
+    }
+    function quizModel2(rep) {
+      let repElem = document.getElementById("rep-quiz-model2");
+      repElem.textContent = (rep === 1)
+        ? "Bonne réponse ! La somme vaut toujours 1."
+        : "Attention : la somme des probabilités sur tous les cas possibles doit être 1.";
+    }
+    function afficheReponseModel() {
+      document.getElementById("exo-reponse-model").style.display = "block";
+    }
+
+    // Schéma dynamique pile/face binomiale
+    function drawModel() {
+      let n = parseInt(document.getElementById("n").value);
+      let p = parseFloat(document.getElementById("p").value);
+      let canvas = document.getElementById("schema");
+      let ctx = canvas.getContext("2d");
+      ctx.clearRect(0,0,420,170);
+      ctx.font="13px Arial";
+      ctx.fillStyle="#e5e7eb";
+
+      let tot=0,xs=[];
+      for(let k=0;k<=n;k++){
+        // Coefficient binomial
         let comb=1;
         for(let i=1;i<=k;i++) comb*=(n-i+1)/i;
         let proba=comb*Math.pow(p,k)*Math.pow(1-p,n-k);
         xs.push(proba); tot+=proba;
-    }
-    for(let k=0;k<=n;k++){
-        ctx.fillStyle="#1877f2";
+      }
+      for(let k=0;k<=n;k++){
+        ctx.fillStyle="#3b82f6";
         ctx.fillRect(35+k*30,150-xs[k]*110,24,xs[k]*110);
-        ctx.fillStyle="#222";
+        ctx.fillStyle="#e5e7eb";
         ctx.fillText(k, 44+k*30, 164);
         ctx.fillText(xs[k].toFixed(3), 36+k*30, 150-xs[k]*113);
+      }
+      ctx.fillStyle="#a855f7";
+      ctx.fillText("Somme des proba ≈ "+tot.toFixed(2), 200, 20);
+      document.getElementById("desc-mod").innerHTML =
+        "Loi binomiale : n = "+n+", p = "+p+"<br>Observe la probabilité de chaque nombre de piles.";
     }
-    ctx.fillStyle="#a133ff"; ctx.fillText("somme des proba = "+tot.toFixed(2), 210, 16);
-    document.getElementById("desc-mod").innerHTML =
-        "Loi Binomiale : n="+n+", p="+p+"<br>Observe la fréquence de chaque nombre de piles.";
-}
-drawModel();
-document.getElementById("n").addEventListener("input",drawModel);
-document.getElementById("p").addEventListener("input",drawModel);
-</script>
+    drawModel();
+    document.getElementById("n").addEventListener("input",drawModel);
+    document.getElementById("p").addEventListener("input",drawModel);
+  </script>
 </body>
 </html>

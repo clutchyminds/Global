@@ -2,315 +2,783 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Masterclass NSI : Histoire de l’informatique (version interactive)</title>
-  <meta name="description" content="Histoire de l’informatique interactif : schéma animé, quiz, explications, anecdotes. Spécial NSI Première.">
+  <title>Global - NSI · Histoire de l’informatique</title>
+  <meta name="description" content="Histoire de l’informatique interactive : schéma animé, quiz, explications, anecdotes. Spécial NSI Première.">
   <style>
-    body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
-    header { background: linear-gradient(90deg,#eef4fb,#e7ffe7 80%); color: #243552; padding: 30px 0 12px; text-align: center;}
-    header h1 { font-size: 2.3rem; margin: 0 0 10px; color: #1877f2;}
-    header .intro { font-size: 1rem;}
-    main { max-width: 950px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
-    h2 { color: #1877f2; margin-top: 32px;}
-    h3 { color: #f5a623; margin-top: 22px;}
-    ul, ol { margin-left: 1.4em;}
-    .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
-    .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
-    .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
-    .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
-    .error {background: #ffeaea; border-left: 7px solid #e06359;}
-    .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
-    .anecdote {background: #e7ffe7; border-left: 7px solid #167c2b; font-style: italic; margin: 1em 0; padding: 12px 17px; border-radius: 6px;}
-    .source { font-size: 0.9em; color: #999; text-align: right;}
-    button, .btn-expl {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 14px; cursor: pointer; margin-right: 8px; margin-top: 7px; transition: background 0.2s;}
-    button:hover, .btn-expl:hover { background: #145ac3;}
-    #schema { margin: 2em auto 1em; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
-    .info-bulle {display:none;position: absolute; background:#fff; border:1px solid #243552; border-radius:5px;padding:10px;font-size:1rem;z-index:10; box-shadow: 0 3px 12px rgba(24,119,242,0.08);}
-    .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
-    #desc-schema { background: #e7f3f7; border-radius: 6px; color: #1877f2; font-weight: bold; padding: 10px; text-align: center; min-height: 25px; margin-bottom: 10px;}
-    label { margin-right: 12px;}
-    @media (max-width: 900px) { main { padding: 12px 2px; } }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-main:#1877f2;
+      --green-main:#16a34a;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(52,211,153,0.25), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#111827 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(540px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(52,211,153,0.35),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(52,211,153,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(52,211,153,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#bbf7d0;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#bbf7d0,transparent);
+      box-shadow:0 0 12px rgba(52,211,153,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#a7f3d0;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(52,211,153,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#bbf7d0,#22c55e,#4ade80);
+      box-shadow:0 0 18px rgba(52,211,153,0.9);
+      animation:barProgress 2.1s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#dcfce7;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(52,211,153,0.2) 45%,
+          rgba(52,211,153,0.45) 50%,
+          rgba(52,211,153,0.2) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#a7f3d0;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(24,119,242,0.95),rgba(34,197,94,0.95));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#f9fafb;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:230px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#bbf7d0;
+      box-shadow:0 0 12px rgba(187,247,208,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:950px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:26px 26px 30px;
+      color:#e5f1ff;
+    }
+
+    h1,h2{
+      color:#e5f1ff;
+      margin-bottom:10px;
+    }
+    h3{
+      color:#fde68a;
+      margin-top:18px;
+      margin-bottom:10px;
+    }
+    h2{margin-top:26px;font-size:1.4rem;}
+    p,li{font-size:0.98rem;line-height:1.6;}
+    ul,ol{margin-left:1.3em;margin-top:0.3em;margin-bottom:0.8em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      padding:12px 20px;
+      border-radius:6px;
+      margin:1.1em 0;
+      font-size:0.97rem;
+    }
+    .infos{
+      background:#e7f3fa;
+      border-left:6px solid #1877f2;
+      color:#0f172a;
+    }
+    .box-exo{
+      background:#e5ffe7;
+      border-left:7px solid #167c2b;
+      color:#052e16;
+    }
+    .box-important{
+      background:#fff7ec;
+      border-left:7px solid #f5a623;
+      color:#3b2710;
+    }
+    .error{
+      background:#ffeaea;
+      border-left:7px solid #e06359;
+      color:#7f1d1d;
+    }
+    .lexique{
+      background:#f7fafd;
+      border-left:7px solid #243552;
+      padding:12px;
+      color:#0f172a;
+    }
+    .anecdote{
+      background:#e7ffe7;
+      border-left:7px solid #167c2b;
+      font-style:italic;
+      padding:12px 17px;
+      color:#064e3b;
+    }
+
+    #schema{
+      margin:2em auto 1em;
+      display:block;
+      background:#e7f3f7;
+      border-radius:8px;
+      border:1px solid #d1d5db;
+    }
+    .info-bulle{
+      display:none;
+      position:absolute;
+      background:#ffffff;
+      border:1px solid #243552;
+      border-radius:5px;
+      padding:10px;
+      font-size:1rem;
+      z-index:10;
+      box-shadow:0 3px 12px rgba(24,119,242,0.18);
+      max-width:260px;
+      color:#111827;
+    }
+    .reponse{
+      margin-top:0.7em;
+      color:#bfdbfe;
+      font-weight:bold;
+      text-align:center;
+      font-size:0.95rem;
+    }
+    #desc-schema{
+      background:#e7f3f7;
+      border-radius:6px;
+      color:#1877f2;
+      font-weight:bold;
+      padding:10px;
+      text-align:center;
+      min-height:25px;
+      margin-bottom:10px;
+    }
+    table{
+      border-collapse:collapse;
+      margin:10px auto;
+    }
+    th,td{
+      border:1px solid #1877f2;
+      padding:7px 15px;
+      text-align:center;
+    }
+    th{
+      background:#eef4fb;
+      color:#0f172a;
+    }
+    td.type{font-weight:bold;}
+    button,.btn-expl{
+      background:#1877f2;
+      color:#f9fafb;
+      font-weight:bold;
+      border:none;
+      border-radius:6px;
+      padding:8px 14px;
+      cursor:pointer;
+      margin-right:8px;
+      margin-top:7px;
+      transition:background 0.2s,transform 0.15s;
+    }
+    button:hover,.btn-expl:hover{
+      background:#145ac3;
+      transform:translateY(-1px);
+    }
+
+    @media (max-width:900px){
+      .content-card{padding:12px 6px 20px;}
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
   </style>
 </head>
 <body>
-<header>
-  <h1>Masterclass NSI : Histoire de l’informatique (interactif)</h1>
-  <div class="intro">Découvre l’histoire comme jamais avec schémas animés et quiz pour progresser plus vite !</div>
-</header>
-<main>
-  <section>
-    <h2>📋 Fiche synthèse ultra-complète et interactive</h2>
-    <ul id="ul-synthese">
-      <li><b>L’informatique :</b>
-        <button class="btn-expl" onclick="afficheSynthese('def')">Voir explication</button>
-        <span id="syn-def" style="display:none;color:#167c2b;">
-          Science du traitement automatique d’informations par des machines : facilite calcul, décision, mémoire.
-        </span>
-      </li>
-      <li><b>Qui est la première programmeuse ?</b>
-        <button class="btn-expl" onclick="afficheSynthese('ada')">Réponse !</button>
-        <span id="syn-ada" style="display:none;color:#f5a623;">
-          Ada Lovelace, ayant écrit en 1843 le premier algorithme pour la machine de Babbage !
-        </span>
-      </li>
-      <li><b>Qu’est-ce qui distingue le transistor du microprocesseur ?</b>
-        <button class="btn-expl" onclick="afficheSynthese('trans')">Clique ici</button>
-        <span id="syn-trans" style="display:none;color:#e06359;">
-          Le transistor est l’élément de base qui commute les signaux. Le microprocesseur regroupe des millions de transistors pour calculer et mémoriser.
-        </span>
-      </li>
-      <li>
-        <b>À quoi a servi ARPANET ?</b>
-        <button class="btn-expl" onclick="afficheSynthese('arpanet')">Devine !</button>
-        <span id="syn-arpanet" style="display:none;color:#243552;">
-          Premier réseau reliant plusieurs ordinateurs à distance, ancêtre direct d’Internet (1969).
-        </span>
-      </li>
-      <li>
-        <b>Quels sont les usages majeurs de l’informatique ? (Clique pour dérouler)</b>
-        <button class="btn-expl" onclick="afficheSynthese('usages')">Voir plus</button>
-        <span id="syn-usages" style="display:none;color:#1877f2;">
-          <ul>
-            <li>Calcul scientifique rapide (météo, astronomie, cryptographie)</li>
-            <li>Gestion de données : santé, finance, réseaux sociaux</li>
-            <li>Simulation et automatisation industrielle</li>
-            <li>Communications (web, e-mail, cloud)</li>
-            <li>Jeux vidéo, arts numériques, création musicale, IA</li>
-          </ul>
-        </span>
-      </li>
-    </ul>
-    <div>
-      <button onclick="quizSynthese()">Quiz surprise</button>
-      <span class="reponse" id="quiz-synthese-res"></span>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//nsi-HISTOIRE</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Histoire de l’informatique · frise interactive, quiz, personnages et grandes dates.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement de la frise chronologique et des anecdotes historiques...</div>
+        <div class="terminal-line">[DATA] Mise en place des jalons : Pascal, Jacquard, Babbage, Turing, ENIAC, ARPANET, Web.</div>
+        <div class="terminal-line">[OK]  Prêt : fiche synthèse, quiz et schéma animé pour la spécialité NSI.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
     </div>
-  </section>
+  </div>
 
-  <section>
-    <h2>🧑‍💻 Frise chronologique interactive</h2>
-    <canvas id="schema" width="900" height="230"></canvas>
-    <div id="desc-schema">Survole ou clique chaque point de la frise : Découvre les infos et anecdotes pour chaque étape clé !</div>
-    <div id="info-bulle" class="info-bulle"></div>
-  </section>
-
-  <section class="box box-exo">
-    <h2>💡 Exercices interactifs</h2>
-    <p>Associe l’invention à sa date :<br>
-      <b>Langage Fortran</b> – A. 1945 B. 1957 C. 1990
-      <button onclick="afficheReponseNSI1()">Voir la correction</button>
-    </p>
-    <div class="reponse" id="exo-reponse-nsi1" style="display:none;">
-      Réponse : <b>1957</b> – Premier langage pour calcul scientifique.
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - NSI
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
     </div>
-    <p>
-      <b>Qui a inventé le principe de la machine universelle ?</b>
-      <button onclick="document.getElementById('exo2-reponse-nsi').style.display='block';">Voir la correction</button>
-    </p>
-    <div class="reponse" id="exo2-reponse-nsi" style="display:none;">
-      Alan Turing, en 1936, avec la machine de Turing.
+
+    <div class="page-padding">
+      <div class="content-card">
+        <h1>Masterclass NSI : Histoire de l’informatique (interactif)</h1>
+        <div class="intro" style="color:#d1fae5;margin-bottom:10px;">
+          Découvre l’histoire comme jamais avec schémas animés, quiz et anecdotes pour progresser plus vite.
+        </div>
+
+        <main>
+          <!-- Fiche synthèse -->
+          <section>
+            <h2>📋 Fiche synthèse ultra-complète et interactive</h2>
+            <ul id="ul-synthese">
+              <li><b>L’informatique :</b>
+                <button class="btn-expl" onclick="afficheSynthese('def')">Voir explication</button>
+                <span id="syn-def" style="display:none;color:#16a34a;">
+                  Science du traitement automatique de l’information par des machines (calcul, décision, mémoire, communication).
+                </span>
+              </li>
+              <li><b>Première programmeuse ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('ada')">Réponse</button>
+                <span id="syn-ada" style="display:none;color:#facc15;">
+                  Ada Lovelace, qui décrit en 1843 un algorithme pour la machine analytique de Babbage.
+                </span>
+              </li>
+              <li><b>Transistor vs microprocesseur ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('trans')">Voir</button>
+                <span id="syn-trans" style="display:none;color:#f97316;">
+                  Le transistor est un commutateur électronique élémentaire ; le microprocesseur regroupe des millions de transistors pour exécuter des programmes.
+                </span>
+              </li>
+              <li><b>Rôle d’ARPANET ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('arpanet')">Afficher</button>
+                <span id="syn-arpanet" style="display:none;color:#111827;">
+                  Premier réseau reliant plusieurs ordinateurs à distance (1969), ancêtre direct d’Internet.
+                </span>
+              </li>
+              <li><b>Usages majeurs de l’informatique :</b>
+                <button class="btn-expl" onclick="afficheSynthese('usages')">Voir plus</button>
+                <span id="syn-usages" style="display:none;color:#e0f2fe;">
+                  <ul>
+                    <li>Calcul scientifique (météo, astronomie, cryptographie).</li>
+                    <li>Gestion de données (santé, finance, réseaux sociaux).</li>
+                    <li>Simulation et automatisation industrielle.</li>
+                    <li>Communication (web, e‑mail, cloud).</li>
+                    <li>Jeux vidéo, arts numériques, IA, musique assistée.</li>
+                  </ul>
+                </span>
+              </li>
+            </ul>
+            <div>
+              <button onclick="quizSynthese()">Quiz surprise</button>
+              <span class="reponse" id="quiz-synthese-res"></span>
+            </div>
+          </section>
+
+          <!-- Frise -->
+          <section>
+            <h2>🧑‍💻 Frise chronologique interactive</h2>
+            anvas id="schema" width="900" height="230"></canvas>
+            <div id="desc-schema">Survole ou clique chaque point de la frise pour voir les infos et anecdotes associées.</div>
+            <div id="info-bulle" class="info-bulle"></div>
+          </section>
+
+          <!-- Exercices -->
+          <section class="box-exo">
+            <h2>💡 Exercices interactifs</h2>
+            <p>Associer l’invention à sa date : Fortran → A. 1945 B. 1957 C. 1990</p>
+            <button onclick="afficheReponseNSI1()">Voir la correction</button>
+            <div class="reponse" id="exo-reponse-nsi1" style="display:none;">
+              Fortran est apparu en 1957, premier langage haut niveau pour le calcul scientifique.
+            </div>
+            <p>Qui formalise la machine universelle ?</p>
+            <button onclick="document.getElementById('exo2-reponse-nsi').style.display='block';">Voir la correction</button>
+            <div class="reponse" id="exo2-reponse-nsi" style="display:none;">
+              Alan Turing, en 1936, avec le concept de machine de Turing.
+            </div>
+          </section>
+
+          <!-- Quiz -->
+          <section class="quiz">
+            <h2>🎯 Quiz rapide</h2>
+            <p>Quel composant permet la miniaturisation massive des ordinateurs ?</p>
+            <button onclick="quizNSI(0)">Le transistor</button>
+            <button onclick="quizNSI(1)">La roue dentée</button>
+            <button onclick="quizNSI(2)">La carte perforée</button>
+            <div class="reponse" id="rep-quiz-nsi"></div>
+
+            <p>En quelle année Tim Berners‑Lee propose le Web au CERN ?</p>
+            <button onclick="quizNSI2(0)">1984</button>
+            <button onclick="quizNSI2(1)">1990</button>
+            <button onclick="quizNSI2(2)">2007</button>
+            <div class="reponse" id="rep-quiz-nsi2"></div>
+          </section>
+
+          <!-- Applications -->
+          <section class="box-important">
+            <h2>🌍 Applications concrètes puissantes</h2>
+            <ul>
+              <li>Santé : imagerie, dossiers patients, épidémiologie, IA médicale.</li>
+              <li>Sciences : simulations physiques, météo, astronomie, climat.</li>
+              <li>Sécurité : cryptographie, cybersécurité, défense.</li>
+              <li>Arts et loisirs : jeux vidéo, cinéma numérique, musique, 3D.</li>
+              <li>Quotidien : paiement, transport, réseaux sociaux, objets connectés.</li>
+            </ul>
+          </section>
+
+          <!-- Erreurs -->
+          <section class="error">
+            <h2>❌ Erreurs fréquentes à éviter</h2>
+            <ul>
+              <li>Confondre Ada Lovelace (programmeuse) et Alan Turing (théoricien du calcul).</li>
+              <li>Réduire l’histoire à l’électronique et oublier les algorithmes et machines mécaniques.</li>
+              <li>Mélanger invention d’Internet (ARPANET) et du Web (Berners‑Lee).</li>
+              <li>Penser que l’IA est née seulement au XXIᵉ siècle (terme introduit dans les années 1950).</li>
+            </ul>
+          </section>
+
+          <!-- Lexique -->
+          <section class="lexique">
+            <h2>📚 Lexique express</h2>
+            <b>Algorithme</b> : suite d’instructions pour résoudre un problème.<br>
+            <b>Carte perforée</b> : support avec trous servant à piloter une machine.<br>
+            <b>Transistor</b> : composant qui amplifie ou commute un signal électrique.<br>
+            <b>Microprocesseur</b> : processeur complet gravé sur une seule puce.<br>
+            <b>Réseau</b> : ensemble de machines reliées pour échanger des données.<br>
+            <b>Intelligence artificielle</b> : techniques visant à reproduire des tâches “intelligentes”.<br>
+            <b>Cryptographie</b> : protection de l’information par des méthodes mathématiques.
+          </section>
+
+          <!-- Anecdotes -->
+          <section class="rubrique">
+            <h3>📖 Petites histoires enrichies</h3>
+            <ul>
+              <li>Le mot “ordinateur” est proposé en français en 1955 par IBM France.</li>
+              <li>Grace Hopper popularise le mot “bug” après avoir trouvé un insecte dans un relais.</li>
+              <li>Enigma et sa cryptanalyse ont influencé la fin de la Seconde Guerre mondiale.</li>
+              <li>Le Web naît au CERN pour partager des documents entre chercheurs.</li>
+            </ul>
+            <div class="source">Source : manuels NSI et ressources sur l’histoire de l’informatique.</div>
+          </section>
+
+          <section class="anecdote">
+            <b>Anecdote :</b> le premier microprocesseur commercial, l’Intel 4004 (1971), ne contenait “que” quelques milliers de transistors, contre plusieurs milliards aujourd’hui dans un smartphone.
+          </section>
+
+          <!-- Méthodo -->
+          <section>
+            <h2>💡 Méthodologie contrôle</h2>
+            <ul>
+              <li>Situer chaque innovation dans le temps et expliquer ses conséquences.</li>
+              <li>Citer des personnages clés (Ada, Turing, Hopper, Berners‑Lee...).</li>
+              <li>Lier mathématiques, électronique, réseaux et usages sociaux.</li>
+              <li>Intégrer les enjeux éthiques (surveillance, emploi, données personnelles).</li>
+            </ul>
+          </section>
+        </main>
+      </div>
     </div>
-  </section>
 
-  <section class="quiz">
-    <h2>🎯 Quiz rapide</h2>
-    <p>Quel composant a permis la miniaturisation fulgurante des ordinateurs ?</p>
-    <button onclick="quizNSI(0)">Le transistor</button>
-    <button onclick="quizNSI(1)">La roue dentée</button>
-    <button onclick="quizNSI(2)">La carte perforée</button>
-    <div class="reponse" id="rep-quiz-nsi"></div>
-    <p>En quelle année le web a-t-il été proposé par Tim Berners-Lee ?</p>
-    <button onclick="quizNSI2(0)">1984</button>
-    <button onclick="quizNSI2(1)">1990</button>
-    <button onclick="quizNSI2(2)">2007</button>
-    <div class="reponse" id="rep-quiz-nsi2"></div>
-  </section>
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
+    </div>
+  </div>
 
-  <section class="box-important">
-    <h2>🌍 Applications concrètes puissantes</h2>
-    <ul>
-      <li><b>Santé :</b> Calculs médicaux, gestion de dossiers patients, IA en imagerie.</li>
-      <li><b>Astronomie/Science :</b> Simulations d’univers, calculs de trajectoire satellite, météo prédictive.</li>
-      <li><b>Sécurité/Défense :</b> Cryptographie, cyberdéfense, cybersurveillance (protection et menaces).</li>
-      <li><b>Arts/Loisirs :</b> Musique électronique, effets spéciaux, jeux vidéo, cinéma numérique.</li>
-      <li><b>Quotidien :</b> Paiement, réseaux sociaux, transports connectés (GPS), objets intelligents.</li>
-      <li><b>Environnement :</b> Modélisation climatique, analyse pollution, capteurs et données temps réel.</li>
-    </ul>
-  </section>
+  <script>
+    // Masquer le loader après 3 secondes[web:2][web:38][web:12][web:29]
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
 
-  <section class="error">
-    <h2>❌ Erreurs fréquentes à éviter (liste doublée)</h2>
-    <ul>
-      <li>Oublier la distinction : programmeur(teuse) = Ada Lovelace, théoricien = Turing.</li>
-      <li>Limiter l’histoire à la seule électronique (penser aussi à la mécanique et l’algorithme !).</li>
-      <li>Confondre invention du web (Berners-Lee) et d’Internet (ARPANET, en 1969).</li>
-      <li>Ignorer l’importance des langages de programmation pour contrôler les machines.</li>
-      <li>Penser que le progrès fut linéaire, alors qu’il y a eu ruptures, reculs (ex. : bulle Internet 2000).</li>
-      <li>Croire que l’intelligence artificielle vient d’apparaître (première mention : années 50).</li>
-      <li>Oublier l’impact social, éthique (emploi, surveillance, fake news).</li>
-      <li>Penser que le smartphone était prévu dès l’invention de l’ordinateur.</li>
-    </ul>
-  </section>
-
-  <section class="lexique">
-    <h2>📚 Lexique express (plus fourni)</h2>
-    <b>Algorithme :</b> suite d’instructions résolvant un problème<br>
-    <b>Carte perforée :</b> support physique de stockage d’instructions (métiers Jacquard, IBM)<br>
-    <b>Transistor :</b> commutateur électronique utilisé pour calculs logiques<br>
-    <b>Microprocesseur :</b> processeur complet miniaturisé<br>
-    <b>Réseau :</b> ensemble de machines reliées pour échanger des données<br>
-    <b>Intelligence artificielle :</b> méthodes permettant à une machine d’imiter l’intelligence humaine<br>
-    <b>Cryptographie :</b> science du secret et de la sécurité de l’information
-  </section>
-
-  <section class="rubrique">
-    <h3>📖 Petites histoires enrichies</h3>
-    <ul>
-      <li>Le mot « ordinateur » est inventé en France (1955) : « mettre en ordre » (Philippe Dreyfus).</li>
-      <li>Le premier « bug » : un papillon grillé dans un relais, découvert par Grace Hopper (1947), anecdote connue !</li>
-      <li>Enigma, machine cryptographique, a été une des plus grandes batailles informatiques de la 2ᵉ Guerre mondiale.</li>
-      <li>Le web a été inventé en Europe, au CERN, par un anglais.</li>
-      <li>La carte perforée, utilisée pour les métiers à tisser Jacquard dès 1801, servira aussi pour programmer les ordinateurs jusqu’aux années 1970 !</li>
-      <li>L’informatique doit beaucoup aux mathématiciens, ingénieurs, et… à la passion !</li>
-    </ul>
-    <div class="source">Source : manuels NSI, histoire de l’informatique</div>
-  </section>
-
-  <section class="anecdote">
-    <b>Anecdotes & Mémo</b> : 
-    Le mot "bit" vient de "Binary digit". Le microprocesseur Intel 4004 (1971) tenait dans une poche et pouvait déjà effectuer plusieurs milliers d’opérations par seconde !
-  </section>
-
-  <section>
-    <h2>💡 Méthodologie contrôle (version double)</h2>
-    <ul>
-      <li>Sache situer une invention dans son temps et la relier à sa conséquence (ex : transistor = miniaturisation = smartphone après 2007).</li>
-      <li>Justifie toujours : pourquoi cette évolution ? (besoins, contexte historique, guerre, société).</li>
-      <li>Structure ton raisonnement : début – rupture – conséquences ; cite plusieurs exemples à chaque étape.</li>
-      <li>Compare : anciens outils VS nouveaux (boulier VS IA…), différences majeures.</li>
-      <li>Cite au moins deux personnages ou anecdotes par question « histoire » au bac !</li>
-      <li>Explique l’apport de chaque évolution sur notre modernité : sans web = pas de réseaux sociaux ; sans transistor = pas de smartphone, etc.</li>
-      <li>Prépare-toi aussi à discuter les enjeux éthiques et sociaux liés à chaque invention.</li>
-      <li>Fais le lien : mathématiques, logique, machines, société : tout s’enchaîne !</li>
-    </ul>
-  </section>
-</main>
-<script>
-function afficheSynthese(id) {
-  var el = document.getElementById("syn-"+id);
-  if (el.style.display==="none") { el.style.display="inline"; }
-  else { el.style.display="none"; }
-}
-// Quiz synthèse
-function quizSynthese() {
-  let qs = [
-    {q:"En quelle année le premier ordinateur électronique est-il né ?", rep:"1945 (ENIAC)"},
-    {q:"Quel inventeur a donné son nom à un test sur l’intelligence des machines ?", rep:"Alan Turing"},
-    {q:"Quel composant a révolutionné la miniaturisation ?", rep:"Le transistor"},
-    {q:"Qui est l’auteur du premier algorithme ?", rep:"Ada Lovelace"}
-  ];
-  let idx = Math.floor(Math.random()*qs.length);
-  let ask = qs[idx];
-  let reponse = prompt(ask.q);
-  let result = (reponse && reponse.toLowerCase().includes(ask.rep.toLowerCase().split(" ")[0].toLowerCase())) ?
-    "Bravo ! " + ask.rep : "Dommage ! Réponse : " + ask.rep;
-  document.getElementById("quiz-synthese-res").textContent = result;
-}
-
-// Frise schéma
-var points = [
-  {x:30, y:170, label:"Abacus\nAntiquité", info:"Le boulier, premier calculateur manuel utilisé depuis -300 av. J.C."},
-  {x:110, y:110, label:"Pascaline\n1642", info:"Machine à calculer mécanique de Blaise Pascal."},
-  {x:200, y:100, label:"Jacquard\n1801", info:"Carte perforée du métier à tisser Jacquard, ancêtre de la programmation."},
-  {x:260, y:70, label:"Babbage\n1834", info:"Machine analytique, vrai précurseur de l’ordinateur."},
-  {x:320, y:50, label:"Ada\n1843", info:"Ada Lovelace, première personne à écrire un algorithme."},
-  {x:370, y:90, label:"Turing\n1936", info:"Théorie du calcul universel, machine abstraite."},
-  {x:450, y:120, label:"ENIAC\n1945", info:"Premier ordinateur électronique de grande échelle."},
-  {x:530, y:110, label:"Transistor\n1948", info:"Naissance de l’électronique, miniaturisation possible."},
-  {x:600, y:155, label:"Fortran\n1957", info:"Premier langage haut niveau en calcul scientifique."},
-  {x:690, y:110, label:"Internet\n1969", info:"Naissance d’ARPANET : connexion entre ordinateurs."},
-  {x:760, y:85, label:"Web\n1990", info:"Invention du World Wide Web par Tim Berners-Lee."},
-  {x:840, y:60, label:"IA\n2025", info:"Développement massif de l’intelligence artificielle."}
-];
-
-var canvas = document.getElementById("schema");
-var ctx = canvas.getContext("2d");
-
-function drawSchema() {
-  ctx.clearRect(0,0,900,230);
-  // Frise
-  ctx.strokeStyle="#243552";
-  ctx.lineWidth=6;
-  ctx.beginPath();
-  ctx.moveTo(points[0].x, points[0].y);
-  for(let i=1;i<points.length;i++){
-    ctx.lineTo(points[i].x, points[i].y);
-  }
-  ctx.stroke();
-  // Points + labels
-  for(let i=0;i<points.length;i++){
-    ctx.beginPath();
-    ctx.arc(points[i].x, points[i].y, 18, 0, 2*Math.PI);
-    ctx.fillStyle="#79acee";
-    ctx.fill();
-    ctx.strokeStyle="#1877f2";
-    ctx.lineWidth=2;
-    ctx.stroke();
-    ctx.fillStyle="#222";
-    ctx.font="bold 14px Arial";
-    let t = points[i].label.split("\n");
-    ctx.fillText(t[0], points[i].x-18, points[i].y-24); // titre
-    ctx.font="12px Arial";
-    ctx.fillText(t[1], points[i].x-15, points[i].y+40); // date
-  }
-}
-drawSchema();
-
-// Interactivité schéma
-canvas.addEventListener('mousemove', function(e){
-  var rect = canvas.getBoundingClientRect();
-  var x = e.clientX - rect.left;
-  var y = e.clientY - rect.top;
-  var bulle = document.getElementById("info-bulle");
-  let found = false;
-  for(let i=0;i<points.length;i++){
-    let dx = x-points[i].x, dy = y-points[i].y;
-    if(dx*dx+dy*dy<350){ //20 px rayon
-      bulle.style.left = (rect.left + points[i].x + 25) + "px";
-      bulle.style.top = (rect.top + points[i].y - 10) + "px";
-      bulle.style.display = "block";
-      bulle.textContent = points[i].info;
-      found=true;
-      break;
+    function afficheSynthese(id) {
+      var el = document.getElementById("syn-"+id);
+      el.style.display = (el.style.display==="none" || !el.style.display) ? "inline" : "none";
     }
-  }
-  if(!found){ bulle.style.display="none"; }
-});
-canvas.addEventListener('click', function(e){
-  var rect = canvas.getBoundingClientRect();
-  var x = e.clientX - rect.left;
-  var y = e.clientY - rect.top;
-  var bulle = document.getElementById("info-bulle");
-  for(let i=0;i<points.length;i++){
-    let dx = x-points[i].x, dy = y-points[i].y;
-    if(dx*dx+dy*dy<350){
-      alert(points[i].info);
-      break;
-    }
-  }
-});
 
-// Exos correction et quiz
-function afficheReponseNSI1() {
-  document.getElementById("exo-reponse-nsi1").style.display = "block";
-}
-function quizNSI(rep) {
-  let rq = document.getElementById("rep-quiz-nsi");
-  rq.textContent = (rep === 0) ? "Bravo ! Le transistor a permis la miniaturisation." : "Incorrect.";
-}
-function quizNSI2(rep) {
-  let rq = document.getElementById("rep-quiz-nsi2");
-  rq.textContent = (rep === 1) ? "Bonne réponse ! C’est en 1990." : "Faux, révise la frise.";
-}
-</script>
+    function quizSynthese() {
+      let qs = [
+        {q:"Approx. date du premier grand ordinateur électronique (ENIAC) ?", rep:"1945"},
+        {q:"Nom de famille du créateur du test d’intelligence machine ?", rep:"Turing"},
+        {q:"Composant clé de la miniaturisation ?", rep:"transistor"},
+        {q:"Nom de la première programmeuse célèbre ?", rep:"Lovelace"}
+      ];
+      let idx = Math.floor(Math.random()*qs.length);
+      let ask = qs[idx];
+      let reponse = prompt(ask.q);
+      let ok = reponse && reponse.toLowerCase().includes(ask.rep.toLowerCase());
+      document.getElementById("quiz-synthese-res").textContent =
+        ok ? "Bravo ! "+ask.rep : "Dommage. Réponse : "+ask.rep;
+    }
+
+    const points = [
+      {x:30,  y:170, label:"Abacus\nAntiquité", info:"Le boulier, premier calculateur manuel largement utilisé dans l’Antiquité."},
+      {x:110, y:110, label:"Pascaline\n1642", info:"Machine à calculer mécanique construite par Blaise Pascal."},
+      {x:200, y:100, label:"Jacquard\n1801", info:"Métiers à tisser à cartes perforées, prémices de la programmation."},
+      {x:260, y:70,  label:"Babbage\n1834", info:"Machine analytique, concept de calculateur programmable."},
+      {x:320, y:50,  label:"Ada\n1843", info:"Ada Lovelace, algorithme pour la machine de Babbage."},
+      {x:370, y:90,  label:"Turing\n1936", info:"Machine de Turing, base théorique de l’informatique."},
+      {x:450, y:120, label:"ENIAC\n1945", info:"Un des premiers ordinateurs électroniques de grande taille."},
+      {x:530, y:110, label:"Transistor\n1948", info:"Composant clé remplaçant la lampe, permettant la miniaturisation."},
+      {x:600, y:155, label:"Fortran\n1957", info:"Premier langage haut niveau pour le calcul scientifique."},
+      {x:690, y:110, label:"ARPANET\n1969", info:"Réseau expérimental reliant plusieurs universités américaines."},
+      {x:760, y:85,  label:"Web\n1990", info:"Tim Berners‑Lee invente le World Wide Web au CERN."},
+      {x:840, y:60,  label:"IA\n2025", info:"Explosion des usages de l’intelligence artificielle."}
+    ];
+
+    var canvas = document.getElementById("schema");
+    var ctx = canvas.getContext("2d");
+
+    function drawSchema() {
+      ctx.clearRect(0,0,900,230);
+      ctx.strokeStyle="#243552";
+      ctx.lineWidth=6;
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for(let i=1;i<points.length;i++){
+        ctx.lineTo(points[i].x, points[i].y);
+      }
+      ctx.stroke();
+
+      for(let i=0;i<points.length;i++){
+        ctx.beginPath();
+        ctx.arc(points[i].x, points[i].y, 18, 0, 2*Math.PI);
+        ctx.fillStyle="#60a5fa";
+        ctx.fill();
+        ctx.strokeStyle="#1877f2";
+        ctx.lineWidth=2;
+        ctx.stroke();
+        let t = points[i].label.split("\n");
+        ctx.fillStyle="#111827";
+        ctx.font="bold 14px Arial";
+        ctx.fillText(t[0], points[i].x-22, points[i].y-24);
+        ctx.font="12px Arial";
+        ctx.fillText(t[1], points[i].x-20, points[i].y+36);
+      }
+    }
+    drawSchema();
+
+    canvas.addEventListener('mousemove', function(e){
+      var rect = canvas.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      var bulle = document.getElementById("info-bulle");
+      let found = false;
+      for(let i=0;i<points.length;i++){
+        let dx = x-points[i].x, dy = y-points[i].y;
+        if(dx*dx+dy*dy<20*20){
+          bulle.style.left = (rect.left + points[i].x + 25) + "px";
+          bulle.style.top  = (rect.top + points[i].y - 10) + "px";
+          bulle.style.display = "block";
+          bulle.textContent = points[i].info;
+          found=true;
+          break;
+        }
+      }
+      if(!found){ bulle.style.display="none"; }
+    });
+
+    canvas.addEventListener('click', function(e){
+      var rect = canvas.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      for(let i=0;i<points.length;i++){
+        let dx = x-points[i].x, dy = y-points[i].y;
+        if(dx*dx+dy*dy<20*20){
+          alert(points[i].info);
+          break;
+        }
+      }
+    });
+
+    function afficheReponseNSI1() {
+      document.getElementById("exo-reponse-nsi1").style.display = "block";
+    }
+    function quizNSI(rep) {
+      let rq = document.getElementById("rep-quiz-nsi");
+      rq.textContent = (rep === 0)
+        ? "Bravo : le transistor est au cœur de la miniaturisation."
+        : "Incorrect : le transistor est la bonne réponse.";
+    }
+    function quizNSI2(rep) {
+      let rq = document.getElementById("rep-quiz-nsi2");
+      rq.textContent = (rep === 1)
+        ? "Bonne réponse : le Web est proposé en 1990."
+        : "Faux : repère la date 1990 sur la frise.";
+    }
+  </script>
 </body>
 </html>
-

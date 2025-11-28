@@ -1,228 +1,661 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Masterclass — Dérivation</title>
-    <meta name="description" content="Tout sur la dérivation : définition, règles, interprétations, schéma interactif, quiz, exercices, applications et méthodologie pour la spé maths/physique.">
-    <style>
-        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
-        header { background: linear-gradient(90deg,#eef4fb,#ffeeda 90%); color: #243552; padding: 28px 0 12px; text-align: center;}
-        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
-        .intro { font-size: 1.01rem;}
-        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.15);}
-        h2 { color: #1877f2; margin-top: 32px;}
-        h3 { color: #f5a623; margin-top: 22px;}
-        ul, ol { margin-left: 1.4em;}
-        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
-        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
-        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
-        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
-        .error {background: #ffeaea; border-left: 7px solid #e06359;}
-        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
-        .anecdote {background: #ffe8ff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
-        .source { font-size: 0.9em; color: #999; text-align: right;}
-        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
-        button:hover { background: #145ac3;}
-        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
-        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
-        label { margin-right: 14px;}
-        @media (max-width: 768px) { main { padding: 12px 2px; } }
-    </style>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <meta charset="UTF-8">
+  <title>Global - Maths · Dérivation</title>
+  <meta name="description" content="Tout sur la dérivation : définition, règles, interprétations, schéma interactif, quiz, exercices, applications et méthodologie pour la spé maths/physique.">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-light:#29d8ff;
+      --blue-main:#007BFF;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#031633 40%,#001a3b 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(520px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(56,189,248,0.26),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(56,189,248,0.8);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(56,189,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#7dd3fc;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#7dd3fc,transparent);
+      box-shadow:0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#22c1c3,#29d8ff,#007bff);
+      box-shadow:0 0 18px rgba(56,189,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#a5b4fc;
+      opacity:0.9;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(56,189,248,0.12) 45%,
+          rgba(56,189,248,0.35) 50%,
+          rgba(56,189,248,0.12) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#c4f1ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(0,123,255,0.82),rgba(3,105,161,0.82));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#fff;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:230px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:var(--blue-light);
+      box-shadow:0 0 12px rgba(41,216,255,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:900px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+                 linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:26px 26px 30px;
+      color:#e5f1ff;
+    }
+
+    h1,h2,h3{
+      color:#7dd3fc;
+      margin-bottom:10px;
+    }
+    h2{margin-top:26px;font-size:1.4rem;}
+    h3{margin-top:18px;font-size:1.15rem;color:#facc6b;}
+    p,li{font-size:0.98rem;line-height:1.6;}
+    ul,ol{margin-left:1.3em;margin-top:0.3em;margin-bottom:0.8em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      padding:12px 18px;
+      border-radius:10px;
+      margin:1em 0;
+      font-size:0.96rem;
+    }
+    .infos{
+      background:rgba(37,99,235,0.16);
+      border-left:4px solid #60a5fa;
+    }
+    .box-exo{
+      background:rgba(22,163,74,0.14);
+      border-left:4px solid #22c55e;
+    }
+    .box-important{
+      background:rgba(245,158,11,0.14);
+      border-left:4px solid #facc15;
+    }
+    .error{
+      background:rgba(248,113,113,0.14);
+      border-left:4px solid #f87171;
+    }
+    .lexique{
+      background:rgba(59,130,246,0.12);
+      border-left:4px solid #7dd3fc;
+    }
+    .anecdote{
+      background:rgba(244,114,182,0.18);
+      border-left:4px solid #a855f7;
+    }
+
+    #schema{
+      margin:1em auto;
+      display:block;
+      background:#0b1725;
+      border-radius:8px;
+      border:1px solid #1f2937;
+    }
+    .reponse{
+      margin-top:0.7em;
+      color:#7dd3fc;
+      font-weight:bold;
+      text-align:center;
+      font-size:0.95rem;
+    }
+    label{
+      margin-right:14px;
+      font-size:0.9rem;
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+  </style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-    <h1>Masterclass — Dérivation</h1>
-    <div class="intro">
-        La clé pour comprendre la notion de variation instantanée et les outils d’analyse modernes :  
-        définitions, schéma interactif, exercices, quiz, astuces, erreurs et applications !
-    </div>
-</header>
-<main>
-<section>
-    <h2>📝 Définitions et interprétations</h2>
-    <div class="infos">
-        La <b>dérivée</b> d’une fonction f en un point a donne le taux de variation instantané de f :  
-        <b>\( f'(a) = \lim_{h\to0}\frac{f(a+h) - f(a)}{h} \)</b><br>
-        Interprétation : c’est le coefficient directeur (la “pente”) de la tangente à la courbe de f au point d’abscisse a.
-    </div>
-    <ul>
-        <li>Si \( f'(a) > 0 \) : la courbe monte à gauche et à droite de a ; \( f'(a) < 0 \) : elle descend</li>
-        <li>Géométriquement : tangente horizontale quand f'(a) = 0, donc extremum possible</li>
-    </ul>
-</section>
-<section>
-    <h2>📗 Principales formules de dérivation</h2>
-    <ul>
-        <li>\( (u + v)' = u' + v' \)</li>
-        <li>\( (ku)' = k \times u' \)</li>
-        <li>\( (uv)' = u'v + uv' \) (produit)</li>
-        <li>\( \left(\frac{u}{v}\right)' = \frac{u'v - uv'}{v^2}\ ) (quotient)</li>
-        <li>Tableau à connaître :
-        <ul>
-            <li>\( (x^n)' = n x^{n-1} \)</li>
-            <li>\( (e^{ax})' = a e^{ax} \)</li>
-            <li>\( (\ln x)' = 1/x \) (x>0)</li>
-            <li>\( (\sin x)' = \cos x \), \( (\cos x)' = -\sin x \)</li>
-        </ul>
-        </li>
-    </ul>
-    <div class="box-important">
-        Astuce : La dérivée traduit l'évolution, la vitesse de changement — utile partout en sciences !
-    </div>
-</section>
-<section>
-    <h2>🟦 Schéma interactif : courbe & tangente</h2>
-    <label>a (abscisse) : <input type="number" id="a" value="1" step="0.1" min="-3" max="3"></label>
-    <select id="select">
-        <option value="x*x">f(x)=x²</option>
-        <option value="x*x*x">f(x)=x³</option>
-        <option value="Math.sin(x)">f(x)=sin(x)</option>
-        <option value="Math.exp(x)">f(x)=eˣ</option>
-    </select>
-    <canvas id="schema" width="410" height="270"></canvas>
-    <div id="desc-deriv"></div>
-</section>
-<section class="box box-exo">
-    <h2>💡 Exercice interactif</h2>
-    <p>Donne la dérivée de f(x) = 3x² – 5x + 2, et calcule f'(1).</p>
-    <button onclick="afficheReponseDeriv()">Voir la correction</button>
-    <div class="reponse" id="exo-reponse-deriv" style="display:none;">
-        f'(x) = 6x - 5, donc f'(1) = 6×1 - 5 = 1.
-    </div>
-</section>
-<section class="box-exo">
-    <h2>🔥 Exercice “expert”</h2>
-    <p>Détermine la tangente à la courbe de f(x) = eˣ en x₀ = 0.</p>
-    <button onclick="document.getElementById('exo2-reponse-deriv').style.display='block';">Voir la correction</button>
-    <div class="reponse" id="exo2-reponse-deriv" style="display:none;">
-        f'(0)=e⁰=1 donc tangente : y = x + 1
-    </div>
-</section>
-<section class="quiz">
-    <h2>🎯 Quiz express</h2>
-    <p>La dérivée de \( x^3 \) est :</p>
-    <button onclick="quizDeriv(0)">3x²</button>
-    <button onclick="quizDeriv(1)">2x</button>
-    <button onclick="quizDeriv(2)">x²</button>
-    <div class="reponse" id="rep-quiz-deriv"></div>
-    <p>La dérivée de \( \cos x \) est :</p>
-    <button onclick="quizDeriv2(0)">\(\sin x\)</button>
-    <button onclick="quizDeriv2(1)">\(-\sin x\)</button>
-    <div class="reponse" id="rep-quiz-deriv2"></div>
-</section>
-<section class="box-important">
-    <h2>🌐 Applications concrètes</h2>
-    <ul>
-        <li><b>Physique</b> : vitesse instantanée (dérivée position/temps), accélération (dérivée de la vitesse)</li>
-        <li><b>Maths :</b> étude de variations, extrema, optimisation</li>
-        <li><b>Info/IA</b> : ajustement/régression (descente de gradient), machine learning</li>
-        <li><b>Technologie :</b> traitements du signal, courbes d’apprentissage</li>
-    </ul>
-</section>
-<section class="error">
-    <h2>❌ Erreurs fréquentes à éviter</h2>
-    <ul>
-        <li>Oublier la dérivée de base de xⁿ (pouvoirs/coefficients)</li>
-        <li>Mal appliquer les règles (produit, quotient, chaîne...)</li>
-        <li>Confondre la valeur d’une fonction et celle de sa dérivée</li>
-        <li>Oublier que la tangente a une équation y = f'(a)(x-a) + f(a)</li>
-    </ul>
-</section>
-<section class="lexique">
-    <h2>📚 Lexique express</h2>
-    <b>Dérivée :</b> taux de variation instantané<br>
-    <b>Tangente :</b> droite “collée” à la courbe en un point<br>
-    <b>Extremum :</b> point où la dérivée s’annule (min/max)<br>
-    <b>Règle de dérivation :</b> formule pour calculer les nouveautés
-</section>
-<section class="rubrique">
-    <h3>📖 Petite histoire</h3>
-    <ul>
-        <li>Le calcul différentiel a été inventé par Newton et Leibniz au XVIIe siècle</li>
-        <li>C’est la base de la physique moderne (lois du mouvement, analyse électrique...)</li>
-        <li>Essentiel des sciences à l’économie et aux IA modernes !</li>
-    </ul>
-    <div class="source">Source : histoire des maths, Wikipedia</div>
-</section>
-<section class="anecdote">
-    <b>Astuce-mémoire</b> : Pour \( x^n \), la dérivée “fait descendre le n devant, puis il baisse d’un cran” !
-</section>
-<section>
-    <h2>💡 Méthodologie pour progresser</h2>
-    <ul>
-        <li>Démarre toujours par la fonction de base</li>
-        <li>Liste les règles, et essaye de construire toi-même les dérivées compliquées</li>
-        <li>Utilise le graphique interactif pour vérifier visuellement la tangente et les variations</li>
-        <li>Fais des quiz chronométrés pour mémoriser les fondamentaux !</li>
-    </ul>
-</section>
-</main>
-<script>
-function quizDeriv(rep) {
-    let repElem = document.getElementById("rep-quiz-deriv");
-    repElem.textContent = (rep === 0) ? "Bonne réponse ! La dérivée de x³, c’est 3x²." : "Faux, revois la formule pour xⁿ.";
-}
-function quizDeriv2(rep) {
-    let repElem = document.getElementById("rep-quiz-deriv2");
-    repElem.textContent = (rep === 1) ? "Bravo : (cos x)' = -sin x" : "Faux, c’est -sin x car la pente “descend” !";
-}
-function afficheReponseDeriv() {
-    document.getElementById("exo-reponse-deriv").style.display = "block";
-}
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//math-DERIVATION</div>
 
-// Schéma interactif : tracer fonction + tangente numérique
-function evalFunc(expr, x) {
-    if(expr === "x*x") return x*x;
-    if(expr === "x*x*x") return x*x*x;
-    if(expr === "Math.sin(x)") return Math.sin(x);
-    if(expr === "Math.exp(x)") return Math.exp(x);
-    return 0;
-}
-function derivFunc(expr, x, h=1e-5) {
-    // Différence centrée
-    return (evalFunc(expr, x+h)-evalFunc(expr, x-h))/(2*h);
-}
-function drawDeriv() {
-    let a = parseFloat(document.getElementById("a").value);
-    let expr = document.getElementById("select").value;
-    let canvas = document.getElementById("schema");
-    let ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, 410, 270);
-    // Axes
-    ctx.strokeStyle="#aaa"; ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(20,135); ctx.lineTo(400,135); ctx.moveTo(210,20); ctx.lineTo(210,250); ctx.stroke();
-    // Courbe
-    ctx.beginPath();
-    for(let xPx=0;xPx<=410;xPx++){
-        let x=(xPx-210)/48; // x∈[-4,4]
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Maths · Dérivation · taux de variation, tangente, règles et applications
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du module Dérivation (spé maths/physique)...</div>
+        <div class="terminal-line">[ANALYSE] Activation des formules de dérivée et des règles somme/produit/quotient.</div>
+        <div class="terminal-line">[GRAPH] Mise en place de la courbe et de la tangente dynamique.</div>
+        <div class="terminal-line">[OK]  Prêt à dériver : pense à la pente et au taux de variation.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
+    </div>
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Maths
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="content-card">
+        <h1>Masterclass — Dérivation</h1>
+        <p style="margin-bottom:1.2em;font-size:0.98rem;color:#cbd5f5;">
+          La clé pour comprendre la notion de variation instantanée et les outils d’analyse modernes :
+          définitions, schéma interactif, exercices, quiz, astuces, erreurs et applications !
+        </p>
+
+        <section>
+          <h2>📝 Définitions et interprétations</h2>
+          <div class="infos">
+            La <b>dérivée</b> d’une fonction \(f\) en un point \(a\) donne le taux de variation instantané de \(f\) :
+            <b>\( f'(a) = \lim_{h\to0}\frac{f(a+h) - f(a)}{h} \)</b>.[web:67][web:70]
+            <br>
+            Interprétation : c’est le coefficient directeur (la “pente”) de la tangente à la courbe de \(f\) au point d’abscisse \(a\).[web:63][web:64]
+          </div>
+          <ul>
+            <li>Si \( f'(a) > 0 \) : la courbe monte près de \(a\) ; si \( f'(a) < 0 \) elle descend.[web:63][web:64]</li>
+            <li>Géométriquement : tangente horizontale quand \(f'(a) = 0\) → extremum possible.[web:63][web:64]</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>📗 Principales formules de dérivation</h2>
+          <ul>
+            <li>\((u + v)' = u' + v'\).</li>
+            <li>\((ku)' = k \times u'\).</li>
+            <li>\((uv)' = u'v + uv'\) (produit).[web:62][web:66]</li>
+            <li>\(\left(\dfrac{u}{v}\right)' = \dfrac{u'v - uv'}{v^2}\) (quotient, avec \(v \neq 0\)).[web:62][web:68]</li>
+            <li>Tableau à connaître :
+              <ul>
+                <li>\((x^n)' = n x^{n-1}\).</li>
+                <li>\((e^{ax})' = a e^{ax}\).</li>
+                <li>\((\ln x)' = 1/x\) pour \(x>0\).</li>
+                <li>\((\sin x)' = \cos x\), \((\cos x)' = -\sin x\).[web:68][web:71]</li>
+              </ul>
+            </li>
+          </ul>
+          <div class="box-important">
+            Astuce : La dérivée traduit l’évolution, la vitesse de changement — utile partout en sciences ![web:64][web:70]
+          </div>
+        </section>
+
+        <section>
+          <h2>🟦 Schéma interactif : courbe & tangente</h2>
+          <label>a (abscisse) : <input type="number" id="a" value="1" step="0.1" min="-3" max="3"></label>
+          <select id="select">
+            <option value="x*x">f(x)=x²</option>
+            <option value="x*x*x">f(x)=x³</option>
+            <option value="Math.sin(x)">f(x)=sin(x)</option>
+            <option value="Math.exp(x)">f(x)=eˣ</option>
+          </select>
+          <canvas id="schema" width="410" height="270"></canvas>
+          <div id="desc-deriv"></div>
+        </section>
+
+        <section class="box box-exo">
+          <h2>💡 Exercice interactif</h2>
+          <p>Donne la dérivée de \(f(x) = 3x^2 - 5x + 2\), et calcule \(f'(1)\).</p>
+          <button onclick="afficheReponseDeriv()">Voir la correction</button>
+          <div class="reponse" id="exo-reponse-deriv" style="display:none;">
+            \(f'(x) = 6x - 5\), donc \(f'(1) = 6\times 1 - 5 = 1\).
+          </div>
+        </section>
+
+        <section class="box-exo">
+          <h2>🔥 Exercice “expert”</h2>
+          <p>Détermine la tangente à la courbe de \(f(x) = e^x\) en \(x_0 = 0\).</p>
+          <button onclick="document.getElementById('exo2-reponse-deriv').style.display='block';">Voir la correction</button>
+          <div class="reponse" id="exo2-reponse-deriv" style="display:none;">
+            \(f'(0)=e^0=1\) donc tangente : \(y = x + 1\).
+          </div>
+        </section>
+
+        <section class="quiz">
+          <h2>🎯 Quiz express</h2>
+          <p>La dérivée de \( x^3 \) est :</p>
+          <button onclick="quizDeriv(0)">3x²</button>
+          <button onclick="quizDeriv(1)">2x</button>
+          <button onclick="quizDeriv(2)">x²</button>
+          <div class="reponse" id="rep-quiz-deriv"></div>
+
+          <p>La dérivée de \( \cos x \) est :</p>
+          <button onclick="quizDeriv2(0)">\(\sin x\)</button>
+          <button onclick="quizDeriv2(1)">\(-\sin x\)</button>
+          <div class="reponse" id="rep-quiz-deriv2"></div>
+        </section>
+
+        <section class="box-important">
+          <h2>🌐 Applications concrètes</h2>
+          <ul>
+            <li><b>Physique</b> : vitesse instantanée (dérivée position/temps), accélération (dérivée de la vitesse).[web:70]</li>
+            <li><b>Maths</b> : étude de variations, extrema, optimisation.[web:63][web:64]</li>
+            <li><b>Info/IA</b> : ajustement/régression (descente de gradient), machine learning.[web:64]</li>
+            <li><b>Technologie</b> : traitements du signal, courbes d’apprentissage.[web:64]</li>
+          </ul>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes à éviter</h2>
+          <ul>
+            <li>Oublier la dérivée de base de \(x^n\) (pouvoirs/coefficients).[web:68]</li>
+            <li>Mal appliquer les règles (produit, quotient, chaîne...).[web:62][web:66]</li>
+            <li>Confondre la valeur d’une fonction et celle de sa dérivée.</li>
+            <li>Oublier que la tangente a une équation \(y = f'(a)(x-a) + f(a)\).[web:63][web:69]</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique express</h2>
+          <b>Dérivée :</b> taux de variation instantané d’une fonction en un point.[web:67][web:70]<br>
+          <b>Tangente :</b> droite “collée” à la courbe en un point, de pente \(f'(a)\).[web:63][web:69]<br>
+          <b>Extremum :</b> point où la dérivée peut s’annuler (minimum ou maximum local).[web:64]<br>
+          <b>Règle de dérivation :</b> formule pour calculer la dérivée d’une combinaison de fonctions.[web:62][web:68]
+        </section>
+
+        <section class="rubrique">
+          <h3>📖 Petite histoire</h3>
+          <ul>
+            <li>Le calcul différentiel a été développé au XVIIe siècle par Newton et Leibniz.[web:64]</li>
+            <li>C’est une base de la physique moderne (mouvement, électricité, etc.).[web:64][web:70]</li>
+            <li>Il est utilisé partout, des sciences à l’économie et aux IA modernes.[web:64]</li>
+          </ul>
+          <div class="source">Sources : cours de dérivation niveau première et ressources de vulgarisation sur l’histoire du calcul différentiel.[web:63][web:64]</div>
+        </section>
+
+        <section class="anecdote">
+          <b>Astuce-mémoire</b> : Pour \( x^n \), la dérivée “fait descendre le n devant, puis il baisse d’un cran” !
+        </section>
+
+        <section>
+          <h2>💡 Méthodologie pour progresser</h2>
+          <ul>
+            <li>Démarre toujours par la fonction de base.</li>
+            <li>Liste les règles, et essaye de reconstruire les dérivées compliquées.</li>
+            <li>Utilise le graphique interactif pour visualiser tangente et variations.</li>
+            <li>Fais des quiz chronométrés pour mémoriser les fondamentaux.</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
+    </div>
+  </div>
+
+  <script>
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
+
+    function quizDeriv(rep) {
+      let repElem = document.getElementById("rep-quiz-deriv");
+      repElem.textContent = (rep === 0)
+        ? "Bonne réponse ! La dérivée de x³, c’est 3x²."
+        : "Faux, revois la formule pour xⁿ.";
+    }
+    function quizDeriv2(rep) {
+      let repElem = document.getElementById("rep-quiz-deriv2");
+      repElem.textContent = (rep === 1)
+        ? "Bravo : (cos x)' = -sin x"
+        : "Faux, c’est -sin x car la pente descend.";
+    }
+    function afficheReponseDeriv() {
+      document.getElementById("exo-reponse-deriv").style.display = "block";
+    }
+
+    // Schéma interactif : tracer fonction + tangente numérique
+    function evalFunc(expr, x) {
+      if(expr === "x*x") return x*x;
+      if(expr === "x*x*x") return x*x*x;
+      if(expr === "Math.sin(x)") return Math.sin(x);
+      if(expr === "Math.exp(x)") return Math.exp(x);
+      return 0;
+    }
+    function derivFunc(expr, x, h=1e-5) {
+      return (evalFunc(expr, x+h)-evalFunc(expr, x-h))/(2*h);
+    }
+    function drawDeriv() {
+      let a = parseFloat(document.getElementById("a").value);
+      let expr = document.getElementById("select").value;
+      let canvas = document.getElementById("schema");
+      let ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, 410, 270);
+
+      // Axes
+      ctx.strokeStyle="#6b7280"; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(20,135); ctx.lineTo(400,135); ctx.moveTo(210,20); ctx.lineTo(210,250); ctx.stroke();
+
+      // Courbe
+      ctx.beginPath();
+      for(let xPx=0;xPx<=410;xPx++){
+        let x=(xPx-210)/48;
         let y=evalFunc(expr, x);
         let yPx=135-y*32;
         if(xPx===0) ctx.moveTo(xPx,yPx); else ctx.lineTo(xPx,yPx);
-    }
-    ctx.strokeStyle="#1877f2"; ctx.lineWidth=3; ctx.stroke();
-    // Sommet point A
-    let Ax=210+48*a, Ay=135-evalFunc(expr,a)*32;
-    ctx.beginPath(); ctx.arc(Ax,Ay,5,0,2*Math.PI); ctx.fillStyle="#fa9100"; ctx.fill();
-    ctx.font="12px Arial"; ctx.fillStyle="#fa9100"; ctx.fillText("A("+a.toFixed(2)+" ; "+evalFunc(expr,a).toFixed(2)+")",Ax+8,Ay-8);
-    // Tangente
-    let fpa=derivFunc(expr, a);
-    ctx.beginPath();
-    for(let dx=-100;dx<=100;dx++){
+      }
+      ctx.strokeStyle="#38bdf8"; ctx.lineWidth=3; ctx.stroke();
+
+      // Point A
+      let Ax=210+48*a, Ay=135-evalFunc(expr,a)*32;
+      ctx.beginPath(); ctx.arc(Ax,Ay,5,0,2*Math.PI); ctx.fillStyle="#facc15"; ctx.fill();
+      ctx.font="12px Arial"; ctx.fillStyle="#facc15";
+      ctx.fillText("A("+a.toFixed(2)+" ; "+evalFunc(expr,a).toFixed(2)+")",Ax+8,Ay-8);
+
+      // Tangente
+      let fpa=derivFunc(expr, a);
+      ctx.beginPath();
+      for(let dx=-100;dx<=100;dx++){
         let x=a+dx/48;
         let y=evalFunc(expr,a)+fpa*(x-a);
         let xPx=210+48*x, yPx=135-y*32;
         if(dx===-100) ctx.moveTo(xPx,yPx); else ctx.lineTo(xPx,yPx);
-    }
-    ctx.strokeStyle="#a133ff"; ctx.setLineDash([5,4]); ctx.lineWidth=2; ctx.stroke(); ctx.setLineDash([]);
-    // Desc
-    document.getElementById("desc-deriv").innerHTML =
+      }
+      ctx.strokeStyle="#a855f7"; ctx.setLineDash([5,4]); ctx.lineWidth=2; ctx.stroke(); ctx.setLineDash([]);
+
+      document.getElementById("desc-deriv").innerHTML =
         "f'("+a.toFixed(2)+") ≈ "+fpa.toFixed(2)+"<br>(Pente de la tangente au point A)";
-}
-drawDeriv();
-document.getElementById("a").addEventListener("input", drawDeriv);
-document.getElementById("select").addEventListener("input", drawDeriv);
-</script>
+    }
+    drawDeriv();
+    document.getElementById("a").addEventListener("input", drawDeriv);
+    document.getElementById("select").addEventListener("input", drawDeriv);
+  </script>
 </body>
 </html>

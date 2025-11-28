@@ -1,299 +1,746 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Masterclass — Pretérito indefinido</title>
+  <meta charset="UTF-8" />
+  <title>Global - Espagnol · Pretérito indefinido</title>
   <meta name="description" content="Tout sur le prétérit espagnol : conjugaisons, règles, tous les verbes irréguliers, quiz, astuces, erreurs, lexique et plus.">
   <style>
-    body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
-    header { background: linear-gradient(90deg,#eef4fb,#def9fc 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
-    header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
-    .intro { font-size: 1.05rem;}
-    main { max-width: 850px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
-    h2 { color: #1877f2; margin-top: 32px;}
-    h3 { color: #f5a623; margin-top: 22px; }
-    ul, ol { margin-left: 1.5em; }
-    .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 1.01rem;}
-    .infos { background: #e7f3fa; border-left: 6px solid #1877f2;}
-    .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
-    .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
-    .error {background: #ffeaea; border-left: 7px solid #e06359;}
-    .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
-    .anecdote {background: #e7ffe7; border-left: 7px solid #167c2b; font-style: italic; margin: 1em 0; padding: 12px 17px; border-radius: 6px;}
-    .source { font-size: 0.9em; color: #999; text-align: right;}
-    button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
-    button:hover { background: #145ac3;}
-    .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
-    label { margin-right: 14px;}
-    table {width:100%;border-collapse:collapse;margin:1.2em 0;background:#fafdff;}
-    th, td {border:1px solid #dde7ee;padding:.7em .45em;text-align:center;}
-    th{background:#e2f0fb;color:#1877f2;}
-    @media (max-width: 900px) { main { padding: 12px 2px; } }
-    .table-wrap {overflow-x: auto; margin: 1.5em 0;}
-    .table-title {margin-top:2em;font-weight:bold;color:#2970a6;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-light:#29d8ff;
+      --blue-main:#007BFF;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#031633 40%,#001a3b 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(520px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(56,189,248,0.26),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(56,189,248,0.8);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(56,189,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#7dd3fc;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#7dd3fc,transparent);
+      box-shadow:0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#22c1c3,#29d8ff,#007bff);
+      box-shadow:0 0 18px rgba(56,189,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#a5b4fc;
+      opacity:0.9;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(56,189,248,0.12) 45%,
+          rgba(56,189,248,0.35) 50%,
+          rgba(56,189,248,0.12) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#c4f1ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(0,123,255,0.82),rgba(3,105,161,0.82));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#fff;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:230px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:var(--blue-light);
+      box-shadow:0 0 12px rgba(41,216,255,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:950px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+                 linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:26px 26px 30px;
+      color:#e5f1ff;
+    }
+
+    /* styles spécifiques de contenu adaptés au thème global */
+    h1,h2,h3{
+      color:#7dd3fc;
+      margin-bottom:10px;
+    }
+    h2{margin-top:26px;font-size:1.4rem;}
+    h3{margin-top:18px;font-size:1.15rem;color:#facc6b;}
+    p,li{font-size:0.98rem;line-height:1.6;}
+    ul,ol{margin-left:1.3em;margin-top:0.3em;margin-bottom:0.8em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      padding:12px 18px;
+      border-radius:10px;
+      margin:1em 0;
+      font-size:0.96rem;
+    }
+    .infos{
+      background:rgba(37,99,235,0.16);
+      border-left:4px solid #60a5fa;
+    }
+    .box-exo{
+      background:rgba(22,163,74,0.14);
+      border-left:4px solid #22c55e;
+    }
+    .box-important{
+      background:rgba(245,158,11,0.14);
+      border-left:4px solid #facc15;
+    }
+    .error{
+      background:rgba(248,113,113,0.14);
+      border-left:4px solid #f87171;
+    }
+    .lexique{
+      background:rgba(59,130,246,0.12);
+      border-left:4px solid #7dd3fc;
+    }
+    .anecdote{
+      background:rgba(34,197,94,0.09);
+      border-left:4px solid #4ade80;
+      font-style:italic;
+    }
+    .table-wrap{overflow-x:auto;margin:1.4em 0;}
+    .table-title{margin-top:1.4em;font-weight:bold;color:#7dd3fc;}
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin:0.8em 0;
+      background:rgba(15,23,42,0.85);
+    }
+    th,td{
+      border:1px solid rgba(148,163,184,0.7);
+      padding:0.55em 0.35em;
+      text-align:center;
+      font-size:0.9rem;
+    }
+    th{
+      background:rgba(15,23,42,0.96);
+      color:#7dd3fc;
+    }
+
+    button{
+      background:#0ea5e9;
+      color:#e5f1ff;
+      font-weight:600;
+      border:none;
+      border-radius:999px;
+      padding:7px 16px;
+      cursor:pointer;
+      margin-right:7px;
+      margin-top:7px;
+      transition:background 0.18s,transform 0.12s,box-shadow 0.12s;
+      box-shadow:0 6px 14px rgba(15,23,42,0.9);
+      font-size:0.92rem;
+    }
+    button:hover{
+      background:#38bdf8;
+      transform:translateY(-1px);
+      box-shadow:0 10px 22px rgba(15,23,42,1);
+    }
+    .reponse{
+      margin-top:0.7em;
+      color:#7dd3fc;
+      font-weight:bold;
+      text-align:center;
+      font-size:0.95rem;
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
   </style>
 </head>
 <body>
-<header>
-  <h1>Masterclass — Pretérito indefinido</h1>
-  <div class="intro">
-    Apprends tout sur ce temps essentiel de l’espagnol : conjugaison, irréguliers, usage, quiz, astuces et lexique express !
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//es-MASTERCLASS</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Connexion</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Espagnol · Pretérito indefinido · conjugaisons, irréguliers et quiz
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du module Espagnol — Pretérito indefinido...</div>
+        <div class="terminal-line">[DB] Récupération des tableaux de conjugaison réguliers et irréguliers.</div>
+        <div class="terminal-line">[QUIZ] Initialisation des questions interactives et corrections.</div>
+        <div class="terminal-line">[OK]  Module Pretérito listo. Buena suerte.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
+    </div>
   </div>
-</header>
-<main>
-<section>
-  <h2>📝 Définition</h2>
-  <div class="infos">
-    Le <b>pretérito indefinido</b> espagnol sert à exprimer une action terminée dans le passé à un moment précis.<br>
-    <b>Exemple :</b> <span style="color:#1877f2;">Ayer fui al cine.</span> (Hier, je suis allé au cinéma.)
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Espagnol
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="content-card">
+        <h1>Masterclass — Pretérito indefinido</h1>
+        <p style="margin-bottom:1.2em;font-size:0.98rem;color:#cbd5f5;">
+          Apprends tout sur ce temps essentiel de l’espagnol : conjugaison, irréguliers, usage, quiz, astuces et lexique express !
+        </p>
+
+        <section>
+          <h2>📝 Définition</h2>
+          <div class="infos">
+            Le <b>pretérito indefinido</b> espagnol sert à exprimer une action terminée dans le passé à un moment précis.<br>
+            <b>Exemple :</b> <span style="color:#7dd3fc;">Ayer fui al cine.</span> (Hier, je suis allé au cinéma.)
+          </div>
+          <ul>
+            <li>Très utilisé pour raconter, décrire un événement ponctuel ou une succession d’actions.</li>
+            <li>Marqueurs temporels fréquents : "ayer", "el año pasado", "una vez", "la semana pasada"…</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>📚 Conjugaison des verbes réguliers</h2>
+          <div class="table-wrap">
+            <table>
+              <tr>
+                <th></th>
+                <th>-ar</th>
+                <th>-er</th>
+                <th>-ir</th>
+              </tr>
+              <tr>
+                <td>yo</td><td>hablé</td><td>comí</td><td>viví</td>
+              </tr>
+              <tr>
+                <td>tú</td><td>hablaste</td><td>comiste</td><td>viviste</td>
+              </tr>
+              <tr>
+                <td>él/ella</td><td>habló</td><td>comió</td><td>vivió</td>
+              </tr>
+              <tr>
+                <td>nosotros</td><td>hablamos</td><td>comimos</td><td>vivimos</td>
+              </tr>
+              <tr>
+                <td>vosotros</td><td>hablasteis</td><td>comisteis</td><td>vivisteis</td>
+              </tr>
+              <tr>
+                <td>ellos/ellas</td><td>hablaron</td><td>comieron</td><td>vivieron</td>
+              </tr>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2>🔑 Tous les verbes irréguliers du pretérito indefinido</h2>
+          <div class="table-wrap">
+            <span class="table-title">Ser / Ir</span>
+            <table>
+              <tr>
+                <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
+              </tr>
+              <tr>
+                <td>fui</td><td>fuiste</td><td>fue</td><td>fuimos</td><td>fuisteis</td><td>fueron</td>
+              </tr>
+            </table>
+
+            <span class="table-title">Estar</span>
+            <table>
+              <tr>
+                <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
+              </tr>
+              <tr>
+                <td>estuve</td><td>estuviste</td><td>estuvo</td><td>estuvimos</td><td>estuvisteis</td><td>estuvieron</td>
+              </tr>
+            </table>
+
+            <span class="table-title">Tener</span>
+            <table>
+              <tr>
+                <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
+              </tr>
+              <tr>
+                <td>tuve</td><td>tuviste</td><td>tuvo</td><td>tuvimos</td><td>tuvisteis</td><td>tuvieron</td>
+              </tr>
+            </table>
+
+            <span class="table-title">Poder</span>
+            <table>
+              <tr>
+                <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
+              </tr>
+              <tr>
+                <td>pude</td><td>pudiste</td><td>pudo</td><td>pudimos</td><td>pudisteis</td><td>pudieron</td>
+              </tr>
+            </table>
+
+            <span class="table-title">Poner</span>
+            <table>
+              <tr>
+                <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
+              </tr>
+              <tr>
+                <td>puse</td><td>pusiste</td><td>puso</td><td>pusimos</td><td>pusisteis</td><td>pusieron</td>
+              </tr>
+            </table>
+
+            <span class="table-title">Saber</span>
+            <table>
+              <tr>
+                <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
+              </tr>
+              <tr>
+                <td>supe</td><td>supiste</td><td>supo</td><td>supimos</td><td>supisteis</td><td>supieron</td>
+              </tr>
+            </table>
+
+            <span class="table-title">Querer</span>
+            <table>
+              <tr>
+                <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
+              </tr>
+              <tr>
+                <td>quise</td><td>quisiste</td><td>quiso</td><td>quisimos</td><td>quisisteis</td><td>quisieron</td>
+              </tr>
+            </table>
+
+            <span class="table-title">Venir</span>
+            <table>
+              <tr>
+                <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
+              </tr>
+              <tr>
+                <td>vine</td><td>viniste</td><td>vino</td><td>vinimos</td><td>vinisteis</td><td>vinieron</td>
+              </tr>
+            </table>
+
+            <span class="table-title">Decir</span>
+            <table>
+              <tr>
+                <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
+              </tr>
+              <tr>
+                <td>dije</td><td>dijiste</td><td>dijo</td><td>dijimos</td><td>dijisteis</td><td>dijeron</td>
+              </tr>
+            </table>
+
+            <span class="table-title">Traer</span>
+            <table>
+              <tr>
+                <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
+              </tr>
+              <tr>
+                <td>traje</td><td>trajiste</td><td>trajo</td><td>trajimos</td><td>trajisteis</td><td>trajeron</td>
+              </tr>
+            </table>
+
+            <span class="table-title">Hacer</span>
+            <table>
+              <tr>
+                <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
+              </tr>
+              <tr>
+                <td>hice</td><td>hiciste</td><td>hizo</td><td>hicimos</td><td>hicisteis</td><td>hicieron</td>
+              </tr>
+            </table>
+
+            <span class="table-title">Dar</span>
+            <table>
+              <tr>
+                <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
+              </tr>
+              <tr>
+                <td>di</td><td>diste</td><td>dio</td><td>dimos</td><td>disteis</td><td>dieron</td>
+              </tr>
+            </table>
+
+            <span class="table-title">Ver</span>
+            <table>
+              <tr>
+                <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
+              </tr>
+              <tr>
+                <td>vi</td><td>viste</td><td>vio</td><td>vimos</td><td>visteis</td><td>vieron</td>
+              </tr>
+            </table>
+
+            <span class="table-title">Autres fréquents</span>
+            <table>
+              <tr><th>verbe</th><th>1re pers. sing.</th><th>radical</th><th>remarque</th></tr>
+              <tr><td>andar</td><td>anduve</td><td>anduv-</td><td>anduve, anduviste, ...</td></tr>
+              <tr><td>conducir</td><td>conduje</td><td>conduj-</td><td>conduje, condujiste, ...</td></tr>
+              <tr><td>producir</td><td>produje</td><td>produj-</td><td>produje, produjiste, ...</td></tr>
+              <tr><td>traducir</td><td>traduje</td><td>traduj-</td><td>traduje, tradujiste, ...</td></tr>
+            </table>
+          </div>
+        </section>
+
+        <section>
+          <h2>✏️ Exemples & usage</h2>
+          <ul>
+            <li>Ayer fui al cine. (Hier, je suis allé au cinéma.)</li>
+            <li>El año pasado viajamos a España. (L’an dernier, nous avons voyagé en Espagne.)</li>
+            <li>Comiste temprano. (Tu as mangé tôt.)</li>
+            <li>¿Qué dijo María? (Qu’a dit Maria ?)</li>
+            <li>Nosotros hicimos los deberes. (Nous avons fait les devoirs.)</li>
+          </ul>
+        </section>
+
+        <section class="box-exo">
+          <h2>💡 Quiz interactif</h2>
+          <p>Conjugue le verbe « estar » à la 1ère personne du pluriel (nosotros) au pretérito indefinido :</p>
+          <button onclick="repQuiz(0)">estuvimos</button>
+          <button onclick="repQuiz(1)">estábamos</button>
+          <button onclick="repQuiz(2)">estuvimos</button>
+          <div class="reponse" id="quiz1"></div>
+
+          <p style="margin-top:1.2em;">Quel verbe irrégulier est employé dans : “Ellos trajeron regalos.” ?</p>
+          <button onclick="repQuiz2(0)">traer</button>
+          <button onclick="repQuiz2(1)">tener</button>
+          <button onclick="repQuiz2(2)">dar</button>
+          <div class="reponse" id="quiz2"></div>
+        </section>
+
+        <section class="box-important">
+          <h2>🎯 Astuces express</h2>
+          <ul>
+            <li>Mémorise les radicaux et les terminaisons particulières pour chaque irrégulier.</li>
+            <li>Répète avec des phrases types pour retenir la conjugaison.</li>
+            <li>Fais attention aux terminaisons en -eron pour decir, traer, conducir…</li>
+          </ul>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes à éviter</h2>
+          <ul>
+            <li>Confondre "pretérito indefinido" et "pretérito perfecto".</li>
+            <li>Oublier de changer le radical pour les irréguliers.</li>
+            <li>Mettre un accent où il n’y en a pas.</li>
+            <li>Utiliser les terminaisons classiques pour des verbes irréguliers.</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique express</h2>
+          <strong>Pretérito indefinido :</strong> passé simple espagnol pour une action ponctuelle.<br>
+          <strong>Verbe irrégulier :</strong> verbe qui change de radical ou de terminaison.<br>
+          <strong>Radical :</strong> racine du verbe modifiée pour l’irrégluarité.
+        </section>
+
+        <section class="anecdote">
+          <strong>Astuce-mémoire :</strong> Fais une liste "top 10 irréguliers" à coller avant tes contrôles !
+        </section>
+
+        <section>
+          <h2>💪 Méthodologie pour progresser</h2>
+          <ul>
+            <li>Fais des fiches pour chaque irrégulier.</li>
+            <li>Pratique à l’oral en racontant des anecdotes au passé simple espagnol.</li>
+            <li>Utilise des quiz et jeux pour mémoriser les tableaux.</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
+    </div>
   </div>
-  <ul>
-    <li>Très utilisé pour raconter, décrire un événement ponctuel ou une succession d’actions.</li>
-    <li>Marqueurs temporels fréquents : "ayer", "el año pasado", "una vez", "la semana pasada"…</li>
-  </ul>
-</section>
 
-<section>
-  <h2>📚 Conjugaison des verbes réguliers</h2>
-  <table>
-    <tr>
-      <th></th>
-      <th>-ar</th>
-      <th>-er</th>
-      <th>-ir</th>
-    </tr>
-    <tr>
-      <td>yo</td><td>hablé</td><td>comí</td><td>viví</td>
-    </tr>
-    <tr>
-      <td>tú</td><td>hablaste</td><td>comiste</td><td>viviste</td>
-    </tr>
-    <tr>
-      <td>él/ella</td><td>habló</td><td>comió</td><td>vivió</td>
-    </tr>
-    <tr>
-      <td>nosotros</td><td>hablamos</td><td>comimos</td><td>vivimos</td>
-    </tr>
-    <tr>
-      <td>vosotros</td><td>hablasteis</td><td>comisteis</td><td>vivisteis</td>
-    </tr>
-    <tr>
-      <td>ellos/ellas</td><td>hablaron</td><td>comieron</td><td>vivieron</td>
-    </tr>
-  </table>
-</section>
+  <script>
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
 
-<section>
-  <h2>🔑 Tous les verbes irréguliers du pretérito indefinido</h2>
-  <div class="table-wrap">
-  <span class="table-title">Ser / Ir</span>
-  <table>
-    <tr>
-      <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
-    </tr>
-    <tr>
-      <td>fui</td><td>fuiste</td><td>fue</td><td>fuimos</td><td>fuisteis</td><td>fueron</td>
-    </tr>
-  </table>
-
-  <span class="table-title">Estar</span>
-  <table>
-    <tr>
-      <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
-    </tr>
-    <tr>
-      <td>estuve</td><td>estuviste</td><td>estuvo</td><td>estuvimos</td><td>estuvisteis</td><td>estuvieron</td>
-    </tr>
-  </table>
-
-  <span class="table-title">Tener</span>
-  <table>
-    <tr>
-      <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
-    </tr>
-    <tr>
-      <td>tuve</td><td>tuviste</td><td>tuvo</td><td>tuvimos</td><td>tuvisteis</td><td>tuvieron</td>
-    </tr>
-  </table>
-
-  <span class="table-title">Poder</span>
-  <table>
-    <tr>
-      <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
-    </tr>
-    <tr>
-      <td>pude</td><td>pudiste</td><td>pudo</td><td>pudimos</td><td>pudisteis</td><td>pudieron</td>
-    </tr>
-  </table>
-
-  <span class="table-title">Poner</span>
-  <table>
-    <tr>
-      <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
-    </tr>
-    <tr>
-      <td>puse</td><td>pusiste</td><td>puso</td><td>pusimos</td><td>pusisteis</td><td>pusieron</td>
-    </tr>
-  </table>
-
-  <span class="table-title">Saber</span>
-  <table>
-    <tr>
-      <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
-    </tr>
-    <tr>
-      <td>supe</td><td>supiste</td><td>supo</td><td>supimos</td><td>supisteis</td><td>supieron</td>
-    </tr>
-  </table>
-
-  <span class="table-title">Querer</span>
-  <table>
-    <tr>
-      <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
-    </tr>
-    <tr>
-      <td>quise</td><td>quisiste</td><td>quiso</td><td>quisimos</td><td>quisisteis</td><td>quisieron</td>
-    </tr>
-  </table>
-
-  <span class="table-title">Venir</span>
-  <table>
-    <tr>
-      <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
-    </tr>
-    <tr>
-      <td>vine</td><td>viniste</td><td>vino</td><td>vinimos</td><td>vinisteis</td><td>vinieron</td>
-    </tr>
-  </table>
-
-  <span class="table-title">Decir</span>
-  <table>
-    <tr>
-      <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
-    </tr>
-    <tr>
-      <td>dije</td><td>dijiste</td><td>dijo</td><td>dijimos</td><td>dijisteis</td><td>dijeron</td>
-    </tr>
-  </table>
-
-  <span class="table-title">Traer</span>
-  <table>
-    <tr>
-      <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
-    </tr>
-    <tr>
-      <td>traje</td><td>trajiste</td><td>trajo</td><td>trajimos</td><td>trajisteis</td><td>trajeron</td>
-    </tr>
-  </table>
-
-  <span class="table-title">Hacer</span>
-  <table>
-    <tr>
-      <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
-    </tr>
-    <tr>
-      <td>hice</td><td>hiciste</td><td>hizo</td><td>hicimos</td><td>hicisteis</td><td>hicieron</td>
-    </tr>
-  </table>
-
-  <span class="table-title">Dar</span>
-  <table>
-    <tr>
-      <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
-    </tr>
-    <tr>
-      <td>di</td><td>diste</td><td>dio</td><td>dimos</td><td>disteis</td><td>dieron</td>
-    </tr>
-  </table>
-
-  <span class="table-title">Ver</span>
-  <table>
-    <tr>
-      <th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>vosotros</th><th>ellos/ellas</th>
-    </tr>
-    <tr>
-      <td>vi</td><td>viste</td><td>vio</td><td>vimos</td><td>visteis</td><td>vieron</td>
-    </tr>
-  </table>
-
-  <span class="table-title">Autres fréquents</span>
-  <table>
-    <tr><th>verbe</th><th>1re pers. sing.</th><th>radical</th><th>remarque</th></tr>
-    <tr><td>andar</td><td>anduve</td><td>anduv-</td><td>anduve, anduviste, ...</td></tr>
-    <tr><td>conducir</td><td>conduje</td><td>conduj-</td><td>conduje, condujiste, ...</td></tr>
-    <tr><td>producir</td><td>produje</td><td>produj-</td><td>produje, produjiste, ...</td></tr>
-    <tr><td>traducir</td><td>traduje</td><td>traduj-</td><td>traduje, tradujiste, ...</td></tr>
-  </table>
-  </div>
-</section>
-
-<section>
-  <h2>✏️ Exemples & usage</h2>
-  <ul>
-    <li>Ayer fui al cine. (Hier, je suis allé au cinéma.)</li>
-    <li>El año pasado viajamos a España. (L’an dernier, nous avons voyagé en Espagne.)</li>
-    <li>Comiste temprano. (Tu as mangé tôt.)</li>
-    <li>¿Qué dijo María? (Qu’a dit Maria ?)</li>
-    <li>Nosotros hicimos los deberes. (Nous avons fait les devoirs.)</li>
-  </ul>
-</section>
-<section class="box-exo">
-  <h2>💡 Quiz interactif</h2>
-  <p>Conjugue le verbe « estar » à la 1ère personne du pluriel (nosotros) au pretérito indefinido :</p>
-  <button onclick="repQuiz(0)">estuvimos</button>
-  <button onclick="repQuiz(1)">estábamos</button>
-  <button onclick="repQuiz(2)">estuvimos</button>
-  <div class="reponse" id="quiz1"></div>
-  <p>Quel verbe irrégulier est employé dans : “Ellos trajeron regalos.” ?</p>
-  <button onclick="repQuiz2(0)">traer</button>
-  <button onclick="repQuiz2(1)">tener</button>
-  <button onclick="repQuiz2(2)">dar</button>
-  <div class="reponse" id="quiz2"></div>
-</section>
-<section class="box-important">
-  <h2>🎯 Astuces express</h2>
-  <ul>
-    <li>Mémorise les radicaux et les terminaisons particulières pour chaque irrégulier.</li>
-    <li>Répète avec des phrases types pour retenir la conjugaison.</li>
-    <li>Fais attention aux terminaisons en -eron pour decir, traer, conducir…</li>
-  </ul>
-</section>
-<section class="error">
-  <h2>❌ Erreurs fréquentes à éviter</h2>
-  <ul>
-    <li>Confondre "pretérito indefinido" et "pretérito perfecto".</li>
-    <li>Oublier de changer le radical pour les irréguliers.</li>
-    <li>Mettre un accent où il n’y en a pas.</li>
-    <li>Utiliser les terminaisons classiques pour des verbes irréguliers.</li>
-  </ul>
-</section>
-<section class="lexique">
-  <h2>📚 Lexique express</h2>
-  <strong>Pretérito indefinido :</strong> passé simple espagnol pour une action ponctuelle.<br>
-  <strong>Verbe irrégulier :</strong> verbe qui change de radical ou de terminaison.<br>
-  <strong>Radical :</strong> racine du verbe modifiée pour l’irrégluarité.
-</section>
-<section class="anecdote">
-  <strong>Astuce-mémoire :</strong> Fais une liste "top 10 irréguliers" à coller avant tes contrôles !
-</section>
-<section>
-  <h2>💪 Méthodologie pour progresser</h2>
-  <ul>
-    <li>Fais des fiches pour chaque irrégulier.</li>
-    <li>Pratique à l’oral en racontant des anecdotes au passé simple espagnol.</li>
-    <li>Utilise des quiz et jeux pour mémoriser les tableaux.</li>
-  </ul>
-</section>
-</main>
-<script>
-function repQuiz(rep) {
-  let q = document.getElementById("quiz1");
-  q.textContent = (rep === 0 || rep === 2) ? "Bravo ! 'estuvimos' est la bonne réponse." : "Non, 'estábamos' c’est l’imparfait!";
-}
-function repQuiz2(rep) {
-  let q = document.getElementById("quiz2");
-  q.textContent = (rep === 0) ? "Correct ! 'trajeron' vient du verbe 'traer' irrégulier." : "Non, ici le verbe irrégulier est 'traer'.";
-}
-</script>
+    function repQuiz(rep) {
+      let q = document.getElementById("quiz1");
+      q.textContent = (rep === 0 || rep === 2)
+        ? "Bravo ! 'estuvimos' est la bonne réponse."
+        : "Non, 'estábamos' c’est l’imparfait!";
+    }
+    function repQuiz2(rep) {
+      let q = document.getElementById("quiz2");
+      q.textContent = (rep === 0)
+        ? "Correct ! 'trajeron' vient du verbe 'traer' irrégulier."
+        : "Non, ici le verbe irrégulier est 'traer'.";
+    }
+  </script>
 </body>
 </html>

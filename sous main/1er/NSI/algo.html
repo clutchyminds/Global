@@ -2,309 +2,808 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Masterclass NSI : Algorithmique — conception et analyse</title>
+  <title>Global - NSI · Algorithmique</title>
   <meta name="description" content="Cours NSI : algorithmes, structures de contrôle, tri, recherche, analyse, schéma interactif, quiz, erreurs fréquentes et astuces.">
   <style>
-    body { background: #f5f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
-    header { background: linear-gradient(90deg,#eef4fb,#e8fae7 80%); color: #243552; padding: 30px 0 12px; text-align: center;}
-    header h1 { font-size: 2.3rem; margin: 0 0 10px; color: #22914d;}
-    header .intro { font-size: 1rem;}
-    main { max-width: 950px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(34,145,77,0.12);}
-    h2 { color: #22914d; margin-top: 32px;}
-    h3 { color: #f5a623; margin-top: 22px;}
-    ul, ol { margin-left: 1.4em;}
-    .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
-    .infos {background: #e7fbe8; border-left: 6px solid #22914d;}
-    .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
-    .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
-    .error {background: #ffeaea; border-left: 7px solid #e06359;}
-    .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
-    .anecdote {background: #e8fae7; border-left: 7px solid #22914d; font-style: italic; margin: 1em 0; padding: 12px 17px; border-radius: 6px;}
-    .source { font-size: 0.9em; color: #999; text-align: right;}
-    button, .btn-expl {background: #22914d; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 14px; cursor: pointer; margin-right: 8px; margin-top: 7px; transition: background 0.2s;}
-    button:hover, .btn-expl:hover { background: #167c2b;}
-    #schema { margin: 2em auto 1em; display: block; background: #e8fae7; border-radius: 8px; border: 1px solid #d1d5db;}
-    .info-bulle {display:none;position: absolute; background:#fffefc; border:1px solid #22914d; border-radius:5px;padding:10px;font-size:1rem;z-index:10; box-shadow: 0 3px 12px rgba(34,145,77,0.09);}
-    .reponse { margin-top: 0.7em; color: #22914d; font-weight: bold; text-align: center;}
-    #desc-schema { background: #e7fbe8; border-radius: 6px; color: #22914d; font-weight: bold; padding: 10px; text-align: center; min-height: 25px; margin-bottom: 10px;}
-    table { border-collapse:collapse; margin: 10px auto;}
-    th, td { border:1px solid #22914d; padding:7px 15px; text-align:center;}
-    th { background:#e7fbe8;}
-    td.type { font-weight:bold; }
-    code {background:#eef4fb; border-radius:4px; padding:0 2px;}
-    @media (max-width: 900px) { main { padding: 12px 2px; } }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --green-main:#22914d;
+      --blue-main:#1877f2;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(74,222,128,0.24), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#111827 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(520px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(74,222,128,0.35),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(74,222,128,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(74,222,128,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#bbf7d0;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#bbf7d0,transparent);
+      box-shadow:0 0 12px rgba(74,222,128,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#a7f3d0;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(74,222,128,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#bbf7d0,#22c55e,#4ade80);
+      box-shadow:0 0 18px rgba(74,222,128,0.9);
+      animation:barProgress 2.1s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#dcfce7;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(74,222,128,0.2) 45%,
+          rgba(74,222,128,0.45) 50%,
+          rgba(74,222,128,0.2) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#a7f3d0;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(34,145,77,0.95),rgba(34,197,94,0.95));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#f9fafb;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:230px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#bbf7d0;
+      box-shadow:0 0 12px rgba(187,247,208,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:950px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:26px 26px 30px;
+      color:#e5f1ff;
+    }
+
+    h1,h2{
+      color:#bbf7d0;
+      margin-bottom:10px;
+    }
+    h3{
+      color:#fde68a;
+      margin-top:18px;
+      margin-bottom:10px;
+    }
+    h2{margin-top:26px;font-size:1.4rem;}
+    p,li{font-size:0.98rem;line-height:1.6;}
+    ul,ol{margin-left:1.3em;margin-top:0.3em;margin-bottom:0.8em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      padding:12px 18px;
+      border-radius:10px;
+      margin:1em 0;
+      font-size:0.96rem;
+    }
+    .infos{
+      background:rgba(220,252,231,0.96);
+      color:#052e16;
+      border-left:4px solid #22c55e;
+    }
+    .box-exo{
+      background:rgba(22,163,74,0.14);
+      border-left:4px solid #22c55e;
+    }
+    .box-important{
+      background:rgba(245,158,11,0.14);
+      border-left:4px solid #facc15;
+    }
+    .error{
+      background:rgba(248,113,113,0.14);
+      border-left:4px solid #f87171;
+    }
+    .lexique{
+      background:rgba(59,130,246,0.12);
+      border-left:4px solid #7dd3fc;
+    }
+    .anecdote{
+      background:rgba(220,252,231,0.96);
+      border-left:4px solid #22c55e;
+      font-style:italic;
+    }
+
+    #schema{
+      margin:2em auto 1em;
+      display:block;
+      background:#e8fae7;
+      border-radius:8px;
+      border:1px solid #d1d5db;
+    }
+    .info-bulle{
+      display:none;
+      position:absolute;
+      background:#fffefc;
+      border:1px solid #22914d;
+      border-radius:5px;
+      padding:10px;
+      font-size:1rem;
+      z-index:10;
+      box-shadow:0 3px 12px rgba(34,145,77,0.25);
+      max-width:260px;
+    }
+    .reponse{
+      margin-top:0.7em;
+      color:#bbf7d0;
+      font-weight:bold;
+      text-align:center;
+      font-size:0.95rem;
+    }
+    #desc-schema{
+      background:#e7fbe8;
+      border-radius:6px;
+      color:#166534;
+      font-weight:bold;
+      padding:10px;
+      text-align:center;
+      min-height:25px;
+      margin-bottom:10px;
+    }
+    table{
+      border-collapse:collapse;
+      margin:10px auto;
+    }
+    th,td{
+      border:1px solid #22914d;
+      padding:7px 15px;
+      text-align:center;
+    }
+    th{
+      background:#e7fbe8;
+      color:#065f46;
+    }
+    td.type{font-weight:bold;}
+    code{
+      background:#0b1220;
+      border-radius:4px;
+      padding:0 3px;
+      font-size:0.9rem;
+      color:#e0f2fe;
+    }
+    .btn-expl,
+    button{
+      background:#22c55e;
+      color:#052e16;
+      font-weight:bold;
+      border:none;
+      border-radius:6px;
+      padding:8px 14px;
+      cursor:pointer;
+      margin-right:8px;
+      margin-top:7px;
+      transition:background 0.2s,transform 0.15s;
+    }
+    button:hover,
+    .btn-expl:hover{
+      background:#16a34a;
+      transform:translateY(-1px);
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
   </style>
 </head>
 <body>
-<header>
-  <h1>Masterclass NSI : Algorithmique — conception et analyse</h1>
-  <div class="intro">Sache concevoir des solutions efficaces avec des algorithmes clairs ! Structures de contrôle, tris, recherche : tout s’explique.</div>
-</header>
-<main>
-<section>
-  <h2>📚 Cours complet – Concevoir et analyser un algorithme</h2>
-  <p>
-    Un <b>algorithme</b> est une suite d’instructions permettant de résoudre un problème de façon systématique. Il se décrit en langage naturel, pseudocode ou langage de programmation.
-  </p>
-  <table>
-    <tr>
-      <th>Étape</th>
-      <th>Explication</th>
-      <th>Exemple / Forme</th>
-    </tr>
-    <tr>
-      <td class="type">Entrée</td>
-      <td>Données de départ fournies à l’algorithme</td>
-      <td>Un tableau de notes, un nombre, une chaîne</td>
-    </tr>
-    <tr>
-      <td class="type">Traitement</td>
-      <td>Opérations, calculs, tests, répétitions…</td>
-      <td>Boucle, calcul de somme/moyenne, tri, recherche</td>
-    </tr>
-    <tr>
-      <td class="type">Sortie</td>
-      <td>Résultat final de l’algorithme</td>
-      <td>Afficher le max, la liste triée, la position trouvée…</td>
-    </tr>
-  </table>
-  <p>
-    <b>Structures de base :</b>
-    <ul>
-      <li><b>Instructions séquentielles</b> : exécution ligne à ligne</li>
-      <li><b>Test (<code>if</code>)</b> : fait une action selon une condition</li>
-      <li><b>Boucle (<code>for</code>, <code>while</code>)</b> : répète une instruction/ensemble d’instructions</li>
-      <li><b>Fonction/procédure</b> : regroupe instructions, reçoit des paramètres, renvoie un résultat</li>
-    </ul>
-  </p>
-  <p>
-    <b>Tris et recherches courantes :</b>
-    <ul>
-      <li><b>Recherche linéaire</b> : regarde chaque élément à la suite (pour liste petite ou non triée)</li>
-      <li><b>Recherche dichotomique</b> : coupe la liste en 2 à chaque étape (pour liste triée)</li>
-      <li><b>Tri par sélection / insertion / tri à bulles</b> : ordonne les valeurs d’un tableau</li>
-    </ul>
-    <b>Analyse d’algorithme :</b> On mesure le <b>nombre d’opérations</b> (=complexité)<br>
-    <ul>
-      <li>Recherche simple : O(n)</li>
-      <li>Recherche dichotomique : O(log n)</li>
-      <li>Tri à bulles : O(n²) — existe mieux !</li>
-    </ul>
-  </p>
-  <p>
-    <b>Pseudocode pour le tri à bulles :</b><br>
-    <code>
-      pour i de 0 à longueur(tab)-1<br>
-      &nbsp;&nbsp;pour j de 0 à longueur(tab)-2<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;si tab[j] > tab[j+1] alors<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;échanger tab[j] et tab[j+1]
-    </code>
-  </p>
-  <p><b>En NSI</b> : Analyser le besoin, écrire le pseudocode, donner la complexité, l’implémenter en Python !</p>
-</section>
-<section>
-  <h2>📋 Fiche synthèse interactive</h2>
-  <ul id="ul-synthese">
-    <li><b>Qu’est-ce qu’un algorithme optimal ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('opt')">Afficher</button>
-      <span id="syn-opt" style="display:none;color:#167c2b;">
-        Il résout le problème en un minimum d’opérations (temps/mémoire).
-      </span>
-    </li>
-    <li><b>Différence entre “for” et “while” ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('boucle')">Voir explication</button>
-      <span id="syn-boucle" style="display:none;color:#22914d;">
-        “for” = boucle pour nombre connu d’itérations, “while” = tant qu’une condition reste vraie.
-      </span>
-    </li>
-    <li><b>Comment parfaire un algorithme de recherche ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('recherche')">Réponse !</button>
-      <span id="syn-recherche" style="display:none;color:#f5a623;">
-        Adapter selon la taille/le tri de la liste : linéaire si petite, dichotomique si triée/longue.
-      </span>
-    </li>
-    <li><b>Défi : Pourquoi le tri à bulles est lent pour de grandes listes ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('bulles')">Voir solution</button>
-      <span id="syn-bulles" style="display:none;color:#e06359;">
-        Sa complexité est O(n²) : il fait trop d’échanges pour chaque élément.
-      </span>
-    </li>
-    <li><b>Pourquoi documenter un algorithme ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('doc')">Afficher</button>
-      <span id="syn-doc" style="display:none;color:#243552;">
-        Pour que tout le monde (toi, les autres, les examinateurs !) comprenne chaque étape et but.
-      </span>
-    </li>
-  </ul>
-  <div>
-    <button onclick="quizSynthese()">Quiz surprise</button>
-    <span class="reponse" id="quiz-synthese-res"></span>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//nsi-ALGO</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        NSI Algorithmique · entrée → traitement → sortie, tri, recherche, complexité.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du module Algorithmique — conception et analyse...</div>
+        <div class="terminal-line">[FLOW] Définition des blocs : analyse, contrôle, traitement, sortie, complexité.</div>
+        <div class="terminal-line">[GRAPH] Construction du schéma interactif avec zones survolables.</div>
+        <div class="terminal-line">[OK]  Prêt : cours complet, fiche synthèse, quiz et exercices NSI.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
+    </div>
   </div>
-</section>
-<section>
-  <h2>🔁 Schéma interactif — Construction d’un algorithme</h2>
-  <canvas id="schema" width="900" height="250"></canvas>
-  <div id="desc-schema">Survole chaque bloc : étapes classiques, contrôle, tri, recherche, complexité.</div>
-  <div id="info-bulle" class="info-bulle"></div>
-</section>
-<section class="box box-exo">
-  <h2>💡 Exercices interactifs</h2>
-  <p>Comment savoir si une liste contient un nombre X ?</p>
-  <button onclick="afficheReponseNSI1()">Voir la correction</button>
-  <div class="reponse" id="exo-reponse-nsi1" style="display:none;">
-    Parcourir toute la liste et tester à chaque étape (<code>for elt in liste: if elt == X: ...</code>) ou <code>X in liste</code> en Python.
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - NSI
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="content-card">
+        <header style="background:none;padding:0;margin:0 0 10px 0;color:inherit;text-align:left;box-shadow:none;">
+          <h1>Masterclass NSI : Algorithmique — conception et analyse</h1>
+          <div class="intro" style="color:#d1fae5;">
+            Sache concevoir des solutions efficaces avec des algorithmes clairs : structures de contrôle, tris, recherche, complexité.
+          </div>
+        </header>
+
+        <main>
+          <section>
+            <h2>📚 Cours complet – Concevoir et analyser un algorithme</h2>
+            <p>
+              Un <b>algorithme</b> est une suite finie et non ambiguë d’instructions qui permet de résoudre un problème de manière systématique.
+              Il peut être décrit en langage naturel, en pseudocode ou dans un langage de programmation comme Python.
+            </p>
+            <table>
+              <tr>
+                <th>Étape</th>
+                <th>Explication</th>
+                <th>Exemple / Forme</th>
+              </tr>
+              <tr>
+                <td class="type">Entrée</td>
+                <td>Données fournies à l’algorithme.</td>
+                <td>Tableau de notes, un nombre, une chaîne.</td>
+              </tr>
+              <tr>
+                <td class="type">Traitement</td>
+                <td>Opérations, calculs, tests, répétitions.</td>
+                <td>Boucles, calcul de moyenne, tri, recherche.</td>
+              </tr>
+              <tr>
+                <td class="type">Sortie</td>
+                <td>Résultat produit par l’algorithme.</td>
+                <td>Liste triée, maximum, indice trouvé, message.</td>
+              </tr>
+            </table>
+            <p>
+              <b>Structures de base :</b>
+            </p>
+            <ul>
+              <li><b>Séquence</b> : instructions exécutées dans l’ordre.</li>
+              <li><b>Test (de>if</code>)</b> : exécuter un bloc selon une condition.</li>
+              <li><b>Boucles (de>for</code>, de>while</code>)</b> : répéter une tâche.</li>
+              <li><b>Fonctions</b> : regrouper des instructions réutilisables avec paramètres et retour.</li>
+            </ul>
+            <p>
+              <b>Tris et recherches courants :</b>
+            </p>
+            <ul>
+              <li><b>Recherche linéaire</b> : parcourt la liste élément par élément (O(n)).</li>
+              <li><b>Recherche dichotomique</b> : coupe une liste triée en deux à chaque étape (O(log n)).</li>
+              <li><b>Tri à bulles / sélection / insertion</b> : algorithmes de tri simples (souvent en O(n²)).</li>
+            </ul>
+            <p>
+              <b>Exemple de pseudocode pour le tri à bulles :</b><br>
+              de>
+                pour i de 0 à longueur(tab)-1<br>
+                &nbsp;&nbsp;pour j de 0 à longueur(tab)-2<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;si tab[j] &gt; tab[j+1] alors<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;échanger tab[j] et tab[j+1]
+              </code>
+            </p>
+          </section>
+
+          <section>
+            <h2>📋 Fiche synthèse interactive</h2>
+            <ul id="ul-synthese">
+              <li><b>Qu’est-ce qu’un algorithme optimal ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('opt')">Afficher</button>
+                <span id="syn-opt" style="display:none;color:#4ade80;">
+                  Il résout le problème en minimisant temps et mémoire, pour la taille de données considérée.
+                </span>
+              </li>
+              <li><b>Différence entre “for” et “while” ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('boucle')">Voir explication</button>
+                <span id="syn-boucle" style="display:none;color:#bbf7d0;">
+                  de>for</code> : nombre d’itérations connu ; de>while</code> : on répète tant que la condition reste vraie.
+                </span>
+              </li>
+              <li><b>Améliorer une recherche ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('recherche')">Réponse</button>
+                <span id="syn-recherche" style="display:none;color:#fde68a;">
+                  Utiliser la recherche dichotomique sur une liste triée, ou adapter la structure de données (dictionnaires, etc.).
+                </span>
+              </li>
+              <li><b>Pourquoi le tri à bulles est lent ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('bulles')">Voir</button>
+                <span id="syn-bulles" style="display:none;color:#fecaca;">
+                  Sa complexité est quadratique O(n²) : trop de comparaisons et d’échanges quand n est grand.
+                </span>
+              </li>
+              <li><b>Pourquoi documenter un algorithme ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('doc')">Afficher</button>
+                <span id="syn-doc" style="display:none;color:#e5e7eb;">
+                  Pour que toi et les autres puissiez le relire, le corriger, l’optimiser et le réutiliser facilement.
+                </span>
+              </li>
+            </ul>
+            <div>
+              <button onclick="quizSynthese()">Quiz surprise</button>
+              <span class="reponse" id="quiz-synthese-res"></span>
+            </div>
+          </section>
+
+          <section>
+            <h2>🔁 Schéma interactif — Construction d’un algorithme</h2>
+            anvas id="schema" width="900" height="250"></canvas>
+            <div id="desc-schema">Survole chaque bloc : analyse, contrôle, traitement, sortie, complexité de l’algorithme.</div>
+            <div id="info-bulle" class="info-bulle"></div>
+          </section>
+
+          <section class="box-exo">
+            <h2>💡 Exercices interactifs</h2>
+            <p>Comment savoir si une liste contient un nombre X ?</p>
+            <button onclick="afficheReponseNSI1()">Voir la correction</button>
+            <div class="reponse" id="exo-reponse-nsi1" style="display:none;">
+              Parcourir la liste et tester chaque élément (de>for elt in liste: if elt == X: ...</code>) ou utiliser de>X in liste</code> en Python.
+            </div>
+            <p>Quel est le premier élément à fixer dans le tri par sélection ?</p>
+            <button onclick="document.getElementById('exo2-reponse-nsi').style.display='block';">Voir la correction</button>
+            <div class="reponse" id="exo2-reponse-nsi" style="display:none;">
+              On cherche le plus petit élément et on le place en première position, puis on recommence sur le reste.
+            </div>
+          </section>
+
+          <section class="quiz">
+            <h2>🎯 Quiz rapide</h2>
+            <p>Quel algorithme cherche dans une liste triée en divisant l’intervalle en deux ?</p>
+            <button onclick="quizNSI(0)">Tri à bulles</button>
+            <button onclick="quizNSI(1)">Recherche dichotomique</button>
+            <button onclick="quizNSI(2)">Recherche linéaire</button>
+            <div class="reponse" id="rep-quiz-nsi"></div>
+
+            <p>Complexité du tri à bulles pour n éléments ?</p>
+            <button onclick="quizNSI2(0)">O(n²)</button>
+            <button onclick="quizNSI2(1)">O(log n)</button>
+            <button onclick="quizNSI2(2)">O(n)</button>
+            <div class="reponse" id="rep-quiz-nsi2"></div>
+          </section>
+
+          <section class="box-important">
+            <h2>🌍 Applications concrètes</h2>
+            <ul>
+              <li>Recherche de contacts, tri de notes, classements sportifs.</li>
+              <li>Moteurs de recherche, dossiers médicaux, gestion de fichiers.</li>
+              <li>Parcours de labyrinthe, gestion d’inventaires, traitement de données.</li>
+            </ul>
+          </section>
+
+          <section class="error">
+            <h2>❌ Erreurs fréquentes à éviter</h2>
+            <ul>
+              <li>Oublier les cas particuliers (liste vide, élément absent).</li>
+              <li>Confondre usage de de>for</code> et de>while</code>.</li>
+              <li>Ne pas préciser sur quel type de liste s’applique l’algorithme.</li>
+              <li>Utiliser un tri en O(n²) pour de très grands volumes sans réfléchir.</li>
+              <li>Ne pas commenter le pseudocode ou le code Python.</li>
+            </ul>
+          </section>
+
+          <section class="lexique">
+            <h2>📚 Lexique express</h2>
+            <b>Algorithme</b> : méthode précise pour résoudre un problème.<br>
+            <b>Pseudocode</b> : description structurée proche du code, mais indépendante d’un langage.<br>
+            <b>Complexité</b> : nombre d’opérations en fonction de la taille des données.<br>
+            <b>Tri</b> : réorganisation d’une liste selon un ordre donné.<br>
+            <b>Recherche</b> : trouver une valeur ou sa position dans une structure.<br>
+            <b>Itération</b> : répétition d’instructions via une boucle.
+          </section>
+
+          <section class="rubrique">
+            <h3>📖 Anecdotes et histoire</h3>
+            <ul>
+              <li>Le mot « algorithme » vient du mathématicien al-Khwarizmi (IXᵉ siècle).</li>
+              <li>Les premiers algorithmes étaient papier/crayon pour calculer et résoudre des équations.</li>
+              <li>Alan Turing a conçu des algorithmes pour briser le code Enigma.</li>
+              <li>Des tris efficaces comme QuickSort sont intégrés aux langages modernes.</li>
+            </ul>
+            <div class="source">Source : histoire de l’algorithmique et de l’informatique, ressources NSI.</div>
+          </section>
+
+          <section class="anecdote">
+            <b>Astuce mémoire :</b> recherche linéaire = tout regarder, dichotomique = couper en deux, tri à bulles = les plus gros éléments « remontent » comme des bulles.
+          </section>
+
+          <section>
+            <h2>💡 Méthodologie pour réussir</h2>
+            <ul>
+              <li>Analyser le problème : entrées, sorties, contraintes.</li>
+              <li>Découper en étapes claires (tests, boucles, résultats).</li>
+              <li>Choisir l’algorithme adapté au contexte (taille, tri, temps dispo).</li>
+              <li>Évaluer la complexité et réfléchir à des améliorations possibles.</li>
+              <li>Commenter et illustrer avec un exemple d’exécution.</li>
+              <li>Savoir passer du pseudocode au Python (et inversement).</li>
+            </ul>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
+    </div>
   </div>
-  <p>Quel est le premier élément à trier dans le tri par sélection ?</p>
-  <button onclick="document.getElementById('exo2-reponse-nsi').style.display='block';">Voir la correction</button>
-  <div class="reponse" id="exo2-reponse-nsi" style="display:none;">
-    On cherche le plus petit, qu’on place en première position, puis on recommence sur le reste.
-  </div>
-</section>
-<section class="quiz">
-  <h2>🎯 Quiz rapide</h2>
-  <p>Quel algorithme trouve un élément dans une liste triée en divisant à chaque étape ?</p>
-  <button onclick="quizNSI(0)">Tri à bulles</button>
-  <button onclick="quizNSI(1)">Recherche dichotomique</button>
-  <button onclick="quizNSI(2)">Recherche linéaire</button>
-  <div class="reponse" id="rep-quiz-nsi"></div>
-  <p>Complexité du tri à bulles pour n éléments ?</p>
-  <button onclick="quizNSI2(0)">O(n²)</button>
-  <button onclick="quizNSI2(1)">O(log n)</button>
-  <button onclick="quizNSI2(2)">O(n)</button>
-  <div class="reponse" id="rep-quiz-nsi2"></div>
-</section>
-<section class="box-important">
-  <h2>🌍 Applications concrètes</h2>
-  <ul>
-    <li>Recherche d’un contact, tri de notes, classements sportifs, traitement d’images</li>
-    <li>Moteurs de recherche (Google...), dossiers médicaux, gestion de fichiers</li>
-    <li>Parcours de labyrinthe, gestion de listes (commerce, inventaire, etc.)</li>
-  </ul>
-</section>
-<section class="error">
-  <h2>❌ Erreurs fréquentes à éviter</h2>
-  <ul>
-    <li>Oublier de tester le cas d’une liste vide ou d’un élément absent</li>
-    <li>Confondre “for” et “while” (borne connue vs. jusqu’à condition vraie)</li>
-    <li>Ne pas indiquer le type d’algorithme ou le cas où il s’applique</li>
-    <li>Choisir un tri lent pour de grandes données</li>
-    <li>Oublier de commenter chaque étape en pseudo-code ou Python</li>
-  </ul>
-</section>
-<section class="lexique">
-  <h2>📚 Lexique express</h2>
-  <b>Algorithme :</b> méthode pour résoudre un problème<br>
-  <b>Pseudocode :</b> description structurée d’un algorithme<br>
-  <b>Complexité :</b> mesure du nombre d’opérations nécessaires<br>
-  <b>Tri :</b> réorganisation de la liste selon un ordre<br>
-  <b>Recherche :</b> trouver une valeur précise<br>
-  <b>Itération :</b> répétition via boucle
-</section>
-<section class="rubrique">
-  <h3>📖 Anecdotes et histoire</h3>
-  <ul>
-    <li>Le mot “algorithme” vient d’al-Khwarizmi, mathématicien perse du 9e siècle</li>
-    <li>Les premiers algorithmes connus servaient à calculer les divisions, multiplications, et à résoudre les équations</li>
-    <li>Alan Turing, père de l’ordinateur, a conçu des algorithmes pour déchiffrer Enigma pendant la Deuxième Guerre mondiale</li>
-    <li>Le tri rapide (“QuickSort”) est largement utilisé, y compris dans Python et Java</li>
-  </ul>
-  <div class="source">Source : histoire de l’algorithmique, NSI</div>
-</section>
-<section class="anecdote">
-  <b>Astuce mémoire</b> :  
-  Recherche linéaire = “je regarde toute la liste”,  
-  dichotomique = “je coupe en deux à chaque fois”,  
-  tri à bulles = “les gros remontent comme des bulles dans la baignoire !”
-</section>
-<section>
-  <h2>💡 Méthodologie pour réussir</h2>
-  <ul>
-    <li>Bien analyser le problème avant de commencer (entrée, sortie, contraintes…)</li>
-    <li>Détailler chaque étape (test, boucle, résultat)</li>
-    <li>Choisir l’algorithme adapté (par taille, structure, objectif)</li>
-    <li>Estimer l’efficacité (complexité, faisabilité sur grande liste)</li>
-    <li>Commenter, expliquer, donner un exemple d’exécution</li>
-    <li>Savoir passer du pseudocode à Python et inversement</li>
-  </ul>
-</section>
-</main>
-<script>
-function afficheSynthese(id) {
-  var el = document.getElementById("syn-"+id);
-  if (el.style.display==="none") { el.style.display="inline"; }
-  else { el.style.display="none"; }
-}
-function quizSynthese() {
-  let qs = [
-    {q:"O(log n) veut dire…", rep:"dichotomique"},
-    {q:"Quel mot-clé pour répéter une action tant que la condition reste vraie ?", rep:"while"},
-    {q:"Quel algorithme de recherche s’applique à une liste NON triée ?", rep:"linéaire"},
-    {q:"Un bon algorithme doit être…", rep:"efficace"}
-  ];
-  let idx = Math.floor(Math.random()*qs.length);
-  let ask = qs[idx]; let reponse = prompt(ask.q);
-  let result = (reponse && reponse.toLowerCase().includes(ask.rep.toLowerCase())) ?
-    "Bravo ! " + ask.rep : "Réponse attendue : " + ask.rep;
-  document.getElementById("quiz-synthese-res").textContent = result;
-}
-const schemaData = [
-  {x:110, y:40, w:200, h:48, zone:"Début/analyse", bulle:"Comprendre le problème : entrées, sorties, contraintes.", color:"#22914d"},
-  {x:360, y:110, w:135, h:48, zone:"Contrôle", bulle:"Test (if), boucle (for/while)", color:"#f5a623"},
-  {x:520, y:50, w:150, h:48, zone:"Traitement", bulle:"Tri, recherche, calculs — partie principale de l'algo", color:"#e06359"},
-  {x:700, y:100, w:160, h:48, zone:"Sortie", bulle:"Afficher, rendre le résultat — fin", color:"#79acee"},
-  {x:380, y:185, w:200, h:46, zone:"Analyse/complexité", bulle:"Compter opérations et ressources (O(n), O(log n)...)", color:"#167c2b"},
-];
-var canvas = document.getElementById("schema");
-var ctx = canvas.getContext("2d");
-function drawSchema() {
-  ctx.clearRect(0,0,900,250);
-  ctx.font="17px Arial";
-  ctx.fillStyle="#243552";
-  ctx.fillText("Schéma : étapes d’un algorithme clair — analyse, conception, contrôle, traitement, sortie, évaluation.",80,65);
-  for(let d of schemaData){
-    ctx.fillStyle=d.color; ctx.globalAlpha=0.19; ctx.fillRect(d.x,d.y,d.w,d.h); ctx.globalAlpha=1.0;
-    ctx.strokeStyle="#22914d"; ctx.lineWidth=2; ctx.strokeRect(d.x,d.y,d.w,d.h);
-    ctx.fillStyle="#243552"; ctx.font="bold 18px Arial"; ctx.fillText(d.zone, d.x+13, d.y+28);
-  }
-  // Flèches de séquence
-  ctx.strokeStyle="#22914d"; ctx.lineWidth=2;
-  ctx.beginPath(); ctx.moveTo(310,63); ctx.lineTo(360,133); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(495,133); ctx.lineTo(570,73); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(670,133); ctx.lineTo(780,120); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(480,133); ctx.lineTo(480,205); ctx.stroke();
-}
-drawSchema();
-canvas.addEventListener('mousemove', function(e){
-  var rect = canvas.getBoundingClientRect();
-  var x = e.clientX - rect.left, y = e.clientY - rect.top;
-  var bulle = document.getElementById("info-bulle"); let found = false;
-  for(let d of schemaData){
-    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
-      bulle.style.left = (rect.left + d.x + 33) + "px";
-      bulle.style.top = (rect.top + d.y + 10) + "px";
-      bulle.style.display = "block"; bulle.innerHTML = d.bulle; found=true; break;
+
+  <script>
+    // Disparition du loader après 3 s[web:38][web:2][web:12][web:47]
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
+
+    function afficheSynthese(id) {
+      const el = document.getElementById("syn-"+id);
+      el.style.display = (el.style.display==="none" || el.style.display==="") ? "inline" : "none";
     }
-  }
-  if(!found) bulle.style.display="none";
-});
-canvas.addEventListener('click', function(e){
-  var rect = canvas.getBoundingClientRect();
-  var x = e.clientX - rect.left, y = e.clientY - rect.top;
-  for(let d of schemaData){
-    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
-      alert(d.bulle.replace(/<br>/g,"\n")); break;
+
+    function quizSynthese() {
+      let qs = [
+        {q:"O(log n) correspond à quelle idée d’algorithme ?", rep:"dichotomique"},
+        {q:"Mot-clé Python pour répéter tant qu’une condition reste vraie ?", rep:"while"},
+        {q:"Quel type de recherche pour une liste non triée ?", rep:"linéaire"},
+        {q:"Un bon algorithme doit être… ?", rep:"efficace"}
+      ];
+      let idx = Math.floor(Math.random()*qs.length);
+      let ask = qs[idx];
+      let reponse = prompt(ask.q);
+      let ok = reponse && reponse.toLowerCase().includes(ask.rep.toLowerCase());
+      document.getElementById("quiz-synthese-res").textContent =
+        ok ? "Bravo ! Réponse attendue : "+ask.rep : "Réponse attendue : "+ask.rep;
     }
-  }
-});
-function afficheReponseNSI1() { document.getElementById("exo-reponse-nsi1").style.display = "block"; }
-function quizNSI(rep) {
-  let rq = document.getElementById("rep-quiz-nsi");
-  rq.textContent = (rep === 1) ? "Bonne réponse : la recherche dichotomique coupe à chaque étape." : "Ce n’est pas un tri ni une recherche linéaire.";
-}
-function quizNSI2(rep) {
-  let rq = document.getElementById("rep-quiz-nsi2");
-  rq.textContent = (rep === 0) ? "C’est ça ! Tri à bulles = O(n²)" : "Non, O(n²) pour le tri à bulles (il fait beaucoup d'échanges).";
-}
-</script>
+
+    const schemaData = [
+      {x:110, y:40,  w:200, h:48, zone:"Début / analyse", bulle:"Comprendre le problème : entrées, sorties, contraintes, cas particuliers.", color:"#22c55e"},
+      {x:360, y:110, w:135, h:48, zone:"Contrôle", bulle:"Tests (if) et boucles (for / while) pour piloter le flot d’exécution.", color:"#facc15"},
+      {x:520, y:50,  w:150, h:48, zone:"Traitement", bulle:"Tri, recherche, calculs : cœur de l’algorithme.", color:"#f97316"},
+      {x:700, y:100, w:160, h:48, zone:"Sortie", bulle:"Afficher ou renvoyer le résultat, terminer proprement.", color:"#60a5fa"},
+      {x:380, y:185, w:200, h:46, zone:"Analyse / complexité", bulle:"Compter les opérations : O(n), O(log n), O(n²)... et comparer les approches.", color:"#16a34a"},
+    ];
+
+    const canvas = document.getElementById("schema");
+    const ctx = canvas.getContext("2d");
+
+    function drawSchema() {
+      ctx.clearRect(0,0,900,250);
+      ctx.font="17px Arial";
+      ctx.fillStyle="#0f172a";
+      ctx.fillText("Schéma : étapes d’un algorithme — analyse, conception, contrôle, traitement, sortie, évaluation.",70,30);
+      for(let d of schemaData){
+        ctx.fillStyle=d.color; ctx.globalAlpha=0.23;
+        ctx.fillRect(d.x,d.y,d.w,d.h);
+        ctx.globalAlpha=1.0;
+        ctx.strokeStyle="#065f46"; ctx.lineWidth=2;
+        ctx.strokeRect(d.x,d.y,d.w,d.h);
+        ctx.fillStyle="#0f172a"; ctx.font="bold 17px Arial";
+        ctx.fillText(d.zone, d.x+10, d.y+28);
+      }
+      ctx.strokeStyle="#22c55e"; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(310,63); ctx.lineTo(360,133); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(495,133); ctx.lineTo(570,73); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(670,133); ctx.lineTo(780,120); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(480,133); ctx.lineTo(480,205); ctx.stroke();
+    }
+    drawSchema();
+
+    canvas.addEventListener('mousemove', function(e){
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const bulle = document.getElementById("info-bulle");
+      let found = false;
+      for(let d of schemaData){
+        if(x>=d.x && x<=d.x+d.w && y>=d.y && y<=d.y+d.h){
+          bulle.style.left = (rect.left + d.x + 30) + "px";
+          bulle.style.top  = (rect.top + d.y + 10) + "px";
+          bulle.style.display = "block";
+          bulle.innerHTML = d.bulle;
+          found = true;
+          break;
+        }
+      }
+      if(!found) bulle.style.display="none";
+    });
+
+    canvas.addEventListener('click', function(e){
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      for(let d of schemaData){
+        if(x>=d.x && x<=d.x+d.w && y>=d.y && y<=d.y+d.h){
+          alert(d.bulle.replace(/<br>/g,"\n"));
+          break;
+        }
+      }
+    });
+
+    function afficheReponseNSI1() {
+      document.getElementById("exo-reponse-nsi1").style.display = "block";
+    }
+    function quizNSI(rep) {
+      const rq = document.getElementById("rep-quiz-nsi");
+      rq.textContent = (rep === 1)
+        ? "Bonne réponse : la recherche dichotomique divise la zone de recherche en deux à chaque étape."
+        : "Mauvaise réponse : pense à la recherche sur liste triée qui coupe en deux.";
+    }
+    function quizNSI2(rep) {
+      const rq = document.getElementById("rep-quiz-nsi2");
+      rq.textContent = (rep === 0)
+        ? "Exact : le tri à bulles a une complexité en O(n²)."
+        : "Non : le tri à bulles est quadratique, donc en O(n²).";
+    }
+  </script>
 </body>
 </html>

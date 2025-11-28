@@ -2,321 +2,679 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Lois du mouvement : Newton, chute libre, frottements</title>
+  <title>Global - Physique · Lois du mouvement</title>
   <meta name="description" content="Cours interactif lycée : lois de Newton, modélisation, chute libre, frottements. QCM, exos, schéma vectoriel, LaTeX, fiche, lexique, notes.">
   <style>
-    body{background:#f6f8fa;font-family:'Segoe UI',Arial,sans-serif;color:#222;margin:0;}
-    header{background:linear-gradient(90deg,#eef4fb,#deffe4 80%);color:#243552;padding:30px 0 12px;text-align:center;}
-    header h1{font-size:2.2rem;margin:0 0 8px;color:#1877f2;}
-    header .intro{font-size:1.09rem;}
-    main{max-width:970px;background:#fff;margin:45px auto 20px;padding:36px 60px;border-radius:20px;box-shadow:0 9px 28px rgba(24,119,242,0.12);}
-    h2,h3{color:#1877f2;margin-top:34px;}
-    h3{color:#f5a623;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.15), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(59,130,246,0.25), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#0b1120 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#020617 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(560px,90vw);
+      padding:26px 26px 30px;
+      border-radius:20px;
+      background:
+        radial-gradient(circle at 0 0,rgba(59,130,246,0.35),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(59,130,246,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.95),
+        0 0 35px rgba(59,130,246,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.5) 1px,
+        rgba(15,23,42,0.95) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#dbeafe;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:280px;
+      height:2px;
+      background:linear-gradient(90deg,#bfdbfe,transparent);
+      box-shadow:0 0 14px rgba(59,130,246,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#bfdbfe;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(59,130,246,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#22c55e,#60a5fa,#a855f7);
+      box-shadow:0 0 18px rgba(59,130,246,0.9);
+      animation:barProgress 2.1s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#e5e7eb;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(59,130,246,0.25) 45%,
+          rgba(59,130,246,0.6) 50%,
+          rgba(59,130,246,0.25) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.92),rgba(15,23,42,1));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#bfdbfe;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(24,119,242,0.95),rgba(34,197,94,0.95));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#f9fafb;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:260px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#bfdbfe;
+      box-shadow:0 0 12px rgba(191,219,254,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    main.page{
+      max-width:970px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:20px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:36px 60px 32px;
+      color:#e5f1ff;
+    }
+    @media (max-width:1040px){main.page{padding:12px 10px;}}
+
+    header.inner{background:none;padding:0;margin:0 0 8px 0;text-align:left;box-shadow:none;color:inherit;}
+    h1{font-size:2.1rem;margin-bottom:8px;color:#e5f1ff;}
+    header.inner .intro{font-size:1.02rem;}
+
+    h2,h3{color:#e5f1ff;margin-top:34px;}
+    h3{color:#f5a623;margin-top:27px;}
     ul,ol{margin-left:2em;margin-bottom:0.8em;}
-    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.06rem;}
-    .infos{background:#e7f3fa;border-left:7px solid #1877f2;}
-    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;}
-    .box-important{background:#fff7ec;border-left:8px solid #f5a623;}
-    .error{background:#ffeaea;border-left:8px solid #e06359;}
-    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;}
-    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;}
-    .source{font-size:0.88em;color:#999;text-align:right;margin-top:10px;}
-    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s;font-size:1em;}
-    button:hover{background:#145ac3;}
-    .reponse{margin-top:0.7em;color:#1877f2;font-weight:bold;text-align:center;}
-    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;}
-    #schema-newton{margin:1.2em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #e7f3f7;}
-    input[type='text'],textarea{border-radius:5px;border:1px solid #ccc;padding:5px;margin-top:6px;}
+    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.02rem;}
+    .infos{background:#e7f3fa;border-left:7px solid #1877f2;color:#0f172a;}
+    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;color:#052e16;}
+    .box-important{background:#fff7ec;border-left:8px solid #f5a623;color:#3b2710;}
+    .error{background:#ffeaea;border-left:8px solid #e06359;color:#7f1d1d;}
+    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;color:#0f172a;}
+    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;color:#064e3b;}
+    .source{font-size:0.88em;color:#9ca3af;text-align:right;margin-top:10px;}
+
+    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s,transform 0.15s;font-size:1em;}
+    button:hover{background:#145ac3;transform:translateY(-1px);}
+    .reponse{margin-top:0.7em;color:#bfdbfe;font-weight:bold;text-align:center;}
+    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;color:#064e3b;}
+    #schema-newton{margin:1.2em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #020617;}
+    input[type='text'],textarea{border-radius:5px;border:1px solid #6b7280;padding:5px;margin-top:6px;background:#020617;color:#e5e7eb;}
     .flex-exercices{display:flex;flex-wrap:wrap;}
     .exo-block{flex:1 1 310px;margin-right:2%;min-width:330px;}
     .exo-block:last-child{margin-right:0;}
-    .popup{display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.17);padding:35px;width:340px;z-index:2000;}
-    .popup h3{color:#1877f2;}
-    .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(40,61,102,0.23);z-index:1800;}
+    .popup{display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#020617;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.4);padding:30px;width:340px;z-index:2000;border:1px solid #1d4ed8;color:#e5e7eb;}
+    .popup h3{color:#60a5fa;}
+    .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(15,23,42,0.7);z-index:1800;}
     .show{display:block;}
-    .scoreQCM{font-weight:bold;color:#167c2b;}
-    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;}
-    .qcm-block{margin-bottom:2.3em;}
-    @media (max-width:1040px){main{padding:8px 2px;}}
+    .scoreQCM{font-weight:bold;color:#bbf7d0;}
+    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;border-radius:999px;cursor:pointer;}
+    .note-area{width:100%;min-height:120px;}
   </style>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-  <h1>Lois du mouvement et modélisation : 1re & 2e lois de Newton, chute libre, frottements</h1>
-  <div class="intro">Comprends et applique les lois de Newton, la chute libre et les frottements : cours détaillé, illustrations, QCM, exos interactifs, LaTeX, prise de notes, fiche, lexique & erreurs types !</div>
-</header>
-<main>
-  <section class="box infos">
-    <h2>📚 Objectifs</h2>
-    <ul>
-      <li>Comprendre le lien fondamental entre forces et mouvement.</li>
-      <li>Savoir utiliser la 1<sup>re</sup> (inertie) et la 2<sup>e</sup> (relation fondamentale) lois de Newton pour prédire ou expliquer un mouvement.</li>
-      <li>Savoir modéliser une chute libre et l’effet des frottements.</li>
-      <button onclick="openPopup('popup-contexte')">Exemples d’applications</button>
-    </ul>
-  </section>
-  <section>
-    <h2>🧭 1. 1<sup>re</sup> loi de Newton : Principe d’inertie</h2>
-    <ul>
-      <li>« Un objet persévère dans son état de repos ou de mouvement rectiligne uniforme si et seulement si la somme des forces qui s’appliquent sur lui est nulle. »</li>
-      <li>
-        Formellement :<br>
-        \( \sum \vec{F}_{\text{ext}} = \vec{0} \implies \vec{v} = \text{constante} \)
-      </li>
-      <li>
-        <b>Exemples :</b> Voiture sur route plate à vitesse constante, bille sur table sans frottements.
-      </li>
-      <button onclick="openPopup('popup-inertie')">Astuce inertie</button>
-    </ul>
-  </section>
-  <section>
-    <h2>🚀 2. 2<sup>e</sup> loi de Newton : Relation fondamentale dynamique</h2>
-    <ul>
-      <li>
-        « La somme vectorielle des forces appliquées est égale au produit de la masse m par le vecteur accélération a de l’objet. »<br>
-        <b>Formule :</b>
-        \( \sum \vec{F}_{\text{ext}} = m\vec{a} \)
-      </li>
-      <li>
-        Ici, l’accélération n’est pas forcément constante (cas général !).<br>
-        <b>Si</b> la somme des forces n’est pas nulle ⇒ \(a \neq 0\) ⇒ le mouvement change (vitesses, direction…)
-      </li>
-      <li>
-        <button onclick="openPopup('popup-exo-force')">Voir schéma modélisation</button>
-      </li>
-    </ul>
-    <canvas id="schema-newton" width="440" height="140"></canvas>
-    <div class="infos" style="text-align:center"><b>Schéma : application des lois de Newton (chute libre, frottements)</b></div>
-  </section>
-  <section>
-    <h2>🌍 3. Cas particuliers : chute libre et frottements</h2>
-    <ul>
-      <li>En <b>chute libre</b>, seule la force de poids agit : accélération \(a = g\) (vers le bas).</li>
-      <li>Quand il y a <b>frottements de l’air</b>, ils s’opposent au mouvement : accélération réelle réduite, vitesse limite possible.</li>
-      <li>
-        <b>Équation complète :</b><br>
-        \( m\vec{a} = m\vec{g} + \vec{f}_{\text{air}} \)
-      </li>
-      <li>
-        <b>Schéma</b> : voir plus haut pour la modélisation des vecteurs.
-      </li>
-    </ul>
-  </section>
-  <section>
-    <h2>🏆 4. Exemple méthode : résoudre un problème de loi de Newton</h2>
-    <ol>
-      <li>Faire le bilan des forces.</li>
-      <li>Choisir le système, référentiel, sens positif.</li>
-      <li>Écrire la 2<sup>e</sup> loi, isoler l’accélération ou la force recherchée.</li>
-      <li>Résoudre numériquement.</li>
-      <button onclick="openPopup('popup-meth')">Voir fiche méthode</button>
-    </ol>
-  </section>
-  <section>
-    <h2>📑 Exercices interactifs</h2>
-    <div class="flex-exercices">
-      <div class="box-exo exo-block">
-        <b>Ex 1 — Chute libre idéale</b><br>
-        Quelle est l'accélération d'un corps en chute libre (hors frottements) ?
-        <input type="text" id="exo1" placeholder="... m/s²">
-        <button onclick="checkExo(1)">Valider</button>
-        <div class="reponse" id="rep-exo1"></div>
-      </div>
-      <div class="box-exo exo-block">
-        <b>Ex 2 — Voiture freinée</b><br>
-        Une voiture (800 kg) subit une force totale de frottement de 4000 N alors qu’elle roule. Calcule l'accélération.
-        <input type="text" id="exo2" placeholder="... m/s²">
-        <button onclick="checkExo(2)">Valider</button>
-        <div class="reponse" id="rep-exo2"></div>
-      </div>
-      <div class="box-exo exo-block">
-        <b>Ex 3 — Inertie</b><br>
-        Que vaut la somme des forces sur un objet à vitesse constante en ligne droite ?
-        <input type="text" id="exo3" placeholder="...">
-        <button onclick="checkExo(3)">Valider</button>
-        <div class="reponse" id="rep-exo3"></div>
-      </div>
-    </div>
-    <button onclick="resetExos()">Effacer mes réponses</button>
-  </section>
-  <section class="qcm-block">
-    <h2>🎯 QCM interactif (score immédiat !)</h2>
-    <div id="qcm-interactif"></div>
-    <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
-    <button onclick="reloadQCM()">Recommencer le QCM</button>
-  </section>
-  <section class="box-important">
-    <h2>🔖 Fiche de révision rapide</h2>
-    <div class="fiche">
-      <ul>
-        <li>1<sup>re</sup> loi : \(\sum \vec{F}_{\text{ext}} = 0 \implies \text{mvmt rectiligne uniforme ou repos}\)</li>
-        <li>2<sup>e</sup> loi : \(\sum \vec{F}_{\text{ext}} = m\vec{a}\)</li>
-        <li>Chute libre idéale : \(a = g = 9,8\,m\,s^{-2}\) (vers le bas)</li>
-        <li>Frottements s’opposent au mouvement : accélération réduite</li>
-        <li>Schéma : toujours faire le bilan des forces !</li>
-      </ul>
-    </div>
-  </section>
-  <section class="error">
-    <h2>❌ Erreurs fréquentes à éviter</h2>
-    <ul>
-      <li>Confondre force et accélération (force = cause, accél = effet !)</li>
-      <li>Oublier les forces de frottements réelles (jamais nulles sauf cas idéal)</li>
-      <li>Mal orienter les vecteurs (toujours sur un schéma !)</li>
-      <li>Penser qu’une somme de forces non nulle… laisse la vitesse constante</li>
-    </ul>
-  </section>
-  <section class="lexique">
-    <h2>📚 Lexique express</h2>
-    <ul>
-      <li><b>Force</b> : vecteur représentant une action mécanique (N)</li>
-      <li><b>Bilan des forces</b> : inventaire direction/sens/intensité de chaque force</li>
-      <li><b>Chute libre</b> : seul le poids agit sur l’objet</li>
-      <li><b>Frottement</b> : force opposée au déplacement</li>
-      <li><b>Inertie</b> : propriété de tout corps à conserver son état si aucune force ne l’en empêche</li>
-      <li><b>Accélération</b> : variation de la vitesse (m.s⁻²)</li>
-    </ul>
-  </section>
-  <section>
-    <h2>🗒️ Tes propres notes (sauvegarde locale)</h2>
-    <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
-    <button onclick="saveNotes()">Enregistrer</button>
-    <span id="savemsg" style="color:#4caf50;font-weight:bold;"></span>
-  </section>
-  <section class="source">Sources : cours lycée, manuels, BAC 2025, fiches PC.</section>
-</main>
-<div class="overlay" id="overlay"></div>
-<div class="popup" id="popup-contexte"><h3>Exemples</h3>
-Chute des objets (Newton), voiture au freinage, ascenseur, sports, balistique, projetiles, etc.
-<button onclick="closePopup()">Fermer</button>
-</div>
-<div class="popup" id="popup-inertie"><h3>Astuce Inertie</h3>
-Un objet “lutte” contre tout changement d’état : réagit à un coup de frein, au virage, veut “aller tout droit”.
-<button onclick="closePopup()">Fermer</button>
-</div>
-<div class="popup" id="popup-exo-force"><h3>Bilan modélisation</h3>
-Toujours placer tous les vecteurs : poids, réaction, forces appliquées, frottements, etc.<br>
-Additionne-les vectoriellement pour la 2<sup>e</sup> loi.
-<button onclick="closePopup()">Fermer</button>
-</div>
-<div class="popup" id="popup-meth"><h3>Méthodo Newton</h3>
-<ul>
-<li>Lister TOUTES les forces (flèches, directions, valeurs, unités…)</li>
-<li>Bilan sur un dessin clair</li>
-<li>Formule “Newton” : \(\sum \vec{F}_{ext}=m\vec{a}\), isole la variable recherchée</li>
-<li>Résoudre avec les données</li>
-</ul>
-<button onclick="closePopup()">Fermer</button>
-</div>
-<script>
-function reloadMathJax(){if(window.MathJax){window.MathJax.typesetPromise();}}
-// Popups/lexique
-function openPopup(id){document.getElementById('overlay').classList.add("show");document.getElementById(id).classList.add("show");}
-function closePopup(){document.getElementById('overlay').classList.remove("show");var popups=document.querySelectorAll('.popup');popups.forEach(function(p){p.classList.remove('show');});}
-function saveNotes(){localStorage.setItem("notesNewton",document.getElementById("notes").value);document.getElementById("savemsg").textContent="✔️ Enregistré !";setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);}
-if(localStorage.getItem("notesNewton")){document.getElementById("notes").value=localStorage.getItem("notesNewton");}
-// Schéma lois de Newton
-function drawNewton(){
-  var c=document.getElementById('schema-newton');if(!c)return;var x=c.getContext('2d');
-  x.clearRect(0,0,440,140);
-  // Sol
-  x.fillStyle="#a4e4cd";x.fillRect(0,120,440,20);x.fillStyle="#222";x.fillText("Sol",13,138);
-  // Objet
-  x.fillStyle="#f3aa3f";x.fillRect(180,80,45,38);x.fillStyle="#1877f2";x.fillText("Objet posé",163,78);
-  // Poids (vecteur vers le bas)
-  x.strokeStyle="#e06359";x.lineWidth=4;x.beginPath();x.moveTo(202,98);x.lineTo(202,140);x.stroke();
-  x.fillStyle="#e06359";x.beginPath();x.moveTo(202,140);x.lineTo(198,130);x.lineTo(206,130);x.fill();
-  x.fillStyle="#e06359";x.font="15px Arial";x.fillText("Poids \\(\\vec{P}\\)",209,137);
-  // Réaction (haut)
-  x.strokeStyle="#167c2b";x.lineWidth=4;x.beginPath();x.moveTo(222,116);x.lineTo(222,78);x.stroke();
-  x.fillStyle="#167c2b";x.beginPath();x.moveTo(222,78);x.lineTo(217,88);x.lineTo(227,88);x.fill();
-  x.fillStyle="#167c2b";x.fillText("Réaction \\(\\vec{R}\\)",226,72);
-  // Force de frottement horizontale (gauche)
-  x.strokeStyle="#243552";x.lineWidth=4;x.beginPath();x.moveTo(180,100);x.lineTo(110,100);x.stroke();
-  x.fillStyle="#243552";x.beginPath();x.moveTo(110,100);x.lineTo(120,95);x.lineTo(120,105);x.fill();
-  x.fillStyle="#243552";x.fillText("Frottements",70,100);
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//phys-NEWTON</div>
 
-  // Flèche d’accélération vers la droite
-  x.strokeStyle="#f5a623";x.lineWidth=4;x.beginPath();x.moveTo(225,100);x.lineTo(300,100);x.stroke();
-  x.fillStyle="#f5a623";x.beginPath();x.moveTo(300,100);x.lineTo(290,95);x.lineTo(290,105);x.fill();
-  x.fillStyle="#f5a623";x.fillText("a",306,104);
-}
-drawNewton();
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
 
-const qcmData=[
-{
-  question:"La 2e loi de Newton : \\(\\sum \\vec{F}_{ext} = ?\\)",
-  choices:["m\\vec{a}","0","m\\vec{v}"],
-  correct:0,
-  explanation:"C’est m*a, pas 0 ni le vecteur vitesse."
-},
-{
-  question:"Un objet tombe, seule la force de : ... s’applique",
-  choices:["Poids","Réaction","Tension"],
-  correct:0,
-  explanation:"En chute libre : le poids."
-},
-{
-  question:"Si un objet subit F=0, il :",
-  choices:["Reste au repos OU avance à vitesse constante","Tombe forcément","Fait demi-tour"],
-  correct:0,
-  explanation:"C’est le principe d’inertie."
-},
-{
-  question:"Les frottements s’opposent toujours au...",
-  choices:["Mouvement","Poids","Référentiel"],
-  correct:0,
-  explanation:"Ils ralentissent le mouvement."
-}
-];
-let qcmScore=0;
-let qcmDone=Array(qcmData.length).fill(false);
-function displayQCM(){
-  let html="";
-  for(let i=0;i<qcmData.length;i++){
-    html += `<div style="margin-bottom:1em"><b>Q${i+1} :</b> <span>\\(${qcmData[i].question}\\)</span><br>`;
-    for(let j=0;j<qcmData[i].choices.length;j++){
-      html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        1re et 2e lois de Newton, chute libre idéale ou avec frottements, méthode bilan des forces.[web:98][web:101][web:106][web:107]
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[L1] Principe d’inertie : ΣF = 0 ⇔ v constante.[web:98][web:103][web:106]</div>
+        <div class="terminal-line">[L2] Relation fondamentale : ΣF = m·a.[web:98][web:104][web:107]</div>
+        <div class="terminal-line">[CHUTE] Modèles de chute libre et frottements de l’air.[web:100][web:101][web:105]</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
+    </div>
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Physique
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <main class="page">
+        <header class="inner">
+          <h1>Lois du mouvement et modélisation : 1re & 2e lois de Newton, chute libre, frottements</h1>
+          <div class="intro">
+            Lien forces–mouvement, inertie, relation fondamentale, chute libre et frottements avec schémas, QCM, exercices et fiche synthèse.[web:98][web:103][web:106][web:107]
+          </div>
+        </header>
+
+        <section class="box infos">
+          <h2>📚 Objectifs</h2>
+          <ul>
+            <li>Relier bilan des forces et type de mouvement (repos, MRU, mouvement accéléré).[web:98][web:106]</li>
+            <li>Appliquer ΣF = m·a pour déterminer une accélération ou une force.[web:98][web:107]</li>
+            <li>Modéliser une chute libre idéale ou avec frottements.[web:100][web:101][web:105]</li>
+          </ul>
+          <button onclick="openPopup('popup-contexte')">Exemples d’applications</button>
+        </section>
+
+        <section>
+          <h2>🧭 1. 1re loi de Newton : inertie</h2>
+          <ul>
+            <li>Si la somme des forces extérieures est nulle, le centre d’inertie reste au repos ou en mouvement rectiligne uniforme.[web:98][web:103][web:106]</li>
+            <li>Inversement, un mouvement rectiligne uniforme ou un repos dans un référentiel galiléen implique ΣF = 0.[web:98][web:106]</li>
+          </ul>
+          <button onclick="openPopup('popup-inertie')">Astuce inertie</button>
+        </section>
+
+        <section>
+          <h2>🚀 2. 2e loi de Newton : ΣF = m·a</h2>
+          <ul>
+            <li>Dans un référentiel galiléen, la somme vectorielle des forces extérieures vaut m·a : \( \sum \vec{F}_{\text{ext}} = m\vec{a} \).[web:98][web:104][web:107]</li>
+            <li>L’accélération est dans la même direction et le même sens que la résultante des forces.[web:98][web:107]</li>
+          </ul>
+          <button onclick="openPopup('popup-exo-force')">Bilan de forces type</button>
+          <canvas id="schema-newton" width="440" height="140"></canvas>
+          <div class="infos" style="text-align:center"><b>Bilan des forces et vecteur accélération sur un solide soumis à P, R et frottement.</b></div>
+        </section>
+
+        <section>
+          <h2>🌍 3. Chute libre et frottements</h2>
+          <ul>
+            <li>Chute libre idéale : seule la force de poids agit, donc \(m\vec a = m\vec g\) et \(\vec a = \vec g\) (vers le bas).[web:98][web:100][web:102]</li>
+            <li>Avec frottements de l’air, une force de sens opposé à la vitesse s’ajoute, ce qui réduit l’accélération et peut conduire à une vitesse limite.[web:100][web:101][web:105]</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>🏆 4. Méthode avec Newton</h2>
+          <ol>
+            <li>Choisir le système et le référentiel, définir un repère et un sens positif.[web:98][web:101]</li>
+            <li>Faire le bilan des forces sous forme de schéma puis de somme vectorielle.[web:98][web:107]</li>
+            <li>Projeter ΣF = m·a sur un axe, isoler la grandeur cherchée (a, F, m…).[web:98][web:104][web:107]</li>
+          </ol>
+          <button onclick="openPopup('popup-meth')">Fiche méthode rapide</button>
+        </section>
+
+        <section>
+          <h2>📑 Exercices interactifs</h2>
+          <div class="flex-exercices">
+            <div class="box-exo exo-block">
+              <b>Ex 1 — Chute libre idéale</b><br>
+              Accélération d’un corps en chute libre (sans frottements) ?
+              <input type="text" id="exo1" placeholder="... m/s²">
+              <button onclick="checkExo(1)">Valider</button>
+              <div class="reponse" id="rep-exo1"></div>
+            </div>
+            <div class="box-exo exo-block">
+              <b>Ex 2 — Voiture freinée</b><br>
+              m = 800 kg, force de frottement totale F = −4000 N (sens opposé à la vitesse).
+              <input type="text" id="exo2" placeholder="... m/s²">
+              <button onclick="checkExo(2)">Valider</button>
+              <div class="reponse" id="rep-exo2"></div>
+            </div>
+            <div class="box-exo exo-block">
+              <b>Ex 3 — Inertie</b><br>
+              Somme des forces sur un objet à vitesse constante en ligne droite ?
+              <input type="text" id="exo3" placeholder="...">
+              <button onclick="checkExo(3)">Valider</button>
+              <div class="reponse" id="rep-exo3"></div>
+            </div>
+          </div>
+          <button onclick="resetExos()">Effacer mes réponses</button>
+        </section>
+
+        <section class="qcm-block">
+          <h2>🎯 QCM interactif</h2>
+          <div id="qcm-interactif"></div>
+          <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
+          <button onclick="reloadQCM()">Recommencer le QCM</button>
+        </section>
+
+        <section class="box-important">
+          <h2>🔖 Fiche de révision rapide</h2>
+          <div class="fiche">
+            <ul>
+              <li>1re loi : ΣF = 0 ⇔ repos ou mouvement rectiligne uniforme.[web:98][web:103][web:106]</li>
+              <li>2e loi : ΣF = m·a.[web:98][web:104][web:107]</li>
+              <li>Chute libre idéale : a = g ≈ 9,8 m·s⁻² (vers le bas).[web:98][web:100][web:102]</li>
+              <li>Frottements s’opposent au mouvement et diminuent l’accélération.[web:100][web:101]</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes</h2>
+          <ul>
+            <li>Confondre ΣF = 0 avec a = 0 alors que v peut être non nulle (MRU).[web:98][web:103][web:106]</li>
+            <li>Oublier un terme de frottement dans le bilan de forces.[web:100][web:101]</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique express</h2>
+          Inertie, bilan des forces, chute libre, frottement fluide, accélération, MRU.[web:98][web:103][web:106][web:101]
+        </section>
+
+        <section>
+          <h2>🗒️ Tes propres notes</h2>
+          <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
+          <button onclick="saveNotes()">Enregistrer</button>
+          <span id="savemsg" style="color:#4ade80;font-weight:bold;"></span>
+        </section>
+
+        <section class="source">Sources : cours lycée, manuels, fiches PFD et chutes, sujets BAC.[web:98][web:101][web:107]</section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Popups -->
+  <div class="overlay" id="overlay"></div>
+
+  <div class="popup" id="popup-contexte">
+    <h3>Applications</h3>
+    Chute d’objets, freinage d’une voiture, ascenseur, tir balistique, sports (football, basket), parachutisme.[web:100][web:102][web:105]
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <div class="popup" id="popup-inertie">
+    <h3>Astuce inertie</h3>
+    Un passager projeté vers l’avant lors d’un freinage brusque illustre l’inertie : le corps garde la même vitesse si rien ne l’en empêche.[web:103][web:106]
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <div class="popup" id="popup-exo-force">
+    <h3>Bilan modélisation</h3>
+    Toujours :
+    - identifier le système ;
+    - lister poids, réactions, tractions, frottements ;
+    - les représenter sur un schéma avant d’écrire ΣF = m·a.[web:98][web:107]
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <div class="popup" id="popup-meth">
+    <h3>Méthode Newton</h3>
+    1) Schéma + forces ; 2) ΣF sur chaque axe ; 3) ΣF = m·a ; 4) résoudre l’équation (a(t), v(t), x(t) si besoin).[web:98][web:107][web:102]
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <script>
+    // Loader + MathJax[web:79][web:36][web:12][web:82][web:84]
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+      if(window.MathJax && MathJax.typesetPromise){MathJax.typesetPromise();}
+    },3000);
+
+    function reloadMathJax(){
+      if(window.MathJax && MathJax.typesetPromise){MathJax.typesetPromise();}
     }
-    html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
-  }
-  document.getElementById("qcm-interactif").innerHTML=html;document.getElementById("qcm-score").innerHTML="";qcmScore=0;qcmDone=Array(qcmData.length).fill(false);reloadMathJax();
-}
-displayQCM();
-function checkQCM(qnum,num){
-  if(qcmDone[qnum])return;
-  if(num==qcmData[qnum].correct){
-    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#168b24;font-weight:bold">Bonne réponse !</span><br><span style="font-size:0.98em;">${qcmData[qnum].explanation}</span>`;
-    qcmScore++;
-  }else{
-    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#c21c5c;font-weight:bold">Faux !</span>  <br><span>${qcmData[qnum].explanation}</span>`;
-  }
-  qcmDone[qnum]=true;
-  document.getElementById("qcm-score").innerHTML="Score : "+qcmScore+"/"+qcmData.length;reloadMathJax();
-}
-function reloadQCM(){displayQCM();}
-function checkExo(ex){
-  let rep=document.getElementById('exo'+ex).value.replace(",",".");
-  if(ex==1){
-    let good = Math.abs(Number(rep)-9.8)<0.12;
-    document.getElementById('rep-exo1').innerHTML = good?"Bravo : a = g = 9,8 m/s²":"Faux. Accél. chute libre = g = 9,8 m/s²";
-  }
-  if(ex==2){
-    let res = -4000/800;
-    let good = Math.abs(Number(rep)-res)<0.02;
-    document.getElementById('rep-exo2').innerHTML = good?"Bonne réponse : a = F/m = -4000/800 = -5 m/s² (négatif rapide !)":"Faux. a = -5 m/s²";
-  }
-  if(ex==3){
-    rep=rep.trim();
-    let good = rep=="0"||rep.toLowerCase()=="zéro"||rep.toLowerCase()=="nul"||rep.toLowerCase().includes("somme nulle")||rep.toLowerCase().includes("égale à zéro");
-    document.getElementById('rep-exo3').innerHTML = good ? "Exact : somme des forces = 0 si vitesse constante." : "Non, pour mvmt rectiligne uniforme, somme = 0.";
-  }
-  reloadMathJax();
-}
-function resetExos(){["exo1","exo2","exo3"].forEach(id=>{let el=document.getElementById(id);if(el)el.value="";});["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{let el=document.getElementById(id);if(el)el.textContent="";});}
-setTimeout(reloadMathJax, 180);
-</script>
+
+    // Popups & notes
+    function openPopup(id){
+      document.getElementById('overlay').classList.add("show");
+      document.getElementById(id).classList.add("show");
+      reloadMathJax();
+    }
+    function closePopup(){
+      document.getElementById('overlay').classList.remove("show");
+      document.querySelectorAll('.popup').forEach(p=>p.classList.remove('show'));
+    }
+    function saveNotes(){
+      localStorage.setItem("notesNewton",document.getElementById("notes").value);
+      document.getElementById("savemsg").textContent="Enregistré";
+      setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);
+    }
+    if(localStorage.getItem("notesNewton")){
+      document.getElementById("notes").value=localStorage.getItem("notesNewton");
+    }
+
+    // Schéma Newton[web:98][web:100][web:101]
+    function drawNewton(){
+      var c=document.getElementById('schema-newton');if(!c)return;
+      var x=c.getContext('2d');
+      x.clearRect(0,0,440,140);
+      x.fillStyle="#a4e4cd";x.fillRect(0,120,440,20);
+      x.fillStyle="#111827";x.fillText("Sol",13,138);
+      x.fillStyle="#fbbf24";x.fillRect(180,80,50,38);
+      x.fillStyle="#1d4ed8";x.fillText("Bloc",195,76);
+
+      x.strokeStyle="#e11d48";x.lineWidth=4;
+      x.beginPath();x.moveTo(205,98);x.lineTo(205,140);x.stroke();
+      x.fillStyle="#e11d48";
+      x.beginPath();x.moveTo(205,140);x.lineTo(200,130);x.lineTo(210,130);x.fill();
+      x.fillText("P",212,136);
+
+      x.strokeStyle="#16a34a";x.lineWidth=4;
+      x.beginPath();x.moveTo(225,118);x.lineTo(225,78);x.stroke();
+      x.fillStyle="#16a34a";
+      x.beginPath();x.moveTo(225,78);x.lineTo(220,88);x.lineTo(230,88);x.fill();
+      x.fillText("R",232,82);
+
+      x.strokeStyle="#0f172a";x.lineWidth=4;
+      x.beginPath();x.moveTo(180,100);x.lineTo(120,100);x.stroke();
+      x.fillStyle="#0f172a";
+      x.beginPath();x.moveTo(120,100);x.lineTo(130,95);x.lineTo(130,105);x.fill();
+      x.fillText("f",116,95);
+
+      x.strokeStyle="#f59e0b";x.lineWidth=4;
+      x.beginPath();x.moveTo(230,100);x.lineTo(310,100);x.stroke();
+      x.fillStyle="#f59e0b";
+      x.beginPath();x.moveTo(310,100);x.lineTo(300,95);x.lineTo(300,105);x.fill();
+      x.fillText("a",316,104);
+    }
+    drawNewton();
+
+    // QCM[web:98][web:106][web:100]
+    const qcmData=[
+      {question:"2e loi : ΣF_ext = ?",choices:["m·a","0","m·v"],correct:0,explanation:"ΣF = m·a dans un référentiel galiléen."},
+      {question:"Chute libre idéale :",choices:["seul le poids agit","aucune force","seules les forces de frottement"],correct:0,explanation:"On néglige tout sauf le poids."},
+      {question:"ΣF = 0 implique :",choices:["repos ou MRU","chute libre","vitesse toujours nulle"],correct:0,explanation:"Principe d’inertie : v constante (éventuellement nulle)."},
+      {question:"Frottements :",choices:["s’opposent au mouvement","sont toujours nuls","augmentent la vitesse"],correct:0,explanation:"Ils réduisent la vitesse ou l’empêchent d’augmenter."}
+    ];
+    let qcmScore=0,qcmDone=Array(qcmData.length).fill(false);
+    function displayQCM(){
+      let html="";
+      for(let i=0;i<qcmData.length;i++){
+        html += `<div style="margin-bottom:1em"><b>Q${i+1} :</b> ${qcmData[i].question}<br>`;
+        for(let j=0;j<qcmData[i].choices.length;j++){
+          html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+        }
+        html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
+      }
+      document.getElementById("qcm-interactif").innerHTML=html;
+      document.getElementById("qcm-score").innerHTML="";
+      qcmScore=0;qcmDone=Array(qcmData.length).fill(false);
+      reloadMathJax();
+    }
+    displayQCM();
+    function checkQCM(qnum,num){
+      if(qcmDone[qnum])return;
+      if(num===qcmData[qnum].correct){
+        document.getElementById('qcm-r'+qnum).innerHTML =
+          `<span style="color:#16a34a;font-weight:bold">Bonne réponse !</span><br>${qcmData[qnum].explanation}`;
+        qcmScore++;
+      }else{
+        document.getElementById('qcm-r'+qnum).innerHTML =
+          `<span style="color:#e11d48;font-weight:bold">Faux.</span><br>${qcmData[qnum].explanation}`;
+      }
+      qcmDone[qnum]=true;
+      document.getElementById("qcm-score").innerHTML="Score : "+qcmScore+"/"+qcmData.length;
+      reloadMathJax();
+    }
+    function reloadQCM(){displayQCM();}
+
+    // Exercices
+    function checkExo(ex){
+      let rep=document.getElementById('exo'+ex).value.replace(",",".");
+      if(ex===1){
+        let ok=Math.abs(Number(rep)-9.8)<0.2;
+        document.getElementById('rep-exo1').innerHTML = ok
+          ? "Bravo : a = g ≈ 9,8 m·s⁻² vers le bas."
+          : "Faux : a = g ≈ 9,8 m·s⁻².";
+      }
+      if(ex===2){
+        let res=-4000/800;
+        let ok=Math.abs(Number(rep)-res)<0.2;
+        document.getElementById('rep-exo2').innerHTML = ok
+          ? "Bonne réponse : a = F/m = −4000/800 = −5 m·s⁻²."
+          : "Faux : a vaut −5 m·s⁻² (négative car freinage).";
+      }
+      if(ex===3){
+        rep=rep.trim().toLowerCase();
+        let ok = rep==="0"||rep.includes("nulle")||rep.includes("somme nulle");
+        document.getElementById('rep-exo3').innerHTML = ok
+          ? "Exact : ΣF = 0 pour un MRU (principe d’inertie)."
+          : "Réponse attendue : la somme des forces est nulle.";
+      }
+      reloadMathJax();
+    }
+    function resetExos(){
+      ["exo1","exo2","exo3"].forEach(id=>{let e=document.getElementById(id);if(e)e.value="";});
+      ["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{let e=document.getElementById(id);if(e)e.textContent="";});
+    }
+
+    setTimeout(reloadMathJax,200);
+  </script>
 </body>
 </html>

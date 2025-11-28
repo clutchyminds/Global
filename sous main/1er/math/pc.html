@@ -1,209 +1,659 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Masterclass — Probabilités conditionnelles</title>
-    <meta name="description" content="Tout sur les probabilités conditionnelles : formules, arbres, exercices, quiz, schéma interactif, lexique, erreurs, applications… pour réussir en spé maths !">
-    <style>
-        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
-        header { background: linear-gradient(90deg,#eef4fb,#fadada 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
-        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
-        .intro { font-size: 1.01rem;}
-        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
-        h2 { color: #1877f2; margin-top: 32px;}
-        h3 { color: #f5a623; margin-top: 22px;}
-        ul, ol { margin-left: 1.4em;}
-        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
-        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
-        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
-        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
-        .error {background: #ffeaea; border-left: 7px solid #e06359;}
-        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
-        .anecdote {background: #ffe8ff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
-        .source { font-size: 0.9em; color: #999; text-align: right;}
-        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
-        button:hover { background: #145ac3;}
-        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
-        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
-        label { margin-right: 14px;}
-        @media (max-width: 768px) { main { padding: 12px 2px; } }
-    </style>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <meta charset="UTF-8">
+  <title>Global - Probas · Probabilités conditionnelles</title>
+  <meta name="description" content="Tout sur les probabilités conditionnelles : formules, arbres, exercices, quiz, schéma interactif, lexique, erreurs, applications… pour réussir en spé maths !">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-main:#1877f2;
+      --violet-main:#6366f1;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(129,140,248,0.2), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#111827 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(520px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(129,140,248,0.3),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(129,140,248,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(129,140,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#c7d2fe;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#c7d2fe,transparent);
+      box-shadow:0 0 12px rgba(129,140,248,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#a5b4fc;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(129,140,248,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#c4b5fd,#6366f1,#22c55e);
+      box-shadow:0 0 18px rgba(129,140,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#e0e7ff;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(129,140,248,0.2) 45%,
+          rgba(129,140,248,0.45) 50%,
+          rgba(129,140,248,0.2) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#a5b4fc;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(24,119,242,0.9),rgba(248,113,113,0.95));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#fff;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:230px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#c7d2fe;
+      box-shadow:0 0 12px rgba(199,210,254,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:900px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:26px 26px 30px;
+      color:#e5f1ff;
+    }
+
+    h1,h2{
+      color:#c7d2fe;
+      margin-bottom:10px;
+    }
+    h3{
+      color:#facc6b;
+      margin-top:18px;
+      margin-bottom:10px;
+    }
+    h2{margin-top:26px;font-size:1.4rem;}
+    p,li{font-size:0.98rem;line-height:1.6;}
+    ul,ol{margin-left:1.3em;margin-top:0.3em;margin-bottom:0.8em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      padding:12px 18px;
+      border-radius:10px;
+      margin:1em 0;
+      font-size:0.96rem;
+    }
+    .infos{
+      background:rgba(226,232,240,0.95);
+      color:#111827;
+      border-left:4px solid #4f46e5;
+    }
+    .box-exo{
+      background:rgba(22,163,74,0.14);
+      border-left:4px solid #22c55e;
+    }
+    .box-important{
+      background:rgba(245,158,11,0.14);
+      border-left:4px solid #facc15;
+    }
+    .error{
+      background:rgba(248,113,113,0.14);
+      border-left:4px solid #f87171;
+    }
+    .lexique{
+      background:rgba(59,130,246,0.12);
+      border-left:4px solid #7dd3fc;
+    }
+    .anecdote{
+      background:rgba(254,240,255,0.95);
+      border-left:4px solid #a855f7;
+    }
+
+    #schema{
+      margin:1em auto;
+      display:block;
+      background:#0b1725;
+      border-radius:8px;
+      border:1px solid #1f2937;
+    }
+    .reponse{
+      margin-top:0.7em;
+      color:#c7d2fe;
+      font-weight:bold;
+      text-align:center;
+      font-size:0.95rem;
+    }
+    label{
+      margin-right:14px;
+      font-size:0.9rem;
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-    <h1>Masterclass — Probabilités conditionnelles</h1>
-    <div class="intro">
-        Maîtrise toutes les bases et techniques pour calculer P(A|B), raisonner avec des événements dépendants, les arbres, le théorème de Bayes, et réussir tous les QCM !
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//proba-COND</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Probabilités conditionnelles · \(P(A|B)\), arbres pondérés, probabilité totale et Bayes.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du module Probabilités conditionnelles...</div>
+        <div class="terminal-line">[DEF] Activation de P(A|B) = P(A∩B) / P(B) et des événements dépendants.</div>
+        <div class="terminal-line">[TREE] Construction de l’arbre à deux niveaux avec P(B), P(A|B), P(A|¬B).</div>
+        <div class="terminal-line">[OK]  Prêt : calculs dynamiques de P(A), P(B∩A), P(B|A) et entraînement aux QCM.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
     </div>
-</header>
-<main>
-<section>
-    <h2>📝 Définition, vocabulaire et bases</h2>
-    <div class="infos">
-        La <b>probabilité conditionnelle</b> de A sachant B est notée \( P(A|B) \),  
-        et mesure la probabilité que A se réalise sachant que B est déjà arrivé :  
-        <b>\( P(A|B) = \frac{P(A \cap B)}{P(B)} \)</b> (si \( P(B) > 0 \))
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Probas
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
     </div>
-    <ul>
-        <li>Lecture : “la proba d’avoir A une fois qu’on sait que B est réalisé”</li>
-        <li>Si A et B sont indépendants : \( P(A|B) = P(A) \)</li>
-        <li>Théorème : \( P(A \cap B) = P(A|B)P(B) = P(B|A)P(A) \)</li>
-        <li>Utilisation : enchaînement d’événements dépendants, arbres, jeux, diagnostiques…</li>
-    </ul>
-</section>
-<section>
-    <h2>📗 Formules et techniques courantes</h2>
-    <ul>
-        <li>Arbre de probabilités : chaque chemin correspond à un événement composé</li>
-        <li>Probabilité totale (partition) :  
-            \( P(A) = P(A|B)P(B) + P(A|\overline{B})P(\overline{B}) \)</li>
-        <li>Théorème de Bayes (retour) :  
-            \( P(B|A) = \frac{P(A|B)P(B)}{P(A)} \)</li>
-        <li>Exemple : succès/échec, malades/testés, tirages sans remise…</li>
-    </ul>
-    <div class="box-important">
-        Astuce : Utilise un schéma (arbre) pour visualiser les enchaînements d’événements conditionnés !
+
+    <div class="page-padding">
+      <div class="content-card">
+        <h1>Masterclass — Probabilités conditionnelles</h1>
+        <p style="margin-bottom:1.2em;font-size:0.98rem;color:#e0e7ff;">
+          Maîtrise toutes les bases pour calculer \(P(A|B)\), manipuler les arbres, appliquer le théorème de Bayes et gérer les événements dépendants.
+        </p>
+
+        <section>
+          <h2>📝 Définition, vocabulaire et bases</h2>
+          <div class="infos">
+            La <b>probabilité conditionnelle</b> de \(A\) sachant \(B\), notée \(P(A|B)\), mesure la probabilité que \(A\) se réalise en sachant que \(B\) est déjà arrivé :<br>
+            \[
+            P(A|B) = \frac{P(A \cap B)}{P(B)} \quad \text{si } P(B) &gt; 0
+            \]
+          </div>
+          <ul>
+            <li>Lecture : « proba d’avoir \(A\) une fois qu’on sait que \(B\) est réalisé ».</li>
+            <li>Si \(A\) et \(B\) sont indépendants : \(P(A|B) = P(A)\).</li>
+            <li>Relation clé : \(P(A \cap B) = P(A|B)P(B) = P(B|A)P(A)\).</li>
+            <li>Usages : événements successifs dépendants, arbres de proba, jeux, diagnostics.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>📗 Formules et techniques courantes</h2>
+          <ul>
+            <li>Arbre pondéré : chaque chemin correspond à un événement composé (comme « B puis A »).</li>
+            <li>Probabilité totale (partition) : \(P(A) = P(A|B)P(B) + P(A|\overline{B})P(\overline{B})\).</li>
+            <li>Théorème de Bayes : \(P(B|A) = \dfrac{P(A|B)P(B)}{P(A)}\).</li>
+            <li>Exemples : malades / tests, tirages sans remise, scénarios succès / échec.</li>
+          </ul>
+          <div class="box-important">
+            Astuce : commence presque toujours par un arbre pour visualiser les branches et les produits de probabilités.
+          </div>
+        </section>
+
+        <section>
+          <h2>🟦 Schéma interactif (arbre simple à deux niveaux)</h2>
+          <label>P(B) : <input type="number" id="pb" step="0.01" value="0.4" min="0.01" max="0.99"></label>
+          <label>P(A|B) : <input type="number" id="pab" step="0.01" value="0.7" min="0.01" max="0.99"></label>
+          <label>P(A|¬B) : <input type="number" id="pab2" step="0.01" value="0.3" min="0.01" max="0.99"></label>
+          <canvas id="schema" width="430" height="220"></canvas>
+          <div id="desc-proba"></div>
+        </section>
+
+        <section class="box-exo">
+          <h2>💡 Exercice interactif</h2>
+          <p>Dans une urne, 40 % de boules sont rouges (événement \(B\)), \(P(A|B)=0{,}7\) (gagner avec une boule rouge), \(P(A|\overline{B})=0{,}3\) (gagner sans rouge). Calculer \(P(A)\).</p>
+          <button onclick="afficheReponseProba()">Voir la correction</button>
+          <div class="reponse" id="exo-reponse-proba" style="display:none;">
+            \(P(A) = 0{,}7 \times 0{,}4 + 0{,}3 \times 0{,}6 = 0{,}28 + 0{,}18 = 0{,}46.\)
+          </div>
+        </section>
+
+        <section class="box-exo">
+          <h2>🔥 Exercice “expert”</h2>
+          <p>Avec les mêmes données, calculer \(P(B|A)\).</p>
+          <button onclick="document.getElementById('exo2-reponse-proba').style.display='block';">Voir la correction</button>
+          <div class="reponse" id="exo2-reponse-proba" style="display:none;">
+            \(P(B|A) = \dfrac{0{,}7 \times 0{,}4}{0{,}46} \approx 0{,}609\) (théorème de Bayes).
+          </div>
+        </section>
+
+        <section class="quiz">
+          <h2>🎯 Quiz express</h2>
+          <p>Si \(A\) et \(B\) sont indépendants, alors :</p>
+          <button onclick="quizProba(0)">\( P(A|B) = P(A) \)</button>
+          <button onclick="quizProba(1)">\( P(A|B) = P(B) \)</button>
+          <button onclick="quizProba(2)">\( P(A|B) = 1 \)</button>
+          <div class="reponse" id="rep-quiz-proba"></div>
+
+          <p>Dans un arbre, la probabilité du chemin « B puis ¬A » vaut :</p>
+          <button onclick="quizProba2(0)">\( P(B)\times P(A|B) \)</button>
+          <button onclick="quizProba2(1)">\( P(B)\times (1-P(A|B)) \)</button>
+          <button onclick="quizProba2(2)">\( P(A|B)\times (1-P(B)) \)</button>
+          <div class="reponse" id="rep-quiz-proba2"></div>
+        </section>
+
+        <section class="box-important">
+          <h2>🌐 Applications concrètes</h2>
+          <ul>
+            <li><b>Médecine</b> : interprétation des tests (vrais positifs, faux positifs), dépistage.</li>
+            <li><b>Info / IA</b> : classifieurs bayésiens, modèles probabilistes supervisés.</li>
+            <li><b>Gestion / Jeux</b> : stratégies avec tirages, scénarios conditionnels, assurance.</li>
+          </ul>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes à éviter</h2>
+          <ul>
+            <li>Confondre \(P(A|B)\) et \(P(B|A)\).</li>
+            <li>Oublier la différence entre événements indépendants et dépendants.</li>
+            <li>Mal utiliser Bayes en oubliant de calculer \(P(A)\) par probabilité totale.</li>
+            <li>Tracer un arbre qui ne se « ferme » pas (somme des branches ≠ 1).</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique express</h2>
+          <b>Conditionnelle</b> : probabilité sachant une information (par exemple \(P(A|B)\)).<br>
+          <b>Indépendant</b> : la réalisation de l’un ne modifie pas la probabilité de l’autre.<br>
+          <b>Partition</b> : découpage complet de l’univers en cas exclusifs et exhaustifs.<br>
+          <b>Bayes</b> : formule qui permet de « remonter » de \(P(A|B)\) à \(P(B|A)\).
+        </section>
+
+        <section class="rubrique">
+          <h3>📖 Petite histoire</h3>
+          <ul>
+            <li>Les probabilités conditionnelles ont été formalisées au XVIIIᵉ siècle par Thomas Bayes.</li>
+            <li>Elles sont devenues centrales en statistique moderne, en IA et dans les sciences expérimentales.</li>
+          </ul>
+          <div class="source">Source : histoire des probabilités et de Bayes, ressources de cours et encyclopédies.</div>
+        </section>
+
+        <section class="anecdote">
+          <b>Astuce-mémoire :</b> dessine systématiquement l’arbre des événements et colorie les chemins utilisés dans le calcul.
+        </section>
+
+        <section>
+          <h2>💡 Méthodologie pour réussir</h2>
+          <ul>
+            <li>Écrire clairement les événements et les notations (\(P(A|B)\) ≠ \(P(B|A)\)).</li>
+            <li>Construire l’arbre des cas avant de lancer les calculs.</li>
+            <li>Utiliser d’abord la probabilité totale pour trouver \(P(A)\), puis appliquer Bayes.</li>
+            <li>Vérifier que chaque nœud de l’arbre a des branches qui se somment à 1.</li>
+          </ul>
+        </section>
+      </div>
     </div>
-</section>
-<section>
-    <h2>🟦 Schéma interactif (arbre simple à deux niveaux)</h2>
-    <label>P(B): <input type="number" id="pb" step="0.01" value="0.4" min="0.01" max="0.99"></label>
-    <label>P(A|B): <input type="number" id="pab" step="0.01" value="0.7" min="0.01" max="0.99"></label>
-    <label>P(A|¬B): <input type="number" id="pab2" step="0.01" value="0.3" min="0.01" max="0.99"></label>
-    <canvas id="schema" width="430" height="220"></canvas>
-    <div id="desc-proba"></div>
-</section>
-<section class="box box-exo">
-    <h2>💡 Exercice interactif</h2>
-    <p>Dans une urne, 40% de boules sont rouges (événement B), P(A|B)=0,7 (gagner avec une boule rouge), P(A|¬B)=0,3 (gagner sans rouge).  
-    Calcule P(A).</p>
-    <button onclick="afficheReponseProba()">Voir la correction</button>
-    <div class="reponse" id="exo-reponse-proba" style="display:none;">
-        P(A) = 0,7×0,4 + 0,3×0,6 = 0,28 + 0,18 = 0,46  
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
     </div>
-</section>
-<section class="box-exo">
-    <h2>🔥 Exercice “expert”</h2>
-    <p>Avec les mêmes données, calcule P(B|A).</p>
-    <button onclick="document.getElementById('exo2-reponse-proba').style.display='block';">Voir la correction</button>
-    <div class="reponse" id="exo2-reponse-proba" style="display:none;">
-        P(B|A) = (0,7×0,4)/0,46 ≈ 0,609 (théorème de Bayes)
-    </div>
-</section>
-<section class="quiz">
-    <h2>🎯 Quiz express</h2>
-    <p>Si A et B sont indépendants, alors :</p>
-    <button onclick="quizProba(0)">\( P(A|B) = P(A) \)</button>
-    <button onclick="quizProba(1)">\( P(A|B) = P(B) \)</button>
-    <button onclick="quizProba(2)">\( P(A|B) = 1 \)</button>
-    <div class="reponse" id="rep-quiz-proba"></div>
-    <p>Dans un schéma, la probabilité du chemin “B puis ¬A” vaut :</p>
-    <button onclick="quizProba2(0)">\( P(B)\times P(A|B) \)</button>
-    <button onclick="quizProba2(1)">\( P(B)\times (1-P(A|B)) \)</button>
-    <button onclick="quizProba2(2)">\( P(A|B)\times (1-P(B)) \)</button>
-    <div class="reponse" id="rep-quiz-proba2"></div>
-</section>
-<section class="box-important">
-    <h2>🌐 Applications concrètes</h2>
-    <ul>
-        <li><b>Médecine</b> : tests diagnostiques, détection maladie</li>
-        <li><b>Info/IA</b> : modèles de classification, “Bayésien”</li>
-        <li><b>Gestion/Jeux</b> : stratégies probabilistes, jeux à tirages</li>
-    </ul>
-</section>
-<section class="error">
-    <h2>❌ Erreurs fréquentes à éviter</h2>
-    <ul>
-        <li>Confondre P(A|B) et P(B|A)</li>
-        <li>Ne pas distinguer événements indépendants/dépendants</li>
-        <li>Mal appliquer le théorème de Bayes (bien prendre les probabilités totales en dénominateur !)</li>
-        <li>Oublier qu’un arbre doit toujours se “fermer” sur une somme à 1</li>
-    </ul>
-</section>
-<section class="lexique">
-    <h2>📚 Lexique express</h2>
-    <b>Conditionnelle</b>&nbsp;: proba sachant une information<br>
-    <b>Indépendant</b>&nbsp;: réalisation de l’un ne change pas l’autre<br>
-    <b>Partition</b>&nbsp;: découpage complet de l’univers<br>
-    <b>Bayes</b>&nbsp;: formule qui inverse cause/effet par les probabilités
-</section>
-<section class="rubrique">
-    <h3>📖 Petite histoire</h3>
-    <ul>
-        <li>Formalisées par Thomas Bayes (XVIIIe), les probabilités conditionnelles sont le socle de la statistique moderne</li>
-        <li>Fondamentales en intelligence artificielle et sciences expérimentales</li>
-    </ul>
-    <div class="source">Source : histoire de la proba, Wikipedia</div>
-</section>
-<section class="anecdote">
-    <b>Astuce-mémoire</b> : Dessine toujours l’arbre des événements et colorie les chemins pour voir !
-</section>
-<section>
-    <h2>💡 Méthodologie pour réussir</h2>
-    <ul>
-        <li>Ecris chaque événement, clarifie tes notations (P(A|B) ≠ P(B|A))</li>
-        <li>Faire systématiquement l’arbre des cas</li>
-        <li>Utilise la formule de probabilités totales avant Bayes pour les cas ambigus</li>
-        <li>Vérifie toujours que la somme des branches issues du même sommet vaut 1</li>
-    </ul>
-</section>
-</main>
-<script>
-function quizProba(rep) {
-    let repElem = document.getElementById("rep-quiz-proba");
-    repElem.textContent = (rep === 0) ? "Bonne réponse : indépendant ⇒ \( P(A|B) = P(A) \) !" : "Faux, revois la définition d’indépendance.";
-}
-function quizProba2(rep) {
-    let repElem = document.getElementById("rep-quiz-proba2");
-    repElem.textContent = (rep === 1) ? "Oui, il faut multiplier par la branche complémentaire." : "Faux, revoie la structure d’un arbre.";
-}
-function afficheReponseProba() {
-    document.getElementById("exo-reponse-proba").style.display = "block";
-}
-// Schéma arbre proba
-function drawArbreProba() {
-    let pb = parseFloat(document.getElementById("pb").value);
-    let pab = parseFloat(document.getElementById("pab").value);
-    let pab2 = parseFloat(document.getElementById("pab2").value);
-    let canvas = document.getElementById("schema");
-    let ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, 430, 220);
-    // Arbre
-    ctx.strokeStyle="#1877f2"; ctx.lineWidth=2;
-    // Tronc
-    ctx.beginPath(); ctx.moveTo(60, 100); ctx.lineTo(160, 50); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(60, 100); ctx.lineTo(160, 150); ctx.stroke();
-    ctx.font = "13px Arial";
-    ctx.fillStyle="#243552"; ctx.fillText("B", 120, 38); ctx.fillText("¬B", 120, 162);
-    ctx.fillStyle = "#1877f2"; ctx.fillText("P(B)="+pb,87,68); ctx.fillText("P(¬B)="+(1-pb).toFixed(2),85,134);
-    // Branches 2ème étages
-    ctx.strokeStyle="#167c2b";
-    ctx.beginPath(); ctx.moveTo(160,50);ctx.lineTo(325,20);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(160,50);ctx.lineTo(325,80);ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(160,150);ctx.lineTo(325,120);ctx.stroke();
-    ctx.beginPath();ctx.moveTo(160,150);ctx.lineTo(325,180);ctx.stroke();
-    ctx.font = "13px Arial";
-    ctx.fillStyle="#167c2b";
-    ctx.fillText("A",265,8);ctx.fillText("¬A",265,93);ctx.fillText("A",265,107);ctx.fillText("¬A",265,192);
-    ctx.fillText("P(A|B)="+pab,220,32);ctx.fillText("P(¬A|B)="+(1-pab).toFixed(2),210,66);
-    ctx.fillText("P(A|¬B)="+pab2,205,118);ctx.fillText("P(¬A|¬B)="+(1-pab2).toFixed(2),190,154);
-    // Résultats
-    let pA = pab*pb+pab2*(1-pb);
-    ctx.font = "13px Arial"; ctx.fillStyle="#a133ff";
-    ctx.fillText("P(A) = "+pA.toFixed(3),340,35);
-    ctx.fillText("P(B∩A) = "+(pb*pab).toFixed(3),340,10);
-    ctx.fillText("P(¬B∩A) = "+((1-pb)*pab2).toFixed(3),340,120);
-    ctx.fillText("P(B|A) = "+(pb*pab/pA).toFixed(3),340,190);
-    // Légende
-    document.getElementById("desc-proba").innerHTML =
-        "Calculs dynamiques : P(A) = "+pA.toFixed(3)+" ; P(B∩A) = "+(pb*pab).toFixed(3)+" ; P(B|A) ≈ "+(pb*pab/pA).toFixed(3);
-}
-drawArbreProba();
-document.getElementById("pb").addEventListener("input", drawArbreProba);
-document.getElementById("pab").addEventListener("input", drawArbreProba);
-document.getElementById("pab2").addEventListener("input", drawArbreProba);
-</script>
+  </div>
+
+  <script>
+    // Masquer le loader puis afficher le contenu après 3 secondes[web:11][web:2][web:29][web:35]
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
+
+    function quizProba(rep) {
+      let repElem = document.getElementById("rep-quiz-proba");
+      repElem.textContent = (rep === 0)
+        ? "Bonne réponse : pour des événements indépendants, P(A|B) = P(A)."
+        : "Faux : indépendance signifie que P(A|B) reste égal à P(A).";
+    }
+    function quizProba2(rep) {
+      let repElem = document.getElementById("rep-quiz-proba2");
+      repElem.textContent = (rep === 1)
+        ? "Oui, « B puis ¬A » vaut P(B) × (1 − P(A|B))."
+        : "Faux : repense à la branche complémentaire de A après B.";
+    }
+    function afficheReponseProba() {
+      document.getElementById("exo-reponse-proba").style.display = "block";
+    }
+
+    // Schéma arbre proba
+    function drawArbreProba() {
+      let pb = parseFloat(document.getElementById("pb").value);
+      let pab = parseFloat(document.getElementById("pab").value);
+      let pab2 = parseFloat(document.getElementById("pab2").value);
+      let canvas = document.getElementById("schema");
+      let ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, 430, 220);
+
+      // Arbre niveau 1
+      ctx.strokeStyle="#3b82f6"; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(60, 100); ctx.lineTo(160, 50); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(60, 100); ctx.lineTo(160, 150); ctx.stroke();
+
+      ctx.font = "13px Arial";
+      ctx.fillStyle="#e5e7eb";
+      ctx.fillText("B", 125, 40);
+      ctx.fillText("¬B", 120, 170);
+      ctx.fillStyle="#93c5fd";
+      ctx.fillText("P(B) = "+pb.toFixed(2),80,70);
+      ctx.fillText("P(¬B) = "+(1-pb).toFixed(2),78,135);
+
+      // Arbre niveau 2
+      ctx.strokeStyle="#22c55e";
+      ctx.beginPath(); ctx.moveTo(160,50);ctx.lineTo(320,20);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(160,50);ctx.lineTo(320,80);ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(160,150);ctx.lineTo(320,120);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(160,150);ctx.lineTo(320,180);ctx.stroke();
+
+      ctx.font = "13px Arial";
+      ctx.fillStyle="#bbf7d0";
+      ctx.fillText("A",270,15);
+      ctx.fillText("¬A",270,90);
+      ctx.fillText("A",270,115);
+      ctx.fillText("¬A",270,190);
+
+      ctx.fillStyle="#4ade80";
+      ctx.fillText("P(A|B) = "+pab.toFixed(2),205,30);
+      ctx.fillText("P(¬A|B) = "+(1-pab).toFixed(2),195,65);
+      ctx.fillText("P(A|¬B) = "+pab2.toFixed(2),190,118);
+      ctx.fillText("P(¬A|¬B) = "+(1-pab2).toFixed(2),180,152);
+
+      // Résultats
+      let pA = pab*pb + pab2*(1-pb);
+      let pBA = pb*pab/pA;
+
+      ctx.font = "12px Arial";
+      ctx.fillStyle="#e879f9";
+      ctx.fillText("P(A) = "+pA.toFixed(3), 330, 35);
+      ctx.fillText("P(B∩A) = "+(pb*pab).toFixed(3), 330, 15);
+      ctx.fillText("P(¬B∩A) = "+((1-pb)*pab2).toFixed(3), 330, 120);
+      ctx.fillText("P(B|A) ≈ "+pBA.toFixed(3), 330, 190);
+
+      document.getElementById("desc-proba").innerHTML =
+        "P(A) = "+pA.toFixed(3)+", P(B∩A) = "+(pb*pab).toFixed(3)+", P(B|A) ≈ "+pBA.toFixed(3)+".";
+    }
+    drawArbreProba();
+    document.getElementById("pb").addEventListener("input", drawArbreProba);
+    document.getElementById("pab").addEventListener("input", drawArbreProba);
+    document.getElementById("pab2").addEventListener("input", drawArbreProba);
+  </script>
 </body>
 </html>

@@ -1,200 +1,644 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Masterclass — Fonctions polynômes du second degré</title>
-    <meta name="description" content="Tout sur les fonctions et équations polynômes du second degré : définitions, résolutions, schéma dynamique, quiz, exercices, lexique et applications.">
-    <style>
-        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
-        header { background: linear-gradient(90deg,#eef4fb,#eafdec 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
-        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
-        .intro { font-size: 1.01rem;}
-        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
-        h2 { color: #1877f2; margin-top: 32px;}
-        h3 { color: #f5a623; margin-top: 22px;}
-        ul, ol { margin-left: 1.4em;}
-        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
-        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
-        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
-        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
-        .error {background: #ffeaea; border-left: 7px solid #e06359;}
-        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
-        .anecdote {background: #eeeaff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
-        .source { font-size: 0.9em; color: #999; text-align: right;}
-        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
-        button:hover { background: #145ac3;}
-        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
-        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
-        label { margin-right: 14px;}
-        @media (max-width: 768px) { main { padding: 12px 2px; } }
-    </style>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <meta charset="UTF-8">
+  <title>Global - Maths · Second degré</title>
+  <meta name="description" content="Tout sur les fonctions et équations polynômes du second degré : définitions, résolutions, schéma dynamique, quiz, exercices, lexique et applications.">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-main:#1877f2;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#031633 40%,#001a3b 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(520px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(56,189,248,0.26),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(56,189,248,0.8);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(56,189,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#7dd3fc;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#7dd3fc,transparent);
+      box-shadow:0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#22c1c3,#29d8ff,#007bff);
+      box-shadow:0 0 18px rgba(56,189,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#a5b4fc;
+      opacity:0.9;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(56,189,248,0.12) 45%,
+          rgba(56,189,248,0.35) 50%,
+          rgba(56,189,248,0.12) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#c4f1ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(24,119,242,0.9),rgba(74,222,128,0.85));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#fff;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:230px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#29d8ff;
+      box-shadow:0 0 12px rgba(41,216,255,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:900px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+                 linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:26px 26px 30px;
+      color:#e5f1ff;
+    }
+
+    h1,h2{
+      color:#7dd3fc;
+      margin-bottom:10px;
+    }
+    h3{
+      color:#facc6b;
+      margin-top:18px;
+      margin-bottom:10px;
+    }
+    h2{margin-top:26px;font-size:1.4rem;}
+    p,li{font-size:0.98rem;line-height:1.6;}
+    ul,ol{margin-left:1.3em;margin-top:0.3em;margin-bottom:0.8em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      padding:12px 18px;
+      border-radius:10px;
+      margin:1em 0;
+      font-size:0.96rem;
+    }
+    .infos{
+      background:rgba(37,99,235,0.16);
+      border-left:4px solid #60a5fa;
+    }
+    .box-exo{
+      background:rgba(22,163,74,0.14);
+      border-left:4px solid #22c55e;
+    }
+    .box-important{
+      background:rgba(245,158,11,0.14);
+      border-left:4px solid #facc15;
+    }
+    .error{
+      background:rgba(248,113,113,0.14);
+      border-left:4px solid #f87171;
+    }
+    .lexique{
+      background:rgba(59,130,246,0.12);
+      border-left:4px solid #7dd3fc;
+    }
+    .anecdote{
+      background:rgba(224,231,255,0.3);
+      border-left:4px solid #a855f7;
+    }
+
+    #schema{
+      margin:1em auto;
+      display:block;
+      background:#0b1725;
+      border-radius:8px;
+      border:1px solid #1f2937;
+    }
+    .reponse{
+      margin-top:0.7em;
+      color:#7dd3fc;
+      font-weight:bold;
+      text-align:center;
+      font-size:0.95rem;
+    }
+    label{
+      margin-right:14px;
+      font-size:0.9rem;
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+  </style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-    <h1>Masterclass — Second degré</h1>
-    <div class="intro">
-        Toutes les clés pour réussir sur les équations et fonctions polynômes du second degré : définitions, résolutions, schémas dynamiques, quiz, applications et astuces !
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//math-2ND</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Maths · Second degré · discriminant, racines, forme canonique et paraboles
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du module Second degré (spé maths)...</div>
+        <div class="terminal-line">[POLY] Mise en place de f(x)=ax²+bx+c, Δ=b²-4ac, formes canoniques et racines.</div>
+        <div class="terminal-line">[GRAPH] Parabole dynamique avec sommet et sens d’ouverture.</div>
+        <div class="terminal-line">[OK]  Prêt : calcule Δ, racines, sommet, puis interprète la courbe.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
     </div>
-</header>
-<main>
-<section>
-    <h2>📝 Définition</h2>
-    <div class="infos">
-        La fonction polynôme du second degré : <br>
-        <b>\( f(x) = ax^2 + bx + c \)</b> avec \( a ≠ 0 \). Sa courbe est une parabole.
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Maths
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
     </div>
-    <ul>
-        <li>Équation du second degré : \( ax^2 + bx + c = 0 \)</li>
-        <li><b>Forme canonique</b> : \( a(x - \alpha)^2 + \beta \), \(\alpha = -\frac{b}{2a}\), \(\beta = f(\alpha)\)</li>
-        <li><b>Discriminant</b> : \( \Delta = b^2 - 4ac \)</li>
-    </ul>
-</section>
-<section>
-    <h2>📗 Résolutions et propriétés</h2>
-    <ul>
-        <li><b>Racines de l’équation</b> (si \( \Delta \geq 0 \)): <br>
-          \( x_1 = \frac{-b - \sqrt{\Delta}}{2a} \), \( x_2 = \frac{-b + \sqrt{\Delta}}{2a} \)</li>
-        <li>Si \( \Delta = 0 \): une racine double. <br>
-          Si \( \Delta < 0 \): pas de racine réelle.</li>
-        <li><b>Sommet de la parabole</b> : \( (\alpha ; \beta) \ )</li>
-        <li><b>Variations</b> : minimum si a > 0, maximum si a < 0</li>
-        <li>Parabole “smile” 😊 si a > 0, “frown” ☹️ si a < 0</li>
-    </ul>
-    <div class="box-important">
-        Astuce : Passe toujours à la forme canonique pour trouver le sommet et les variations facilement.
+
+    <div class="page-padding">
+      <div class="content-card">
+        <h1>Masterclass — Second degré</h1>
+        <p style="margin-bottom:1.2em;font-size:0.98rem;color:#cbd5f5;">
+          Toutes les clés pour réussir sur les équations et fonctions polynômes du second degré :
+          définitions, résolutions, schémas dynamiques, quiz, applications et astuces !
+        </p>
+
+        <section>
+          <h2>📝 Définition</h2>
+          <div class="infos">
+            Une fonction polynôme du second degré s’écrit \(f(x)=ax^2+bx+c\) avec \(a\neq0\); sa courbe est une parabole.[web:100][web:102]
+          </div>
+          <ul>
+            <li>Équation du second degré : \(ax^2+bx+c=0\).[web:100][web:102]</li>
+            <li>Forme canonique : \(f(x)=a(x-\alpha)^2+\beta\) avec \(\alpha=-\dfrac{b}{2a}\) et \(\beta=f(\alpha)\).[web:99][web:103]</li>
+            <li>Discriminant : \(\Delta=b^2-4ac\).[web:100][web:102]</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>📗 Résolutions et propriétés</h2>
+          <ul>
+            <li>Si \(\Delta \ge 0\), racines :
+              \(x_1=\dfrac{-b-\sqrt{\Delta}}{2a}\) et \(x_2=\dfrac{-b+\sqrt{\Delta}}{2a}\).[web:100][web:102]
+            </li>
+            <li>Si \(\Delta=0\) : une racine double \(x_0=-\dfrac{b}{2a}\); si \(\Delta<0\) : pas de racine réelle.[web:100][web:102]</li>
+            <li>Sommet de la parabole : \(S(\alpha;\beta)\) avec \(\alpha=-\dfrac{b}{2a}\).[web:99][web:103]</li>
+            <li>Variations : minimum si \(a>0\), maximum si \(a<0\).[web:100][web:104]</li>
+            <li>Ouverture vers le haut si \(a>0\) (parabole “smile”), vers le bas si \(a<0\).[web:104][web:107]</li>
+          </ul>
+          <div class="box-important">
+            Astuce : passe en forme canonique pour lire rapidement sommet et variations, puis reviens à la forme développée si besoin.[web:99][web:103]
+          </div>
+        </section>
+
+        <section>
+          <h2>🟦 Schéma dynamique — parabole</h2>
+          <label>a: <input type="number" id="a" value="1" step="0.1"></label>
+          <label>b: <input type="number" id="b" value="0" step="0.1"></label>
+          <label>c: <input type="number" id="c" value="0" step="0.1"></label>
+          <canvas id="schema" width="410" height="270"></canvas>
+          <div id="desc-second"></div>
+        </section>
+
+        <section class="box box-exo">
+          <h2>💡 Exercice interactif</h2>
+          <p>Soit \(f(x)=x^2-6x+5\). Calcule le sommet, le discriminant et les racines.</p>
+          <button onclick="afficheReponseSecond()">Voir la correction</button>
+          <div class="reponse" id="exo-reponse-second" style="display:none;">
+            \(\alpha=3\), \(\beta=f(3)=9-18+5=-4\).<br>
+            \(\Delta=36-20=16\) donc racines \(x_1=5\) et \(x_2=1\).
+          </div>
+        </section>
+
+        <section class="box-exo">
+          <h2>🔥 Exercice “expert”</h2>
+          <p>Donne la forme canonique de \(2x^2-8x+6\).</p>
+          <button onclick="document.getElementById('exo2-reponse-second').style.display='block';">Voir la correction</button>
+          <div class="reponse" id="exo2-reponse-second" style="display:none;">
+            \(\alpha=2\), \(\beta=2(2)^2-8\cdot2+6=8-16+6=-2\).<br>
+            Donc \(2x^2-8x+6=2(x-2)^2-2\).
+          </div>
+        </section>
+
+        <section class="quiz">
+          <h2>🎯 Quiz express</h2>
+          <p>Le discriminant de \(x^2-4x+5\) est :</p>
+          <button onclick="quizSecond(0)">-4</button>
+          <button onclick="quizSecond(1)">4</button>
+          <button onclick="quizSecond(2)">0</button>
+          <div class="reponse" id="rep-quiz-second"></div>
+
+          <p>La parabole de \(f(x)=-x^2+4x-3\) s’ouvre :</p>
+          <button onclick="quizSecond2(0)">Vers le haut</button>
+          <button onclick="quizSecond2(1)">Vers le bas</button>
+          <div class="reponse" id="rep-quiz-second2"></div>
+        </section>
+
+        <section class="box-important">
+          <h2>🌐 Applications concrètes</h2>
+          <ul>
+            <li><b>Physique/Maths</b> : trajectoires, optimisation, recherche d’extrémum.[web:100][web:104]</li>
+            <li><b>Informatique</b> : tracé de courbes, modélisation de phénomènes quadratiques.[web:104]</li>
+            <li><b>Économie/Finance</b> : modèles de coûts ou profits quadratiques.[web:100]</li>
+          </ul>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes à éviter</h2>
+          <ul>
+            <li>Mal calculer le discriminant \(b^2-4ac\).[web:100][web:102]</li>
+            <li>Confondre forme canonique et forme développée.</li>
+            <li>Oublier que le signe de \(a\) détermine le sens d’ouverture.[web:104][web:107]</li>
+            <li>Oublier la racine double quand \(\Delta=0\).[web:100][web:102]</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique express</h2>
+          <b>Polynôme du second degré :</b> \(ax^2+bx+c\) avec \(a\neq0\).[web:100][web:102]<br>
+          <b>Discriminant :</b> \(\Delta=b^2-4ac\), donne le nombre de solutions réelles.[web:100][web:102]<br>
+          <b>Forme canonique :</b> \(a(x-\alpha)^2+\beta\), pratique pour lire sommet et variations.[web:99][web:103]<br>
+          <b>Racines :</b> solutions de \(f(x)=0\).[web:100]
+        </section>
+
+        <section class="rubrique">
+          <h3>📖 Petite histoire</h3>
+          <ul>
+            <li>Les équations du second degré sont étudiées depuis l’Antiquité (Babylone, Grèce).[web:100]</li>
+            <li>Les paraboles ont été approfondies par Apollonius puis par Descartes avec la géométrie analytique.[web:102]</li>
+            <li>Elles restent centrales en sciences, en ingénierie et en économie moderne.[web:100][web:102]</li>
+          </ul>
+          <div class="source">Source : cours de second degré niveau première et ressources d’histoire des coniques.[web:100][web:102]</div>
+        </section>
+
+        <section class="anecdote">
+          <b>Astuces-mémoire</b> : parabole “smile” si \(a>0\), “triste” si \(a<0\); le sommet a toujours pour abscisse \(-\dfrac{b}{2a}\).
+        </section>
+
+        <section>
+          <h2>💡 Méthodologie pour réussir</h2>
+          <ul>
+            <li>Commence par calculer \(\Delta\), puis les racines éventuelles et le sommet.</li>
+            <li>Trace rapidement la courbe (sens, sommet, coupures avec l’axe des x).</li>
+            <li>Passe en forme canonique pour les problèmes d’optimisation.</li>
+            <li>Utilise le schéma dynamique pour tester différents triplets \((a,b,c)\).</li>
+          </ul>
+        </section>
+      </div>
     </div>
-</section>
-<section>
-    <h2>🟦 Schéma dynamique — parabole</h2>
-    <label>a: <input type="number" id="a" value="1" step="0.1"></label>
-    <label>b: <input type="number" id="b" value="0" step="0.1"></label>
-    <label>c: <input type="number" id="c" value="0" step="0.1"></label>
-    <canvas id="schema" width="410" height="260"></canvas>
-    <div id="desc-second"></div>
-</section>
-<section class="box box-exo">
-    <h2>💡 Exercice interactif</h2>
-    <p>Soit \( f(x) = x^2 - 6x + 5 \). Calcule le sommet, le discriminant et les racines.</p>
-    <button onclick="afficheReponseSecond()">Voir la correction</button>
-    <div class="reponse" id="exo-reponse-second" style="display:none;">
-        \( \alpha = 3 ; \beta = f(3) = 9 - 18 + 5 = -4 \)<br>
-        \( \Delta = 36 - 20 = 16 \), racines \( x_1 = 5,\, x_2 = 1 \)
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
     </div>
-</section>
-<section class="box-exo">
-    <h2>🔥 Exercice “expert”</h2>
-    <p>Forme canonique de \( 2x^2 - 8x + 6 \) ?</p>
-    <button onclick="document.getElementById('exo2-reponse-second').style.display='block';">Voir la correction</button>
-    <div class="reponse" id="exo2-reponse-second" style="display:none;">
-        \( \alpha = 2 ; \beta = 2 \times 4 -8 \times 2 + 6 = 8 - 16 + 6 = -2 \)<br>
-        Donc : \( 2(x-2)^2 -2 \)
-    </div>
-</section>
-<section class="quiz">
-    <h2>🎯 Quiz express</h2>
-    <p>Le discriminant de \( x^2 - 4x + 5 \) est ?</p>
-    <button onclick="quizSecond(0)">-4</button>
-    <button onclick="quizSecond(1)">4</button>
-    <button onclick="quizSecond(2)">0</button>
-    <div class="reponse" id="rep-quiz-second"></div>
-    <p>La parabole de \( f(x) = -x^2 + 4x - 3 \) s’ouvre :</p>
-    <button onclick="quizSecond2(0)">Vers le haut</button>
-    <button onclick="quizSecond2(1)">Vers le bas</button>
-    <div class="reponse" id="rep-quiz-second2"></div>
-</section>
-<section class="box-important">
-    <h2>🌐 Applications concrètes</h2>
-    <ul>
-        <li><b>Physique/Maths</b> : trajectoires, optimisation, calcul d’extrémum</li>
-        <li><b>Info/Algorithmique</b> : courbes, modélisation, graphiques</li>
-        <li><b>Finance</b> : optimisation de profit/cout, évolution quadratique</li>
-    </ul>
-</section>
-<section class="error">
-    <h2>❌ Erreurs fréquentes à éviter</h2>
-    <ul>
-        <li>Mal calculer le discriminant ! (<b>b² - 4ac</b>)</li>
-        <li>Confondre formes canonique/générale</li>
-        <li>Oublier le signe de a pour le sens de la parabole</li>
-        <li>Omettre la double racine si \(\Delta = 0\)</li>
-    </ul>
-</section>
-<section class="lexique">
-    <h2>📚 Lexique express</h2>
-    <b>Polynôme du second degré</b> : \( ax^2 + bx + c \)<br>
-    <b>Discriminant</b> : \( \Delta \), repère le nombre de solutions<br>
-    <b>Forme canonique</b> : permet de lire sommet/variations<br>
-    <b>Racine</b> : solution de \( f(x) = 0 \)
-</section>
-<section class="rubrique">
-    <h3>📖 Petite histoire</h3>
-    <ul>
-        <li>Connus depuis les Babyloniens, les polynômes du second degré apparaissent partout en sciences et économie</li>
-        <li>Les paraboles sont étudiées par Apollonius et Descartes</li>
-        <li>Fondement de l’analyse, optimisation, trajectoires physiques</li>
-    </ul>
-    <div class="source">Source : histoire des maths, Wikipedia</div>
-</section>
-<section class="anecdote">
-    <b>Astuces-mémoire</b> : La parabole “smile” (a>0), la parabole “triste” (a<0) — le sommet est toujours \( -\frac{b}{2a} \)
-</section>
-<section>
-    <h2>💡 Méthodologie pour réussir</h2>
-    <ul>
-        <li>Calcule systématiquement le discriminant, les racines, puis le sommet</li>
-        <li>Trace la courbe pour visualiser les variations</li>
-        <li>Passe en forme canonique si besoin d’optimiser ou lire le sommet</li>
-        <li>Utilise le schéma dynamique pour t’entraîner avec différents coefficients</li>
-    </ul>
-</section>
-</main>
-<script>
-function quizSecond(rep) {
-    let repElem = document.getElementById("rep-quiz-second");
-    repElem.textContent = (rep === 0) ? "Parfait ! \(-4\), car \(16 - 20 = -4\)." : "Faux, refais la formule discriminant : b² - 4ac.";
-}
-function quizSecond2(rep) {
-    let repElem = document.getElementById("rep-quiz-second2");
-    repElem.textContent = (rep === 1) ? "Bonne réponse ! a négatif = ouverture vers le bas." : "Faux, a négatif descend.";
-}
-function afficheReponseSecond() {
-    document.getElementById("exo-reponse-second").style.display = "block";
-}
-// Schéma dynamique
-function drawSecond() {
-    let a = parseFloat(document.getElementById("a").value);
-    let b = parseFloat(document.getElementById("b").value);
-    let c = parseFloat(document.getElementById("c").value);
-    let canvas = document.getElementById("schema");
-    let ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, 410, 260);
-    // Axes
-    ctx.strokeStyle="#aaa"; ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(20,130); ctx.lineTo(400,130); ctx.moveTo(210,20); ctx.lineTo(210,240); ctx.stroke();
-    // Parabole
-    ctx.beginPath();
-    for(let xPx=0;xPx<=410;xPx++){
-        let x=(xPx-210)/38; // x ∈ [-5 ; 5]
-        let y=a*x*x+b*x+c;
-        let yPx=130-y*22;
-        if(xPx===0) ctx.moveTo(xPx,yPx); else ctx.lineTo(xPx,yPx);
+  </div>
+
+  <script>
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
+
+    function quizSecond(rep) {
+      let repElem = document.getElementById("rep-quiz-second");
+      repElem.textContent = (rep === 0)
+        ? "Parfait ! Δ = -4, car 16 - 20 = -4."
+        : "Faux, refais bien Δ = b² - 4ac pour b=-4, a=1, c=5.";
     }
-    ctx.strokeStyle="#1877f2"; ctx.lineWidth=3; ctx.stroke();
-    // Sommet
-    let alpha = -b/(2*a), beta = a*alpha*alpha + b*alpha + c;
-    let SxPx = 210 + 38*alpha, SyPx = 130 - 22*beta;
-    ctx.beginPath(); ctx.arc(SxPx,SyPx,5,0,2*Math.PI); ctx.fillStyle="#fa9100"; ctx.fill();
-    ctx.font="12px Arial"; ctx.fillStyle="#fa9100"; ctx.fillText("S("+alpha.toFixed(1)+";"+beta.toFixed(1)+")",SxPx+7,SyPx-8);
-    // Description
-    document.getElementById("desc-second").innerHTML =
-        "Sommet S = ("+alpha.toFixed(2)+" ; "+beta.toFixed(2)+")";
-}
-drawSecond();
-document.getElementById("a").addEventListener("input", drawSecond);
-document.getElementById("b").addEventListener("input", drawSecond);
-document.getElementById("c").addEventListener("input", drawSecond);
-</script>
+    function quizSecond2(rep) {
+      let repElem = document.getElementById("rep-quiz-second2");
+      repElem.textContent = (rep === 1)
+        ? "Bonne réponse ! a<0 donc parabole vers le bas."
+        : "Faux, a négatif ⇒ ouverture vers le bas.";
+    }
+    function afficheReponseSecond() {
+      document.getElementById("exo-reponse-second").style.display = "block";
+    }
+
+    // Schéma dynamique
+    function drawSecond() {
+      let a = parseFloat(document.getElementById("a").value);
+      let b = parseFloat(document.getElementById("b").value);
+      let c = parseFloat(document.getElementById("c").value);
+      let canvas = document.getElementById("schema");
+      let ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, 410, 270);
+
+      // Axes
+      ctx.strokeStyle="#6b7280"; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(20,135); ctx.lineTo(390,135);
+      ctx.moveTo(205,20); ctx.lineTo(205,250); ctx.stroke();
+
+      // Parabole
+      ctx.beginPath();
+      for(let xPx=0;xPx<=410;xPx++){
+        let x=(xPx-205)/38; // x ∈ [-5 ; 5]
+        let y=a*x*x+b*x+c;
+        let yPx=135-y*18;
+        if(xPx===0) ctx.moveTo(xPx,yPx); else ctx.lineTo(xPx,yPx);
+      }
+      ctx.strokeStyle="#38bdf8"; ctx.lineWidth=3; ctx.stroke();
+
+      // Sommet
+      if(a !== 0){
+        let alpha = -b/(2*a);
+        let beta  = a*alpha*alpha + b*alpha + c;
+        let SxPx = 205 + 38*alpha;
+        let SyPx = 135 - 18*beta;
+        ctx.beginPath(); ctx.arc(SxPx,SyPx,5,0,2*Math.PI);
+        ctx.fillStyle="#facc15"; ctx.fill();
+        ctx.font="12px Arial"; ctx.fillStyle="#facc15";
+        ctx.fillText("S("+alpha.toFixed(2)+" ; "+beta.toFixed(2)+")",SxPx+7,SyPx-8);
+        document.getElementById("desc-second").innerHTML =
+          "Sommet S = ("+alpha.toFixed(2)+" ; "+beta.toFixed(2)+") • a "+(a>0?"&gt; 0 ⇒ minimum":"&lt; 0 ⇒ maximum");
+      }else{
+        document.getElementById("desc-second").innerHTML =
+          "a ne doit pas être nul pour un polynôme du second degré.";
+      }
+    }
+    drawSecond();
+    document.getElementById("a").addEventListener("input", drawSecond);
+    document.getElementById("b").addEventListener("input", drawSecond);
+    document.getElementById("c").addEventListener("input", drawSecond);
+  </script>
 </body>
 </html>

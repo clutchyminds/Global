@@ -1,206 +1,656 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Masterclass – Géométrie repérée dans le plan</title>
-    <meta name="description" content="Tout pour maîtriser la géométrie repérée : coordonnées, droites, distance, exercices, quiz, lexique, applications et histoire, avec graphismes modernes.">
-    <style>
-        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
-        header { background: linear-gradient(90deg,#eef4fb,#deffe4 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
-        header h1 { font-size: 2.3rem; margin: 0 0 10px; color: #1877f2;}
-        .intro { font-size: 1.01rem;}
-        main { max-width: 750px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
-        h2 { color: #1877f2; margin-top: 32px;}
-        h3 { color: #f5a623; margin-top: 22px;}
-        ul, ol { margin-left: 1.4em;}
-        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
-        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
-        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
-        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
-        .error {background: #ffeaea; border-left: 7px solid #e06359;}
-        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
-        .anecdote {background: #e7ffe7; border-left: 7px solid #167c2b; font-style: italic; margin: 1em 0; padding: 12px 17px; border-radius: 6px;}
-        .source { font-size: 0.9em; color: #999; text-align: right;}
-        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
-        button:hover { background: #145ac3;}
-        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
-        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
-        label { margin-right: 12px;}
-        @media (max-width: 768px) { main { padding: 12px 2px; } }
-    </style>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <meta charset="UTF-8">
+  <title>Global - Maths · Géométrie repérée</title>
+  <meta name="description" content="Tout pour maîtriser la géométrie repérée : coordonnées, droites, distance, exercices, quiz, lexique, applications et histoire, avec graphismes modernes.">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-main:#1877f2;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#031633 40%,#001a3b 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(520px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(56,189,248,0.26),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(56,189,248,0.8);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(56,189,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#7dd3fc;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#7dd3fc,transparent);
+      box-shadow:0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#22c1c3,#29d8ff,#007bff);
+      box-shadow:0 0 18px rgba(56,189,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#a5b4fc;
+      opacity:0.9;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(56,189,248,0.12) 45%,
+          rgba(56,189,248,0.35) 50%,
+          rgba(56,189,248,0.12) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#c4f1ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(24,119,242,0.9),rgba(34,197,94,0.9));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#fff;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:230px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#29d8ff;
+      box-shadow:0 0 12px rgba(41,216,255,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:900px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+                 linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:26px 26px 30px;
+      color:#e5f1ff;
+    }
+
+    h1,h2{
+      color:#7dd3fc;
+      margin-bottom:10px;
+    }
+    h3{
+      color:#facc6b;
+      margin-top:18px;
+      margin-bottom:10px;
+    }
+    h2{margin-top:26px;font-size:1.4rem;}
+    p,li{font-size:0.98rem;line-height:1.6;}
+    ul,ol{margin-left:1.3em;margin-top:0.3em;margin-bottom:0.8em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      padding:12px 18px;
+      border-radius:10px;
+      margin:1em 0;
+      font-size:0.96rem;
+    }
+    .infos{
+      background:rgba(37,99,235,0.16);
+      border-left:4px solid #60a5fa;
+    }
+    .box-exo{
+      background:rgba(22,163,74,0.14);
+      border-left:4px solid #22c55e;
+    }
+    .box-important{
+      background:rgba(245,158,11,0.14);
+      border-left:4px solid #facc15;
+    }
+    .error{
+      background:rgba(248,113,113,0.14);
+      border-left:4px solid #f87171;
+    }
+    .lexique{
+      background:rgba(59,130,246,0.12);
+      border-left:4px solid #7dd3fc;
+    }
+    .anecdote{
+      background:rgba(34,197,94,0.09);
+      border-left:4px solid #22c55e;
+      font-style:italic;
+    }
+
+    #schema{
+      margin:1em auto;
+      display:block;
+      background:#0b1725;
+      border-radius:8px;
+      border:1px solid #1f2937;
+    }
+    .reponse{
+      margin-top:0.7em;
+      color:#7dd3fc;
+      font-weight:bold;
+      text-align:center;
+      font-size:0.95rem;
+    }
+    label{
+      margin-right:12px;
+      font-size:0.9rem;
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+  </style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-    <h1>Masterclass — Géométrie repérée dans le plan</h1>
-    <div class="intro">
-        Les outils essentiels pour tout mathématicien, programmeur ou physicien :  
-        <b>Coordonnées, distance, équations de droites et applications concrètes !</b>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//math-GEO-REP</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Maths · Géométrie repérée · coordonnées, distance, milieu et droites
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du module Géométrie repérée (spé maths)...</div>
+        <div class="terminal-line">[REPERE] Coordonnées, vecteurs, distance, milieu, équation de droites.</div>
+        <div class="terminal-line">[GRAPH] Visualisation dynamique de A, B, M et du segment [AB].</div>
+        <div class="terminal-line">[OK]  Prêt : pense “Pythagore + moyenne des coords” pour distance/milieu.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
     </div>
-</header>
-<main>
-<section>
-    <h2>📝 Définition et cadre</h2>
-    <div class="infos">Le plan est un espace doté d’un repère \( (O,\,\vec{i},\,\vec{j}) \) où chaque point a des coordonnées \( (x, y) \).<br>
-    On peut ainsi calculer des distances, des milieux, des équations avec précision et modéliser des situations réelles ou informatiques.</div>
-    <ul>
-        <li>Exemples : point A(3 ; -2), vecteur \( \vec{u} = (x_u, y_u) \)</li>
-        <li>Le repère est souvent orthonormé (axes perpendiculaires, unité 1 sur chaque)</li>
-    </ul>
-</section>
-<section>
-    <h2>📗 Formules et propriétés majeures</h2>
-    <ul>
-        <li><b>Distance entre deux points</b> A(xA ; yA), B(xB ; yB) :  
-            \( AB = \sqrt{(x_B-x_A)^2 + (y_B-y_A)^2} \ )</li>
-        <li><b>Milieu</b> de [AB] :  
-            \( M = \left( \frac{x_A+x_B}{2},\,\frac{y_A+y_B}{2} \right) \)</li>
-        <li><b>Équation de droite</b> passant par A et de vecteur directeur \( \vec{u}(a, b) \) :  
-            \( y = mx + p \) si possible,  
-            ou sous forme cartésienne : \( ax + by + c = 0 \)</li>
-        <li>Vecteur \( \vec{AB} = (x_B-x_A,\,y_B-y_A) \)</li>
-    </ul>
-    <div class="box-important">
-        Astuce : Utilise les coordonnées pour généraliser tous les calculs géométriques — simplifie la vie en programmation !
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Maths
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
     </div>
-</section>
-<section>
-    <h2>🟦 Schéma interactif : deux points, milieu et droite</h2>
-    <label>A_x: <input type="number" id="Ax" value="2"></label>
-    <label>A_y: <input type="number" id="Ay" value="1"></label>
-    <label>B_x: <input type="number" id="Bx" value="7"></label>
-    <label>B_y: <input type="number" id="By" value="5"></label>
-    <canvas id="schema" width="440" height="260"></canvas>
-    <div id="desc-geom"></div>
-</section>
-<section class="box box-exo">
-    <h2>💡 Exercice interactif</h2>
-    <p>Dans le repère, A(2 ; 1), B(7 ; 5). Calcule la distance AB et le milieu M.</p>
-    <button onclick="afficheReponseGeom()">Voir la correction</button>
-    <div class="reponse" id="exo-reponse-geom" style="display:none;">
-        Distance : \( AB = \sqrt{(7-2)^2 + (5-1)^2} = \sqrt{25+16} = \sqrt{41} \approx 6,4 \)<br>
-        Milieu : M = \( \left( \frac{2+7}{2},\,\frac{1+5}{2} \right) = (4, 3) \)
+
+    <div class="page-padding">
+      <div class="content-card">
+        <h1>Masterclass — Géométrie repérée dans le plan</h1>
+        <p style="margin-bottom:1.2em;font-size:0.98rem;color:#cbd5f5;">
+          Les outils essentiels pour tout mathématicien, programmeur ou physicien :
+          <b>coordonnées, distance, équations de droites et applications concrètes !</b>
+        </p>
+
+        <section>
+          <h2>📝 Définition et cadre</h2>
+          <div class="infos">
+            Dans un repère \((O,\vec{i},\vec{j})\), chaque point \(M\) du plan a des coordonnées \((x,y)\).[web:118][web:120]
+            <br>
+            Cela permet de calculer distances, milieux, équations de droites et de modéliser des situations réelles ou informatiques.[web:120][web:122]
+          </div>
+          <ul>
+            <li>Exemple : A(3 ; -2), vecteur \(\vec{u}=(x_u,y_u)\).[web:118]</li>
+            <li>Un repère orthonormé a des axes perpendiculaires et une unité identique sur chaque axe.[web:118][web:122]</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>📗 Formules et propriétés majeures</h2>
+          <ul>
+            <li>Distance entre A\((x_A;y_A)\) et B\((x_B;y_B)\) :
+              \(AB=\sqrt{(x_B-x_A)^2+(y_B-y_A)^2}\).[web:118][web:126]
+            </li>
+            <li>Milieu de [AB] :
+              \(M\left(\dfrac{x_A+x_B}{2},\,\dfrac{y_A+y_B}{2}\right)\).[web:118][web:121]
+            </li>
+            <li>Vecteur \(\vec{AB}=(x_B-x_A,\,y_B-y_A)\).[web:118]</li>
+            <li>Une droite du plan admet une équation cartésienne \(ax+by+c=0\); si \(b\neq0\), on peut écrire \(y=mx+p\).[web:118][web:122]</li>
+          </ul>
+          <div class="box-important">
+            Astuce : ramène toujours la géométrie à des coordonnées; en code comme en maths, tout devient des calculs d’addition, de moyenne et de Pythagore.[web:118][web:120]
+          </div>
+        </section>
+
+        <section>
+          <h2>🟦 Schéma interactif : deux points, milieu et droite</h2>
+          <label>Aₓ: <input type="number" id="Ax" value="2"></label>
+          <label>Aᵧ: <input type="number" id="Ay" value="1"></label>
+          <label>Bₓ: <input type="number" id="Bx" value="7"></label>
+          <label>Bᵧ: <input type="number" id="By" value="5"></label>
+          <canvas id="schema" width="410" height="270"></canvas>
+          <div id="desc-geom"></div>
+        </section>
+
+        <section class="box box-exo">
+          <h2>💡 Exercice interactif</h2>
+          <p>Dans le repère, A(2 ; 1), B(7 ; 5). Calcule la distance AB et le milieu M.</p>
+          <button onclick="afficheReponseGeom()">Voir la correction</button>
+          <div class="reponse" id="exo-reponse-geom" style="display:none;">
+            Distance : \(AB=\sqrt{(7-2)^2+(5-1)^2}=\sqrt{25+16}=\sqrt{41}\approx6{,}4\).<br>
+            Milieu : \(M\left(\dfrac{2+7}{2},\dfrac{1+5}{2}\right)=(4,3)\).
+          </div>
+        </section>
+
+        <section class="box-exo">
+          <h2>🔥 Exercice “expert”</h2>
+          <p>Détermine l’équation cartésienne de la droite passant par A(2 ; 1) et B(7 ; 5).</p>
+          <button onclick="document.getElementById('exo2-reponse-geom').style.display='block';">Voir la correction</button>
+          <div class="reponse" id="exo2-reponse-geom" style="display:none;">
+            Vecteur directeur : \(\vec{AB}=(5,4)\).<br>
+            Équation : \(y-1=\dfrac{4}{5}(x-2)\) soit \(4x-5y+1=0\).[web:118][web:122]
+          </div>
+        </section>
+
+        <section class="quiz">
+          <h2>🎯 Quiz express</h2>
+          <p>Le milieu de [AB] avec A(0 ; 6) et B(4 ; 2) est :</p>
+          <button onclick="quizG(0)">(2 ; 4)</button>
+          <button onclick="quizG(1)">(1 ; 8)</button>
+          <button onclick="quizG(2)">(0 ; 2)</button>
+          <div class="reponse" id="rep-quiz-g"></div>
+
+          <p>La distance entre A(0 ; 0) et B(3 ; 4) est :</p>
+          <button onclick="quizG2(0)">5</button>
+          <button onclick="quizG2(1)">6</button>
+          <button onclick="quizG2(2)">7</button>
+          <div class="reponse" id="rep-quiz-g2"></div>
+        </section>
+
+        <section class="box-important">
+          <h2>🌐 Applications concrètes</h2>
+          <ul>
+            <li><b>Physique</b> : positions, trajectoires, distances, centres de masse.[web:120]</li>
+            <li><b>Informatique</b> : dessin, moteurs 2D/3D, détection de collisions, GPS.[web:120][web:124]</li>
+            <li><b>Maths</b> : géométrie analytique, intersections, cercles, droites.[web:118][web:121]</li>
+          </ul>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes à éviter</h2>
+          <ul>
+            <li>Inverser abscisse/ordonnée ou se tromper de signe dans les coordonnées.[web:118]</li>
+            <li>Oublier les carrés dans la formule de distance ou les moyennes pour le milieu.[web:118][web:126]</li>
+            <li>Confondre forme cartésienne \(ax+by+c=0\) et forme \(y=mx+p\).[web:122]</li>
+            <li>Oublier que le repère n’est pas toujours orthonormé (dans certains problèmes avancés).[web:118]</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique express</h2>
+          <b>Repère :</b> point origine + vecteurs de base servant à repérer les points.[web:118][web:125]<br>
+          <b>Coordonnées :</b> réels \((x,y)\) qui repèrent un point du plan.[web:118]<br>
+          <b>Vecteur directeur :</b> vecteur donnant la direction d’une droite.[web:118][web:122]<br>
+          <b>Équation cartésienne :</b> équation du type \(ax+by+c=0\) décrivant une droite.[web:122]
+        </section>
+
+        <section class="rubrique">
+          <h3>📖 Petite histoire</h3>
+          <ul>
+            <li>La géométrie analytique est née avec Descartes au XVIIᵉ siècle, en reliant algèbre et géométrie.[web:120]</li>
+            <li>Elle a rendu possible la description des courbes par des équations, base de la physique moderne.[web:120][web:125]</li>
+            <li>Aujourd’hui, elle est partout : CAO, jeux vidéo, robotique, navigation, etc.[web:120]</li>
+          </ul>
+          <div class="source">Source : cours de géométrie repérée niveau première et ressources historiques.[web:118][web:120]</div>
+        </section>
+
+        <section class="anecdote">
+          <b>Astuce-mémoire :</b> pour le milieu, pense “moitié du chemin” : moyenne de chaque coordonnée.
+        </section>
+
+        <section>
+          <h2>💡 Méthodologie pour réussir</h2>
+          <ul>
+            <li>Commence toujours par un schéma avec les points et leurs coordonnées.</li>
+            <li>Calcule dans l’ordre : vecteur, distance, milieu, équation de la droite.</li>
+            <li>Utilise le module interactif pour tester des cas particuliers (verticale/horizontale, points alignés ou non).</li>
+            <li>Reviens régulièrement aux définitions (repère, vecteur, équation cartésienne).</li>
+          </ul>
+        </section>
+      </div>
     </div>
-</section>
-<section class="box-exo">
-    <h2>🔥 Exercice “expert”</h2>
-    <p>Détermine l’équation cartésienne de la droite passant par A(2 ; 1) et B(7 ; 5).</p>
-    <button onclick="document.getElementById('exo2-reponse-geom').style.display='block';">Voir la correction</button>
-    <div class="reponse" id="exo2-reponse-geom" style="display:none;">
-        Vecteur directeur : \( \vec{AB} = (5, 4) \)<br>
-        Équation : \( y - 1 = \frac{4}{5}(x - 2) \) ou \( 4x - 5y + 1 = 0 \)
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
     </div>
-</section>
-<section class="quiz">
-    <h2>🎯 Quiz express</h2>
-    <p>Le milieu du segment [AB] d’A(0 ; 6), B(4 ; 2) est :</p>
-    <button onclick="quizG(0)">(2 ; 4)</button>
-    <button onclick="quizG(1)">(1 ; 8)</button>
-    <button onclick="quizG(2)">(0 ; 2)</button>
-    <div class="reponse" id="rep-quiz-g"></div>
-    <p>La distance entre les points A(0;0) et B(3;4) est :</p>
-    <button onclick="quizG2(0)">5</button>
-    <button onclick="quizG2(1)">6</button>
-    <button onclick="quizG2(2)">7</button>
-    <div class="reponse" id="rep-quiz-g2"></div>
-</section>
-<section class="box-important">
-    <h2>🌐 Applications concrètes</h2>
-    <ul>
-        <li><b>Physique</b> : positions, trajectoires, mouvement rectiligne, centre de masse…</li>
-        <li><b>Informatique</b> : dessin, modélisation, algorithmes de collision, repérage GPS…</li>
-        <li><b>Maths :</b> calculs d’aires, d’intersections, géométrie analytique…</li>
-    </ul>
-</section>
-<section class="error">
-    <h2>❌ Erreurs fréquentes à éviter</h2>
-    <ul>
-        <li>Oublier de bien repérer les axes (x/y, sens)</li>
-        <li>Mal utiliser la formule de distance ou de milieu</li>
-        <li>Confondre équation de droite cartésienne et affine</li>
-        <li>Oublier que le repère peut être non orthonormé</li>
-    </ul>
-</section>
-<section class="lexique">
-    <h2>📚 Lexique express</h2>
-    <b>Repère :</b> ensemble {O ; vecteurs de base} pour calculer positions<br>
-    <b>Coordonnées :</b> nombres repérant un point [(x ; y)]<br>
-    <b>Vecteur directeur :</b> vecteur indiquant la direction d’une droite<br>
-    <b>Équation cartésienne :</b> équation générale de droite dans le plan
-</section>
-<section class="rubrique">
-    <h3>📖 Petite histoire</h3>
-    <ul>
-        <li>La géométrie analytique est née avec René Descartes au XVIIe siècle !</li>
-        <li>Le calcul des coordonnées a permis de relier algèbre et géométrie</li>
-        <li>Aujourd’hui, indispensable de la physique au GPS !</li>
-    </ul>
-    <div class="source">Source : histoire des maths, Wikipedia</div>
-</section>
-<section class="anecdote">
-    <b>Astuce-mémoire :</b> Pour trouver le milieu, “moitié route” : tu fais la moyenne de chaque coordonnée !
-</section>
-<section>
-    <h2>💡 Méthodologie pour réussir</h2>
-    <ul>
-        <li>Trace toujours un schéma avec les points et leurs coordonnées</li>
-        <li>Recalcule chaque étape (vecteurs, distance, milieu, équation)</li>
-        <li>Utilise le module interactif pour t’entraîner à visualiser</li>
-        <li>Teste différents cas (alignés, non alignés, vertical/horizontal)</li>
-    </ul>
-</section>
-</main>
-<script>
-function quizG(rep) {
-    let repElem = document.getElementById("rep-quiz-g");
-    repElem.textContent = (rep === 0) ? "Bravo ! (2 ; 4) est bien le milieu." : "Faux, refais la formule du milieu.";
-}
-function quizG2(rep) {
-    let repElem = document.getElementById("rep-quiz-g2");
-    repElem.textContent = (rep === 0) ? "Bonne réponse ! √(3²+4²) = √9+16 = √25 = 5." : "Incorrect, calcule bien la distance.";
-}
-function afficheReponseGeom() {
-    document.getElementById("exo-reponse-geom").style.display = "block";
-}
-function drawGeometrie() {
-    let Ax = parseFloat(document.getElementById("Ax").value);
-    let Ay = parseFloat(document.getElementById("Ay").value);
-    let Bx = parseFloat(document.getElementById("Bx").value);
-    let By = parseFloat(document.getElementById("By").value);
-    let canvas = document.getElementById("schema");
-    let ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, 440, 260);
-    // Axes
-    ctx.strokeStyle="#aaa"; ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(40,220); ctx.lineTo(420,220); ctx.moveTo(40,40); ctx.lineTo(40,220); ctx.stroke();
-    // Points scaled
-    let f = 30, ox=40, oy=220;
-    let Axp = ox+f*Ax, Ayp = oy-f*Ay, Bxp = ox+f*Bx, Byp = oy-f*By;
-    // Points
-    ctx.beginPath(); ctx.arc(Axp,Ayp,5,0,2*Math.PI); ctx.fillStyle="#1877f2"; ctx.fill();
-    ctx.fillText("A",Axp+7,Ayp-8); ctx.fillText("("+Ax+","+Ay+")",Axp-14,Ayp+18);
-    ctx.beginPath(); ctx.arc(Bxp,Byp,5,0,2*Math.PI); ctx.fillStyle="#167c2b"; ctx.fill();
-    ctx.fillText("B",Bxp+7,Byp-8); ctx.fillText("("+Bx+","+By+")",Bxp-14,Byp+18);
-    // Segment AB
-    ctx.beginPath(); ctx.moveTo(Axp,Ayp); ctx.lineTo(Bxp,Byp);
-    ctx.strokeStyle="#a133ff"; ctx.lineWidth=3; ctx.stroke();
-    // Milieu
-    let Mxp=(Axp+Bxp)/2, Myp=(Ayp+Byp)/2;
-    ctx.beginPath(); ctx.arc(Mxp,Myp,5,0,2*Math.PI); ctx.fillStyle="#ffa500"; ctx.fill();
-    ctx.fillText("M",Mxp+7,Myp-8);
-    // Equation de la droite (optionnel, left as segment above)
-    // Description
-    let dist = Math.sqrt((Bx-Ax)**2 + (By-Ay)**2);
-    let mx = (Ax+Bx)/2, my=(Ay+By)/2;
-    document.getElementById("desc-geom").innerHTML =
-        "AB = "+dist.toFixed(2)+", Milieu M = ("+mx+", "+my+")";
-}
-drawGeometrie();
-document.getElementById("Ax").addEventListener("input", drawGeometrie);
-document.getElementById("Ay").addEventListener("input", drawGeometrie);
-document.getElementById("Bx").addEventListener("input", drawGeometrie);
-document.getElementById("By").addEventListener("input", drawGeometrie);
-</script>
+  </div>
+
+  <script>
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
+
+    function quizG(rep) {
+      let repElem = document.getElementById("rep-quiz-g");
+      repElem.textContent = (rep === 0)
+        ? "Bravo ! (2 ; 4) est bien le milieu."
+        : "Faux, applique M((xA+xB)/2 ; (yA+yB)/2).";
+    }
+    function quizG2(rep) {
+      let repElem = document.getElementById("rep-quiz-g2");
+      repElem.textContent = (rep === 0)
+        ? "Bonne réponse ! √(3²+4²) = 5."
+        : "Incorrect, utilise bien le théorème de Pythagore.";
+    }
+    function afficheReponseGeom() {
+      document.getElementById("exo-reponse-geom").style.display = "block";
+    }
+
+    function drawGeometrie() {
+      let Ax = parseFloat(document.getElementById("Ax").value);
+      let Ay = parseFloat(document.getElementById("Ay").value);
+      let Bx = parseFloat(document.getElementById("Bx").value);
+      let By = parseFloat(document.getElementById("By").value);
+      let canvas = document.getElementById("schema");
+      let ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, 410, 270);
+
+      // Axes
+      ctx.strokeStyle="#6b7280"; ctx.lineWidth=1;
+      ctx.beginPath();
+      ctx.moveTo(40,230); ctx.lineTo(390,230);
+      ctx.moveTo(40,30); ctx.lineTo(40,230);
+      ctx.stroke();
+
+      let f = 30, ox=40, oy=230;
+      let Axp = ox+f*Ax, Ayp = oy-f*Ay;
+      let Bxp = ox+f*Bx, Byp = oy-f*By;
+
+      // Segment [AB]
+      ctx.beginPath();
+      ctx.moveTo(Axp,Ayp); ctx.lineTo(Bxp,Byp);
+      ctx.strokeStyle="#a855f7"; ctx.lineWidth=3; ctx.stroke();
+
+      // Point A
+      ctx.beginPath(); ctx.arc(Axp,Ayp,5,0,2*Math.PI);
+      ctx.fillStyle="#38bdf8"; ctx.fill();
+      ctx.font="12px Arial"; ctx.fillStyle="#e5e7eb";
+      ctx.fillText("A("+Ax+" ; "+Ay+")",Axp+7,Ayp-6);
+
+      // Point B
+      ctx.beginPath(); ctx.arc(Bxp,Byp,5,0,2*Math.PI);
+      ctx.fillStyle="#22c55e"; ctx.fill();
+      ctx.fillText("B("+Bx+" ; "+By+")",Bxp+7,Byp-6);
+
+      // Milieu M
+      let Mx = (Ax+Bx)/2, My = (Ay+By)/2;
+      let Mxp = (Axp+Bxp)/2, Myp = (Ayp+Byp)/2;
+      ctx.beginPath(); ctx.arc(Mxp,Myp,5,0,2*Math.PI);
+      ctx.fillStyle="#facc15"; ctx.fill();
+      ctx.fillText("M",Mxp+7,Myp-6);
+
+      let dist = Math.sqrt((Bx-Ax)**2 + (By-Ay)**2);
+      document.getElementById("desc-geom").innerHTML =
+        "AB ≈ "+dist.toFixed(2)+" ; Milieu M = ("+Mx+" ; "+My+")";
+    }
+    drawGeometrie();
+    document.getElementById("Ax").addEventListener("input", drawGeometrie);
+    document.getElementById("Ay").addEventListener("input", drawGeometrie);
+    document.getElementById("Bx").addEventListener("input", drawGeometrie);
+    document.getElementById("By").addEventListener("input", drawGeometrie);
+  </script>
 </body>
 </html>

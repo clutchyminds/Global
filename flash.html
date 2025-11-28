@@ -4,63 +4,348 @@
   <meta charset="UTF-8" />
   <title>Outil de flashcards interactives</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
+    :root {
+      --blue-light: #29d8ff;
+      --blue-main: #007BFF;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
+        linear-gradient(135deg, #020617 0%, #031633 40%, #001a3b 100%);
+      color: #e5f1ff;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.08;
+      mix-blend-mode: soft-light;
+      background-image:
+        linear-gradient(0deg, rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 3px 3px, 3px 3px;
+      z-index: -1;
+    }
+
+    /* ===== LOADER FLASHCARDS ===== */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, #0b1220 0, #020617 45%, #000 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      overflow: hidden;
+    }
+    .loader-hud {
+      position: relative;
+      width: min(520px, 90vw);
+      padding: 26px 26px 30px 26px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 0 0, rgba(56,189,248,0.26), transparent 60%),
+        linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
+      border: 1px solid rgba(56,189,248,0.8);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(56,189,248,0.7);
+      color: #e5f1ff;
+      font-family: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      overflow: hidden;
+    }
+    .loader-hud::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size: 100% 3px;
+      mix-blend-mode: soft-light;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .loader-title {
+      font-size: 0.9rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #7dd3fc;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .loader-title::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 240px;
+      height: 2px;
+      background: linear-gradient(90deg, #7dd3fc, transparent);
+      box-shadow: 0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 1rem;
+      margin-bottom: 14px;
+    }
+    .status-label {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 600;
+    }
+    .status-dots {
+      display: inline-block;
+      min-width: 18px;
+      animation: blinkDots 1s steps(2, start) infinite;
+      color: #38bdf8;
+    }
+    @keyframes blinkDots {
+      0%, 50% { opacity: 1; }
+      50.01%, 100% { opacity: 0; }
+    }
+    .loader-bar {
+      position: relative;
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.9);
+      background: rgba(15,23,42,0.9);
+      overflow: hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom: 10px;
+    }
+    .loader-bar-fill {
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      background: linear-gradient(90deg, #22c1c3, #29d8ff, #007bff);
+      box-shadow: 0 0 18px rgba(56,189,248,0.9);
+      animation: barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress {
+      0%   { width: 0%;   transform: translateX(-5%); }
+      40%  { width: 65%;  transform: translateX(0); }
+      70%  { width: 100%; transform: translateX(0); }
+      100% { width: 35%;  transform: translateX(90%); }
+    }
+    .loader-subtext {
+      font-size: 0.72rem;
+      margin-top: 4px;
+      color: #a5b4fc;
+      opacity: 0.9;
+    }
+    .loader-scan {
+      position: absolute;
+      inset: -40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(56,189,248,0.12) 45%,
+          rgba(56,189,248,0.35) 50%,
+          rgba(56,189,248,0.12) 55%,
+          transparent 100%
+        );
+      mix-blend-mode: screen;
+      animation: scanMove 2.6s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes scanMove {
+      0%   { transform: translateY(-40%); opacity: 0; }
+      10%  { opacity: 0.9; }
+      60%  { opacity: 0.9; }
+      100% { transform: translateY(40%); opacity: 0; }
+    }
+    .loader-terminal {
+      margin-top: 14px;
+      padding: 10px;
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.9), rgba(15,23,42,0.98));
+      border-radius: 10px;
+      border: 1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height: 140px;
+      overflow: hidden;
+      font-size: 0.7rem;
+      line-height: 1.5;
+      color: #c4f1ff;
+      position: relative;
+    }
+    .terminal-line {
+      opacity: 0;
+      transform: translateY(6px);
+      animation: lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1) { animation-delay: 0.1s; }
+    .terminal-line:nth-child(2) { animation-delay: 0.6s; }
+    .terminal-line:nth-child(3) { animation-delay: 1.2s; }
+    .terminal-line:nth-child(4) { animation-delay: 1.9s; }
+    .terminal-line:nth-child(5) { animation-delay: 2.5s; }
+    .terminal-line:nth-child(6) { animation-delay: 3.1s; }
+    .terminal-line:nth-child(7) { animation-delay: 3.7s; }
+    .terminal-line:nth-child(8) { animation-delay: 4.3s; }
+    .terminal-line:nth-child(9) { animation-delay: 4.9s; }
+    @keyframes lineIn {
+      0%   { opacity: 0; transform: translateY(6px); }
+      8%   { opacity: 1; transform: translateY(0); }
+      70%  { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-12px); }
+    }
+    .terminal-cursor {
+      display: inline-block;
+      width: 8px;
+      animation: cursorBlink 0.6s steps(1, start) infinite;
+      color: #38bdf8;
+    }
+    @keyframes cursorBlink {
+      0%, 49%  { opacity: 1; }
+      50%,100% { opacity: 0; }
+    }
+
+    /* HEADER + PAGE */
     .top-banner {
-      background-color: #007BFF;
-      color: white;
-      padding: 18px 0 0 0;
-      font-size: 2rem;
-      letter-spacing: 1px;
-      font-weight: bold;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background: linear-gradient(
+        135deg,
+        rgba(0, 123, 255, 0.82),
+        rgba(3, 105, 161, 0.82)
+      );
+      border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      color: #ffffff;
+      padding: 18px 7vw 4px 7vw;
+      font-size: 1.9rem;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .top-banner::after {
+      content: "";
+      height: 2px;
+      width: 260px;
+      margin-top: 4px;
+      background: linear-gradient(90deg, #ffffff, rgba(255,255,255,0));
+      opacity: 0.9;
     }
     .nav-bar {
       display: flex;
-      justify-content: center;
-      gap: 40px;
-      background-color: #007BFF;
-      padding: 10px 0 18px 0;
-      margin: 0;
+      justify-content: flex-start;
+      gap: 26px;
+      padding-bottom: 10px;
+      margin-top: 4px;
     }
     .nav-bar a {
-      color: white;
+      position: relative;
+      color: #e0f2ff;
       text-decoration: none;
-      font-size: 1.1rem;
+      font-size: 0.98rem;
       font-weight: 500;
-      padding: 5px 18px;
-      border-radius: 12px;
-      transition: background 0.2s, color 0.2s;
+      padding: 7px 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.24), transparent 60%);
+      border: 1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition:
+        transform 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        background 0.18s ease-out;
+    }
+    .nav-bar a::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--blue-light);
+      box-shadow: 0 0 12px rgba(41,216,255,0.9);
     }
     .nav-bar a:hover {
-      background: #0057b8;
-      color: #fffbea;
+      transform: translateY(-1px) scale(1.02);
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.5), transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148, 163, 184, 0.25),
+        0 10px 25px rgba(15,23,42,0.9);
     }
+
+    .page-padding {
+      padding: 26px 7vw 90px 7vw;
+    }
+
     .container {
-      background: white;
+      background:
+        radial-gradient(circle at 0 0, rgba(255,255,255,0.16), transparent 60%),
+        linear-gradient(145deg, rgba(15,23,42,0.96), rgba(15,23,42,0.9));
       max-width: 510px;
-      margin: 35px auto 16px auto;
+      margin: 20px auto 16px auto;
       border-radius: 18px;
-      box-shadow: 0 2px 14px #bbb;
-      padding: 35px 22px 30px 22px;
+      box-shadow:
+        0 18px 40px rgba(15,23,42,0.95),
+        0 0 0 1px rgba(15,23,42,1);
+      padding: 24px 22px 26px 22px;
       text-align: center;
+      color: #e5f1ff;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(148,163,184,0.7);
     }
     .container h2 {
       margin-bottom: 10px;
-      font-size: 1.5rem;
-      color: #007BFF;
+      font-size: 1.4rem;
+      color: #7dd3fc;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
     }
+
     .instructions {
-      background: #e7f3ff;
-      border-left: 7px solid #007BFF;
-      padding: 15px 20px;
-      margin-bottom: 28px;
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.9), rgba(15,23,42,0.98));
+      border-left: 4px solid #38bdf8;
+      padding: 12px 18px;
+      margin-bottom: 20px;
       text-align: left;
-      border-radius: 8px;
-      font-size: 1.08rem;
+      border-radius: 10px;
+      font-size: 0.98rem;
+      color: #dbeafe;
+      box-shadow: inset 0 0 8px rgba(15,23,42,1);
     }
+    .instructions ul {
+      margin: 6px 0 0 18px;
+      padding: 0;
+    }
+
     .row {
       margin-bottom: 13px;
       display: flex;
@@ -68,140 +353,254 @@
       gap: 13px;
       flex-wrap: wrap;
     }
+
     input, textarea {
-      padding: 8px;
-      font-size: 1rem;
+      padding: 8px 9px;
+      font-size: 0.98rem;
       border-radius: 10px;
-      border: 1.4px solid #ccc;
+      border: 1.4px solid rgba(148,163,184,0.9);
       margin-bottom: 7px;
       min-width: 115px;
+      background: rgba(15,23,42,0.96);
+      color: #e5f1ff;
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,1),
+        0 8px 18px rgba(15,23,42,0.95);
+      outline: none;
+      transition:
+        border-color 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        background 0.18s ease-out;
     }
-    textarea { min-height: 34px; resize: vertical; }
+    textarea { min-height: 40px; resize: vertical; }
+    input:focus, textarea:focus {
+      border-color: #38bdf8;
+      box-shadow:
+        0 0 0 1px rgba(56,189,248,0.9),
+        0 12px 26px rgba(15,23,42,1);
+      background: rgba(15,23,42,0.98);
+    }
+
     button {
       padding: 8px 17px;
-      background-color: #007BFF;
+      background: linear-gradient(135deg,#007BFF,#00b4ff);
       color: white;
       border: none;
-      border-radius: 9px;
-      font-size: 1rem;
+      border-radius: 999px;
+      font-size: 0.96rem;
       cursor: pointer;
       font-weight: 500;
       margin-top: 2px;
-      transition: background-color 0.2s;
+      box-shadow:
+        0 8px 18px rgba(37,99,235,0.9),
+        0 0 0 1px rgba(15,23,42,1);
+      transition:
+        background 0.2s,
+        transform 0.12s,
+        box-shadow 0.15s;
     }
     button:hover {
-      background-color: #0057b8;
+      background: linear-gradient(135deg,#1d4ed8,#0284c7);
+      transform: translateY(-1px);
+      box-shadow:
+        0 10px 24px rgba(37,99,235,1),
+        0 0 0 1px rgba(15,23,42,1);
     }
+
     .save-btn {
-      background: #33bf40;
+      background: linear-gradient(135deg,#22c55e,#15803d);
       color: #fff;
-      font-weight: bold;
+      font-weight: 600;
       margin-top: 12px;
     }
     .save-btn:hover {
-      background: #22912b;
+      box-shadow:
+        0 10px 22px rgba(22,163,74,1),
+        0 0 0 1px rgba(15,23,42,1);
     }
     .restore-btn {
       margin-left: 12px;
-      background: #ff9800;
+      background: linear-gradient(135deg,#f59e0b,#b45309);
       color: #fff;
-      font-weight: bold;
+      font-weight: 600;
     }
-    .restore-btn:hover {
-      background: #d37007;
-    }
+
     .notification {
-      color: #007BFF;
+      color: #7dd3fc;
       margin: 8px auto 10px auto;
       font-weight: 500;
-      font-size: 1rem;
+      font-size: 0.98rem;
       letter-spacing: .1px;
       min-height: 18px;
     }
+
+    .flashcard-section {
+      margin-top: 10px;
+    }
+
     .flashcard-box {
-      margin: 25px auto 7px auto;
+      margin: 18px auto 7px auto;
       max-width: 370px;
       min-height: 110px;
-      background: #f3f8ff;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.2), transparent 60%);
       border-radius: 18px;
-      box-shadow: 0 1px 6px #b3d2f7;
+      box-shadow:
+        0 10px 24px rgba(15,23,42,0.95),
+        0 0 0 1px rgba(15,23,42,1);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.27rem;
-      color: #222;
-      font-weight: bold;
+      font-size: 1.2rem;
+      color: #e5f1ff;
+      font-weight: 600;
       cursor: pointer;
       user-select: none;
-      border: 2.5px solid #007bff44;
-      transition: background 0.25s, color 0.2s;
+      border: 1.8px solid rgba(148,163,184,0.9);
+      padding: 10px 12px;
+      text-align: center;
+      transition: background 0.25s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
     }
     .flashcard-box.revealed {
-      background:#007bff19;
-      color: #2f529f;
-      border: 2.5px solid #007BFF;
+      background: radial-gradient(circle at 0 0, rgba(37,99,235,0.28), transparent 70%);
+      color: #e0f2ff;
+      border-color: #38bdf8;
+      box-shadow:
+        0 14px 30px rgba(15,23,42,1),
+        0 0 30px rgba(56,189,248,0.7);
     }
+
     .flashcard-controls {
       margin: 8px auto 5px auto;
       display: flex;
       justify-content: center;
       gap: 14px;
     }
+
     .index-indicator {
-      margin: 2px auto 12px auto;
-      color: #4a72c7;
-      font-size:1.07rem;
+      margin: 2px auto 8px auto;
+      color: #cbd5ff;
+      font-size:1.02rem;
     }
+
+    .bottom-footer {
+      background: linear-gradient(
+        135deg,
+        rgba(15,23,42,0.98),
+        rgba(15,23,42,0.98)
+      );
+      color: #cbd5f5;
+      padding: 14px 7vw 12px 7vw;
+      text-align: center;
+      font-size: 0.9rem;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-top: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
     @media (max-width: 600px) {
-      .container { padding: 7vw 2vw; }
-      .flashcard-box { font-size: 1rem; min-height: 70px;}
-      button {font-size: 0.98rem;}
+      .container { padding: 7vw 3vw; }
+      .flashcard-box { font-size: 1rem; min-height: 80px;}
+      button {font-size: 0.94rem;}
     }
   </style>
 </head>
 <body>
-  <div class="top-banner">
-    Flashcards interactives personnalisées
-    <nav class="nav-bar">
-      <a href="index.html">Accueil</a>
-      <a href="apropos.html">À propos</a>
-    </nav>
-  </div>
-  <div class="page-padding">
-    <div class="container">
-      <h2>Outil de flashcards</h2>
-      <div class="instructions">
-        <b>Instructions :</b>
-        <ul>
-          <li>Ajoute manuellement chaque flashcard : le recto (mot, question, symbole…) et le verso (traduction, formule, solution…).</li>
-          <li>Pour réviser, clique sur la carte pour afficher la réponse ou la masquer.</li>
-          <li>Navigue avec les boutons Précédent / Suivant.</li>
-          <li>Enregistre/restaure tes cartes si besoin.</li>
-          <li style="color:#007BFF;">Pour garder une trace, fais une capture d’écran de la ou des cartes !</li>
-        </ul>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//FLASHCARDS-ENGINE</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Connexion</span>
+        <span class="status-dots">...</span>
       </div>
-      <form id="addFlashcardForm" onsubmit="event.preventDefault(); addFlashcard();">
-        <div class="row">
-          <input type="text" id="frontInput" placeholder="Recto (mot, formule...)" maxlength="100" required>
-          <textarea id="backInput" placeholder="Verso (définition, traduction...)" maxlength="200" required></textarea>
-          <button type="submit">Ajouter la carte</button>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Initialisation des cartes · Sauvegarde locale · Interface révision
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement de l’outil de flashcards personnalisées...</div>
+        <div class="terminal-line">[OK]  Gestion recto/verso et navigation entre les cartes.</div>
+        <div class="terminal-line">[STORE] Vérification des cartes déjà présentes dans le navigateur.</div>
+        <div class="terminal-line">[UI] Activation du thème glassmorphism et des animations.</div>
+        <div class="terminal-line">[OK]  Prêt pour une nouvelle session de révision.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
+    </div>
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content" style="display:none;">
+    <div class="top-banner">
+      Flashcards interactives personnalisées
+      <nav class="nav-bar">
+        <a href="index.html">Accueil</a>
+        <a href="apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="container">
+        <h2>Outil de flashcards</h2>
+        <div class="instructions">
+          <b>Instructions :</b>
+          <ul>
+            <li>Ajoute manuellement chaque flashcard : le recto (mot, question, symbole…) et le verso (traduction, formule, solution…).</li>
+            <li>Pour réviser, clique sur la carte pour afficher la réponse ou la masquer.</li>
+            <li>Navigue avec les boutons Précédent / Suivant.</li>
+            <li>Enregistre/restaure tes cartes si besoin.</li>
+            <li style="color:#7dd3fc;">Pour garder une trace, fais une capture d’écran de la ou des cartes !</li>
+          </ul>
         </div>
-      </form>
-      <div class="notification" id="notif"></div>
-      <div class="flashcard-section" id="flashSection" style="display:none;">
-        <div class="index-indicator" id="cardIndex"></div>
-        <div class="flashcard-box" id="flashcardBox" onclick="toggleFlashcard()"></div>
-        <div class="flashcard-controls">
-          <button onclick="previousCard()">Précédent</button>
-          <button onclick="toggleFlashcard()">Afficher/Masquer</button>
-          <button onclick="nextCard()">Suivant</button>
+
+        <form id="addFlashcardForm" onsubmit="event.preventDefault(); addFlashcard();">
+          <div class="row">
+            <input type="text" id="frontInput" placeholder="Recto (mot, formule...)" maxlength="100" required>
+            <textarea id="backInput" placeholder="Verso (définition, traduction...)" maxlength="200" required></textarea>
+            <button type="submit">Ajouter la carte</button>
+          </div>
+        </form>
+
+        <div class="notification" id="notif"></div>
+
+        <div class="flashcard-section" id="flashSection" style="display:none;">
+          <div class="index-indicator" id="cardIndex"></div>
+          <div class="flashcard-box" id="flashcardBox" onclick="toggleFlashcard()"></div>
+          <div class="flashcard-controls">
+            <button type="button" onclick="previousCard()">Précédent</button>
+            <button type="button" onclick="toggleFlashcard()">Afficher/Masquer</button>
+            <button type="button" onclick="nextCard()">Suivant</button>
+          </div>
+        </div>
+
+        <div style="margin:6px 0 8px 0;">
+          <button type="button" class="save-btn" onclick="saveEDT()">Enregistrer les cartes</button>
+          <button type="button" class="restore-btn" onclick="restoreEDT()">Restaurer</button>
         </div>
       </div>
     </div>
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Comptenu : Perplexity (ia)
+    </div>
   </div>
-  <div class="bottom-footer">
-    © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Comptenu : Perplexity (ia)
-  </div>
+
   <script>
     let flashcards = [];
     let current = 0;
@@ -216,17 +615,17 @@
       document.getElementById('backInput').value = '';
       notif("Carte ajoutée !");
       if (flashcards.length === 1) {
-        // Première carte ajoutée, on l'affiche
         current = 0;
         revealed = false;
         document.getElementById('flashSection').style.display = '';
         showCard();
+      } else {
+        updateFlashSectionState();
       }
-      else updateFlashSectionState();
     }
 
     function showCard() {
-      if(flashcards.length === 0) {
+      if (flashcards.length === 0) {
         document.getElementById('flashSection').style.display = 'none';
         return;
       }
@@ -249,26 +648,31 @@
       revealed = false;
       showCard();
     }
+
     function nextCard() {
       if(flashcards.length === 0) return;
       current = (current + 1) % flashcards.length;
       revealed = false;
       showCard();
     }
+
     function toggleFlashcard() {
       if(flashcards.length === 0) return;
       revealed = !revealed;
       showCard();
     }
+
     function notif(msg) {
       const el = document.getElementById('notif');
       el.textContent = msg;
       setTimeout(()=>{el.textContent='';}, 2000);
     }
+
     function saveEDT() {
       localStorage.setItem('flashcards-sauvegarde', JSON.stringify(flashcards));
       notif("Cartes enregistrées !");
     }
+
     function restoreEDT() {
       const sauvegarde = localStorage.getItem('flashcards-sauvegarde');
       if (!sauvegarde) {notif("Aucune sauvegarde trouvée."); return;}
@@ -277,27 +681,24 @@
       showCard();
       notif("Cartes restaurées !");
     }
+
     function updateFlashSectionState() {
       document.getElementById('flashSection').style.display = flashcards.length ? '' : 'none';
       showCard();
     }
-    // Enregistrement/restauration boutons
+
     window.onload = () => {
       document.getElementById('flashSection').style.display = 'none';
-      // Dynamically create buttons to avoid double form submit with Enter:
-      let btnsDiv = document.createElement('div');
-      btnsDiv.style.margin = "6px 0 8px 0";
-      let saveBtn = document.createElement('button');
-      saveBtn.type = "button"; saveBtn.className = "save-btn"; saveBtn.innerText = "Enregistrer les cartes";
-      saveBtn.onclick = saveEDT;
-      let restBtn = document.createElement('button');
-      restBtn.type = "button"; restBtn.className = "restore-btn"; restBtn.innerText = "Restaurer";
-      restBtn.onclick = restoreEDT;
-      btnsDiv.appendChild(saveBtn); btnsDiv.appendChild(restBtn);
-      document.querySelector('.container').insertBefore(btnsDiv, document.getElementById('notif'));
-      // Restaure si cartes déjà stockées
       if(localStorage.getItem('flashcards-sauvegarde')) restoreEDT();
-    }
+    };
+
+    // Masquer le loader après 4s (change 4000 pour ajuster)
+    setTimeout(() => {
+      const loader = document.getElementById('loader');
+      const main = document.getElementById('main-content');
+      if (loader) loader.style.display = 'none';
+      if (main) main.style.display = 'block';
+    }, 4000);
   </script>
 </body>
 </html>

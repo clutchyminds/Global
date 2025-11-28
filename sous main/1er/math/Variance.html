@@ -1,206 +1,672 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Masterclass — Variance</title>
-    <meta name="description" content="Variance en probabilités et stats : définitions, calculs, propriétés, schéma dynamique, quiz, exercices, applications, erreurs, lexique et histoire pour réussir en spé.">
-    <style>
-        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
-        header { background: linear-gradient(90deg,#eef4fb,#ccefff 90%); color: #243552; padding: 28px 0 12px; text-align: center;}
-        header h1 { font-size: 2.2rem; margin: 0 0 13px; color: #1877f2;}
-        .intro { font-size: 1.01rem;}
-        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.13);}
-        h2 { color: #1877f2; margin-top: 32px;}
-        h3 { color: #f5a623; margin-top: 22px;}
-        ul, ol { margin-left: 1.4em;}
-        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
-        .infos {background: #e3f6ff; border-left: 6px solid #1877f2;}
-        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
-        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
-        .error {background: #ffeaea; border-left: 7px solid #e06359;}
-        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
-        .anecdote {background: #e8fffc; border-left: 7px solid #27c7b3; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
-        .source { font-size: 0.9em; color: #999; text-align: right;}
-        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
-        button:hover { background: #145ac3;}
-        #schema { margin: 1em auto; display: block; background: #e3f6ff; border-radius: 8px; border: 1px solid #1877f2;}
-        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
-        label { margin-right: 14px;}
-        @media (max-width: 768px) { main { padding: 12px 2px; } }
-        table.loi { border-collapse: collapse; margin: 14px auto; }
-        table.loi th, table.loi td { border: 1px solid #d0e5f9; padding: 7px 13px; text-align: center;}
-        table.loi th { background: #e3f6ff; color: #1877f2;}
-    </style>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <meta charset="UTF-8">
+  <title>Global - Probas · Variance</title>
+  <meta name="description" content="Variance en probabilités et stats : définitions, calculs, propriétés, schéma dynamique, quiz, exercices, applications, erreurs, lexique et histoire pour réussir en spé.">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-main:#1877f2;
+      --violet-main:#6366f1;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(129,140,248,0.2), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#111827 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(520px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(129,140,248,0.3),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(129,140,248,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(129,140,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#c7d2fe;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#c7d2fe,transparent);
+      box-shadow:0 0 12px rgba(129,140,248,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#a5b4fc;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(129,140,248,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#c4b5fd,#6366f1,#22c55e);
+      box-shadow:0 0 18px rgba(129,140,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#e0e7ff;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(129,140,248,0.2) 45%,
+          rgba(129,140,248,0.45) 50%,
+          rgba(129,140,248,0.2) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#a5b4fc;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(24,119,242,0.9),rgba(56,189,248,0.95));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#fff;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:230px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#c7d2fe;
+      box-shadow:0 0 12px rgba(199,210,254,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:900px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:26px 26px 30px;
+      color:#e5f1ff;
+    }
+
+    h1,h2{
+      color:#c7d2fe;
+      margin-bottom:10px;
+    }
+    h3{
+      color:#facc6b;
+      margin-top:18px;
+      margin-bottom:10px;
+    }
+    h2{margin-top:26px;font-size:1.4rem;}
+    p,li{font-size:0.98rem;line-height:1.6;}
+    ul,ol{margin-left:1.3em;margin-top:0.3em;margin-bottom:0.8em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      padding:12px 18px;
+      border-radius:10px;
+      margin:1em 0;
+      font-size:0.96rem;
+    }
+    .infos{
+      background:rgba(219,234,254,0.96);
+      color:#0f172a;
+      border-left:4px solid #0ea5e9;
+    }
+    .box-exo{
+      background:rgba(22,163,74,0.14);
+      border-left:4px solid #22c55e;
+    }
+    .box-important{
+      background:rgba(245,158,11,0.14);
+      border-left:4px solid #facc15;
+    }
+    .error{
+      background:rgba(248,113,113,0.14);
+      border-left:4px solid #f87171;
+    }
+    .lexique{
+      background:rgba(59,130,246,0.12);
+      border-left:4px solid #7dd3fc;
+    }
+    .anecdote{
+      background:rgba(224,242,254,0.96);
+      border-left:4px solid #22c55e;
+    }
+
+    #schema{
+      margin:1em auto;
+      display:block;
+      background:#e3f6ff;
+      border-radius:8px;
+      border:1px solid #1877f2;
+      min-height:90px;
+      padding:4px 0;
+    }
+    .reponse{
+      margin-top:0.7em;
+      color:#c7d2fe;
+      font-weight:bold;
+      text-align:center;
+      font-size:0.95rem;
+    }
+    label{
+      margin-right:14px;
+      font-size:0.9rem;
+    }
+
+    table.loi{
+      border-collapse:collapse;
+      margin:14px auto;
+      background:rgba(15,23,42,0.95);
+      color:#e5e7eb;
+    }
+    table.loi th,table.loi td{
+      border:1px solid #1f2937;
+      padding:7px 13px;
+      text-align:center;
+    }
+    table.loi th{
+      background:rgba(30,64,175,0.9);
+      color:#e0f2fe;
+    }
+    table.loi input{
+      width:70px;
+      padding:3px 4px;
+      border-radius:4px;
+      border:1px solid #4b5563;
+      background:#020617;
+      color:#e5e7eb;
+      text-align:center;
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-    <h1>Masterclass — Variance</h1>
-    <div class="intro">
-        Définitions, calculs, propriétés, schéma interactif, quiz, exercices, applications et astuces pour comprendre et utiliser la variance en probabilités et statistiques !
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//proba-VARIANCE</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Variance · dispersion autour de l’espérance, lois discrètes et écart-type.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du module Variance en probabilités et statistiques...</div>
+        <div class="terminal-line">[DEF] Mise en place de V(X) = E[(X−E(X))²] et V(X) = E(X²) − [E(X)]².</div>
+        <div class="terminal-line">[GRAPH] Calcul dynamique de E(X), E(X²), V(X) et de l’écart-type avec histogramme.</div>
+        <div class="terminal-line">[OK]  Prêt : quiz, exercices et exploration de la stabilité des lois.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
     </div>
-</header>
-<main>
-<section>
-    <h2>📝 Définitions & concepts</h2>
-    <div class="infos">
-        La <b>variance</b> d’une variable aléatoire X mesure la dispersion de ses valeurs autour de l’espérance :  
-        <b>\( V(X) = E[(X-E(X))^2] \)</b><br>
-        Pour les variables discrètes :  
-        <b>\( V(X) = E(X^2) - [E(X)]^2 \)</b> (où \( E(X^2) = \sum x_i^2 P(X=x_i) \))
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Probas
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
     </div>
-    <ul>
-        <li>Plus la variance est grande, plus les résultats possibles sont “éparpillés”</li>
-        <li>La racine carrée de la variance est <b>l’écart-type</b>, très utilisée en stats</li>
-    </ul>
-</section>
-<section>
-    <h2>📗 Propriétés et calculs classiques</h2>
-    <ul>
-        <li>Formule de variance pour \( Y = aX+b \) :  
-            - \( V(aX+b) = a^2 V(X) \) (b n’influence pas la dispersion)</li>
-        <li>Variance de la binomiale \( B(n,p) \) :  
-            - \( V(X) = n p (1-p) \)</li>
-        <li>Variance nulle : variable constante (pas de dispersion)</li>
-    </ul>
-    <div class="box-important">
-        Astuce : La variance te renseigne sur la “stabilité” d’un jeu/d’une expérience — faible : résultat proche de la moyenne, forte : résultats très variables !
+
+    <div class="page-padding">
+      <div class="content-card">
+        <h1>Masterclass — Variance</h1>
+        <p style="margin-bottom:1.2em;font-size:0.98rem;color:#e0e7ff;">
+          Définitions, calculs, propriétés, schéma interactif, quiz, exercices, applications et astuces pour comprendre et utiliser la variance en probabilités et statistiques.
+        </p>
+
+        <section>
+          <h2>📝 Définitions & concepts</h2>
+          <div class="infos">
+            La <b>variance</b> d’une variable aléatoire \(X\) mesure la dispersion de ses valeurs autour de l’espérance :<br>
+            \(V(X) = E[(X - E(X))^2]\).<br>
+            Pour une loi discrète : \(V(X) = E(X^2) - [E(X)]^2\) avec \(E(X^2) = \sum x_i^2 P(X=x_i)\).
+          </div>
+          <ul>
+            <li>Plus la variance est grande, plus les résultats possibles sont éparpillés.</li>
+            <li>La racine carrée de la variance est l’<b>écart-type</b>, très utilisé en statistiques.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>📗 Propriétés et calculs classiques</h2>
+          <ul>
+            <li>Pour \(Y = aX + b\) : \(V(Y) = a^2 V(X)\) (la translation par \(b\) ne change pas la dispersion).</li>
+            <li>Pour \(X \sim B(n,p)\) (binomiale) : \(V(X) = n p (1-p)\).</li>
+            <li>Variance nulle ⇔ variable constante (aucune dispersion).</li>
+          </ul>
+          <div class="box-important">
+            Astuce : la variance renseigne sur la « stabilité » d’un jeu ou d’une mesure : faible ⇒ résultats proches de la moyenne, forte ⇒ résultats très variables.
+          </div>
+        </section>
+
+        <section>
+          <h2>🟦 Schéma dynamique : variance pour une loi à 3 valeurs</h2>
+          <table class="loi">
+            <tr><th>x</th><th>P(X=x)</th></tr>
+            <tr><td><input type="number" id="x1" value="0"></td><td><input type="number" id="p1" step="0.01" value="0.1"></td></tr>
+            <tr><td><input type="number" id="x2" value="2"></td><td><input type="number" id="p2" step="0.01" value="0.7"></td></tr>
+            <tr><td><input type="number" id="x3" value="5"></td><td><input type="number" id="p3" step="0.01" value="0.2"></td></tr>
+          </table>
+          <div id="schema"></div>
+          <div id="desc-var"></div>
+        </section>
+
+        <section class="box-exo">
+          <h2>💡 Exercice interactif</h2>
+          <p>Jeu : gains 0 € (p = 0,1), 2 € (p = 0,7), 5 € (p = 0,2). Calculer la variance.</p>
+          <button onclick="afficheReponseVar()">Voir la correction</button>
+          <div class="reponse" id="exo-reponse-var" style="display:none;">
+            \(E(X) = 0\times0{,}1 + 2\times0{,}7 + 5\times0{,}2 = 2{,}4\).<br>
+            \(E(X^2) = 0^2\times0{,}1 + 2^2\times0{,}7 + 5^2\times0{,}2 = 7{,}8\).<br>
+            \(V(X) = 7{,}8 - 2{,}4^2 = 2{,}04\).
+          </div>
+        </section>
+
+        <section class="box-exo">
+          <h2>🔥 Exercice “expert”</h2>
+          <p>Pour \(X \sim \text{Binomiale}(6; 0{,}4)\), calculer la variance.</p>
+          <button onclick="document.getElementById('exo2-reponse-var').style.display='block';">Voir la correction</button>
+          <div class="reponse" id="exo2-reponse-var" style="display:none;">
+            \(V(X) = n p (1-p) = 6\times0{,}4\times0{,}6 = 1{,}44\).
+          </div>
+        </section>
+
+        <section class="quiz">
+          <h2>🎯 Quiz express</h2>
+          <p>La variance mesure :</p>
+          <button onclick="quizVar(0)">La dispersion autour de la moyenne</button>
+          <button onclick="quizVar(1)">L’espérance</button>
+          <button onclick="quizVar(2)">La probabilité la plus forte</button>
+          <div class="reponse" id="rep-quiz-var"></div>
+
+          <p>L’écart-type est :</p>
+          <button onclick="quizVar2(0)">La racine carrée de la variance</button>
+          <button onclick="quizVar2(1)">La somme des probabilités</button>
+          <button onclick="quizVar2(2)">Le carré de la moyenne</button>
+          <div class="reponse" id="rep-quiz-var2"></div>
+        </section>
+
+        <section class="box-important">
+          <h2>🌐 Applications concrètes</h2>
+          <ul>
+            <li>Finance / Jeux : mesure de risque, stabilité d’une stratégie.</li>
+            <li>Statistiques : qualité d’un estimateur (variance faible = estimateur plus précis).</li>
+            <li>Physique : incertitudes de mesure, phénomènes de diffusion.</li>
+            <li>Info / IA : analyse de distributions, choix et évaluation de modèles.</li>
+          </ul>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes à éviter</h2>
+          <ul>
+            <li>Oublier de calculer \(E(X^2)\) ou mettre le carré au mauvais endroit.</li>
+            <li>Confondre variance et écart-type.</li>
+            <li>Penser qu’une variance nulle est liée à une probabilité 1 plutôt qu’à une variable constante.</li>
+            <li>Oublier le facteur \(a^2\) quand on passe de \(X\) à \(Y = aX + b\).</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique express</h2>
+          <b>Variance</b> : mesure de dispersion autour de l’espérance.<br>
+          <b>Espérance</b> : moyenne théorique d’une variable aléatoire.<br>
+          <b>Écart-type</b> : racine carrée de la variance.<br>
+          <b>Pondération</b> : poids attribué à chaque valeur via sa probabilité.
+        </section>
+
+        <section class="rubrique">
+          <h3>📖 Petite histoire</h3>
+          <ul>
+            <li>La variance apparaît au XIXᵉ siècle dans les travaux de Gauss, Laplace et d’autres sur les erreurs de mesure.</li>
+            <li>Elle est aujourd’hui au cœur des tests statistiques, de l’analyse de risques et de l’IA moderne.</li>
+          </ul>
+          <div class="source">Source : histoire des statistiques et de la théorie des probabilités, ressources de cours et encyclopédies.</div>
+        </section>
+
+        <section class="anecdote">
+          <b>Astuce-mémoire :</b> « Variance élevée : les valeurs partent dans tous les sens. Variance faible : résultats serrés et plus “fiables”. »
+        </section>
+
+        <section>
+          <h2>💡 Méthodologie pour progresser</h2>
+          <ul>
+            <li>Calculer d’abord \(E(X)\) puis \(E(X^2)\), et seulement ensuite \(V(X) = E(X^2) - [E(X)]^2\).</li>
+            <li>Utiliser le schéma interactif pour voir comment changer la loi modifie la variance.</li>
+            <li>Passer régulièrement à l’écart-type, plus intuitif car dans les mêmes unités que \(X\).</li>
+            <li>Relier toujours variance et stabilité dans les exercices de probabilités et de statistiques.</li>
+          </ul>
+        </section>
+      </div>
     </div>
-</section>
-<section>
-    <h2>🟦 Schéma dynamique : calcul sur loi à 3 valeurs</h2>
-    <table class="loi">
-        <tr><th>x</th><th>P(X=x)</th></tr>
-        <tr><td><input type="number" id="x1" value="0"></td><td><input type="number" id="p1" step="0.01" value="0.1"></td></tr>
-        <tr><td><input type="number" id="x2" value="2"></td><td><input type="number" id="p2" step="0.01" value="0.7"></td></tr>
-        <tr><td><input type="number" id="x3" value="5"></td><td><input type="number" id="p3" step="0.01" value="0.2"></td></tr>
-    </table>
-    <div id="schema"></div>
-    <div id="desc-var"></div>
-</section>
-<section class="box box-exo">
-    <h2>💡 Exercice interactif</h2>
-    <p>On joue à un jeu : gains 0€ (p=0,1), 2€ (p=0,7), 5€ (p=0,2). Calcule la variance.</p>
-    <button onclick="afficheReponseVar()">Voir la correction</button>
-    <div class="reponse" id="exo-reponse-var" style="display:none;">
-        E(X) = 0×0,1 + 2×0,7 + 5×0,2 = 0 + 1,4 + 1 = 2,4 <br>
-        E(X²) = 0²×0,1 + 2²×0,7 + 5²×0,2 = 0 + 2,8 + 5 = 7,8 <br>
-        Variance : V(X) = 7,8 - 2,4² = 7,8 - 5,76 = 2,04
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
     </div>
-</section>
-<section class="box-exo">
-    <h2>🔥 Exercice “expert”</h2>
-    <p>X~Binomiale(6;0,4). Calcule la variance.</p>
-    <button onclick="document.getElementById('exo2-reponse-var').style.display='block';">Voir la correction</button>
-    <div class="reponse" id="exo2-reponse-var" style="display:none;">
-        Variance : V(X) = n×p×(1-p) = 6×0,4×0,6 = 1,44
-    </div>
-</section>
-<section class="quiz">
-    <h2>🎯 Quiz express</h2>
-    <p>La variance mesure :</p>
-    <button onclick="quizVar(0)">La dispersion autour de la moyenne</button>
-    <button onclick="quizVar(1)">L’espérance</button>
-    <button onclick="quizVar(2)">La probabilité la plus forte</button>
-    <div class="reponse" id="rep-quiz-var"></div>
-    <p>L’écart-type est :</p>
-    <button onclick="quizVar2(0)">La racine carrée de la variance</button>
-    <button onclick="quizVar2(1)">La somme des proba</button>
-    <button onclick="quizVar2(2)">Le carré de la moyenne</button>
-    <div class="reponse" id="rep-quiz-var2"></div>
-</section>
-<section class="box-important">
-    <h2>🌐 Applications concrètes</h2>
-    <ul>
-        <li>Finance/Jeux : calcul de risque, stabilité d’une stratégie</li>
-        <li>Stats : mesurer la fiabilité d’une estimation (plus la variance est faible, meilleur est l’estimateur)</li>
-        <li>Physique : propagation, incertitude de mesure, lois de diffusion…</li>
-        <li>Info/IA : analyse des distributions, sélection de modèles</li>
-    </ul>
-</section>
-<section class="error">
-    <h2>❌ Erreurs fréquentes à éviter</h2>
-    <ul>
-        <li>Oublier E(X²) ou mal calculer la pondération (carré AVANT multiplication)</li>
-        <li>Confondre variance et écart-type</li>
-        <li>Penser qu’une variance nulle signifie forcément “proba 1” (juste variable constante)</li>
-        <li>Ignorer la formule pour Y=aX+b (bien penser au carré sur a !)</li>
-    </ul>
-</section>
-<section class="lexique">
-    <h2>📚 Lexique express</h2>
-    <b>Variance</b>: mesure de dispersion<br>
-    <b>Espérance</b>: moyenne attendue<br>
-    <b>Ecart-type</b>: racine de la variance<br>
-    <b>Pondération</b>: “poids” attribué à chaque valeur
-</section>
-<section class="rubrique">
-    <h3>📖 Petite histoire</h3>
-    <ul>
-        <li>La variance apparaît dès le XIXe siècle (Gauss, Laplace) pour mieux évaluer la qualité des mesures et prédictions</li>
-        <li>Essentielle pour tout test statistique, analyse de risques, IA moderne</li>
-    </ul>
-    <div class="source">Source : histoire des stats et proba, Wikipedia</div>
-</section>
-<section class="anecdote">
-    <b>Astuce-mémoire</b>: “Variance élevée : les valeurs sont dans tous les sens ; variance faible : fiable et stable !”
-</section>
-<section>
-    <h2>💡 Méthodologie pour progresser</h2>
-    <ul>
-        <li>Teste et recalcule E(X) et E(X²), puis la différence</li>
-        <li>Utilise le schéma interactif, modifie les lois/dispersions pour voir l’effet</li>
-        <li>Pense toujours à l’écart-type (plus manipulable) !</li>
-        <li>Relie variance et stabilité pour comprendre l’intérêt dans les QCM, stats ou physique</li>
-    </ul>
-</section>
-</main>
-<script>
-function quizVar(rep) {
-    let repElem = document.getElementById("rep-quiz-var");
-    repElem.textContent = (rep === 0) ? "Bravo ! La variance quantifie la dispersion autour de la moyenne." : "Non, attention, ce n’est pas une moyenne ni une proba directe.";
-}
-function quizVar2(rep) {
-    let repElem = document.getElementById("rep-quiz-var2");
-    repElem.textContent = (rep === 0) ? "Bonne réponse ! L’écart-type est la racine carrée de la variance." : "Non, revois la définition !";
-}
-function afficheReponseVar() {
-    document.getElementById("exo-reponse-var").style.display = "block";
-}
-// Schéma dynamique variance
-function drawVar() {
-    let x1 = parseFloat(document.getElementById("x1").value);
-    let x2 = parseFloat(document.getElementById("x2").value);
-    let x3 = parseFloat(document.getElementById("x3").value);
-    let p1 = parseFloat(document.getElementById("p1").value);
-    let p2 = parseFloat(document.getElementById("p2").value);
-    let p3 = parseFloat(document.getElementById("p3").value);
-    let E = x1*p1 + x2*p2 + x3*p3;
-    let E2 = x1*x1*p1 + x2*x2*p2 + x3*x3*p3;
-    let V = E2-E*E;
-    let sV = Math.sqrt(V);
-    document.getElementById("desc-var").innerHTML =
-        "Variance : "+V.toFixed(2)+
-        "<br>Ecart-type : "+sV.toFixed(2)+
-        "<br>Somme des proba : "+(p1+p2+p3).toFixed(2);
-    // Histogramme
-    let canvas = document.createElement('canvas');
-    canvas.width=320; canvas.height=80;
-    let ctx = canvas.getContext("2d");
-    let vals = [x1,x2,x3], ps = [p1,p2,p3];
-    for(let i=0;i<3;i++){
-        ctx.fillStyle="#1877f2"; ctx.fillRect(20+90*i,70-ps[i]*60,40,ps[i]*60);
-        ctx.fillStyle="#222";ctx.fillText("x="+vals[i],32+90*i,75);
-        ctx.fillText("p="+ps[i],32+90*i,62-ps[i]*60);
+  </div>
+
+  <script>
+    // Masquer le loader et afficher le contenu après 3 secondes[web:38][web:2][web:12][web:29]
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
+
+    function quizVar(rep) {
+      let repElem = document.getElementById("rep-quiz-var");
+      repElem.textContent = (rep === 0)
+        ? "Bravo ! La variance mesure bien la dispersion autour de la moyenne."
+        : "Non : la variance ne donne ni l’espérance ni la valeur la plus probable.";
     }
-    document.getElementById("schema").innerHTML="";
-    document.getElementById("schema").appendChild(canvas);
-}
-drawVar();
-["x1","x2","x3","p1","p2","p3"].forEach(id=>{
-    document.getElementById(id).addEventListener("input",drawVar);
-});
-</script>
+    function quizVar2(rep) {
+      let repElem = document.getElementById("rep-quiz-var2");
+      repElem.textContent = (rep === 0)
+        ? "Bonne réponse ! L’écart-type est la racine carrée de la variance."
+        : "Faux : l’écart-type n’est ni une somme de probabilités ni le carré d’une moyenne.";
+    }
+    function afficheReponseVar() {
+      document.getElementById("exo-reponse-var").style.display = "block";
+    }
+
+    // Schéma dynamique variance
+    function drawVar() {
+      let x1 = parseFloat(document.getElementById("x1").value);
+      let x2 = parseFloat(document.getElementById("x2").value);
+      let x3 = parseFloat(document.getElementById("x3").value);
+      let p1 = parseFloat(document.getElementById("p1").value);
+      let p2 = parseFloat(document.getElementById("p2").value);
+      let p3 = parseFloat(document.getElementById("p3").value);
+
+      let E = x1*p1 + x2*p2 + x3*p3;
+      let E2 = x1*x1*p1 + x2*x2*p2 + x3*x3*p3;
+      let V = E2 - E*E;
+      let sV = Math.sqrt(V);
+      let sumP = p1+p2+p3;
+
+      document.getElementById("desc-var").innerHTML =
+        "E(X) ≈ "+E.toFixed(2)+
+        "<br>Variance V(X) ≈ "+V.toFixed(2)+
+        "<br>Écart-type σ ≈ "+sV.toFixed(2)+
+        "<br>Somme des probabilités = "+sumP.toFixed(2);
+
+      // Histogramme
+      let canvas = document.createElement('canvas');
+      canvas.width=320; canvas.height=80;
+      let ctx = canvas.getContext("2d");
+      ctx.clearRect(0,0,320,80);
+
+      let vals = [x1,x2,x3], ps = [p1,p2,p3];
+      for(let i=0;i<3;i++){
+        ctx.fillStyle="#1877f2";
+        ctx.fillRect(20+90*i,70-ps[i]*60,40,ps[i]*60);
+        ctx.fillStyle="#0f172a";
+        ctx.font="11px Arial";
+        ctx.fillText("x="+vals[i],32+90*i,75);
+        ctx.fillText("p="+ps[i].toFixed(2),32+90*i,62-ps[i]*60);
+      }
+      let container = document.getElementById("schema");
+      container.innerHTML="";
+      container.appendChild(canvas);
+    }
+    drawVar();
+    ["x1","x2","x3","p1","p2","p3"].forEach(id=>{
+      document.getElementById(id).addEventListener("input",drawVar);
+    });
+  </script>
 </body>
 </html>

@@ -4,63 +4,364 @@
   <meta charset="UTF-8" />
   <title>Emploi du temps personnalisé</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
+    /* RESET + VARIABLES */
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
+    :root {
+      --blue-light: #29d8ff;
+      --blue-main: #007BFF;
+      --blue-dark: #004a9f;
+      --white: #ffffff;
+    }
+
+    /* FOND GLOBAL */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
+        linear-gradient(135deg, #020617 0%, #031633 40%, #001a3b 100%);
+      color: #e5f1ff;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.08;
+      mix-blend-mode: soft-light;
+      background-image:
+        linear-gradient(0deg, rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 3px 3px, 3px 3px;
+      z-index: -1;
+    }
+
+    /* ===== LOADER HACKING EDT ===== */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, #0b1220 0, #020617 45%, #000 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      overflow: hidden;
+    }
+    .loader-hud {
+      position: relative;
+      width: min(520px, 90vw);
+      padding: 26px 26px 30px 26px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 0 0, rgba(56,189,248,0.26), transparent 60%),
+        linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
+      border: 1px solid rgba(56,189,248,0.8);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(56,189,248,0.7);
+      color: #e5f1ff;
+      font-family: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      overflow: hidden;
+    }
+    .loader-hud::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size: 100% 3px;
+      mix-blend-mode: soft-light;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .loader-title {
+      font-size: 0.9rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #7dd3fc;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .loader-title::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 230px;
+      height: 2px;
+      background: linear-gradient(90deg, #7dd3fc, transparent);
+      box-shadow: 0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 1rem;
+      margin-bottom: 14px;
+    }
+    .status-label {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 600;
+    }
+    .status-dots {
+      display: inline-block;
+      min-width: 18px;
+      animation: blinkDots 1s steps(2, start) infinite;
+      color: #38bdf8;
+    }
+    @keyframes blinkDots {
+      0%, 50% { opacity: 1; }
+      50.01%, 100% { opacity: 0; }
+    }
+    .loader-bar {
+      position: relative;
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.9);
+      background: rgba(15,23,42,0.9);
+      overflow: hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom: 10px;
+    }
+    .loader-bar-fill {
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      background: linear-gradient(90deg, #22c1c3, #29d8ff, #007bff);
+      box-shadow: 0 0 18px rgba(56,189,248,0.9);
+      animation: barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress {
+      0%   { width: 0%;   transform: translateX(-5%); }
+      40%  { width: 65%;  transform: translateX(0); }
+      70%  { width: 100%; transform: translateX(0); }
+      100% { width: 35%;  transform: translateX(90%); }
+    }
+    .loader-subtext {
+      font-size: 0.72rem;
+      margin-top: 4px;
+      color: #a5b4fc;
+      opacity: 0.9;
+    }
+    .loader-scan {
+      position: absolute;
+      inset: -40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(56,189,248,0.12) 45%,
+          rgba(56,189,248,0.35) 50%,
+          rgba(56,189,248,0.12) 55%,
+          transparent 100%
+        );
+      mix-blend-mode: screen;
+      animation: scanMove 2.6s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes scanMove {
+      0%   { transform: translateY(-40%); opacity: 0; }
+      10%  { opacity: 0.9; }
+      60%  { opacity: 0.9; }
+      100% { transform: translateY(40%); opacity: 0; }
+    }
+    .loader-terminal {
+      margin-top: 14px;
+      padding: 10px 10px 8px 10px;
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.9), rgba(15,23,42,0.98));
+      border-radius: 10px;
+      border: 1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height: 140px;
+      overflow: hidden;
+      font-size: 0.7rem;
+      line-height: 1.5;
+      color: #c4f1ff;
+      position: relative;
+    }
+    .terminal-line {
+      opacity: 0;
+      transform: translateY(6px);
+      animation: lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1) { animation-delay: 0.1s; }
+    .terminal-line:nth-child(2) { animation-delay: 0.6s; }
+    .terminal-line:nth-child(3) { animation-delay: 1.2s; }
+    .terminal-line:nth-child(4) { animation-delay: 1.9s; }
+    .terminal-line:nth-child(5) { animation-delay: 2.5s; }
+    .terminal-line:nth-child(6) { animation-delay: 3.1s; }
+    .terminal-line:nth-child(7) { animation-delay: 3.7s; }
+    .terminal-line:nth-child(8) { animation-delay: 4.3s; }
+    .terminal-line:nth-child(9) { animation-delay: 4.9s; }
+    @keyframes lineIn {
+      0%   { opacity: 0; transform: translateY(6px); }
+      8%   { opacity: 1; transform: translateY(0); }
+      70%  { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-12px); }
+    }
+    .terminal-cursor {
+      display: inline-block;
+      width: 8px;
+      animation: cursorBlink 0.6s steps(1, start) infinite;
+      color: #38bdf8;
+    }
+    @keyframes cursorBlink {
+      0%, 49%  { opacity: 1; }
+      50%,100% { opacity: 0; }
+    }
+
+    /* CONTENU PRINCIPAL (fade-in) */
+    #main-content {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.7s ease forwards;
+      animation-delay: 0.2s;
+      display: none;
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* HEADER + NAV GLASS */
     .top-banner {
-      background-color: #007BFF;
-      color: white;
-      padding: 18px 0 0 0;
-      font-size: 2rem;
-      letter-spacing: 1px;
-      font-weight: bold;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background: linear-gradient(
+        135deg,
+        rgba(0, 123, 255, 0.82),
+        rgba(3, 105, 161, 0.82)
+      );
+      border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      color: var(--white);
+      padding: 18px 7vw 4px 7vw;
+      font-size: 1.9rem;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .top-banner::after {
+      content: "";
+      height: 2px;
+      width: 260px;
+      margin-top: 4px;
+      background: linear-gradient(90deg, var(--white), rgba(255,255,255,0));
+      opacity: 0.9;
     }
     .nav-bar {
       display: flex;
-      justify-content: center;
-      gap: 40px;
-      background-color: #007BFF;
-      padding: 10px 0 18px 0;
-      margin: 0;
+      justify-content: flex-start;
+      gap: 26px;
+      padding-bottom: 10px;
+      margin-top: 4px;
     }
     .nav-bar a {
-      color: white;
+      position: relative;
+      color: #e0f2ff;
       text-decoration: none;
-      font-size: 1.1rem;
+      font-size: 0.98rem;
       font-weight: 500;
-      padding: 5px 18px;
-      border-radius: 12px;
-      transition: background 0.2s, color 0.2s;
+      padding: 7px 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.24), transparent 60%);
+      border: 1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition:
+        transform 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        background 0.18s ease-out;
+    }
+    .nav-bar a::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--blue-light);
+      box-shadow: 0 0 12px rgba(41,216,255,0.9);
     }
     .nav-bar a:hover {
-      background: #0057b8;
-      color: #fffbea;
+      transform: translateY(-1px) scale(1.02);
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.5), transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148, 163, 184, 0.25),
+        0 10px 25px rgba(15,23,42,0.9);
     }
+
+    .page-padding { padding: 26px 7vw 90px 7vw; }
+
+    /* CONTENEUR GLASS EDT */
     .container {
-      background: white;
-      max-width: 800px;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.16), transparent 60%),
+                  linear-gradient(145deg, rgba(15,23,42,0.96), rgba(15,23,42,0.9));
+      max-width: 900px;
       margin: 35px auto 16px auto;
       border-radius: 18px;
-      box-shadow: 0 2px 14px #bbb;
-      padding: 35px 20px;
+      box-shadow:
+        0 18px 40px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(15,23,42,0.9);
+      padding: 26px 20px 24px 20px;
       text-align: center;
+      color: #e5f1ff;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(148,163,184,0.7);
     }
     .container h2 {
       margin-bottom: 10px;
       font-size: 1.5rem;
-      color: #007BFF;
+      color: #7dd3fc;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
     .instructions {
-      background: #e7f3ff;
-      border-left: 7px solid #007BFF;
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.88), rgba(15,23,42,0.98));
+      border-left: 4px solid #38bdf8;
       padding: 15px 20px;
-      margin-bottom: 28px;
+      margin-bottom: 22px;
       text-align: left;
-      border-radius: 8px;
-      font-size: 1.08rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      color: #dbeafe;
+      box-shadow: inset 0 0 12px rgba(15,23,42,1);
     }
+    .instructions ul {
+      margin: 6px 0 0 18px;
+      padding: 0;
+    }
+
     .row {
       margin-bottom: 19px;
       display: flex;
@@ -69,46 +370,73 @@
       flex-wrap: wrap;
     }
     input, select {
-      padding: 7px;
-      font-size: 1rem;
-      border-radius: 9px;
-      border: 1.5px solid #ccc;
+      padding: 7px 9px;
+      font-size: 0.98rem;
+      border-radius: 11px;
+      border: 1.5px solid rgba(148,163,184,0.9);
       margin-bottom: 7px;
       min-width: 110px;
+      background: rgba(15,23,42,0.96);
+      color: #e5f1ff;
+      outline: none;
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.9),
+        0 8px 18px rgba(15,23,42,0.95);
+      transition:
+        border-color 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        background 0.18s ease-out;
     }
+    input:focus, select:focus {
+      border-color: #38bdf8;
+      box-shadow:
+        0 0 0 1px rgba(56,189,248,0.9),
+        0 12px 26px rgba(15,23,42,1);
+      background: rgba(15,23,42,0.98);
+    }
+
     button {
       padding: 8px 24px;
-      background-color: #007BFF;
+      background: linear-gradient(135deg, #007BFF, #00b4ff);
       color: white;
       border: none;
-      border-radius: 9px;
-      font-size: 1rem;
+      border-radius: 999px;
+      font-size: 0.98rem;
       cursor: pointer;
       font-weight: 500;
       margin-top: 4px;
-      transition: background-color 0.2s;
+      box-shadow:
+        0 8px 18px rgba(37,99,235,0.9),
+        0 0 0 1px rgba(15,23,42,1);
+      transition:
+        background 0.2s,
+        transform 0.12s,
+        box-shadow 0.15s;
     }
     button:hover {
-      background-color: #0057b8;
+      background: linear-gradient(135deg, #1d4ed8, #0284c7);
+      transform: translateY(-1px);
+      box-shadow:
+        0 10px 24px rgba(37,99,235,1),
+        0 0 0 1px rgba(15,23,42,1);
     }
+
     .save-btn {
       margin-top: 10px;
-      background: #33bf40;
-      color: #fff;
-      font-weight: bold;
+      background: linear-gradient(135deg, #22c55e, #15803d);
+      font-weight: 600;
     }
     .save-btn:hover {
-      background: #22912b;
+      box-shadow:
+        0 10px 22px rgba(22,163,74,1),
+        0 0 0 1px rgba(15,23,42,1);
     }
     .restore-btn {
       margin-left: 15px;
-      background: #ff9800;
-      color: #fff;
-      font-weight: bold;
+      background: linear-gradient(135deg, #f59e0b, #b45309);
+      font-weight: 600;
     }
-    .restore-btn:hover {
-      background: #d37007;
-    }
+
     table {
       width: 100%;
       border-collapse: separate;
@@ -117,51 +445,67 @@
       font-size: 1rem;
       overflow-x: auto;
       border-radius: 12px;
-      background: #f8faff;
+      background: #020617;
+      color: #e5f1ff;
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,1),
+        0 12px 26px rgba(15,23,42,0.95);
     }
     th, td {
-      border: 1.8px solid #b7dbf7;
+      border: 1.8px solid #1e3a8a;
       padding: 10px 2px;
       text-align: center;
       min-width: 98px;
       border-radius: 13px !important;
     }
     th {
-      background: #007BFF;
+      background: linear-gradient(135deg, #1d4ed8, #0ea5e9);
       color: white;
       position: sticky;
       top: 0;
       z-index: 2;
     }
     td {
-      background: #f0f7ff;
+      background: #020617;
       font-weight: 500;
     }
     td.cours {
       color: #fff;
-      font-weight: bold;
+      font-weight: 600;
+      text-shadow: 0 1px 3px #000;
     }
+
+    .notification {
+      color: #7dd3fc;
+      margin: 8px auto 10px auto;
+      font-weight: 500;
+      font-size: 0.98rem;
+      letter-spacing: .1px;
+      min-height: 18px;
+    }
+
     .bottom-footer {
-      background-color: #333;
-      color: #eee;
-      padding: 16px 0;
+      background: linear-gradient(
+        135deg,
+        rgba(15,23,42,0.98),
+        rgba(15,23,42,0.98)
+      );
+      color: #cbd5f5;
+      padding: 14px 7vw 12px 7vw;
       text-align: center;
-      font-size: 1rem;
+      font-size: 0.9rem;
       position: fixed;
       left: 0;
       right: 0;
       bottom: 0;
-      box-shadow: 0 -1px 8px #bbb;
+      border-top: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
     }
-    .page-padding { padding-bottom: 60px; }
-    .notification {
-      color: #007BFF;
-      margin: 8px auto 10px auto;
-      font-weight: 500;
-      font-size: 1rem;
-      letter-spacing: .1px;
-      min-height: 18px;
-    }
+
     @media (max-width: 900px) {
       .container { max-width: 99vw; }
       table { font-size: 0.92rem; }
@@ -174,60 +518,101 @@
   </style>
 </head>
 <body>
-  <div class="top-banner">
-    Emploi du temps personnalisé
-    <nav class="nav-bar">
-      <a href="index.html">Accueil</a>
-      <a href="apropos.html">À propos</a>
-    </nav>
-  </div>
-  <div class="page-padding">
-    <div class="container">
-      <h2>Crée ton emploi du temps</h2>
-      <div class="instructions">
-        <b>Instructions :</b>
-        <ul>
-          <li>Choisis le nombre de jours et le nombre de plages horaires (<b>Plage 1, Plage 2 …</b>), puis indique pour chaque plage l’heure de début et de fin.</li>
-          <li>Ajoute chaque cours à la liste avec son nom et sa couleur (« Ajouter cours »).</li>
-          <li>Pour placer un cours, sélectionne-le, choisis le jour (ex : lundi) et la plage horaire voulue, puis clique sur « Placer le cours ».</li>
-          <li>Le tableau se met à jour <b>directement</b> : plus besoin de cliquer sur "générer".</li>
-          <li>(Option) Enregistre ou restaure ton tableau à tout moment.</li>
-          <li style="color:#007BFF;">Pour imprimer ou partager, fais une capture d’écran directement depuis le site !</li>
-        </ul>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//EDT-ENGINE</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Connexion</span>
+        <span class="status-dots">...</span>
       </div>
-      <form id="edtForm" onsubmit="event.preventDefault();">
-        <div class="row">
-          <select id="nbDays">
-            <option value="5">Semaine (5 jours)</option>
-            <option value="6">Semaine + samedi (6 jours)</option>
-            <option value="7">Semaine complète (7 jours)</option>
-          </select>
-          <input type="number" id="nbSlots" min="1" max="12" value="6" placeholder="Nombre de plages" required>
-        </div>
-        <div class="row" id="hoursRow"></div>
-        <div class="row" id="subjectsRow">
-          <input type="text" id="subjectName" placeholder="Nom du cours">
-          <input type="color" id="subjectColor" value="#007BFF">
-          <button type="button" class="add-btn" id="addSubjectBtn">Ajouter cours</button>
-        </div>
-        <div class="row">
-          <select id="subjectsSelect"></select>
-          <input type="text" id="slotDay" placeholder="Jour (ex: lundi)">
-          <select id="slotHour"></select>
-          <button type="button" id="addSlotBtn">Placer le cours</button>
-        </div>
-      </form>
-      <div>
-        <button class="save-btn" onclick="saveEDT()">Enregistrer l’emploi du temps</button>
-        <button class="restore-btn" onclick="restoreEDT()">Restaurer</button>
-        <div class="notification" id="notif"></div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
       </div>
-      <div id="tableContainer"></div>
+
+      <div class="loader-subtext">
+        Plages horaires · Matières · Sauvegarde locale
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du générateur d’emploi du temps personnalisé...</div>
+        <div class="terminal-line">[OK]  Gestion des jours, plages horaires et couleurs de cours.</div>
+        <div class="terminal-line">[STORE] Activation de l’enregistrement dans le navigateur (localStorage).</div>
+        <div class="terminal-line">[UI] Mise à jour automatique du tableau à chaque modification.</div>
+        <div class="terminal-line">[HELP] Préparation des messages de notification utilisateur.</div>
+        <div class="terminal-line">[OK]  Interface prête pour organiser ta semaine.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
     </div>
   </div>
-  <div class="bottom-footer">
-    © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Comptenu : Perplexity (ia)
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Emploi du temps personnalisé
+      <nav class="nav-bar">
+        <a href="index.html">Accueil</a>
+        <a href="apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="container">
+        <h2>Crée ton emploi du temps</h2>
+        <div class="instructions">
+          <b>Instructions :</b>
+          <ul>
+            <li>Choisis le nombre de jours et le nombre de plages horaires (<b>Plage 1, Plage 2 …</b>), puis indique pour chaque plage l’heure de début et de fin.</li>
+            <li>Ajoute chaque cours à la liste avec son nom et sa couleur (« Ajouter cours »).</li>
+            <li>Pour placer un cours, sélectionne-le, choisis le jour (ex : lundi) et la plage horaire voulue, puis clique sur « Placer le cours ».</li>
+            <li>Le tableau se met à jour <b>directement</b> : plus besoin de cliquer sur "générer".</li>
+            <li>(Option) Enregistre ou restaure ton tableau à tout moment.</li>
+            <li style="color:#7dd3fc;">Pour imprimer ou partager, fais une capture d’écran directement depuis le site !</li>
+          </ul>
+        </div>
+
+        <form id="edtForm" onsubmit="event.preventDefault();">
+          <div class="row">
+            <select id="nbDays">
+              <option value="5">Semaine (5 jours)</option>
+              <option value="6">Semaine + samedi (6 jours)</option>
+              <option value="7">Semaine complète (7 jours)</option>
+            </select>
+            <input type="number" id="nbSlots" min="1" max="12" value="6" placeholder="Nombre de plages" required>
+          </div>
+          <div class="row" id="hoursRow"></div>
+          <div class="row" id="subjectsRow">
+            <input type="text" id="subjectName" placeholder="Nom du cours">
+            <input type="color" id="subjectColor" value="#007BFF">
+            <button type="button" class="add-btn" id="addSubjectBtn">Ajouter cours</button>
+          </div>
+          <div class="row">
+            <input type="text" id="slotDay" placeholder="Jour (ex: lundi)">
+            <select id="slotHour"></select>
+            <select id="subjectsSelect"></select>
+            <button type="button" id="addSlotBtn">Placer le cours</button>
+          </div>
+        </form>
+
+        <div>
+          <button class="save-btn" onclick="saveEDT()">Enregistrer l’emploi du temps</button>
+          <button class="restore-btn" onclick="restoreEDT()">Restaurer</button>
+          <div class="notification" id="notif"></div>
+        </div>
+
+        <div id="tableContainer"></div>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (ia)
+    </div>
   </div>
+
   <script>
     const JOURS = [
       "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"
@@ -243,10 +628,10 @@
       let html = '';
       for (let i = 0; i < nbSlots; i++) {
         html +=
-          `<div style="display:inline-block;">
-            <label style="font-size:0.98rem;">Plage ${i+1} :</label>
+          `<div style="display:inline-block;margin:4px 6px;">
+            <label style="font-size:0.93rem;display:block;margin-bottom:3px;">Plage ${i+1}</label>
             <input type="time" id="hourStart${i}" value="08:00">
-            <span>à</span>
+            <span style="margin:0 4px;">à</span>
             <input type="time" id="hourEnd${i}" value="09:00">
           </div>`;
       }
@@ -340,7 +725,7 @@
       for (let d = 0; d < nbDays; d++) html += `<th>${JOURS[d]}</th>`;
       html += '</tr>';
       for (let s = 0; s < nbSlots; s++) {
-        html += `<tr><td>Plage ${s+1} <br><span style="font-size:0.93em;">${hours[s].debut} - ${hours[s].fin}</span></td>`;
+        html += `<tr><td>Plage ${s+1} <br><span style="font-size:0.9em;color:#cbd5ff;">${hours[s].debut} - ${hours[s].fin}</span></td>`;
         for (let d = 0; d < nbDays; d++) {
           let day = JOURS[d];
           let slot = placement[day] && placement[day][s] ? placement[day][s] : null;
@@ -392,7 +777,7 @@
       setTimeout(()=>{el.textContent='';}, 3200);
     }
 
-    // Responsive mise à jour : plages, jours, sujets, toutes modifications → tableau mis à jour
+    // Initialisation
     window.onload = () => {
       updateDays();
       renderHoursInputs();
@@ -409,6 +794,12 @@
       document.getElementById('addSubjectBtn').addEventListener('click', addSubject);
       document.getElementById('addSlotBtn').addEventListener('click', addSlot);
     };
+
+    // Masquer le loader après 5 s
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('main-content').style.display = 'block';
+    }, 5000);
   </script>
 </body>
 </html>

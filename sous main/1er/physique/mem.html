@@ -1,406 +1,671 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Physique-Chimie : La matière à l’échelle atomique et moléculaire</title>
-    <meta name="description" content="Cours interactif avec LaTeX, QCM dynamiques, exercices autovalidés, fiche révision — Modèle atomique, ions, molécules.">
-    <style>
-      body {
-        background: #f6f8fa;
-        font-family: 'Segoe UI', Arial, sans-serif;
-        color: #222; margin: 0;
-      }
-      header {
-        background: linear-gradient(90deg,#eef4fb,#deffe4 80%);
-        color: #243552;
-        padding: 30px 0 12px;
-        text-align: center;
-      }
-      header h1 {font-size: 2.4rem; margin: 0 0 8px; color: #1877f2;}
-      header .intro {font-size: 1.08rem;}
-      main {max-width: 850px; background: #fff; margin: 45px auto 20px; padding: 34px 55px; border-radius: 20px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
-      h2 {color: #1877f2; margin-top: 34px;}
-      h3 {color: #f5a623; margin-top: 27px;}
-      ul, ol {margin-left: 2em; margin-bottom: 0.8em;}
-      .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.05rem;}
-      .infos{background:#e7f3fa;border-left:7px solid #1877f2;}
-      .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;}
-      .box-important{background:#fff7ec;border-left:8px solid #f5a623;}
-      .error{background:#ffeaea;border-left:8px solid #e06359;}
-      .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;}
-      .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;}
-      .source{font-size:0.88em;color:#999;text-align:right;margin-top:10px;}
-      button {background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s;font-size:1em;}
-      button:hover{background:#145ac3;}
-      .reponse{margin-top:0.7em; color:#1877f2;font-weight:bold;text-align:center;}
-      #schema-atom {margin: 1.3em auto;display: block; background: #e7f3f7; border-radius: 10px; border: 1px solid #d1d5db; box-shadow: 0 3px 10px #e7f3f7;}
-      .flex-exercices{display:flex;flex-wrap:wrap;}
-      .exo-block {flex:1 1 290px;margin-right:2%;min-width:320px;}
-      .exo-block:last-child{margin-right:0;}
-      .popup {display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.17);padding:35px;width:340px;z-index:2000;}
-      .popup h3{color: #1877f2;}
-      .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(40,61,102,0.23);z-index:1800;}
-      .show{display:block;}
-      .scoreQCM {font-weight:bold;color:#167c2b;}
-      .qcm-block{margin-bottom:2.3em;}
-      input[type="text"], textarea {border-radius:5px;border:1px solid #ccc;padding:5px;margin-top:6px;}
-      .fiche {background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;}
-      .note-area{width:100%;min-height:52px;margin-top:8px;}
-      @media (max-width: 900px){main{padding:18px 3px;}header h1{font-size:1.3rem;}}
-      .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;}
-    </style>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <meta charset="UTF-8">
+  <title>Global - Physique-Chimie · Matière atomique & moléculaire</title>
+  <meta name="description" content="Cours interactif avec LaTeX, QCM dynamiques, exercices autovalidés, fiche révision — Modèle atomique, ions, molécules.">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.15), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(59,130,246,0.25), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#0b1120 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* Loader */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#020617 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(560px,90vw);
+      padding:26px 26px 30px;
+      border-radius:20px;
+      background:
+        radial-gradient(circle at 0 0,rgba(59,130,246,0.35),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(59,130,246,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.95),
+        0 0 35px rgba(59,130,246,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.5) 1px,
+        rgba(15,23,42,0.95) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#dbeafe;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:280px;
+      height:2px;
+      background:linear-gradient(90deg,#bfdbfe,transparent);
+      box-shadow:0 0 14px rgba(59,130,246,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#bfdbfe;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(59,130,246,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#22c55e,#60a5fa,#a855f7);
+      box-shadow:0 0 18px rgba(59,130,246,0.9);
+      animation:barProgress 2.1s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#e5e7eb;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(59,130,246,0.25) 45%,
+          rgba(59,130,246,0.6) 50%,
+          rgba(59,130,246,0.25) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.92),rgba(15,23,42,1));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#bfdbfe;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(24,119,242,0.95),rgba(34,197,94,0.95));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#f9fafb;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:260px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#bfdbfe;
+      box-shadow:0 0 12px rgba(191,219,254,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    main.page{
+      max-width:850px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:20px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:34px 55px 32px;
+      color:#e5f1ff;
+    }
+    @media (max-width:900px){main.page{padding:18px 8px;}}
+
+    header.inner{background:none;padding:0;margin:0 0 8px 0;text-align:left;box-shadow:none;color:inherit;}
+    h1{font-size:2.1rem;margin-bottom:8px;color:#e5f1ff;}
+    header.inner .intro{font-size:1.02rem;}
+
+    h2{color:#e5f1ff;margin-top:34px;}
+    h3{color:#f5a623;margin-top:27px;}
+    ul,ol{margin-left:2em;margin-bottom:0.8em;}
+    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.02rem;}
+    .infos{background:#e7f3fa;border-left:7px solid #1877f2;color:#0f172a;}
+    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;color:#052e16;}
+    .box-important{background:#fff7ec;border-left:8px solid #f5a623;color:#3b2710;}
+    .error{background:#ffeaea;border-left:8px solid #e06359;color:#7f1d1d;}
+    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;color:#0f172a;}
+    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;color:#064e3b;}
+    .source{font-size:0.88em;color:#9ca3af;text-align:right;margin-top:10px;}
+
+    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s,transform 0.15s;font-size:1em;}
+    button:hover{background:#145ac3;transform:translateY(-1px);}
+    .reponse{margin-top:0.7em;color:#bfdbfe;font-weight:bold;text-align:center;}
+    #schema-atom{margin:1.3em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #020617;}
+    .flex-exercices{display:flex;flex-wrap:wrap;}
+    .exo-block{flex:1 1 290px;margin-right:2%;min-width:320px;}
+    .exo-block:last-child{margin-right:0;}
+    input[type="text"],textarea{border-radius:5px;border:1px solid #6b7280;padding:5px;margin-top:6px;background:#020617;color:#e5e7eb;}
+    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;color:#064e3b;}
+    .note-area{width:100%;min-height:60px;margin-top:8px;}
+    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;border-radius:999px;cursor:pointer;}
+    .qcm-block{margin-bottom:2.3em;}
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-  <h1>🌟 Comprendre la matière à l’échelle atomique et moléculaire</h1>
-  <div class="intro">
-    <b>Cours interactif spécial réussite (modèle atomique, structure, ions, molécules, QCM, exercices, notes, astuces, LaTeX inclus)</b>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//PC-MATIERE</div>
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+      <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+      <div class="loader-subtext">
+        Modèle atomique, Z/A, isotopes, ions, molécules, QCM et exercices corrigés.[web:108][web:109][web:110][web:111][web:112][web:113][web:114][web:115]
+      </div>
+      <div class="loader-terminal">
+        <div class="terminal-line">[ATOMES] Noyau (p⁺, n⁰) + électrons sur couches.[web:109][web:110][web:112]</div>
+        <div class="terminal-line">[IONS] Atomes ayant perdu/gagné des électrons : cations/anions.[web:113][web:115][web:116]</div>
+        <div class="terminal-line">[MOLECULES] Assemblages d’atomes, formules brutes et modèles.[web:113][web:116]</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+      <div class="loader-scan"></div>
+    </div>
   </div>
-</header>
-<main>
-  <section class="box infos">
-    <h2>📚 Introduction</h2>
-    <ul>
-      <li>L’étude de la matière commence à l’échelle des <b>atomes</b> et <b>molécules</b> (invisibles à l’œil nu).</li>
-      <li>L'<b>organisation microscopique</b> explique toutes les propriétés macroscopiques : état, couleur, conduction...</li>
-      <li>Objectif → Être capable de <i>modéliser</i> la matière et <i>expliquer</i> ses transformations.</li>
-      <li>Tout ce qui existe : constitué d’atomes, seuls ou assemblés (ions, molécules, réseaux...).</li>
-      <button onclick="openPopup('astuce1')">Astuce mnémo : matière = atomes + interactions</button>
-    </ul>
-  </section>
 
-  <section>
-    <h2>🧬 Modèle atomique (cours détaillé)</h2>
-    <ul>
-      <li><b>Atome</b> : particule de base, neutre, constituée d’un <b>noyau</b> (protons <i>p<sup>+</sup></i> et neutrons <i>n<sup>0</sup></i>) et d’un <b>nuage électronique</b> (électrons <i>e<sup>-</sup></i>).</li>
-      <li><b>Numéro atomique</b> \(Z\) : nombre de protons du noyau. <button onclick="openPopup('lexZ')">Déf ?</button></li>
-      <li><b>Nombre de masse</b> \(A\) : protons + neutrons. <button onclick="openPopup('lexA')">Déf ?</button></li>
-      <li><b>Électrons</b> : répartis sur des couches électroniques (K, L, M…)</li>
-      <li><b>Symbole</b> : \(\ce{^A_ZX}\) (ex : \(\ce{^{12}_6C}\)).</li>
-      <li><b>Neutre ?</b> : Un atome est électriquement neutre si \( Z = \text{nombres d’électrons} \).</li>
-      <li>Exemple : le carbone (\(\ce{^{12}_6C}\)) a \( Z = 6 \) → 6 protons, 6 électrons, 6 neutrons.</li>
-    </ul>
-
-    <canvas id="schema-atom" width="410" height="150"></canvas>
-    <div id="desc-schema-atom" class="infos" style="text-align:center;">
-      Modélisation : <span style="color:#1877f2"><b>noyau</b></span> = protons + neutrons (centre), <span style="color:#79acee;"><b>électrons</b></span> sur couches.
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Physique-Chimie
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
     </div>
 
-    <div class="anecdote">Anecdote : <i>La matière est « vide » à 99,9999&nbsp;% ! Le diamètre de l’atome n’est que 100&nbsp;000 fois plus grand que son noyau.</i></div>
-  </section>
+    <div class="page-padding">
+      <main class="page">
+        <header class="inner">
+          <h1>Comprendre la matière à l’échelle atomique et moléculaire</h1>
+          <div class="intro">
+            Modèle atomique, structure du noyau, Z/A, isotopes, ions et molécules avec LaTeX, QCM dynamiques, exercices auto-corrigés et fiche de révision.[web:108][web:109][web:110][web:111][web:112][web:113][web:114][web:115]
+          </div>
+        </header>
 
-  <section>
-    <h2>🔢 Eléments, isotopes, ions (<span style="color:#f5a623">niveau expert</span>)</h2>
-    <ul>
-      <li><b>Élément chimique</b> : ensemble d’atomes ayant même \(Z\) (ex.: carbone tous \(Z=6\)).</li>
-      <li><b>Isotope</b> : même \(Z\), \(A\) différent (plusieurs neutrons possibles).<br>
-          Exemple : \(\ce{^{12}_6C}\), \(\ce{^{14}_6C}\)</li>
-      <li><b>Ion</b> : atome ou groupe ayant perdu ou gagné des électrons ; <span style="color:#167c2b"><b>anion</b></span> (\(-\)), <span style="color:#f86699"><b>cation</b></span> (\(+\)).<br>
-          Ex : \(\ce{Na+}\), \(\ce{Cl-}\), \(\ce{Fe^{2+}}\).</li>
-      <li>
-        <b>Calcul rapide :</b><br>
-        <span class="box-exo"><b>Nombre de neutrons</b> = \(A - Z\)<br>
-        <b>Nombre d’électrons</b> (atome neutre) = \(Z\), (ion) = \(Z - \text{charge}\)</span>
-      </li>
-    </ul>
-  </section>
+        <section class="box infos">
+          <h2>📚 Introduction</h2>
+          <ul>
+            <li>La matière est composée d’atomes et de molécules invisibles à l’œil nu.[web:108][web:112]</li>
+            <li>L’organisation microscopique (noyaux, électrons, liaisons) explique les propriétés macroscopiques (état, couleur, conduction…).[web:110][web:112][web:113]</li>
+          </ul>
+          <button onclick="openPopup('astuce1')">Astuce : matière = atomes + interactions</button>
+        </section>
 
-  <section>
-    <h2>🌱 Les molécules</h2>
-    <ul>
-      <li><b>Molécule</b> : assemblage d’atomes liés (liaison = partage/échange d’électrons).</li>
-      <li><b>Formule brute</b> : indique les atomes (ex : \(\ce{H2O}\), \(\ce{CO2}\)).</li>
-      <li><b>Formule développée</b> : représentation de toutes les liaisons.</li>
-      <li><b>Structure moléculaire</b> : boule et bâtonnet, Lewis.</li>
-      <li><b>Ex. de modèles 3D (DIY) :</b><br>
-        Le méthane \(\ce{CH4}\), l’eau \(\ce{H2O}\), le dioxygène \(\ce{O2}\) : formes, angles, dimensions…</li>
-    </ul>
-    <button onclick="openPopup('popup-molecule')">Visualiser différents modèles moléculaires</button>
-  </section>
+        <section>
+          <h2>🧬 Modèle atomique</h2>
+          <ul>
+            <li>Un atome est neutre et constitué d’un noyau (protons p⁺, neutrons n⁰) entouré d’électrons e⁻ répartis sur des couches.[web:109][web:110][web:111][web:112]</li>
+            <li>Numéro atomique Z = nombre de protons du noyau (et d’électrons pour un atome neutre).[web:109][web:111][web:115]</li>
+            <li>Nombre de masse A = protons + neutrons ; nombre de neutrons N = A − Z.[web:112][web:114]</li>
+          </ul>
+          <canvas id="schema-atom" width="410" height="150"></canvas>
+          <div class="infos" style="text-align:center;">
+            Noyau (protons + neutrons) au centre, électrons sur des couches autour (modèle simplifié).[web:110][web:112]
+          </div>
+          <div class="anecdote">
+            L’atome est presque entièrement vide : le noyau est environ 100 000 fois plus petit que l’atome.[web:108]
+          </div>
+        </section>
 
-  <section>
-    <h2>🔬 Application : propriétés et transformations</h2>
-    <ul>
-      <li>La matière apparaît solide/liquide/gaz selon agencement atomes/molécules.</li>
-      <li>À l’échelle microscopique, échanges d’électrons (réactions) expliquent création/dissolution molécules, ions, changements d’état…</li>
-      <li><b>Exemple :</b> Dissolution du sel \(\ce{NaCl}\) : \(\ce{NaCl_{(s)} -> Na+_{(aq)} + Cl-_{(aq)}}\).</li>
-    </ul>
-    <button onclick="openPopup('astuce2')">Astuce : schématiser chaque transformation</button>
-  </section>
+        <section>
+          <h2>🔢 Éléments, isotopes et ions</h2>
+          <ul>
+            <li>Élément chimique : ensemble d’atomes ayant le même Z (carbone Z=6, oxygène Z=8…).[web:108][web:109][web:111]</li>
+            <li>Isotopes : atomes d’un même élément (même Z) mais avec A différent, donc un nombre de neutrons différent.[web:114][web:117]</li>
+            <li>Ion : espèce chimique chargée qui provient d’un atome ou d’une molécule ayant perdu (cation) ou gagné (anion) des électrons.[web:113][web:115][web:116]</li>
+          </ul>
+        </section>
 
-  <section class="box-important">
-    <h2>🎓 Fiche de synthèse</h2>
-    <div class="fiche">
-      <ul>
-        <li>Atome : noyau (\(p^+\), \(n^0\)), nuage (\(e^-\)).</li>
-        <li><span class="btn-lex" onclick="openPopup('lexZ')">Z</span> = protons, nombre d’électrons si neutre.</li>
-        <li>A = protons + neutrons.</li>
-        <li>Isotope : atomes d’un élément (Z) avec A différent (neutrons).</li>
-        <li>Ion : <span style="color:#167c2b">anion</span> = -é, <span style="color:#f86699">cation</span> = +é.</li>
-        <li>Molécule : plusieurs atomes liés.</li>
-        <li>Formule : composition atomique.</li>
-      </ul>
+        <section>
+          <h2>🌱 Molécules et formules</h2>
+          <ul>
+            <li>Molécule : ensemble d’atomes liés ; sa formule brute indique le type et le nombre d’atomes (H₂O, CO₂, NH₃…).[web:113][web:116]</li>
+            <li>Une même composition peut être représentée par différentes écritures (Lewis, développée, modèle boule–bâton).[web:112][web:116]</li>
+          </ul>
+          <button onclick="openPopup('popup-molecule')">Voir quelques modèles moléculaires</button>
+        </section>
+
+        <section>
+          <h2>🔬 Propriétés et transformations</h2>
+          <ul>
+            <li>Les états solide/liquide/gaz dépendent de l’agencement des particules et de leurs interactions.[web:113]</li>
+            <li>Les réactions chimiques réarrangent les atomes en modifiant les liaisons (ex : dissolution ionique NaCl → Na⁺(aq) + Cl⁻(aq)).[web:113][web:115]</li>
+          </ul>
+          <button onclick="openPopup('astuce2')">Astuce schémas micro/macro</button>
+        </section>
+
+        <section class="box-important">
+          <h2>🎓 Fiche de synthèse</h2>
+          <div class="fiche">
+            <ul>
+              <li>Atome : noyau (p⁺, n⁰) + électrons sur couches.[web:109][web:110][web:112]</li>
+              <li>Z = nombre de protons ; A = protons + neutrons ; N = A − Z.[web:111][web:112][web:114]</li>
+              <li>Isotopes : même Z, A différent (neutrons).[web:114][web:117]</li>
+              <li>Ion : cation (charge +) si perte d’électrons, anion (charge −) si gain d’électrons.[web:113][web:115][web:116]</li>
+              <li>Molécule : plusieurs atomes liés, formule brute = composition atomique.[web:113][web:116]</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="qcm-block">
+          <h2>🎯 QCM interactif</h2>
+          <div id="qcm-interactif"></div>
+          <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
+          <button onclick="reloadQCM()">Recommencer le QCM</button>
+        </section>
+
+        <section>
+          <h2>📝 Exercices interactifs</h2>
+          <div class="flex-exercices">
+            <div class="box-exo exo-block">
+              <b>Ex1 — Atome de magnésium</b><br>
+              \(\ce{^{25}_{12}Mg}\) : combien de protons, neutrons, électrons ?[web:109][web:112][web:114]
+              <input type="text" id="exo1" placeholder="ex : 12p, 13n, 12e">
+              <button onclick="checkExo(1)">Valider</button>
+              <div class="reponse" id="rep-exo1"></div>
+            </div>
+            <div class="box-exo exo-block">
+              <b>Ex2 — Ion calcium</b><br>
+              Ion \(\ce{Ca^{2+}}\) (Z=20) : nombre d’électrons ?[web:113][web:115]
+              <input type="text" id="exo2" placeholder="...">
+              <button onclick="checkExo(2)">Valider</button>
+              <div class="reponse" id="rep-exo2"></div>
+            </div>
+            <div class="box-exo exo-block">
+              <b>Ex3 — Formule de l’eau</b><br>
+              Donne la formule brute de la molécule d’eau.[web:113][web:116]
+              <input type="text" id="exo3" placeholder="...">
+              <button onclick="checkExo(3)">Valider</button>
+              <div class="reponse" id="rep-exo3"></div>
+            </div>
+          </div>
+          <button onclick="resetExos()">Effacer mes réponses</button>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes</h2>
+          <ul>
+            <li>Confondre Z (protons) et A (protons + neutrons).[web:109][web:111][web:114]</li>
+            <li>Penser qu’un ion change son nombre de protons (seuls les électrons changent).[web:113][web:115]</li>
+            <li>Oublier d’écrire la charge des ions (Na⁺, Cl⁻…).[web:113][web:116]</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique rapide</h2>
+          Atome, numéro atomique Z, nombre de masse A, isotope, ion, cation, anion, molécule, formule brute.[web:108][web:109][web:113][web:114][web:115]
+        </section>
+
+        <section>
+          <h2>🗒️ Tes notes perso</h2>
+          <textarea class="note-area" id="notes" placeholder="Prends tes propres notes ici..."></textarea>
+          <button onclick="saveNotes()">Enregistrer</button>
+          <span id="savemsg" style="color:#4ade80;font-weight:bold;"></span>
+        </section>
+
+        <section class="source">
+          Sources : cours officiels, fiches lycée, INJS, supports Bac 2025.[web:108][web:110][web:111][web:113][web:114][web:115]
+        </section>
+      </main>
     </div>
-  </section>
+  </div>
 
-  <section class="qcm-block">
-    <h2>🎯 QCM interactif (compte ton score !)</h2>
-    <div id="qcm-interactif"></div>
-    <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
-    <button onclick="reloadQCM()">Recommencer le QCM</button>
-  </section>
+  <!-- Overlay & popups -->
+  <div class="overlay" id="overlay"></div>
 
-  <section>
-    <h2>📝 Exercices - Réponds puis vérifie la correction !</h2>
-    <div class="box-exo exo-block">
-      <b>Ex1 — Calculs atomiques</b><br>
-      Un atome de magnésium \(\ce{^{25}_{12}Mg}\) : combien de protons, neutrons, électrons ?<br>
-      <input type="text" id="exo1" placeholder="Réponse (ex : 12p, 12n, 12e)">
-      <button onclick="checkExo(1)">Valider</button>
-      <div class="reponse" id="rep-exo1"></div>
-    </div>
-    <div class="box-exo exo-block">
-      <b>Ex2 — Ionicité</b><br>
-      Un ion \(\ce{Ca^{2+}}\). Combien d’électrons (<i>e⁻</i>) a-t-il ?<br>
-      <input type="text" id="exo2" placeholder="Réponse (ex : 18)">
-      <button onclick="checkExo(2)">Valider</button>
-      <div class="reponse" id="rep-exo2"></div>
-    </div>
-    <div class="box-exo exo-block">
-      <b>Ex3 — Formule moléculaire</b><br>
-      Donne la formule brute de l’eau.<br>
-      <input type="text" id="exo3" placeholder="...">
-      <button onclick="checkExo(3)">Valider</button>
-      <div class="reponse" id="rep-exo3"></div>
-    </div>
-    <button onclick="resetExos()">Effacer mes réponses</button>
-  </section>
+  <div class="popup" id="astuce1">
+    <h3>Astuce mnémo</h3>
+    « Tout ce qui est matière possède des atomes organisés et qui interagissent. »
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
 
-  <section class="error">
-    <h2>❌ Erreurs fréquentes à éviter</h2>
-    <ul>
-      <li>Confondre Z (protons) et A (masse totale protons+neutrons)</li>
-      <li>Croire qu’un ion a changé son nombre de protons (en fait : électrons)</li>
-      <li>Oublier d’indiquer la charge des ions (Na<sup>+</sup> et pas Na !)</li>
-      <li>Penser que toutes les molécules sont électriques</li>
-      <li><b>Astuce</b> : Revoir la notation \(\ce{^A_ZX}\) et différencier atomique / moléculaire</li>
-    </ul>
-  </section>
+  <div class="popup" id="popup-molecule">
+    <h3>Modèles moléculaires</h3>
+    Exemples : eau H₂O, méthane CH₄, dioxygène O₂, dioxyde de carbone CO₂ (modèles Lewis ou boule–bâton).[web:113][web:116]
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
 
-  <section class="lexique">
-    <h2>📚 Lexique rapide</h2>
-    <ul>
-      <li><b>Atome</b> : plus petite unité d’un élément décrite par Z, A </li>
-      <li><b>Ion</b> : particule chargée (+ ou -) suite à un transfert d’électrons</li>
-      <li><b>Molécule</b> : ensemble d’atomes liés de façon définie (H2O, O2 ...)</li>
-      <li><b>Règle du duet/octet</b> : stabilité recherchée à 2/8 électrons de valence</li>
-    </ul>
-  </section>
-  <section>
-    <h2>🗒️ Tes notes perso</h2>
-    <textarea class="note-area" id="notes" placeholder="Prends tes propres notes ici..."></textarea>
-    <button onclick="saveNotes()">Enregistrer</button>
-    <span id="savemsg" style="color:#4caf50;font-weight:bold;"></span>
-  </section>
-  <section class="source">
-    Sources : cours officiels, INJS, brochures éducatives, Fiches Bac édition 2025.
-  </section>
-</main>
+  <div class="popup" id="astuce2">
+    <h3>Astuce schémas</h3>
+    Dessine toujours un schéma « avant/après » au niveau atomique pour visualiser les réactions (ions en solution, molécules formées…).[web:113][web:115]
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
 
+  <script>
+    // Loader + MathJax[web:79][web:36][web:12][web:82][web:84]
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+      if(window.MathJax && MathJax.typesetPromise){MathJax.typesetPromise();}
+    },3000);
 
-<!-- Popups/Overlays -->
-<div class="overlay" id="overlay"></div>
-<div class="popup" id="astuce1"><h3>Astuce mnémo</h3><b>“Tout ce qui est matière… doit avoir des atomes !”</b> (Rime + phrase clé à retenir)<br><button onclick="closePopup()">Fermer</button></div>
-<div class="popup" id="popup-molecule">
-  <h3>Modèles moléculaires</h3>
-  <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Lewis-struct-H2O.svg" width="92" alt="Lewis H2O"> <br>
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Methane-2D.svg/120px-Methane-2D.svg.png" width="92" alt="CH4"> <br>
-  Exemples : H<sub>2</sub>O, CH<sub>4</sub>, O<sub>2</sub>, CO<sub>2</sub>, ...
-  <br><button onclick="closePopup()">Fermer</button>
-</div>
-<div class="popup" id="astuce2"><h3>Astuce</h3>
-  Utilise TOUJOURS un schéma (avant/après) pour bien comprendre les réactions ou les transformations.<br>
-  <button onclick="closePopup()">Fermer</button>
-</div>
-<div class="popup" id="lexZ"><h3>Z (numéro atomique)</h3>
-  Nombre de protons dans le noyau = élément défini. Z=6 carbone, Z=1 hydrogène...
-  <button onclick="closePopup()">Fermer</button></div>
-<div class="popup" id="lexA"><h3>A (nombre de masse)</h3>
-  Protons + neutrons, donne une information sur la masse et l’isotope de l’atome.
-  <button onclick="closePopup()">Fermer</button></div>
-
-
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script>
-  // MathJax triggers
-  function reloadMathJax(){if(window.MathJax){window.MathJax.typesetPromise();}}
-
-  // Canvas : schéma atome
-  function drawAtomSchema() {
-    var canvas = document.getElementById('schema-atom');
-    if (!canvas) return;
-    var ctx = canvas.getContext('2d');
-    ctx.clearRect(0,0,410,150);
-    // Noyau principal
-    ctx.beginPath();
-    ctx.arc(125, 75, 35, 0, 2*Math.PI, false);
-    ctx.fillStyle = "#ffebaf"; ctx.fill();
-    ctx.strokeStyle="#f5a623"; ctx.lineWidth=3; ctx.stroke();
-    // Protons
-    for(let i=0;i<4;i++) {
-      ctx.beginPath();
-      ctx.arc(125+12*Math.cos(i*Math.PI/2), 75+12*Math.sin(i*Math.PI/2), 8, 0, 2*Math.PI, false);
-      ctx.fillStyle="#f86699"; ctx.fill(); ctx.strokeStyle="#c21c5c"; ctx.lineWidth=1.2; ctx.stroke();
+    function reloadMathJax(){
+      if(window.MathJax && MathJax.typesetPromise){MathJax.typesetPromise();}
     }
-    // Neutrons
-    for(let i=0;i<3;i++) {
-      ctx.beginPath();
-      ctx.arc(125+15*Math.cos(i*2*Math.PI/3 + Math.PI/3), 75+15*Math.sin(i*2*Math.PI/3 + Math.PI/3), 8, 0, 2*Math.PI, false);
-      ctx.fillStyle="#8adcca"; ctx.fill();
-      ctx.strokeStyle="#248b6e"; ctx.lineWidth=1.2; ctx.stroke();
+
+    function openPopup(id){
+      document.getElementById('overlay').classList.add("show");
+      document.getElementById(id).classList.add("show");
+      reloadMathJax();
     }
-    // Couches électroniques
-    for(let i=0;i<2;i++) {
+    function closePopup(){
+      document.getElementById('overlay').classList.remove("show");
+      document.querySelectorAll('.popup').forEach(p=>p.classList.remove('show'));
+    }
+
+    function saveNotes(){
+      localStorage.setItem("mesNotesPhysique_matiere",document.getElementById("notes").value);
+      document.getElementById("savemsg").textContent="Enregistré";
+      setTimeout(()=>{document.getElementById("savemsg").textContent="";},1200);
+    }
+    if(localStorage.getItem("mesNotesPhysique_matiere")){
+      document.getElementById("notes").value=localStorage.getItem("mesNotesPhysique_matiere");
+    }
+
+    function drawAtomSchema(){
+      var canvas=document.getElementById('schema-atom');if(!canvas)return;
+      var ctx=canvas.getContext('2d');
+      ctx.clearRect(0,0,410,150);
       ctx.beginPath();
-      ctx.arc(125,75,55+17*i,0,2*Math.PI); ctx.strokeStyle="#1877f2"; ctx.lineWidth=1.1; ctx.setLineDash([5,5]); ctx.stroke(); ctx.setLineDash([]);
-      // Place électrons
-      for(let j=0; j<((i==0)?2:6); j++) {
-        var angle = j*Math.PI/(i==0?1:3) + Math.PI/3*i;
+      ctx.arc(125,75,35,0,2*Math.PI,false);
+      ctx.fillStyle="#ffebaf";ctx.fill();
+      ctx.strokeStyle="#f5a623";ctx.lineWidth=3;ctx.stroke();
+
+      for(let i=0;i<4;i++){
         ctx.beginPath();
-        ctx.arc(125+(55+17*i)*Math.cos(angle), 75+(55+17*i)*Math.sin(angle), 7,0,2*Math.PI);
-        ctx.fillStyle="#1877f2"; ctx.fill();
-        ctx.strokeStyle="#243552"; ctx.stroke();
+        ctx.arc(125+12*Math.cos(i*Math.PI/2),75+12*Math.sin(i*Math.PI/2),8,0,2*Math.PI,false);
+        ctx.fillStyle="#f97373";ctx.fill();
+        ctx.strokeStyle="#b91c1c";ctx.lineWidth=1.2;ctx.stroke();
       }
-    }
-    // Légendes
-    ctx.font = "15px Arial";
-    ctx.fillStyle = "#c21c5c";
-    ctx.fillText("Protons", 45, 43);
-    ctx.fillStyle = "#248b6e";
-    ctx.fillText("Neutrons", 42, 121);
-    ctx.fillStyle = "#1877f2";
-    ctx.fillText("Électrons", 235, 29);
-  }
-  drawAtomSchema();
-
-  // QCM interactif avancé
-  const qcmData = [
-    {
-      question: "Un atome d’oxygène \\(\\ce{^{16}_8O}\\) possède combien de neutrons ?",
-      choices: ["8", "16", "8"],
-      correct: 0,
-      explanation: "Neutrons = A – Z = 16 – 8 = 8"
-    },
-    {
-      question: "Un atome qui perd 2 électrons forme...",
-      choices: ["Un anion –2", "Un cation 2+", "Un anion 2+"],
-      correct: 1,
-      explanation: "Cation = atome qui perd électrons, 2+ pour deux électrons."
-    },
-    {
-      question: "La formule brute de l’ammoniac est :",
-      choices: ["\\(\\ce{NH3}\\)", "\\(\\ce{NH4+}\\)", "\\(\\ce{NO3-}\\)"],
-      correct: 0,
-      explanation: "NH₃ = ammoniac."
-    },
-    {
-      question: "Un atome possède Z=12, A=25. Il s’agit de :",
-      choices: ["\\(\\ce{Mg}\\)", "\\(\\ce{Na}\\)", "\\(\\ce{Fe}\\)"],
-      correct: 0,
-      explanation: "Z=12 = magnésium Mg."
-    },
-    {
-      question: "Un cation est-il :",
-      choices: ["Une particule négative", "Un atome ayant gagné des électrons", "Un atome ayant perdu des électrons"],
-      correct: 2,
-      explanation: "Perdu des électrons → charge positive (cation)."
-    }
-  ];
-  let qcmScore = 0;
-  let qcmDone = Array(qcmData.length).fill(false);
-  function displayQCM(){
-    let html = "";
-    for(let i=0;i<qcmData.length;i++){
-      html += `<div style="margin-bottom:1em"><b>Q${i+1} :</b> <span>${qcmData[i].question}</span><br>`;
-      for(let j=0;j<qcmData[i].choices.length;j++){
-        html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+      for(let i=0;i<3;i++){
+        ctx.beginPath();
+        ctx.arc(125+15*Math.cos(i*2*Math.PI/3+Math.PI/3),75+15*Math.sin(i*2*Math.PI/3+Math.PI/3),8,0,2*Math.PI,false);
+        ctx.fillStyle="#6ee7b7";ctx.fill();
+        ctx.strokeStyle="#047857";ctx.lineWidth=1.2;ctx.stroke();
       }
-      html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
-    }
-    document.getElementById("qcm-interactif").innerHTML = html;
-    document.getElementById("qcm-score").innerHTML = "";
-    qcmScore = 0;qcmDone = Array(qcmData.length).fill(false);
-    reloadMathJax();
-  }
-  displayQCM();
-  function checkQCM(qnum, num){
-    if(qcmDone[qnum]) return;
-    if(num==qcmData[qnum].correct){
-      document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#168b24;font-weight:bold">Bonne réponse !</span><br><span style="font-size:0.98em;">${qcmData[qnum].explanation}</span>`;
-      qcmScore++;
-    }else{
-      document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#c21c5c;font-weight:bold">Faux !</span>  <br><span>${qcmData[qnum].explanation}</span>`;
-    }
-    qcmDone[qnum]=true;
-    document.getElementById("qcm-score").innerHTML = "Score : " + qcmScore + "/" + qcmData.length;
-    reloadMathJax();
-  }
-  function reloadQCM(){displayQCM();}
 
-  // Exercices interactifs
-  function checkExo(ex){
-    let rep, txt, good;
-    if(ex==1){
-      rep = document.getElementById('exo1').value.replace(/ /g,"");
-      good = /12p.*13n.*12e|12p.*12e.*13n|13n.*12p.*12e|(?:12p.*12e.*13n|13n.*12e.*12p)/i.test(rep);
-      txt = good ? "Bravo : 12 protons, 13 neutrons, 12 électrons !" : "Faux. Il y a 12 protons (Z), 13 neutrons (25-12), 12 électrons !";
-      document.getElementById('rep-exo1').innerHTML = txt;
+      for(let i=0;i<2;i++){
+        ctx.beginPath();
+        ctx.arc(125,75,55+17*i,0,2*Math.PI);
+        ctx.strokeStyle="#1d4ed8";ctx.lineWidth=1.1;ctx.setLineDash([5,5]);ctx.stroke();ctx.setLineDash([]);
+        for(let j=0;j<((i===0)?2:6);j++){
+          var angle=j*Math.PI/(i===0?1:3)+Math.PI/3*i;
+          ctx.beginPath();
+          ctx.arc(125+(55+17*i)*Math.cos(angle),75+(55+17*i)*Math.sin(angle),7,0,2*Math.PI);
+          ctx.fillStyle="#1d4ed8";ctx.fill();
+          ctx.strokeStyle="#020617";ctx.stroke();
+        }
+      }
+      ctx.font="15px Arial";
+      ctx.fillStyle="#b91c1c";ctx.fillText("Protons",45,43);
+      ctx.fillStyle="#047857";ctx.fillText("Neutrons",42,121);
+      ctx.fillStyle="#1d4ed8";ctx.fillText("Électrons",235,29);
     }
-    if(ex==2){
-      rep = document.getElementById('exo2').value.replace(/ /g,"");
-      good = (rep=="18"||rep=="18e"||rep=="18e-"||rep=="18electrons");
-      txt = good ? "Exact ! Ca (Z=20) Ca<sup>2+</sup> donc 20-2 = 18 électrons." : "Faux. Pour Ca<sup>2+</sup> : 20 – 2 = 18 électrons.";
-      document.getElementById('rep-exo2').innerHTML = txt;
+    drawAtomSchema();
+
+    const qcmData=[
+      {question:"Un atome d’oxygène \\(^{16}_{8}O\\) possède combien de neutrons ?",choices:["8","16","24"],correct:0,explanation:"N = A − Z = 16 − 8 = 8 neutrons.[web:114]"},
+      {question:"Un atome qui perd 2 électrons devient :",choices:["un anion 2−","un cation 2+","un anion 2+"],correct:1,explanation:"Perte d’électrons ⇒ charge positive ⇒ cation 2+.[web:113][web:115][web:116]"},
+      {question:"Formule brute de l’ammoniac :",choices:["NH₃","NH₄⁺","NO₃⁻"],correct:0,explanation:"NH₃ est la molécule d’ammoniac.[web:113][web:116]"},
+      {question:"Deux isotopes d’un même élément ont :",choices:["le même Z, A différent","le même A, Z différent","ni même Z ni même A"],correct:0,explanation:"Isotopes : même numéro atomique Z, nombre de masse A différent.[web:114][web:117]"},
+      {question:"Un ion est :",choices:["toujours neutre","une espèce chargée","un noyau isolé"],correct:1,explanation:"Un ion porte une charge nette car il a perdu ou gagné des électrons.[web:113][web:115]"}
+    ];
+    let qcmScore=0,qcmDone=Array(qcmData.length).fill(false);
+    function displayQCM(){
+      let html="";
+      for(let i=0;i<qcmData.length;i++){
+        html+=`<div style="margin-bottom:1em"><b>Q${i+1} :</b> ${qcmData[i].question}<br>`;
+        for(let j=0;j<qcmData[i].choices.length;j++){
+          html+=`<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+        }
+        html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
+      }
+      document.getElementById("qcm-interactif").innerHTML=html;
+      document.getElementById("qcm-score").innerHTML="";
+      qcmScore=0;qcmDone=Array(qcmData.length).fill(false);
+      reloadMathJax();
     }
-    if(ex==3){
-      rep = document.getElementById('exo3').value.trim().toLowerCase().replace(/[^a-z0-9]/g,"");
-      good = (rep=="h2o" || rep=="h₂o" || rep=="h2o");
-      txt = good ? "Parfait : la formule brute de l’eau est H₂O." : "Ce n’est pas la bonne formule brute (indice : H₂O…).";
-      document.getElementById('rep-exo3').innerHTML = txt;
+    displayQCM();
+    function checkQCM(qnum,num){
+      if(qcmDone[qnum])return;
+      if(num===qcmData[qnum].correct){
+        document.getElementById('qcm-r'+qnum).innerHTML=
+          `<span style="color:#16a34a;font-weight:bold">Bonne réponse !</span><br>${qcmData[qnum].explanation}`;
+        qcmScore++;
+      }else{
+        document.getElementById('qcm-r'+qnum).innerHTML=
+          `<span style="color:#e11d48;font-weight:bold">Faux.</span><br>${qcmData[qnum].explanation}`;
+      }
+      qcmDone[qnum]=true;
+      document.getElementById("qcm-score").innerHTML="Score : "+qcmScore+"/"+qcmData.length;
+      reloadMathJax();
     }
-    reloadMathJax();
-  }
+    function reloadQCM(){displayQCM();}
 
-  function resetExos(){
-    ["exo1","exo2","exo3"].forEach(id=>{document.getElementById(id).value="";});
-    ["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{document.getElementById(id).textContent="";});
-  }
-  // Popup lexique/astuces
-  function openPopup(id){
-    document.getElementById('overlay').classList.add("show");
-    document.getElementById(id).classList.add("show");
-  }
-  function closePopup(){
-    document.getElementById('overlay').classList.remove("show");
-    var popups = document.querySelectorAll('.popup');
-    popups.forEach(function(p){p.classList.remove('show');});
-  }
+    function checkExo(ex){
+      if(ex===1){
+        let rep=document.getElementById('exo1').value.replace(/\s/g,"").toLowerCase();
+        let ok = rep.includes("12p") && rep.includes("13n") && rep.includes("12e");
+        document.getElementById('rep-exo1').innerHTML = ok
+          ? "Bravo : 12 p⁺, 13 n⁰, 12 e⁻ (Z=12, A=25)."
+          : "Attendu : 12 protons, 13 neutrons, 12 électrons.[web:112][web:114]";
+      }
+      if(ex===2){
+        let rep=document.getElementById('exo2').value.replace(/\s/g,"");
+        let ok = rep==="18"||rep==="18e"||rep==="18e-"||rep==="18electrons";
+        document.getElementById('rep-exo2').innerHTML = ok
+          ? "Exact : Ca²⁺ a 20 − 2 = 18 électrons."
+          : "Faux : Ca²⁺ possède 18 électrons.[web:113][web:115]";
+      }
+      if(ex===3){
+        let rep=document.getElementById('exo3').value.trim().toLowerCase();
+        let ok = rep==="h2o" || rep==="h₂o";
+        document.getElementById('rep-exo3').innerHTML = ok
+          ? "Parfait : la formule brute de l’eau est H₂O.[web:113][web:116]"
+          : "Indice : la formule brute de l’eau est H₂O.";
+      }
+      reloadMathJax();
+    }
+    function resetExos(){
+      ["exo1","exo2","exo3"].forEach(id=>{let e=document.getElementById(id);if(e)e.value="";});
+      ["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{let e=document.getElementById(id);if(e)e.textContent="";});
+    }
 
-  // Persistance des notes
-  function saveNotes(){
-    localStorage.setItem("mesNotesPhysique", document.getElementById("notes").value);
-    document.getElementById("savemsg").textContent = "✔️ Enregistré !";
-    setTimeout(()=>{document.getElementById("savemsg").textContent="";}, 1200);
-  }
-  if(localStorage.getItem("mesNotesPhysique")){
-    document.getElementById("notes").value = localStorage.getItem("mesNotesPhysique");
-  }
-
-  setTimeout(reloadMathJax,150); // After injection
-
-</script>
+    setTimeout(reloadMathJax,200);
+  </script>
 </body>
 </html>

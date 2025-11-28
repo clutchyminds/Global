@@ -3,234 +3,855 @@
 <head>
   <meta charset="UTF-8" />
   <title>Carte mentale interactive - Zoomable</title>
+
   <script src="https://cdn.jsdelivr.net/npm/leader-line@1.0.7/leader-line.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+          integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
+    /* ===== RESET / VARIABLES ===== */
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
-    .top-banner {
-      background-color: #007BFF;
-      color: white;
-      padding: 18px 0 0 0;
-      font-size: 2rem;
-      letter-spacing: 1px;
-      font-weight: bold;
+    :root {
+      --blue-light: #29d8ff;
+      --blue-main: #007BFF;
+      --blue-dark: #004a9f;
+      --white: #ffffff;
+      --primary: #007BFF;
+      --primary-dark: #0057b8;
+      --node-root-bg: linear-gradient(135deg,#007BFF,#00c6ff);
+      --node-border: #1d4ed8aa;
     }
-    .nav-bar {
+
+    /* ===== FOND GLOBAL + TEXTURE ===== */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
+        linear-gradient(135deg, #020617 0%, #031633 40%, #001a3b 100%);
+      color: #e5f1ff;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.08;
+      mix-blend-mode: soft-light;
+      background-image:
+        linear-gradient(0deg, rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 3px 3px, 3px 3px;
+      z-index: -1;
+    }
+
+    /* ===== LOADER HACKING CARTE MENTALE ===== */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, #0b1220 0, #020617 45%, #000 100%);
       display: flex;
       justify-content: center;
-      gap: 40px;
-      background-color: #007BFF;
-      padding: 10px 0 18px 0;
-      margin: 0;
+      align-items: center;
+      z-index: 9999;
+      overflow: hidden;
+    }
+    .loader-hud {
+      position: relative;
+      width: min(520px, 90vw);
+      padding: 26px 26px 30px 26px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 0 0, rgba(56,189,248,0.26), transparent 60%),
+        linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
+      border: 1px solid rgba(56,189,248,0.8);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(56,189,248,0.7);
+      color: #e5f1ff;
+      font-family: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      overflow: hidden;
+    }
+    .loader-hud::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size: 100% 3px;
+      mix-blend-mode: soft-light;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .loader-title {
+      font-size: 0.9rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #7dd3fc;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .loader-title::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 210px;
+      height: 2px;
+      background: linear-gradient(90deg, #7dd3fc, transparent);
+      box-shadow: 0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 1rem;
+      margin-bottom: 14px;
+    }
+    .status-label {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 600;
+    }
+    .status-dots {
+      display: inline-block;
+      min-width: 18px;
+      animation: blinkDots 1s steps(2, start) infinite;
+      color: #38bdf8;
+    }
+    @keyframes blinkDots {
+      0%, 50% { opacity: 1; }
+      50.01%, 100% { opacity: 0; }
+    }
+    .loader-bar {
+      position: relative;
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.9);
+      background: rgba(15,23,42,0.9);
+      overflow: hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom: 10px;
+    }
+    .loader-bar-fill {
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      background: linear-gradient(90deg, #22c1c3, #29d8ff, #007bff);
+      box-shadow: 0 0 18px rgba(56,189,248,0.9);
+      animation: barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress {
+      0%   { width: 0%;   transform: translateX(-5%); }
+      40%  { width: 65%;  transform: translateX(0); }
+      70%  { width: 100%; transform: translateX(0); }
+      100% { width: 35%;  transform: translateX(90%); }
+    }
+    .loader-subtext {
+      font-size: 0.72rem;
+      margin-top: 4px;
+      color: #a5b4fc;
+      opacity: 0.9;
+    }
+    .loader-scan {
+      position: absolute;
+      inset: -40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(56,189,248,0.12) 45%,
+          rgba(56,189,248,0.35) 50%,
+          rgba(56,189,248,0.12) 55%,
+          transparent 100%
+        );
+      mix-blend-mode: screen;
+      animation: scanMove 2.6s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes scanMove {
+      0%   { transform: translateY(-40%); opacity: 0; }
+      10%  { opacity: 0.9; }
+      60%  { opacity: 0.9; }
+      100% { transform: translateY(40%); opacity: 0; }
+    }
+    .loader-terminal {
+      margin-top: 14px;
+      padding: 10px 10px 8px 10px;
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.9), rgba(15,23,42,0.98));
+      border-radius: 10px;
+      border: 1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height: 140px;
+      overflow: hidden;
+      font-size: 0.7rem;
+      line-height: 1.5;
+      color: #c4f1ff;
+      position: relative;
+    }
+    .terminal-line {
+      opacity: 0;
+      transform: translateY(6px);
+      animation: lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1) { animation-delay: 0.1s; }
+    .terminal-line:nth-child(2) { animation-delay: 0.6s; }
+    .terminal-line:nth-child(3) { animation-delay: 1.2s; }
+    .terminal-line:nth-child(4) { animation-delay: 1.9s; }
+    .terminal-line:nth-child(5) { animation-delay: 2.5s; }
+    .terminal-line:nth-child(6) { animation-delay: 3.1s; }
+    .terminal-line:nth-child(7) { animation-delay: 3.7s; }
+    .terminal-line:nth-child(8) { animation-delay: 4.3s; }
+    .terminal-line:nth-child(9) { animation-delay: 4.9s; }
+    @keyframes lineIn {
+      0%   { opacity: 0; transform: translateY(6px); }
+      8%   { opacity: 1; transform: translateY(0); }
+      70%  { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-12px); }
+    }
+    .terminal-cursor {
+      display: inline-block;
+      width: 8px;
+      animation: cursorBlink 0.6s steps(1, start) infinite;
+      color: #38bdf8;
+    }
+    @keyframes cursorBlink {
+      0%, 49%  { opacity: 1; }
+      50%,100% { opacity: 0; }
+    }
+
+    /* ===== CONTENU PRINCIPAL (fade-in) ===== */
+    #main-content {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.7s ease forwards;
+      animation-delay: 0.2s;
+      display: none;
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ===== HEADER + NAV GLASS ===== */
+    .top-banner {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background: linear-gradient(
+        135deg,
+        rgba(0, 123, 255, 0.82),
+        rgba(3, 105, 161, 0.8)
+      );
+      border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      color: var(--white);
+      padding: 18px 7vw 4px 7vw;
+      font-size: 1.9rem;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      text-transform: uppercase;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .top-banner::after {
+      content: "";
+      height: 2px;
+      width: 210px;
+      margin-top: 4px;
+      background: linear-gradient(90deg, var(--white), rgba(255,255,255,0));
+      opacity: 0.9;
+    }
+    .top-banner nav.nav-bar {
+      display: flex;
+      justify-content: flex-start;
+      gap: 26px;
+      padding-bottom: 10px;
     }
     .nav-bar a {
-      color: white;
+      position: relative;
+      color: #e0f2ff;
       text-decoration: none;
-      font-size: 1.1rem;
+      font-size: 0.95rem;
       font-weight: 500;
-      padding: 5px 18px;
-      border-radius: 12px;
-      transition: background 0.2s, color 0.2s;
+      padding: 7px 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.24), transparent 60%);
+      border: 1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition:
+        transform 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        background 0.18s ease-out;
+    }
+    .nav-bar a::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--blue-light);
+      box-shadow: 0 0 12px rgba(41,216,255,0.9);
     }
     .nav-bar a:hover {
-      background: #0057b8;
-      color: #fffbea;
+      transform: translateY(-1px) scale(1.02);
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.5), transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148, 163, 184, 0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    /* ===== CONTAINER GLASS ===== */
+    .page-padding {
+      padding: 26px 7vw 90px 7vw;
     }
     .container {
-      background: white;
-      max-width: 740px;
-      margin: 35px auto 16px auto;
-      border-radius: 18px;
-      box-shadow: 0 2px 14px #bbb;
-      padding: 35px 22px 30px 22px;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.16), transparent 60%),
+                  linear-gradient(145deg, rgba(15,23,42,0.96), rgba(15,23,42,0.9));
+      max-width: 960px;
+      margin: 26px auto 16px auto;
+      border-radius: 22px;
+      box-shadow:
+        0 18px 40px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(15,23,42,0.9);
+      padding: 24px 22px 30px 22px;
       text-align: center;
+      color: #e5f1ff;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(148,163,184,0.7);
     }
     .container h2 {
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       font-size: 1.5rem;
-      color: #007BFF;
+      color: #7dd3fc;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
+
     .instructions {
-      background: #e7f3ff;
-      border-left: 7px solid #007BFF;
-      padding: 15px 20px;
-      margin-bottom: 20px;
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.88), rgba(15,23,42,0.98));
+      border-left: 4px solid #38bdf8;
+      padding: 14px 18px;
+      margin-bottom: 18px;
       text-align: left;
-      border-radius: 8px;
-      font-size: 1.08rem;
+      border-radius: 11px;
+      font-size: 0.96rem;
+      color: #dbeafe;
+      box-shadow: inset 0 0 12px rgba(15,23,42,1);
     }
+    .instructions ul {
+      margin: 6px 0 0 18px;
+      padding: 0;
+    }
+    .instructions li {
+      margin-bottom: 4px;
+    }
+
     .row {
       margin-bottom: 11px;
       display: flex;
       justify-content: center;
-      gap: 14px;
+      gap: 10px;
       flex-wrap: wrap;
     }
-    input, select {
-      padding: 8px;
-      font-size: 1rem;
-      border-radius: 10px;
-      border: 1.4px solid #ccc;
+
+    input, select, textarea {
+      padding: 9px 11px;
+      font-size: 0.98rem;
+      border-radius: 14px;
+      border: 1.4px solid rgba(148,163,184,0.9);
       margin-bottom: 7px;
-      min-width: 120px;
+      min-width: 140px;
+      outline: none;
+      background: rgba(15,23,42,0.95);
+      color: #e5f1ff;
+      transition:
+        border-color 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        background 0.18s ease-out;
+      font-family: inherit;
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.9),
+        0 8px 20px rgba(15,23,42,0.95);
     }
+    textarea {
+      min-width: 240px;
+      min-height: 60px;
+      resize: vertical;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #38bdf8;
+      box-shadow:
+        0 0 0 1px rgba(56,189,248,0.9),
+        0 12px 26px rgba(15,23,42,1);
+      background: rgba(15,23,42,0.98);
+    }
+
+    button[type="submit"], .btn-main {
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #22c55e, #15803d);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow:
+        0 8px 20px rgba(22,163,74,0.85),
+        0 0 0 1px rgba(15,23,42,1);
+      font-size: 0.98rem;
+      letter-spacing: 0.03em;
+      transition:
+        transform 0.1s,
+        box-shadow 0.15s,
+        filter 0.15s;
+      touch-action: manipulation;
+    }
+    button[type="submit"]:hover,
+    .btn-main:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        0 10px 24px rgba(22,163,74,1),
+        0 0 0 1px rgba(15,23,42,1);
+      filter: brightness(1.03);
+    }
+    button[type="submit"]:active,
+    .btn-main:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow:
+        0 4px 12px rgba(22,163,74,0.7),
+        0 0 0 1px rgba(15,23,42,1);
+      filter: brightness(0.96);
+    }
+
+    .top-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+      padding: 0 6px;
+      font-size: 0.92rem;
+    }
+    .top-actions-left {
+      color: #cbd5ff;
+    }
+
+    .btn-secondary {
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.9);
+      background: rgba(15,23,42,0.95);
+      color: #e5f1ff;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s, box-shadow 0.15s, transform 0.08s;
+      touch-action: manipulation;
+      box-shadow:
+        0 6px 16px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(15,23,42,1);
+    }
+    .btn-secondary:hover {
+      background: rgba(30,64,175,0.95);
+      box-shadow:
+        0 8px 20px rgba(15,23,42,1),
+        0 0 0 1px rgba(30,64,175,1);
+    }
+    .btn-secondary:active {
+      transform: translateY(1px);
+      box-shadow:
+        0 4px 10px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(15,23,42,1);
+    }
+
     .zoom-controls {
-      margin: 7px auto 0 auto;
-      text-align: right;
-      width: 96%;
+      margin: 6px auto 4px auto;
+      width: 100%;
       display: flex;
       justify-content: flex-end;
-      gap: 7px;
+      gap: 6px;
+      align-items: center;
+      font-size: 0.9rem;
+      color: #cbd5ff;
     }
+
     .zoom-btn {
-      background:#007BFF;
-      color:white;
-      border:none;
-      border-radius:11px;
-      font-weight:bold;
-      font-size:1.2em;
-      width:36px; height:36px;
-      cursor:pointer;
-      box-shadow: 0 1px 4px #007BFF22;
-      transition: background 0.17s;
+      background: radial-gradient(circle at 30% 20%, #ffffff, #e5f0ff);
+      color: var(--primary-dark);
+      border: 1px solid rgba(148,163,184,0.8);
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 1.2em;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      box-shadow:
+        0 4px 10px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(15,23,42,1);
+      transition:
+        background 0.17s,
+        transform 0.08s,
+        box-shadow 0.17s;
+      touch-action: manipulation;
     }
-    .zoom-btn:active { background: #0057b8; }
+    .zoom-btn:hover {
+      background: radial-gradient(circle at 30% 20%, #ffffff, #c7ddff);
+      box-shadow:
+        0 6px 16px rgba(15,23,42,1),
+        0 0 0 1px rgba(59,130,246,1);
+    }
+    .zoom-btn:active {
+      background: #dbeafe;
+      transform: translateY(1px) scale(0.97);
+      box-shadow:
+        0 3px 8px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(15,23,42,1);
+    }
+
+    /* ===== ZONE CARTE ===== */
     .map-area {
       position: relative;
-      background: #f7fbff;
+      background: radial-gradient(circle at top,#0b1220,#020617);
       min-height: 420px;
       min-width: 340px;
       overflow: auto;
-      border-radius: 17px;
-      box-shadow: 0 1.2px 8px #b3d2f7;
-      margin: 0 auto 10px auto;
-      border: 2px solid #b7dbf7;
+      border-radius: 20px;
+      box-shadow:
+        inset 0 0 0 1px rgba(30,64,175,0.7),
+        0 18px 30px rgba(15,23,42,0.9);
+      margin: 4px auto 12px auto;
+      border: 0;
       transition: height 0.2s;
       touch-action: none;
     }
+    .map-area::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.12;
+      pointer-events: none;
+      background-image:
+        radial-gradient(circle at 0 0, rgba(56,189,248,0.3), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(59,130,246,0.4), transparent 55%);
+      mix-blend-mode: screen;
+    }
+
     .map-inner {
       position: absolute;
       left:0; top:0; width:100%; height:100%;
       transform-origin: 0 0;
       will-change: transform;
     }
+
     .node {
       position: absolute;
-      min-width: 120px;
-      padding: 13px 15px;
-      border-radius: 21px;
-      background: #dbefff;
-      border: 2px solid #007bff77;
-      color: #1d3b60;
-      font-weight: bold;
+      min-width: 130px;
+      padding: 12px 15px;
+      border-radius: 22px;
+      background: linear-gradient(135deg,#1e293b,#0f172a);
+      border: 2px solid var(--node-border);
+      color: #e5f1ff;
+      font-weight: 600;
       cursor: move;
-      text-align:center;
-      box-shadow: 0 1px 7px #007BFF22;
+      text-align: center;
+      box-shadow:
+        0 10px 26px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
       user-select: none;
-      transition: box-shadow 0.2s;
+      transition: box-shadow 0.2s, transform 0.1s, border-color 0.2s;
       z-index: 1;
     }
     .node.root {
-      background: #007BFF;
+      background: var(--node-root-bg);
       color: #fff;
-      border: 3px solid #0057b8;
-      font-size: 1.17rem;
+      border: 3px solid rgba(255,255,255,0.6);
+      font-size: 1.06rem;
+      text-shadow: 0 1px 3px #002;
     }
+    .node:hover {
+      box-shadow:
+        0 16px 32px rgba(15,23,42,1),
+        0 0 30px rgba(56,189,248,0.7);
+      border-color: rgba(56,189,248,0.9);
+      transform: translateY(-2px);
+    }
+
+    .node-title {
+      display: inline-block;
+      padding: 0 4px;
+    }
+    .node-buttons {
+      display: inline-flex;
+      gap: 4px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
     .btn-mini {
-      font-size: 0.94em;
-      background: #e44;
+      font-size: 0.8em;
+      background: linear-gradient(135deg,#f97373,#b91c1c);
       color: #fff;
-      border-radius: 8px;
+      border-radius: 999px;
       border: none;
-      padding: 2px 8px;
-      margin-left: 10px;
+      padding: 2px 7px;
       cursor: pointer;
+      box-shadow:
+        0 4px 10px rgba(190,24,93,0.9),
+        0 0 0 1px rgba(15,23,42,1);
+      touch-action: manipulation;
+      transition: transform 0.12s, filter 0.12s, box-shadow 0.12s;
     }
-    .btn-mini:hover { background: #a10; }
+    .btn-mini:active {
+      transform: translateY(1px);
+      filter: brightness(0.9);
+      box-shadow:
+        0 3px 8px rgba(190,24,93,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+    }
+
+    .btn-info {
+      font-size: 0.8em;
+      background: rgba(15,23,42,0.96);
+      color: #e5f1ff;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.9);
+      padding: 2px 7px;
+      cursor: pointer;
+      box-shadow:
+        0 4px 10px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(15,23,42,1);
+      transition: transform 0.12s, box-shadow 0.12s, background 0.12s;
+    }
+    .btn-info:active {
+      transform: translateY(1px);
+      box-shadow:
+        0 3px 8px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(30,64,175,1);
+      background: rgba(30,64,175,0.98);
+    }
+
+    .description-popup {
+      position: absolute;
+      max-width: 260px;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.96), rgba(226,232,255,0.98));
+      border-radius: 12px;
+      padding: 10px 12px;
+      box-shadow: 0 18px 30px rgba(15,23,42,0.95);
+      border: 1px solid rgba(148,163,184,0.9);
+      font-size: 0.9rem;
+      color: #0f172a;
+      z-index: 50;
+    }
+    .description-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--primary-dark);
+    }
+    .description-close {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      color: #6b7489;
+    }
+
     .bottom-footer {
-      background-color: #333;
-      color: #eee;
-      padding: 16px 0;
+      background: linear-gradient(135deg,#020617,#020617);
+      color: #cbd5f5;
+      padding: 12px 10px;
       text-align: center;
-      font-size: 1rem;
+      font-size: 0.9rem;
       position: fixed;
       left: 0;
       right: 0;
       bottom: 0;
-      box-shadow: 0 -1px 8px #bbb;
+      box-shadow:
+        0 -10px 24px rgba(0,0,0,0.85),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
     }
-    .page-padding { padding-bottom: 60px; }
+    .page-padding { padding-bottom: 80px; }
+
     .notification {
-      color: #007BFF;
-      margin: 8px auto 8px auto;
+      color: #7dd3fc;
+      margin: 6px auto 6px auto;
       font-weight: 500;
-      font-size: 1rem;
+      font-size: 0.98rem;
       letter-spacing: .1px;
       min-height: 18px;
     }
-    @media (max-width: 900px) {.container {max-width: 99vw;}}
+
+    @media (max-width: 900px) {
+      .container {max-width: 96vw;}
+    }
     @media (max-width: 600px) {
-      .container { padding: 7vw 2vw; }
-      .map-area { min-height:240px; }
-      .node { min-width:77px; font-size: 0.94rem;}
+      .container { padding: 6vw 3vw 7vw 3vw; border-radius: 18px; }
+      .map-area { min-height: 280px; }
+      .node { min-width: 90px; font-size: 0.9rem; padding: 9px 11px; }
+      .top-banner { font-size: 1.6rem; }
+      .zoom-btn { width: 44px; height: 44px; }
+      .row { gap: 6px; }
+      textarea { min-width: 100%; }
     }
   </style>
 </head>
 <body>
-  <div class="top-banner">
-    Carte mentale interactive
-    <nav class="nav-bar">
-      <a href="index.html">Accueil</a>
-      <a href="apropos.html">À propos</a>
-    </nav>
-  </div>
-  <div class="page-padding">
-    <div class="container">
-      <h2>Carte mentale interactive avec zoom</h2>
-      <div class="instructions">
-        <b>Instructions :</b>
-        <ul>
-          <li>Ajoute une idée principale (« racine »), puis relie-lui des sous-idées.</li>
-          <li>Déplace les bulles où tu veux. Zoome/dézoome avec les boutons <b>+</b>/<b>-</b> ou en pincant l’écran.</li>
-          <li>Les fichiers de liaison restent visibles même en zoom.</li>
-          <li>Supprime une idée (et ses sous-idées) avec « X ». Capture d’écran : facile à partager ou intégrer dans un exposé !</li>
-        </ul>
+  <!-- Loader hacking carte mentale -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//MINDMAP-ENGINE</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Connexion</span>
+        <span class="status-dots">...</span>
       </div>
-      <form id="ideaForm" onsubmit="event.preventDefault(); addNode();">
-        <div class="row">
-          <input type="text" id="nodeText" placeholder="Idée ou mot-clé" maxlength="46" required>
-          <select id="parentSelect"></select>
-          <button type="submit">Ajouter l'idée</button>
-        </div>
-      </form>
-      <div class="notification" id="notif"></div>
-      <div class="zoom-controls">
-        <button class="zoom-btn" onclick="zoomMap(1.25)" title="Zoomer">+</button>
-        <button class="zoom-btn" onclick="zoomMap(0.8)" title="Dézoomer">-</button>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
       </div>
-      <div class="map-area" id="mapArea" style="height:410px;">
-        <div class="map-inner" id="mapInner"></div>
+
+      <div class="loader-subtext">
+        Génération des nœuds · Liens fluides · Zoom interactif
       </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du moteur de carte mentale...</div>
+        <div class="terminal-line">[OK]  Librairies LeaderLine et HTML2PDF initialisées.</div>
+        <div class="terminal-line">[GRAPH] Allocation du graphe (nœuds + arêtes).</div>
+        <div class="terminal-line">[LAYOUT] Placement radial des idées autour de la racine...</div>
+        <div class="terminal-line">[COLOR] Attribution de couleurs par branche.</div>
+        <div class="terminal-line">[ZOOM] Activation du pinch-zoom et des boutons + / −.</div>
+        <div class="terminal-line">[EXPORT] Préparation de l’export PDF haute résolution.</div>
+        <div class="terminal-line">[OK]  Interface prête pour l’édition en temps réel.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
     </div>
   </div>
-  <div class="bottom-footer">
-    © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Comptenu : Perplexity (ia)
+
+  <div id="main-content">
+    <div class="top-banner">
+      Carte mentale interactive
+      <nav class="nav-bar">
+        <a href="index.html">Accueil</a>
+        <a href="apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="container">
+        <h2>Carte mentale interactive avec zoom</h2>
+        <div class="instructions">
+          <b>Instructions :</b>
+          <ul>
+            <li>Ajoute une idée principale (racine), puis relie-lui des sous-idées.</li>
+            <li>Déplace les bulles au doigt ou à la souris. Zoome/dézoome avec + / − ou en pincant l’écran.</li>
+            <li>Chaque branche a sa propre couleur, transmise aux sous-idées.</li>
+            <li>Ajoute une description pour chaque bulle et clique sur « i » pour l’afficher/masquer.</li>
+            <li>Supprime une bulle (et ses sous-idées) avec « X ». Tu peux ensuite exporter la carte en PDF.</li>
+          </ul>
+        </div>
+
+        <form id="ideaForm" onsubmit="event.preventDefault(); addNode();">
+          <div class="row">
+            <input type="text" id="nodeText" placeholder="Idée ou mot-clé" maxlength="46" required>
+            <select id="parentSelect"></select>
+          </div>
+          <div class="row">
+            <textarea id="nodeDesc" placeholder="Description (optionnelle) de cette idée..."></textarea>
+          </div>
+          <div class="row">
+            <button type="submit" class="btn-main">Ajouter l'idée</button>
+          </div>
+        </form>
+
+        <div class="top-actions">
+          <div class="top-actions-left">
+            Astuce : pince à deux doigts pour zoomer sur la carte.
+          </div>
+          <button class="btn-secondary" type="button" onclick="exportPDF()">
+            Exporter en PDF
+          </button>
+        </div>
+
+        <div class="notification" id="notif"></div>
+
+        <div class="zoom-controls">
+          <span>Zoom</span>
+          <button class="zoom-btn" type="button" onclick="zoomMap(1.25)" title="Zoomer">+</button>
+          <button class="zoom-btn" type="button" onclick="zoomMap(0.8)" title="Dézoomer">−</button>
+        </div>
+
+        <div class="map-area" id="mapArea" style="height:410px;">
+          <div class="map-inner" id="mapInner"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
+    </div>
   </div>
+
   <script>
+    // Masquer le loader après 5 s
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      const main = document.getElementById('main-content');
+      main.style.display = 'block';
+    }, 5000);
+
     let nodes = [];
     let links = [];
     let nodeId = 0;
     let zoom = 1;
+    let currentPopup = null;
 
+    function randomPastel() {
+      const hue = Math.floor(Math.random() * 360);
+      return `hsl(${hue},75%,80%)`;
+    }
     function getSiblings(parentId) {
       return nodes.filter(n=>n.parent==parentId);
     }
 
     function addNode() {
       const text = document.getElementById('nodeText').value.trim();
+      const desc = document.getElementById('nodeDesc').value.trim();
       const parent = document.getElementById('parentSelect').value;
       if (!text) return;
 
@@ -240,13 +861,11 @@
       const mapW = 650, mapH = 380;
       let x, y;
 
-      if (!nParent) { // Racine = centre
+      if (!nParent) {
         x = mapW/2+Math.random()*20-10;
         y = mapH/2+Math.random()*20-10;
       } else {
-        // dispersion en cercle autour du parent
         let r = 135 + 30*childCount;
-        // Corrige le bug du "collé au coin" pour le premier enfant : place-le vers la droite du parent (angle=0)
         let angle;
         if(childCount === 0) {
           angle = 0;
@@ -256,7 +875,7 @@
         x = nParent.x + r * Math.cos(angle);
         y = nParent.y + r * Math.sin(angle);
       }
-      // Anti-collisions :
+
       const radius = 70;
       let collide;
       for(let tries=0; tries<30; tries++) {
@@ -264,12 +883,25 @@
         if(!collide) break;
         x += 20-(Math.random()*40); y += 20-(Math.random()*40);
       }
-      const newNode = {id: nodeId++, text, x, y, parent: parent==='' ? null : parseInt(parent)};
+
+      const color = nParent && nParent.color ? nParent.color : randomPastel();
+
+      const newNode = {
+        id: nodeId++,
+        text,
+        desc,
+        x,
+        y,
+        parent: parent==='' ? null : parseInt(parent),
+        color
+      };
+
       nodes.push(newNode);
       updateParentSelect();
       renderNodes();
       notif('Idée ajoutée !');
       document.getElementById('nodeText').value = '';
+      document.getElementById('nodeDesc').value = '';
     }
 
     function updateParentSelect() {
@@ -292,18 +924,55 @@
     function renderNodes() {
       const inner = document.getElementById('mapInner');
       inner.innerHTML = '';
-      // Nettoie les anciens liens
+      if(currentPopup && currentPopup.parentNode){
+        currentPopup.parentNode.removeChild(currentPopup);
+        currentPopup = null;
+      }
       links.forEach(l => {if(l.remove) l.remove(); });
       links = [];
       nodes.forEach(n=>{
         let div = document.createElement('div');
         div.className = 'node' + (n.parent===null?' root':'');
-        div.innerHTML = n.text + ` <button class="btn-mini" onclick="delNode(${n.id})" title="Supprimer">X</button>`;
+
+        if(n.parent!==null && n.color){
+          div.style.background = `linear-gradient(135deg, ${n.color}, #020617)`;
+        }
+
         div.style.left = (n.x*zoom)+'px';
         div.style.top = (n.y*zoom)+'px';
         div.style.transform = `scale(${zoom})`;
         div.style.transformOrigin = "top left";
         div.id = 'node'+n.id;
+
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'node-title';
+        titleSpan.textContent = n.text;
+
+        const btnBox = document.createElement('span');
+        btnBox.className = 'node-buttons';
+
+        const infoBtn = document.createElement('button');
+        infoBtn.type = 'button';
+        infoBtn.className = 'btn-info';
+        infoBtn.textContent = 'i';
+        infoBtn.title = 'Afficher / masquer la description';
+        infoBtn.addEventListener('click', (e)=>{
+          e.stopPropagation();
+          toggleDescriptionPopup(n, div);
+        });
+
+        const delBtn = document.createElement('button');
+        delBtn.type = 'button';
+        delBtn.className = 'btn-mini';
+        delBtn.textContent = 'X';
+        delBtn.title = 'Supprimer';
+        delBtn.onclick = () => delNode(n.id);
+
+        btnBox.appendChild(infoBtn);
+        btnBox.appendChild(delBtn);
+        div.appendChild(titleSpan);
+        div.appendChild(btnBox);
+
         inner.appendChild(div);
         dragify(div, n);
       });
@@ -312,21 +981,84 @@
 
     function drawAllLinks() {
       nodes.forEach(n=>{
-        if(n.parent!==null 
-           && document.getElementById('node'+n.id) 
+        if(n.parent!==null
+           && document.getElementById('node'+n.id)
            && document.getElementById('node'+n.parent)) {
           links.push(new LeaderLine(
             document.getElementById('node'+n.parent),
             document.getElementById('node'+n.id),
-            {color: "#007BFF", size:2.8, path:'fluid', startSocket:'auto',endSocket:'auto',endPlug:'disc'}
+            {
+              color: "#29d8ff",
+              size: 3.0,
+              path:'fluid',
+              startSocket:'auto',
+              endSocket:'auto',
+              endPlug:'disc'
+            }
           ));
         }
       });
     }
 
+    function toggleDescriptionPopup(node, nodeElem) {
+      if(currentPopup && currentPopup.nodeId === node.id) {
+        currentPopup.parentNode.removeChild(currentPopup);
+        currentPopup = null;
+        return;
+      }
+      if(currentPopup && currentPopup.parentNode) {
+        currentPopup.parentNode.removeChild(currentPopup);
+        currentPopup = null;
+      }
+      if(!node.desc) {
+        notif("Aucune description pour cette bulle. Tu peux la modifier en recréant l'idée.");
+        return;
+      }
+
+      const popup = document.createElement('div');
+      popup.className = 'description-popup';
+      popup.nodeId = node.id;
+
+      const close = document.createElement('span');
+      close.className = 'description-close';
+      close.textContent = '✕';
+      close.onclick = () => {
+        if(popup.parentNode) popup.parentNode.removeChild(popup);
+        currentPopup = null;
+      };
+
+      const title = document.createElement('div');
+      title.className = 'description-title';
+      title.textContent = node.text;
+
+      const content = document.createElement('div');
+      content.textContent = node.desc;
+
+      popup.appendChild(close);
+      popup.appendChild(title);
+      popup.appendChild(content);
+
+      const mapArea = document.getElementById('mapArea');
+      mapArea.appendChild(popup);
+
+      const rect = nodeElem.getBoundingClientRect();
+      const areaRect = mapArea.getBoundingClientRect();
+
+      const top = rect.bottom - areaRect.top + 8;
+      const left = rect.left - areaRect.left;
+
+      popup.style.top = top + 'px';
+      popup.style.left = left + 'px';
+
+      currentPopup = popup;
+    }
+
     function dragify(element, n) {
       let offsetX, offsetY, dragging = false;
+
       element.onmousedown = function(e){
+        if(e.target.classList.contains('btn-mini') || e.target.classList.contains('btn-info')) return;
+        e.preventDefault();
         dragging = true;
         offsetX = e.clientX - n.x*zoom;
         offsetY = e.clientY - n.y*zoom;
@@ -337,9 +1069,17 @@
           n.y = (e2.clientY - offsetY)/zoom;
           renderNodes();
         };
-        document.onmouseup = function(){ dragging=false; element.style.zIndex = 1; document.onmousemove=null;};
+        document.onmouseup = function(){
+          dragging=false;
+          element.style.zIndex = 1;
+          document.onmousemove=null;
+          document.onmouseup=null;
+        };
       };
+
       element.ontouchstart = function(e){
+        if(e.touches.length>1) return;
+        if(e.target.classList.contains('btn-mini') || e.target.classList.contains('btn-info')) return;
         dragging = true;
         const touch=e.touches[0];
         offsetX = touch.clientX - n.x*zoom;
@@ -352,7 +1092,12 @@
           n.y = (t2.clientY - offsetY)/zoom;
           renderNodes();
         };
-        document.ontouchend = function(){ dragging=false; element.style.zIndex = 1; document.ontouchmove=null;};
+        document.ontouchend = function(){
+          dragging=false;
+          element.style.zIndex = 1;
+          document.ontouchmove=null;
+          document.ontouchend=null;
+        };
       };
     }
 
@@ -366,16 +1111,18 @@
       renderNodes();
       notif('Idée supprimée.');
     }
+
     function notif(msg) {
       const el = document.getElementById('notif');
       el.textContent = msg;
-      setTimeout(()=>{el.textContent='';}, 1650);
+      setTimeout(()=>{el.textContent='';}, 1800);
     }
+
     function zoomMap(factor) {
       zoom = Math.max(0.5, Math.min(2.3, zoom*factor));
       renderNodes();
     }
-    // Mobile pinch zoom
+
     let lastDist = null;
     document.addEventListener('touchmove', function(e) {
       const area = document.getElementById('mapArea');
@@ -391,6 +1138,18 @@
       }
     },{passive:false});
     document.addEventListener('touchend',()=>{lastDist=null;});
+
+    function exportPDF() {
+      const element = document.getElementById('mapArea');
+      const opt = {
+        margin:       0.2,
+        filename:     'carte_mentale.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'cm', format: 'a4', orientation: 'landscape' }
+      };
+      html2pdf().set(opt).from(element).save();
+    }
 
     window.onload = ()=>{
       updateParentSelect();

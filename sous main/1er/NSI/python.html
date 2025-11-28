@@ -2,207 +2,534 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Masterclass Python — Cours ultra détaillé & interactif</title>
-  <meta name="description" content="Apprends Python en profondeur : syntaxe, variables, types, fonctions, classes, gestion des erreurs, fichiers, modules, bonnes pratiques, quiz et exercices." />
+  <title>Global - Python · Masterclass</title>
+  <meta name="description" content="Apprends Python en profondeur : syntaxe, variables, types, fonctions, classes, gestion des erreurs, fichiers, modules, bonnes pratiques, quiz et exercices.">
   <style>
-    body {
-      background: #f7f9fc;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #222;
-      margin: 0;
-      line-height: 1.8;
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-main:#004a99;
+      --blue-dark:#002244;
     }
-    header {
-      background: linear-gradient(90deg, #cdeaff, #a1d4ff);
-      color: #003355;
-      padding: 45px 0 28px;
-      text-align: center;
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.15), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(59,130,246,0.28), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#0b1120 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
     }
-    header h1 {
-      font-size: 3.2rem;
-      margin: 0 0 16px;
-      color: #002244;
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
     }
-    header .intro {
-      font-size: 1.35rem;
-      font-weight: 700;
-      max-width: 900px;
-      margin: 0 auto;
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#020617 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
     }
-    main {
-      max-width: 1000px;
-      background: #fff;
-      margin: 55px auto 35px;
-      padding: 50px 60px;
-      border-radius: 22px;
-      box-shadow: 0 15px 48px rgba(0, 34, 68, 0.15);
+    .loader-hud{
+      position:relative;
+      width:min(560px,90vw);
+      padding:26px 26px 30px;
+      border-radius:20px;
+      background:
+        radial-gradient(circle at 0 0,rgba(96,165,250,0.35),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(96,165,250,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.95),
+        0 0 35px rgba(96,165,250,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
     }
-    h2 {
-      color: #002244;
-      margin-top: 55px;
-      border-bottom: 5px solid #a1d4ff;
-      padding-bottom: 12px;
-      font-size: 2.8rem;
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.5) 1px,
+        rgba(15,23,42,0.95) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
     }
-    h3 {
-      color: #004a99;
-      margin-top: 48px;
-      font-size: 2.0rem;
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#dbeafe;
+      margin-bottom:16px;
+      position:relative;
     }
-    ul, ol {
-      margin-left: 3em;
-      margin-bottom: 2.5em;
-      font-size: 1.2rem;
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:280px;
+      height:2px;
+      background:linear-gradient(90deg,#bfdbfe,transparent);
+      box-shadow:0 0 14px rgba(59,130,246,0.95);
     }
-    .infos, .box-exo, .lexique, .error, .anecdote {
-      padding: 28px 36px;
-      border-radius: 12px;
-      margin: 2.5em 0;
-      font-size: 1.2rem;
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
     }
-    .infos {
-      background: #d9f0ff;
-      border-left: 10px solid #3399ff;
-      color: #003355;
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
     }
-    .box-exo {
-      background: #e5f3ff;
-      border-left: 11px solid #0066cc;
-      color: #002244;
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#bfdbfe;
     }
-    .box-important {
-      background: #fff9e6;
-      border-left: 11px solid #ffb84d;
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
     }
-    .error {
-      background: #ffdede;
-      border-left: 11px solid #cc3300;
-      color: #990000;
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(96,165,250,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
     }
-    .lexique {
-      background: #bddbff;
-      border-left: 11px solid #004a99;
-      padding: 28px;
-      margin: 3em 0;
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#22c55e,#60a5fa,#a855f7);
+      box-shadow:0 0 18px rgba(96,165,250,0.9);
+      animation:barProgress 2.1s ease-in-out infinite;
     }
-    .anecdote {
-      background: #a9c9ff;
-      border-left: 11px solid #002244;
-      font-style: italic;
-      margin: 3em 0;
-      padding: 25px 33px;
-      color: #001a33;
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
     }
-    code {
-      background: #d2e8ff;
-      padding: 0 8px;
-      border-radius: 7px;
-      font-family: 'Consolas', monospace;
-      font-size: 1.15rem;
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#e5e7eb;
+      opacity:0.95;
     }
-    pre {
-      background: #d2e8ff;
-      padding: 28px;
-      border-radius: 12px;
-      overflow-x: auto;
-      font-family: 'Consolas', monospace;
-      margin: 1.5em 0 3em;
-      font-size: 1.15rem;
-      line-height: 1.6;
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(59,130,246,0.25) 45%,
+          rgba(59,130,246,0.6) 50%,
+          rgba(59,130,246,0.25) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
     }
-    button, .btn-expl {
-      background: #004a99;
-      color: white;
-      border: none;
-      font-weight: 900;
-      border-radius: 11px;
-      padding: 14px 26px;
-      cursor: pointer;
-      margin-right: 16px;
-      margin-top: 16px;
-      transition: background-color 0.35s ease;
-      font-size: 1.2rem;
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
     }
-    button:hover, .btn-expl:hover {
-      background: #002f66;
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.92),rgba(15,23,42,1));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
     }
-    .reponse {
-      margin-top: 1.6em;
-      font-weight: 900;
-      color: #002244;
-      text-align: center;
-      font-size: 1.3rem;
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#bfdbfe;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(0,34,68,0.95),rgba(37,99,235,0.95));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#f9fafb;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:260px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#bfdbfe;
+      box-shadow:0 0 12px rgba(191,219,254,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:1000px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:40px 40px 32px;
+      color:#e5f1ff;
+    }
+
+    h1,h2{
+      color:#e0ecff;
+      margin-bottom:10px;
+    }
+    h3{
+      color:#bfdbfe;
+      margin-top:32px;
+      margin-bottom:10px;
+      font-size:2rem;
+    }
+    h2{
+      margin-top:40px;
+      border-bottom:4px solid #93c5fd;
+      padding-bottom:10px;
+      font-size:2.3rem;
+    }
+    p,li{font-size:1.03rem;line-height:1.8;}
+    ul,ol{margin-left:2.2em;margin-bottom:2em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      border-radius:12px;
+      margin:2.2em 0;
+      font-size:1.05rem;
+    }
+    .infos{
+      padding:24px 32px;
+      background:#d9f0ff;
+      border-left:10px solid #3399ff;
+      color:#003355;
+    }
+    .box-exo{
+      padding:24px 32px;
+      background:#e5f3ff;
+      border-left:11px solid #0066cc;
+      color:#e0ecff;
+    }
+    .box-important{
+      padding:24px 32px;
+      background:#fff9e6;
+      border-left:11px solid #ffb84d;
+      color:#4a3410;
+    }
+    .error{
+      padding:24px 32px;
+      background:#ffdede;
+      border-left:11px solid #cc3300;
+      color:#990000;
+    }
+    .lexique{
+      padding:26px;
+      background:#bddbff;
+      border-left:11px solid #004a99;
+      margin:3em 0;
+      color:#0f172a;
+    }
+    .anecdote{
+      padding:24px 32px;
+      background:#a9c9ff;
+      border-left:11px solid #002244;
+      font-style:italic;
+      margin:3em 0;
+      color:#001a33;
+    }
+
+    code{
+      background:#020617;
+      padding:0 8px;
+      border-radius:7px;
+      font-family:"Consolas","SFMono-Regular",monospace;
+      font-size:1rem;
+      color:#e5e7eb;
+    }
+    pre{
+      background:#020617;
+      padding:24px;
+      border-radius:12px;
+      overflow-x:auto;
+      font-family:"Consolas","SFMono-Regular",monospace;
+      margin:1.5em 0 2.8em;
+      font-size:1rem;
+      line-height:1.6;
+      color:#e5e7eb;
+    }
+
+    button,.btn-expl{
+      background:#004a99;
+      color:white;
+      border:none;
+      font-weight:900;
+      border-radius:11px;
+      padding:14px 26px;
+      cursor:pointer;
+      margin-right:16px;
+      margin-top:16px;
+      transition:background-color 0.25s ease,transform 0.15s ease;
+      font-size:1.05rem;
+    }
+    button:hover,.btn-expl:hover{
+      background:#002f66;
+      transform:translateY(-1px);
+    }
+
+    .reponse{
+      margin-top:1.6em;
+      font-weight:900;
+      color:#bfdbfe;
+      text-align:center;
+      font-size:1.1rem;
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
     }
   </style>
 </head>
 <body>
-<header>
-  <h1>Masterclass Python — Cours complet & ultra détaillé</h1>
-  <div class="intro">Maîtrise Python à fond : syntaxe, types, fonctions, classes, gestion des erreurs, fichiers, programmation modulaire, bonnes pratiques, quiz et exercices.</div>
-</header>
-<main>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//python-MASTER</div>
 
-  <section>
-    <h2>🐍 Qu’est-ce que Python ?</h2>
-    <ul>
-      <li><b>Python</b> est un langage de programmation interprété et multiplateforme, réputé pour sa syntaxe claire et sa facilité d’apprentissage.</li>
-      <li>Utilisé en science des données, web, automatisation, intelligence artificielle, jeux vidéo, applications robustes.</li>
-      <li>Créé en 1991 par Guido van Rossum, il repose sur la lisibilité du code pour faciliter la collaboration et la maintenance.</li>
-      <li>Sa large communauté et ses bibliothèques riches en font un langage versatile et puissant.</li>
-    </ul>
-    <div class="infos">
-      <p>Son design s’inspire du langage ABC et met l’accent sur une syntaxe minimaliste où l'indentation remplace les accolades, pour structurer le code visuellement.</p>
+      <div class="loader-status-row">
+        <span class="status-label">Import</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Python : syntaxe, types, fonctions, classes, exceptions, fichiers, modules et bonnes pratiques.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[ENV] Activation de l’environnement virtuel, chargement des modules standards...</div>
+        <div class="terminal-line">[SYNTAX] Vérification indentation, définitions de fonctions, classes et imports.</div>
+        <div class="terminal-line">[READY] Masterclass Python prête : théorie, exemples, quiz et exercices pratiques.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
     </div>
-  </section>
+  </div>
 
-  <section>
-    <h2>🔠 Syntaxe et variables en Python</h2>
-    <p>Les variables en Python n'ont pas besoin d'être déclarées explicitement : elles sont créées dès la première assignation.</p>
-    <ul>
-      <li>Les types principaux sont <code>int</code>, <code>float</code>, <code>str</code>, <code>bool</code>.</li>
-      <li>Python est fortement typé : une variable garde son type, mais le typage est dynamique.</li>
-      <li>La convention est d’utiliser le snake_case pour nommer variables et fonctions.</li>
-      <li>Tu peux assigner plusieurs variables en une ligne, et échanger facilement les valeurs : <code>a, b = b, a</code></li>
-    </ul>
-    <pre><code>age = 30
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Python
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="content-card">
+        <header style="background:none;padding:0;margin:0 0 10px 0;color:inherit;text-align:left;box-shadow:none;">
+          <h1>Masterclass Python — Cours complet & ultra détaillé</h1>
+          <div class="intro" style="font-size:1.2rem;font-weight:700;max-width:900px;margin:0;">
+            Maîtrise Python : syntaxe, types, fonctions, POO, erreurs, fichiers, modules, bonnes pratiques, quiz et exercices.
+          </div>
+        </header>
+
+        <main>
+          <section>
+            <h2>🐍 Qu’est-ce que Python ?</h2>
+            <ul>
+              <li>Langage interprété, multi‑plateforme et très lisible, idéal pour apprendre comme pour des projets pro.</li>
+              <li>Très présent en data, IA, web, automatisation, scripts système, jeux, outils scientifiques.</li>
+            </ul>
+            <div class="infos">
+              L’indentation structure le code (pas d’accolades), ce qui impose un style clair et uniforme.
+            </div>
+          </section>
+
+          <section>
+            <h2>🔠 Syntaxe et variables</h2>
+            <ul>
+              <li>Variables créées par simple affectation : pas de type à déclarer.</li>
+              <li>Types de base : de>int</code>, de>float</code>, de>str</code>, de>bool</code>.</li>
+              <li>Typage dynamique et fort : on peut changer la valeur, mais les opérations entre types incompatibles lèvent des erreurs.</li>
+            </ul>
+            <pre>de>age = 30
 nom = "Alice"
 taille = 1.75
 est_actif = True
 a, b = 5, 10
-a, b = b, a  # échange
-</code></pre>
-    <div class="infos">
-      <p>Le typage dynamique permet de reassigner une variable avec un type différent, mais cela peut aussi être source d’erreurs si mal géré.</p>
-    </div>
-  </section>
+a, b = b, a  # échange</code></pre>
+          </section>
 
-  <section>
-    <h2>⚖️ Types de données et opérations</h2>
-    <p>Les types de base permettent de faire des opérations mathématiques, des manipulations de chaînes et des comparaisons.</p>
-    <ul>
-      <li><b>Opérateurs mathématiques :</b> <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>//</code> (division entière), <code>%</code> (modulo), <code>**</code> (puissance).</li>
-      <li><b>Opérateurs de comparaison :</b> <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code>.</li>
-      <li><b>Concaténation de chaînes :</b> avec <code>+</code>, ou avec f-string pour l’interpolation.</li>
-    </ul>
-    <pre><code>x = 10 + 4 * 2
-y = 15 // 4  # 3
-z = 5 % 2   # 1
+          <section>
+            <h2>⚖️ Types et opérations</h2>
+            <ul>
+              <li>Opérateurs : de>+</code>, de>-</code>, de>*</code>, de>/</code>, de>//</code>, de>%</code>, de>**</code>.</li>
+              <li>Comparaisons : de>==</code>, de>!=</code>, de>&lt;</code>, etc.</li>
+              <li>f‑strings pour formater des messages lisibles.</li>
+            </ul>
+            <pre>de>x = 10 + 4 * 2
+y = 15 // 4
+z = 5 % 2
 nom = "Alice"
 message = f"Bonjour {nom} !"
-print(message)
-</code></pre>
-  </section>
+print(message)</code></pre>
+          </section>
 
-  <section>
-    <h2>🔀 Structures de contrôle : conditions et boucles</h2>
-    <p>Le contrôle de flux est essentiel pour prendre des décisions et répéter des actions.</p>
-    <ul>
-      <li><b>if / elif / else :</b> blocs conditionnels indentés pour exécuter le code selon des tests booléens.</li>
-      <li><b>while :</b> boucle tant que la condition est vraie.</li>
-      <li><b>for :</b> boucle sur une séquence (liste, chaîne, range...).</li>
-      <li><b>break / continue :</b> permettent d’arrêter ou sauter une itération dans une boucle.</li>
-    </ul>
-    <pre><code>age = 20
+          <section>
+            <h2>🔀 Conditions et boucles</h2>
+            <pre>de>age = 20
 if age &gt;= 18:
     print("Majeur")
 elif age &gt;= 13:
@@ -213,101 +540,53 @@ else:
 for i in range(5):
     if i == 3:
         continue
-    print(i)
-</code></pre>
-  </section>
+    print(i)</code></pre>
+          </section>
 
-  <section>
-    <h2>🧩 Fonctions : bloquer et réutiliser un code</h2>
-    <p>Une fonction contient un groupe d’instructions réutilisables, avec des paramètres et éventuellement une valeur retournée.</p>
-    <ul>
-      <li>Déclaration avec <code>def nom_fonction(param1, param2):</code>.</li>
-      <li>Utilisation du mot-clé <code>return</code> pour renvoyer une valeur.</li>
-      <li>Les fonctions peuvent avoir des arguments par défaut, des paramètres nommés, et accepter un nombre variable d’arguments.</li>
-    </ul>
-    <pre><code>def saluer(nom="ami"):
+          <section>
+            <h2>🧩 Fonctions</h2>
+            <pre>de>def saluer(nom="ami"):
     return f"Bonjour {nom} !"
 
 print(saluer())
-print(saluer("Alice"))
-</code></pre>
-  </section>
+print(saluer("Alice"))</code></pre>
+          </section>
 
-  <section>
-    <h2>📚 Listes, tuples, dictionnaires et ensembles</h2>
-    <p>Python offre plusieurs structures pour stocker des collections de données.</p>
-    <ul>
-      <li><b>Liste :</b> mutable, ordonnée, modifiable (ex : <code>[1, 2, 3]</code>).</li>
-      <li><b>Tuple :</b> immuable, ordonné, plus sécurisé (ex : <code>(1, 2, 3)</code>).</li>
-      <li><b>Dictionnaire :</b> collection clé-valeur avec clés uniques (ex : <code>{"nom":"Alice", "age":30}</code>).</li>
-      <li><b>Set :</b> collection non ordonnée d’éléments uniques.</li>
-    </ul>
-    <pre><code>liste = [1, 2, 3, 4]
+          <section>
+            <h2>📚 Listes, tuples, dictionnaires, ensembles</h2>
+            <pre>de>liste = [1, 2, 3, 4]
 tuple_ = (10, 20, 30)
 dico = {"nom": "Alice", "age": 25}
-ensemble = {1, 2, 3, 4}
-</code></pre>
-  </section>
+ensemble = {1, 2, 3, 4}</code></pre>
+          </section>
 
-  <section>
-    <h2>🛠️ Gestion d’erreurs et exceptions</h2>
-    <p>Pour gérer les erreurs sans faire planter le programme, Python utilise les exceptions.</p>
-    <ul>
-      <li><b>try / except :</b> tenter un bloc de code, intercepter les erreurs.</li>
-      <li><b>else :</b> exécuter si pas d’erreur.</li>
-      <li><b>finally :</b> code toujours exécuté, pour nettoyage.</li>
-      <li>On peut lever des erreurs personnalisées avec <code>raise</code>.</li>
-    </ul>
-    <pre><code>try:
+          <section>
+            <h2>🛠️ Exceptions</h2>
+            <pre>de>try:
     x = int(input("Entrez un nombre : "))
 except ValueError:
     print("Ce n'est pas un nombre valide.")
 else:
     print("Merci !")
 finally:
-    print("Fin du programme.")
-</code></pre>
-  </section>
+    print("Fin du programme.")</code></pre>
+          </section>
 
-  <section>
-    <h2>📁 Lecture et écriture de fichiers</h2>
-    <p>Python facilite la manipulation de fichiers texte ou binaire pour sauvegarder ou lire des données.</p>
-    <ul>
-      <li>Ouvrir un fichier avec <code>open("fichier.txt", "r")</code> (mode lecture) ou <code>"w"</code> (mode écriture).</li>
-      <li>Utiliser <code>with</code> pour gérer correctement la fermeture automatique.</li>
-      <li>Lire tout le contenu avec <code>read()</code>, lire ligne à ligne avec <code>readline()</code> ou <code>readlines()</code>.</li>
-      <li>Écrire du texte avec <code>write()</code>.</li>
-    </ul>
-    <pre><code>with open("data.txt", "w") as f:
+          <section>
+            <h2>📁 Fichiers</h2>
+            <pre>de>with open("data.txt", "w", encoding="utf-8") as f:
     f.write("Hello World\n")
 
-with open("data.txt", "r") as f:
+with open("data.txt", "r", encoding="utf-8") as f:
     contenu = f.read()
-    print(contenu)
-</code></pre>
-  </section>
+    print(contenu)</code></pre>
+          </section>
 
-  <section>
-    <h2>📦 Modules et packages</h2>
-    <p>Pour organiser et réutiliser le code, on divise souvent en modules et packages.</p>
-    <ul>
-      <li><b>Module :</b> un fichier Python (.py) contenant des fonctions, classes, variables.</li>
-      <li><b>Importer avec <code>import nom_module</code> ou <code>from nom_module import fonction</code>.</li>
-      <li><b>Package :</b> dossier contenant plusieurs modules et un fichier <code>__init__.py</code>.</li>
-      <li>Utiliser pip pour installer des packages externes (ex : numpy, pandas).</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>🔄 Programmation orientée objet (POO)</h2>
-    <p>La POO permet de modéliser des objets avec attributs (données) et méthodes (fonctions associées).</p>
-    <ul>
-      <li>Définir une classe avec <code>class NomClasse :</code>.</li>
-      <li>Créer des objets (instances) en appelant la classe.</li>
-      <li>Surcharge du constructeur <code>__init__</code> pour initialiser les objets.</li>
-      <li>Héritage, encapsulation et polymorphisme pour structurer des programmes complexes.</li>
-    </ul>
-    <pre><code>class Personne:
+          <section>
+            <h2>📦 Modules et POO</h2>
+            <pre>de>import math
+print(math.sqrt(16))</code></pre>
+            <pre>de>class Personne:
     def __init__(self, nom, age):
         self.nom = nom
         self.age = age
@@ -316,88 +595,86 @@ with open("data.txt", "r") as f:
         print(f"Bonjour, je suis {self.nom}.")
 
 p = Personne("Alice", 30)
-p.saluer()
-</code></pre>
-  </section>
+p.saluer()</code></pre>
+          </section>
 
-  <section>
-    <h2>💡 Quiz : testez vos connaissances Python</h2>
-    <ul>
-      <li><b>Comment déclare-t-on une fonction en Python ?</b>
-        <button class="btn-expl" onclick="toggleQuiz('quiz1')">Voir réponse</button>
-        <span id="quiz1" style="display:none; color:#002244;">Avec <code>def nom_fonction(param):</code></span>
-      </li>
-      <li><b>Quelle est la différence entre une liste et un tuple ?</b>
-        <button class="btn-expl" onclick="toggleQuiz('quiz2')">Voir réponse</button>
-        <span id="quiz2" style="display:none; color:#002244;">La liste est modifiable, le tuple est immuable.</span>
-      </li>
-      <li><b>Comment gérer une erreur dans un bloc de code ?</b>
-        <button class="btn-expl" onclick="toggleQuiz('quiz3')">Voir réponse</button>
-        <span id="quiz3" style="display:none; color:#002244;">Avec <code>try/except</code>.</span>
-      </li>
-    </ul>
-  </section>
+          <section>
+            <h2>💡 Quiz rapide</h2>
+            <ul>
+              <li><b>Déclaration d’une fonction ?</b>
+                <button class="btn-expl" onclick="toggleQuiz('quiz1')">Voir</button>
+                <span id="quiz1" style="display:none;color:#dbeafe;">de>def nom_fonction(param):</code></span>
+              </li>
+              <li><b>Liste vs tuple ?</b>
+                <button class="btn-expl" onclick="toggleQuiz('quiz2')">Voir</button>
+                <span id="quiz2" style="display:none;color:#dbeafe;">Liste mutable, tuple immuable.</span>
+              </li>
+              <li><b>Gérer une erreur ?</b>
+                <button class="btn-expl" onclick="toggleQuiz('quiz3')">Voir</button>
+                <span id="quiz3" style="display:none;color:#dbeafe;">Avec de>try / except</code>.</span>
+              </li>
+            </ul>
+          </section>
 
-  <section class="box-exo">
-    <h2>💡 Exercices pratiques</h2>
-    <p>1. Écris une fonction <code>facteurielle(n)</code> qui calcule la factorielle récursivement.</p>
-    <p>2. Crée un dictionnaire représentant un étudiant (nom, âge, notes) et affiche la moyenne.</p>
-    <button onclick="showExoCode()">Voir correction</button>
-    <pre id="exo-code" style="display:none; color:#002244;">
-def factorielle(n):
+          <section class="box-exo">
+            <h2>💡 Exercices pratiques</h2>
+            <p>1. Fonction de>factorielle(n)</code> récursive.</p>
+            <p>2. Dictionnaire étudiant (nom, âge, notes) et moyenne.</p>
+            <button onclick="showExoCode()">Voir correction</button>
+            <pre id="exo-code" style="display:none;color:#bfdbfe;">de>def factorielle(n):
     if n <= 1:
         return 1
-    else:
-        return n * factorielle(n-1)
+    return n * factorielle(n-1)
 
-etudiant = {
-    "nom": "Alice",
-    "age": 22,
-    "notes": [12, 14, 16]
-}
-
+etudiant = {"nom": "Alice", "age": 22, "notes": [12, 14, 16]}
 moyenne = sum(etudiant["notes"]) / len(etudiant["notes"])
 print(f"Moyenne : {moyenne}")
+print(factorielle(5))</code></pre>
+          </section>
 
-print(factorielle(5))
-</pre>
-  </section>
+          <section class="box-important">
+            <h2>🧠 Bonnes pratiques Python</h2>
+            <ul>
+              <li>Indentation de 4 espaces, jamais de tabulation mélangée.</li>
+              <li>Noms clairs, commentaires utiles, pas envahissants.</li>
+              <li>Tester chaque fonction avec plusieurs cas.</li>
+              <li>Découper en modules, réutiliser plutôt que copier‑coller.</li>
+            </ul>
+          </section>
 
-  <section class="box-important">
-    <h2>🧠 Méthodologie & bonnes pratiques en Python</h2>
-    <ul>
-      <li>Respecte l’indentation rigoureuse à 4 espaces, élément fondamental de Python.</li>
-      <li>Choisis des noms de variables explicites et utilise des commentaires pour clarifier.</li>
-      <li>Teste tes fonctions indépendamment avec des cas simples puis complexes.</li>
-      <li>Modularise ton code en fonctions et modules pour faciliter la maintenance.</li>
-      <li>Lis la documentation officielle et explore les bibliothèques standards.</li>
-    </ul>
-  </section>
+          <section class="lexique">
+            <h2>📚 Lexique Python</h2>
+            Variable, fonction, liste, tuple, dictionnaire, exception, module, classe, objet, méthode.
+          </section>
 
-  <section class="lexique">
-    <h2>📚 Lexique Python</h2>
-    <b>Variable :</b> espace mémoire nommé pour stocker une valeur.<br />
-    <b>Fonction :</b> bloc de code réutilisable, défini par <code>def</code>.<br />
-    <b>Tuple :</b> collection ordonnée et immuable.<br />
-    <b>Dictionnaire :</b> collection clé-valeur.<br />
-    <b>Exception :</b> erreur gérée avec <code>try/except</code>.<br />
-    <b>Module :</b> fichier Python que l’on peut importer.<br />
-    <b>Classe :</b> définition d’un type d’objet.<br />
-  </section>
+          <section class="anecdote">
+            Python vise un code “proche de l’anglais” avec l’idée qu’il doit être aussi agréable à lire qu’à écrire.
+          </section>
+        </main>
+      </div>
+    </div>
 
-  <section class="anecdote">
-    <b>Anecdote :</b> Python a été conçu pour être un langage aussi facile à lire et écrire que l’anglais, avec un célèbre dicton “There should be one — and preferably only one — obvious way to do it”.
-  </section>
-</main>
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
+    </div>
+  </div>
 
-<script>
-  function toggleQuiz(id) {
-    let el = document.getElementById(id);
-    el.style.display = (el.style.display === "none" || !el.style.display) ? "inline" : "none";
-  }
-  function showExoCode() {
-    document.getElementById("exo-code").style.display = "block";
-  }
-</script>
+  <script>
+    // Masquer le loader après 3 secondes[web:38][web:2][web:62][web:29][web:12]
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
+
+    function toggleQuiz(id) {
+      const el = document.getElementById(id);
+      el.style.display = (!el.style.display || el.style.display === "none") ? "inline" : "none";
+    }
+    function showExoCode() {
+      document.getElementById("exo-code").style.display = "block";
+    }
+  </script>
 </body>
 </html>

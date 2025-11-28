@@ -2,320 +2,647 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Réactions chimiques : équations, bilans, avancement</title>
+  <title>Global - Chimie · Réactions chimiques</title>
   <meta name="description" content="Cours interactif Réactions chimiques : équation-bilan, avancement, réactif limitant, schéma, QCM, exos, LaTeX, fiche et astuces lycée Première PC.">
   <style>
-    body{background:#f6f8fa;font-family:'Segoe UI',Arial,sans-serif;color:#222;margin:0;}
-    header{background:linear-gradient(90deg,#eef4fb,#deffe4 80%);color:#243552;padding:30px 0 12px;text-align:center;}
-    header h1{font-size:2.3rem;margin:0 0 8px;color:#1877f2;}
-    header .intro{font-size:1.09rem;}
-    main{max-width:950px;background:#fff;margin:45px auto 20px;padding:36px 60px;border-radius:20px;box-shadow:0 9px 28px rgba(24,119,242,0.12);}
-    h2{color:#1877f2;margin-top:34px;}
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.15), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(59,130,246,0.25), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#0b1120 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#020617 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(560px,90vw);
+      padding:26px 26px 30px;
+      border-radius:20px;
+      background:
+        radial-gradient(circle at 0 0,rgba(59,130,246,0.35),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(59,130,246,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.95),
+        0 0 35px rgba(59,130,246,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.5) 1px,
+        rgba(15,23,42,0.95) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#dbeafe;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:280px;
+      height:2px;
+      background:linear-gradient(90deg,#bfdbfe,transparent);
+      box-shadow:0 0 14px rgba(59,130,246,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#bfdbfe;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(59,130,246,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#22c55e,#60a5fa,#a855f7);
+      box-shadow:0 0 18px rgba(59,130,246,0.9);
+      animation:barProgress 2.1s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#e5e7eb;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(59,130,246,0.25) 45%,
+          rgba(59,130,246,0.6) 50%,
+          rgba(59,130,246,0.25) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.92),rgba(15,23,42,1));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#bfdbfe;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(24,119,242,0.95),rgba(34,197,94,0.95));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#f9fafb;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:260px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#bfdbfe;
+      box-shadow:0 0 12px rgba(191,219,254,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    main.page{
+      max-width:950px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:20px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:36px 60px 32px;
+      color:#e5f1ff;
+    }
+    @media (max-width:1040px){main.page{padding:11px 8px;}}
+
+    header.inner{background:none;padding:0;margin:0 0 8px 0;text-align:left;box-shadow:none;color:inherit;}
+    h1{font-size:2.1rem;margin-bottom:8px;color:#e5f1ff;}
+    header.inner .intro{font-size:1.02rem;}
+
+    h2{color:#e5f1ff;margin-top:34px;}
     h3{color:#f5a623;margin-top:27px;}
-    ul, ol{margin-left:2em;margin-bottom:0.8em;}
-    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.05rem;}
-    .infos{background:#e7f3fa;border-left:7px solid #1877f2;}
-    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;}
-    .box-important{background:#fff7ec;border-left:8px solid #f5a623;}
-    .error{background:#ffeaea;border-left:8px solid #e06359;}
-    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;}
-    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;}
-    .source{font-size:0.88em;color:#999;text-align:right;margin-top:10px;}
-    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s;font-size:1em;}
-    button:hover{background:#145ac3;}
-    .reponse{margin-top:0.7em;color:#1877f2;font-weight:bold;text-align:center;}
-    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;}
-    #schema-bilan{margin:1.2em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #e7f3f7;}
-    .qcm-block{margin-bottom:2.3em;}
-    input[type='text'],textarea{border-radius:5px;border:1px solid #ccc;padding:5px;margin-top:6px;}
+    ul,ol{margin-left:2em;margin-bottom:0.8em;}
+    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.02rem;}
+    .infos{background:#e7f3fa;border-left:7px solid #1877f2;color:#0f172a;}
+    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;color:#052e16;}
+    .box-important{background:#fff7ec;border-left:8px solid #f5a623;color:#3b2710;}
+    .error{background:#ffeaea;border-left:8px solid #e06359;color:#7f1d1d;}
+    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;color:#0f172a;}
+    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;color:#064e3b;}
+    .source{font-size:0.88em;color:#9ca3af;text-align:right;margin-top:10px;}
+
+    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s,transform 0.15s;font-size:1em;}
+    button:hover{background:#145ac3;transform:translateY(-1px);}
+    .reponse{margin-top:0.7em;color:#bfdbfe;font-weight:bold;text-align:center;}
+    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;color:#064e3b;}
+    #schema-bilan{margin:1.2em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #020617;}
+    input[type='text'],textarea{border-radius:5px;border:1px solid #6b7280;padding:5px;margin-top:6px;background:#020617;color:#e5e7eb;}
     .flex-exercices{display:flex;flex-wrap:wrap;}
     .exo-block{flex:1 1 310px;margin-right:2%;min-width:330px;}
     .exo-block:last-child{margin-right:0;}
-    .popup{display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.17);padding:35px;width:340px;z-index:2000;}
-    .popup h3{color:#1877f2;}
-    .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(40,61,102,0.23);z-index:1800;}
+    .popup{display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#020617;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.4);padding:30px;width:340px;z-index:2000;border:1px solid #1d4ed8;color:#e5e7eb;}
+    .popup h3{color:#60a5fa;}
+    .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(15,23,42,0.7);z-index:1800;}
     .show{display:block;}
-    .scoreQCM{font-weight:bold;color:#167c2b;}
-    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;}
-    @media (max-width:1040px){main{padding:11px 2px;}}
+    .scoreQCM{font-weight:bold;color:#bbf7d0;}
+    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;border-radius:999px;cursor:pointer;}
+    .note-area{width:100%;min-height:60px;margin-top:8px;}
   </style>
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-  <h1>Réactions chimiques : équations, bilans, avancement</h1>
-  <div class="intro">Cours interactif lycée : savoir écrire et équilibrer une équation chimique, dresser le bilan, calculer l’avancement, identifier le réactif limitant, réussir tout exercice du contrôle !</div>
-</header>
-<main>
-  <section class="box infos">
-    <h2>📚 Introduction & objectifs</h2>
-    <ul>
-      <li>Comprendre ce qu’est une <b>réaction chimique</b>&nbsp;: passage de réactifs à des produits, transformation de la matière.</li>
-      <li>Savoir écrire et équilibrer <b>une équation chimique</b> (bilan).</li>
-      <li>Calculer <b>l’avancement</b> : suivre la quantité d’espèces transformées pendant la réaction.</li>
-      <li>Déterminer le <b>réactif limitant</b>, rendre compte de la transformation totale ou non.</li>
-      <button onclick="openPopup('popup-equation')">Rappel sur l'équation-bilan</button>
-    </ul>
-  </section>
-  
-  <section>
-    <h2>✏️ 1. Équation de réaction & bilan</h2>
-    <ul>
-      <li>Une <b>réaction chimique</b> met en jeu des <b>réactifs</b> qui se transforment en <b>produits</b>.<br>
-          Ex : combustion du méthane : <span style="font-weight:bold">\\(\ce{CH4 + 2 O2 -> CO2 + 2 H2O}\\)</span>
-      </li>
-      <li>L’<b>équation-bilan</b> doit être <b>équilibrée</b> : même nombre d’atomes de chaque espèce de part et d’autre.</li>
-      <li>
-          <b>Équilibre l’équation :</b><br>
-          \\(\ce{H2 + O2 -> H2O}\\) ➔ <span class="btn-lex" onclick="openPopup('popup-eq-exo')">Voir correction</span>
-      </li>
-      <li><b>Étapes :</b> écrire l’état physique (s, l, g, aq), équilibrer les atomes, vérifier la charge (si ions).</li>
-    </ul>
-    <canvas id="schema-bilan" width="410" height="100"></canvas>
-    <div class="infos" style="text-align:center"><b>Schéma : principe d’un bilan réactionnel (avant, pendant, après réaction)</b></div>
-    <div class="anecdote">Anecdote : “Lavoisier disait déjà en 1789 : <b>"Rien ne se perd, rien ne se crée, tout se transforme"</b> — le bilan, c’est la chimie du réel !</div>
-  </section>
-  
-  <section>
-    <h2>🔢 2. Suivi d’avancement d’une réaction</h2>
-    <ul>
-      <li><b>Avancement</b> (<span style="color:#1877f2;font-weight:bold">x</span>) : grandeur qui indique la quantité de matière (en mol) ayant effectivement réagi à un instant donné.</li>
-      <li><b>Tableau d’avancement</b> : outil pour suivre l’évolution des quantités (avant, en cours, après réaction).</li>
-      <li>
-        <b>Exemple</b> :<br>
-        \\(\ce{N2 + 3 H2 -> 2 NH3}\\)<br>
-        <button onclick="openPopup('popup-avancement')">Rappel tableau d’avancement</button>
-      </li>
-      <li>
-        <b>Formule générale :</b>
-        <br>Si : \\(aA + bB \longrightarrow cC + dD\\)<br>
-        alors <span style="font-weight:bold">\\(\frac{n_{A0}}{a},\frac{n_{B0}}{b}, …\\)</span>
-        <br>Le réactif limitant est celui pour lequel <span style="color:#e06359">\\(x_{max}\\)</span> est le plus petit.
-        <br>
-        <span class="btn-lex" onclick="openPopup('popup-formule-x')">Formule d'avancement max</span>
-      </li>
-    </ul>
-  </section>
-  
-  <section>
-    <h2>🧪 3. Réactif limitant, transformation totale/partielle</h2>
-    <ul>
-      <li>Le <b>réactif limitant</b> est celui qui s’épuise en premier. Il “bloque” l’avancement maximal.</li>
-      <li>
-        <b>Transformation totale</b> : tout le réactif limitant est consommé, il ne reste que l’excès d’autre(s) réactif(s).
-      </li>
-      <li>
-        <b>Transformation non totale</b> (équilibre) : lorsque la réaction s’arrête avant l’épuisement d’au moins un réactif.
-      </li>
-    </ul>
-    <button onclick="openPopup('popup-lim')">Astuce pour trouver le limitant</button>
-  </section>
-  
-  <section>
-    <h2>📑 Exercices interactifs</h2>
-    <div class="flex-exercices">
-      <div class="box-exo exo-block">
-        <b>Ex 1 – Équilibrer</b><br>
-        Soit l’équation : \\(\ce{Fe + O2 -> Fe2O3}\\).<br>
-        Écris-la correctement équilibrée.<br>
-        <input type="text" id="exo1" placeholder="...">
-        <button onclick="checkExo(1)">Valider</button>
-        <div class="reponse" id="rep-exo1"></div>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//chim-REACTIONS</div>
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
       </div>
-      <div class="box-exo exo-block">
-        <b>Ex 2 – Avancement maximum</b><br>
-        On mélange 0,30 mol de H2 et 0,21 mol de O2.<br>
-        Pour la réaction : \\(\ce{2 H2 + O2 -> 2 H2O}\\)<br>
-        Quel est le réactif limitant ?
-        <input type="text" id="exo2" placeholder="...">
-        <button onclick="checkExo(2)">Valider</button>
-        <div class="reponse" id="rep-exo2"></div>
+      <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+      <div class="loader-subtext">
+        Équation-bilan, tableau d’avancement, avancement maximal et réactif limitant pour les réactions de Première.[web:148][web:150][web:151][web:152][web:155]
       </div>
-      <div class="box-exo exo-block">
-        <b>Ex 3 – Quantité produite</b><br>
-        Même réaction. Combien de mol d’eau (\(\ce{H2O}\)) formée à la fin ?
-        <input type="text" id="exo3" placeholder="... mol">
-        <button onclick="checkExo(3)">Valider</button>
-        <div class="reponse" id="rep-exo3"></div>
+      <div class="loader-terminal">
+        <div class="terminal-line">[EQ] Équilibrer l’équation : mêmes atomes et charges de chaque côté.[web:150]</div>
+        <div class="terminal-line">[X] Avancement x suit la consommation des réactifs et la formation des produits.[web:148][web:151][web:152]</div>
+        <div class="terminal-line">[LIM] x_max = min(n₀/coef), réactif limitant = celui qui donne le plus petit x_max.[web:148][web:151][web:155]</div>
+        <div class="terminal-line terminal-cursor">_</div>
       </div>
+      <div class="loader-scan"></div>
     </div>
-    <button onclick="resetExos()">Effacer mes réponses</button>
-  </section>
-  
-  <section class="qcm-block">
-    <h2>🎯 QCM interactif (score immédiat !)</h2>
-    <div id="qcm-interactif"></div>
-    <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
-    <button onclick="reloadQCM()">Recommencer le QCM</button>
-  </section>
-  
-  <section class="box-important">
-    <h2>🔖 Fiche de révision rapide</h2>
-    <div class="fiche">
-      <ul>
-        <li>Écriture-bilan : réactifs à gauche, produits à droite, équilibre obligatoire</li>
-        <li>Tableau d’avancement : suit quantité de chaque espèce à chaque étape</li>
-        <li>Avancement max : \\(x_{max} = \min( n_{A0}/a, n_{B0}/b, ... )\\)</li>
-        <li>Réactif limitant : celui qui “manque” le premier</li>
-        <li>Formule d’avancement : \\(n_i = n_{i,0} + \nu_i \cdot x\\) (\\(\nu_i\\) = coef stœchiométrique, négatif si réactif)</li>
-      </ul>
+  </div>
+
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Chimie
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
     </div>
-  </section>
-  <section class="error">
-    <h2>❌ Erreurs fréquentes à éviter</h2>
-    <ul>
-      <li>Ne pas équilibrer ou oublier un coefficient dans l’équation</li>
-      <li>Se tromper dans les signes (réactifs négatifs, produits positifs dans l’avancement !)</li>
-      <li>Oublier la notion de “limite” du réactif limitant</li>
-      <li>Confondre “transformation totale”/“non totale” (équilibre dynamique)</li>
-    </ul>
-  </section>
-  <section class="lexique">
-    <h2>📚 Lexique express</h2>
-    <ul>
-      <li><b>Équation-bilan</b>&nbsp;: équilibre réactifs/produits (coefficients stœchiométriques)</li>
-      <li><b>Avancement (x)</b>&nbsp;: “mole-règle” de la réaction</li>
-      <li><b>Réactif limitant</b>&nbsp;: qui s’épuise en premier</li>
-      <li><b>Transformation totale</b> : atteint quand tous les limitants sont consommés</li>
-    </ul>
-  </section>
-  <section>
-    <h2>🗒️ Tes propres notes (sauvegarde locale)</h2>
-    <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
-    <button onclick="saveNotes()">Enregistrer</button>
-    <span id="savemsg" style="color:#4caf50;font-weight:bold;"></span>
-  </section>
-  <section class="source">Sources : cours lycée, manuels, fiches BAC 2025, chimie-fr.</section>
-</main>
-<!-- Popups/Overlays -->
-<div class="overlay" id="overlay"></div>
-<div class="popup" id="popup-equation"><h3>Équation-bilan</h3>
-<b>Réactifs à gauche, produits à droite, coefficients obligatoires pour égaler chaque atome.</b><br>Contrôle : compte les atomes chaque côté !
-<button onclick="closePopup()">Fermer</button>
-</div>
-<div class="popup" id="popup-eq-exo"><h3>Correction</h3>
-H₂ + O₂ → H₂O<br>
-Équilibré : <b>2H₂ + O₂ → 2H₂O</b>
-<button onclick="closePopup()">Fermer</button>
-</div>
-<div class="popup" id="popup-avancement"><h3>Tableau d’avancement</h3>
-<table border="1" style="width:98%;font-size:0.95em"><tr><th></th><th>N₂</th><th>H₂</th><th>NH₃</th></tr>
-<tr><td>État initial</td><td>n₀</td><td>3n₀</td><td>0</td></tr>
-<tr><td>En cours</td><td>n₀-x</td><td>3n₀-3x</td><td>2x</td></tr>
-<tr><td>État final</td><td>n₀-xₘₐₓ</td><td>3n₀-3xₘₐₓ</td><td>2xₘₐₓ</td></tr>
-</table>
-<button onclick="closePopup()">Fermer</button>
-</div>
-<div class="popup" id="popup-formule-x"><h3>Avancement maximal</h3>
-\(x_{max} = \min\left(\dfrac{n_{A,0}}{a},\dfrac{n_{B,0}}{b},... \right)\)
-<button onclick="closePopup()">Fermer</button>
-</div>
-<div class="popup" id="popup-lim"><h3>Astuce réactif limitant</h3>
-Calcule \(\dfrac{n_{i,0}}{coefficient~de~l’équation}\) pour chaque réactif. Le plus petit → limitant !
-<button onclick="closePopup()">Fermer</button>
-</div>
 
-<script>
-function reloadMathJax(){if(window.MathJax){window.MathJax.typesetPromise();}}
-function openPopup(id){document.getElementById('overlay').classList.add("show");document.getElementById(id).classList.add("show");}
-function closePopup(){document.getElementById('overlay').classList.remove("show");var popups=document.querySelectorAll('.popup');popups.forEach(function(p){p.classList.remove('show');});}
-function saveNotes(){localStorage.setItem("mesNotesPC_Reactions", document.getElementById("notes").value);document.getElementById("savemsg").textContent="✔️ Enregistré !";setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);}
-if(localStorage.getItem("mesNotesPC_Reactions")){document.getElementById("notes").value=localStorage.getItem("mesNotesPC_Reactions");}
-// Schéma bilan
-function drawBilan(){
-  var c=document.getElementById('schema-bilan');if(!c)return;var x=c.getContext('2d');
-  x.clearRect(0,0,410,100);
-  x.fillStyle="#f5a623"; x.font="16px Arial"; x.fillText("AVANT",10,20); x.fillStyle="#1877f2";x.fillText("APRES",325,20);
-  x.fillStyle="#b8ecfd";x.fillRect(15,35,40,55);x.strokeRect(15,35,40,55);
-  x.fillStyle="#167c2b";x.font="12px Arial";x.fillText("Réactifs",18,50);
-  x.beginPath();x.moveTo(55,62);x.lineTo(160,62);x.lineTo(160,47);x.lineTo(170,65.5);x.lineTo(160,80);x.lineTo(160,67);x.lineTo(55,67);x.fillStyle="#b9f7d9";x.fill();
-  x.fillStyle="#243552";x.font="13px Arial";x.fillText("Réaction",110,55);
-  x.fillStyle="#f3aa3f";x.fillRect(320,35,48,55);x.strokeRect(320,35,48,55);
-  x.fillStyle="#f86699";x.font="12px Arial";x.fillText("Produits",325,50);
-}
-drawBilan();
+    <div class="page-padding">
+      <main class="page">
+        <header class="inner">
+          <h1>Réactions chimiques : équations, bilans, avancement</h1>
+          <div class="intro">
+            Équation-bilan, tableau d’avancement, avancement maximal et réactif limitant pour réussir les exercices de Réactions chimiques.[web:148][web:150][web:151][web:152]
+          </div>
+        </header>
 
-const qcmData = [
-  {
-    question: "Quel est l’avancement max pour 0,2 mol A et 0,6 mol B avec \\(\\ce{A + 3B -> ... }\\)?",
-    choices: ["0.2", "0.066", "0.6"],
-    correct: 1,
-    explanation: "xₘₐₓ = min(0.2/1 ; 0.6/3) = min(0.2 ; 0.2) = 0.2. 0.6/3=0.2 donc ici les deux limitants."
-  },
-  {
-    question: "Qu’est-ce qu’un réactif limitant ?",
-    choices: ["Celui qui ne réagit pas", "Celui qui s’épuise en 1er", "Le plus abondant"],
-    correct: 1,
-    explanation: "Limitant = totalité consommée, 'bloque' la réaction."
-  },
-  {
-    question: "Dans \\(\\ce{2H2 + O2 -> 2H2O}\\), si on a n(H2)=0.3, n(O2)=0.21, qui limite ?",
-    choices: ["H2", "O2", "Les deux"],
-    correct: 0,
-    explanation: "xₘₐₓ=min(0.3/2, 0.21/1)=min(0,15;0,21)=0,15 donc H₂ limitant."
-  },
-  {
-    question: "À quoi sert un tableau d’avancement ?",
-    choices: ["Compter les molécules", "Suivre quantitativement l’évolution d’une réaction", "Équilibrer l’équation"],
-    correct: 1,
-    explanation: "Permet de justifier le bilan, les calculs, le réactif limitant."
-  }
-];
-let qcmScore = 0;
-let qcmDone = Array(qcmData.length).fill(false);
-function displayQCM(){
-  let html = "";
-  for(let i=0;i<qcmData.length;i++){
-    html += `<div style="margin-bottom:1em"><b>Q${i+1} :</b> <span>\\(${qcmData[i].question}\\)</span><br>`;
-    for(let j=0;j<qcmData[i].choices.length;j++){
-      html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+        <section class="box infos">
+          <h2>📚 Introduction & objectifs</h2>
+          <ul>
+            <li>Écrire et équilibrer correctement une équation de réaction.[web:150]</li>
+            <li>Construire un tableau d’avancement et calculer l’avancement x et x_max.[web:148][web:151][web:152]</li>
+            <li>Identifier le réactif limitant à partir des quantités initiales et des coefficients stœchiométriques.[web:151][web:154][web:155]</li>
+            <button onclick="openPopup('popup-equation')">Rappel sur l'équation-bilan</button>
+          </ul>
+        </section>
+
+        <section>
+          <h2>✏️ 1. Équation de réaction & bilan</h2>
+          <ul>
+            <li>Une réaction chimique décrit la transformation de réactifs en produits, avec conservation des atomes et de la charge.[web:150][web:152]</li>
+            <li>L’équation-bilan est équilibrée lorsque le nombre d’atomes de chaque élément est identique de part et d’autre.[web:150]</li>
+            <li>Exemple : combustion du méthane \(\ce{CH4 + 2 O2 -> CO2 + 2 H2O}\) est une équation équilibrée pour C, H et O.[web:148][web:150]</li>
+          </ul>
+          <canvas id="schema-bilan" width="410" height="100"></canvas>
+          <div class="infos" style="text-align:center"><b>Schéma : réactifs → réaction → produits (bilan de matière).</b></div>
+          <div class="anecdote">L’idée « rien ne se perd, rien ne se crée, tout se transforme » illustre la conservation de la masse et des atomes.[web:150]</div>
+        </section>
+
+        <section>
+          <h2>🔢 2. Avancement et tableau d’avancement</h2>
+          <ul>
+            <li>L’avancement x (en mol) mesure la progression de la réaction ; à l’état initial, x = 0, à l’état final, x = x_max.[web:148][web:150][web:151][web:156]</li>
+            <li>Le tableau d’avancement comporte quatre lignes : équation équilibrée, état initial, état intermédiaire x, état final x_max.[web:150][web:152][web:156]</li>
+            <li>Pour \(aA + bB \rightarrow cC + dD\), les quantités s’écrivent en général \(n_A = n_{A0} - a x\), \(n_B = n_{B0} - b x\), \(n_C = c x\), \(n_D = d x\).[web:148][web:151][web:153]</li>
+          </ul>
+          <button onclick="openPopup('popup-avancement')">Voir un tableau d’avancement</button>
+          <button class="btn-lex" onclick="openPopup('popup-formule-x')">Formule de x_max</button>
+        </section>
+
+        <section>
+          <h2>🧪 3. Réactif limitant, totale / non totale</h2>
+          <ul>
+            <li>Le réactif limitant est celui qui est totalement consommé à l’état final et qui fixe l’avancement maximal.[web:148][web:151][web:154][web:155]</li>
+            <li>Pour le trouver, on compare \(n_{i0}/\nu_i\) pour chaque réactif ; x_max est la plus petite de ces valeurs.[web:148][web:151][web:153][web:155]</li>
+            <li>Si la réaction est modélisée comme totale, tout le réactif limitant disparaît ; dans les réactions non totales, l’avancement s’arrête avant x_max théorique.[web:151][web:155]</li>
+          </ul>
+          <button onclick="openPopup('popup-lim')">Astuce réactif limitant</button>
+        </section>
+
+        <section>
+          <h2>📑 Exercices interactifs</h2>
+          <div class="flex-exercices">
+            <div class="box-exo exo-block">
+              <b>Ex 1 – Équilibrer</b><br>
+              Équilibrer : \(\ce{Fe + O2 -> Fe2O3}\).[web:150]
+              <input type="text" id="exo1" placeholder="...">
+              <button onclick="checkExo(1)">Valider</button>
+              <div class="reponse" id="rep-exo1"></div>
+            </div>
+            <div class="box-exo exo-block">
+              <b>Ex 2 – Réactif limitant</b><br>
+              Pour \(\ce{2 H2 + O2 -> 2 H2O}\), avec n(H₂)=0,30 mol et n(O₂)=0,21 mol, qui est limitant ?[web:151][web:155]
+              <input type="text" id="exo2" placeholder="H2 ou O2 ?">
+              <button onclick="checkExo(2)">Valider</button>
+              <div class="reponse" id="rep-exo2"></div>
+            </div>
+            <div class="box-exo exo-block">
+              <b>Ex 3 – Quantité d’eau formée</b><br>
+              Même mélange. Quelle quantité de \(\ce{H2O}\) à l’état final si la réaction est totale ?[web:148][web:155]
+              <input type="text" id="exo3" placeholder="... mol">
+              <button onclick="checkExo(3)">Valider</button>
+              <div class="reponse" id="rep-exo3"></div>
+            </div>
+          </div>
+          <button onclick="resetExos()">Effacer mes réponses</button>
+        </section>
+
+        <section class="qcm-block">
+          <h2>🎯 QCM interactif</h2>
+          <div id="qcm-interactif"></div>
+          <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
+          <button onclick="reloadQCM()">Recommencer le QCM</button>
+        </section>
+
+        <section class="box-important">
+          <h2>🔖 Fiche de révision rapide</h2>
+          <div class="fiche">
+            <ul>
+              <li>Équation-bilan : équilibrer atomes et charges, réactifs à gauche, produits à droite.[web:150]</li>
+              <li>Tableau d’avancement : lignes “initial”, “en cours (x)”, “final (x_max)”.[web:148][web:150][web:152]</li>
+              <li>Avancement : \(n_i = n_{i0} + \nu_i x\) avec \(\nu_i<0\) pour les réactifs.[web:148][web:151][web:153]</li>
+              <li>\(x_{max} = \min\left(\dfrac{n_{i0}}{\nu_i}\right)\) sur les réactifs.[web:148][web:151][web:155]</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes</h2>
+          <ul>
+            <li>Penser que le réactif en plus petite quantité (en mol) est toujours limitant sans tenir compte des coefficients.[web:148][web:151][web:154]</li>
+            <li>Remplir le tableau d’avancement avec des signes inversés (réactifs positifs au lieu de négatifs).[web:148][web:150][web:152]</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique express</h2>
+          Équation-bilan, coefficient stœchiométrique, avancement x, avancement maximal x_max, réactif limitant, réactif en excès.[web:148][web:150][web:151][web:152][web:154]
+        </section>
+
+        <section>
+          <h2>🗒️ Tes propres notes</h2>
+          <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
+          <button onclick="saveNotes()">Enregistrer</button>
+          <span id="savemsg" style="color:#4ade80;font-weight:bold;"></span>
+        </section>
+
+        <section class="source">
+          Sources : cours lycée, manuels et fiches sur tableau d’avancement et réactif limitant.[web:148][web:150][web:151][web:152][web:155]
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Popups -->
+  <div class="overlay" id="overlay"></div>
+
+  <div class="popup" id="popup-equation">
+    <h3>Équation-bilan</h3>
+    Réactifs à gauche, produits à droite, coefficients choisis pour conserver chaque type d’atome et la charge totale.[web:150]
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <div class="popup" id="popup-avancement">
+    <h3>Tableau d’avancement</h3>
+    Lignes : équation équilibrée ; état initial (x=0) ; état intermédiaire (x) ; état final (x=x_max).[web:150][web:152][web:156]
+    <br>Ex : \( \ce{N2 + 3 H2 -> 2 NH3} \) avec n(N₂) = n₀, n(H₂) = 3n₀, n(NH₃)=0 :
+    <br>- intermédiaire : n(N₂)=n₀−x, n(H₂)=3n₀−3x, n(NH₃)=2x.
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <div class="popup" id="popup-formule-x">
+    <h3>Avancement maximal</h3>
+    \(x_{max} = \min\left(\dfrac{n_{A0}}{a}, \dfrac{n_{B0}}{b}, …\right)\) pour \(aA + bB \rightarrow …\).[web:148][web:151][web:153][web:155]
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <div class="popup" id="popup-lim">
+    <h3>Astuce réactif limitant</h3>
+    Calculer \(n_{i0}/\nu_i\) pour chaque réactif ; le plus petit rapport donne x_max et donc le réactif limitant associé.[web:148][web:151][web:154][web:155]
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <script>
+    // Loader + MathJax[web:79][web:36][web:12][web:82][web:84]
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+      if(window.MathJax && MathJax.typesetPromise){MathJax.typesetPromise();}
+    },3000);
+
+    function reloadMathJax(){
+      if(window.MathJax && MathJax.typesetPromise){MathJax.typesetPromise();}
     }
-    html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
-  }
-  document.getElementById("qcm-interactif").innerHTML = html;
-  document.getElementById("qcm-score").innerHTML = "";
-  qcmScore = 0;qcmDone = Array(qcmData.length).fill(false); reloadMathJax();
-}
-displayQCM();
-function checkQCM(qnum, num){
-  if(qcmDone[qnum]) return;
-  if(num==qcmData[qnum].correct){
-    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#168b24;font-weight:bold">Bonne réponse !</span><br><span style="font-size:0.98em;">${qcmData[qnum].explanation}</span>`;
-    qcmScore++;
-  }else{
-    document.getElementById('qcm-r'+qnum).innerHTML = `<span style="color:#c21c5c;font-weight:bold">Faux !</span>  <br><span>${qcmData[qnum].explanation}</span>`;
-  }
-  qcmDone[qnum]=true;
-  document.getElementById("qcm-score").innerHTML = "Score : " + qcmScore + "/" + qcmData.length;
-  reloadMathJax();
-}
-function reloadQCM(){displayQCM();}
 
-function checkExo(ex){
-  let rep = document.getElementById('exo'+ex).value.trim().replace(/\s/g,"").replace(/=/g,"");
-  if(ex==1){
-    let good = /4Fe\+3O2[-=]>2Fe2O3/i.test(rep)||/4fe\+3o2.*2fe2o3/i.test(rep);
-    document.getElementById('rep-exo1').innerHTML = good ?
-      "Correct : <b>4 Fe + 3 O₂ → 2 Fe₂O₃</b>" :
-      "Faux. Il fallait équilibrer : 4Fe + 3O₂ → 2Fe₂O₃";
-  }
-  if(ex==2){
-    rep = rep.toLowerCase();
-    let good = rep.includes("h2") || rep.includes("h₂"); // H₂ limitant
-    document.getElementById('rep-exo2').innerHTML = good ?
-      "Correct : H₂ est le limitant car 0,3/2=0,15 ; 0,21/1=0,21 donc H₂." :
-      "Faux. xₘₐₓ= min(0,3/2;0,21/1) → H₂ limitant.";
-  }
-  if(ex==3){
-    rep = rep.toLowerCase();
-    let good = rep==="0.3"||rep==="0,3"||rep==="0.15"||rep==="0,15"||rep.includes("0,3mol")||rep.includes("0,15mol")||rep.includes("0.3mol")||rep.includes("0.15mol");
-    document.getElementById('rep-exo3').innerHTML = "Le bon résultat est x=0.15 mol d’eau (<b>H₂ limitant donc 2×x=0.3 mol H₂O produits</b>).";
-  }
-  reloadMathJax();
-}
-function resetExos(){["exo1","exo2","exo3"].forEach(id=>{document.getElementById(id).value="";});["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{document.getElementById(id).textContent="";});}
-setTimeout(reloadMathJax, 180);
-</script>
+    function openPopup(id){
+      document.getElementById('overlay').classList.add("show");
+      document.getElementById(id).classList.add("show");
+      reloadMathJax();
+    }
+    function closePopup(){
+      document.getElementById('overlay').classList.remove("show");
+      document.querySelectorAll('.popup').forEach(p=>p.classList.remove('show'));
+    }
+
+    function saveNotes(){
+      localStorage.setItem("mesNotesPC_Reactions_global",document.getElementById("notes").value);
+      document.getElementById("savemsg").textContent="Enregistré";
+      setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);
+    }
+    if(localStorage.getItem("mesNotesPC_Reactions_global")){
+      document.getElementById("notes").value=localStorage.getItem("mesNotesPC_Reactions_global");
+    }
+
+    function drawBilan(){
+      var c=document.getElementById('schema-bilan');if(!c)return;
+      var x=c.getContext('2d');
+      x.clearRect(0,0,410,100);
+      x.fillStyle="#facc15";x.font="16px Arial";x.fillText("AVANT",10,20);
+      x.fillStyle="#bfdbfe";x.fillText("APRÈS",330,20);
+      x.fillStyle="#bae6fd";x.fillRect(15,35,40,55);x.strokeStyle="#1d4ed8";x.strokeRect(15,35,40,55);
+      x.fillStyle="#0f172a";x.font="12px Arial";x.fillText("Réactifs",18,50);
+      x.fillStyle="#bbf7d0";
+      x.beginPath();x.moveTo(55,62);x.lineTo(160,62);x.lineTo(160,47);x.lineTo(170,65.5);x.lineTo(160,80);x.lineTo(160,67);x.lineTo(55,67);x.closePath();x.fill();
+      x.fillStyle="#0f172a";x.fillText("Réaction",99,58);
+      x.fillStyle="#fed7aa";x.fillRect(320,35,48,55);x.strokeStyle="#f97316";x.strokeRect(320,35,48,55);
+      x.fillStyle="#0f172a";x.fillText("Produits",323,50);
+    }
+    drawBilan();
+
+    const qcmData=[
+      {question:"x_max pour 0,20 mol A et 0,60 mol B dans \\(\\ce{A + 3B -> ...}\\) :",choices:["0,20","0,067","0,60"],correct:1,explanation:"x_max = min(0,20/1 ; 0,60/3) = min(0,20 ; 0,20) = 0,20 mol (réactifs en proportions stœchiométriques).[web:148][web:151][web:153]"},
+      {question:"Un réactif limitant :",choices:["ne réagit pas","s’épuise en premier","est toujours celui en plus petite quantité"],correct:1,explanation:"C’est celui qui conduit au plus petit x_max et disparaît à l’état final.[web:148][web:151][web:154][web:155]"},
+      {question:"Dans \\(\\ce{2H2 + O2 -> 2H2O}\\) avec n(H₂)=0,30 et n(O₂)=0,21, qui est limitant ?",choices:["H₂","O₂","aucun"],correct:0,explanation:"x_max(H₂)=0,30/2=0,15 ; x_max(O₂)=0,21/1=0,21 ⇒ H₂ limitant.[web:148][web:151][web:155]"},
+      {question:"Un tableau d’avancement sert à :",choices:["équilibrer l’équation","suivre les quantités au cours de la réaction","calculer les masses molaires"],correct:1,explanation:"Il sert à suivre n des réactifs/produits de l’état initial à l’état final.[web:150][web:152]"}
+    ];
+    let qcmScore=0,qcmDone=Array(qcmData.length).fill(false);
+
+    function displayQCM(){
+      let html="";
+      for(let i=0;i<qcmData.length;i++){
+        html+=`<div style="margin-bottom:1em"><b>Q${i+1} :</b> ${qcmData[i].question}<br>`;
+        for(let j=0;j<qcmData[i].choices.length;j++){
+          html+=`<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+        }
+        html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
+      }
+      document.getElementById("qcm-interactif").innerHTML=html;
+      document.getElementById("qcm-score").innerHTML="";
+      qcmScore=0;qcmDone=Array(qcmData.length).fill(false);
+      reloadMathJax();
+    }
+    displayQCM();
+
+    function checkQCM(qnum,num){
+      if(qcmDone[qnum])return;
+      if(num===qcmData[qnum].correct){
+        document.getElementById('qcm-r'+qnum).innerHTML=
+          `<span style="color:#16a34a;font-weight:bold">Bonne réponse !</span><br>${qcmData[qnum].explanation}`;
+        qcmScore++;
+      }else{
+        document.getElementById('qcm-r'+qnum).innerHTML=
+          `<span style="color:#e11d48;font-weight:bold">Faux.</span><br>${qcmData[qnum].explanation}`;
+      }
+      qcmDone[qnum]=true;
+      document.getElementById("qcm-score").innerHTML="Score : "+qcmScore+"/"+qcmData.length;
+      reloadMathJax();
+    }
+    function reloadQCM(){displayQCM();}
+
+    function checkExo(ex){
+      if(ex===1){
+        let rep=document.getElementById('exo1').value.trim().replace(/\s/g,"").replace(/=/g,"").toLowerCase();
+        let ok = /4fe\+3o2.*2fe2o3/.test(rep);
+        document.getElementById('rep-exo1').innerHTML = ok
+          ? "Correct : 4 Fe + 3 O₂ → 2 Fe₂O₃."
+          : "Faux : il fallait écrire 4 Fe + 3 O₂ → 2 Fe₂O₃ (équilibrer Fe et O).";
+      }
+      if(ex===2){
+        let rep=document.getElementById('exo2').value.trim().toLowerCase();
+        let ok = rep.includes("h2") || rep.includes("h₂");
+        document.getElementById('rep-exo2').innerHTML = ok
+          ? "Exact : H₂ est limitant, car 0,30/2 = 0,15 < 0,21/1 = 0,21."
+          : "Faux : H₂ est le réactif limitant (x_max=0,15 mol).";
+      }
+      if(ex===3){
+        let rep=document.getElementById('exo3').value.replace(",",".").trim();
+        let ok = Math.abs(Number(rep)-0.30)<0.03;
+        document.getElementById('rep-exo3').innerHTML = ok
+          ? "Bonne réponse : n(H₂O)_final ≈ 0,30 mol."
+          : "Correction : n(H₂O)_final = 2×x_max = 2×0,15 ≈ 0,30 mol.";
+      }
+      reloadMathJax();
+    }
+
+    function resetExos(){
+      ["exo1","exo2","exo3"].forEach(id=>{let e=document.getElementById(id);if(e)e.value="";});
+      ["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{let e=document.getElementById(id);if(e)e.textContent="";});
+    }
+
+    setTimeout(reloadMathJax,200);
+  </script>
 </body>
 </html>

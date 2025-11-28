@@ -1,217 +1,663 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Masterclass — Suites numériques</title>
-    <meta name="description" content="Suites arithmétiques et géométriques : définitions, formules, propriétés, exercices, quiz, schéma interactif, méthodo et applications.">
-    <style>
-        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
-        header { background: linear-gradient(90deg,#eef4fb,#e9ffe6 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
-        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
-        .intro { font-size: 1.01rem;}
-        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
-        h2 { color: #1877f2; margin-top: 32px;}
-        h3 { color: #f5a623; margin-top: 22px;}
-        ul, ol { margin-left: 1.4em;}
-        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
-        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
-        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
-        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
-        .error {background: #ffeaea; border-left: 7px solid #e06359;}
-        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
-        .anecdote {background: #eeeaff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
-        .source { font-size: 0.9em; color: #999; text-align: right;}
-        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
-        button:hover { background: #145ac3;}
-        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
-        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
-        label { margin-right: 14px;}
-        @media (max-width: 768px) { main { padding: 12px 2px; } }
-    </style>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <meta charset="UTF-8">
+  <title>Global - Maths · Suites numériques</title>
+  <meta name="description" content="Suites arithmétiques et géométriques : définitions, formules, propriétés, exercices, quiz, schéma interactif, méthodo et applications.">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-light:#29d8ff;
+      --blue-main:#1877f2;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#031633 40%,#001a3b 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(520px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(56,189,248,0.26),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(56,189,248,0.8);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(56,189,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#7dd3fc;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#7dd3fc,transparent);
+      box-shadow:0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#22c1c3,#29d8ff,#007bff);
+      box-shadow:0 0 18px rgba(56,189,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#a5b4fc;
+      opacity:0.9;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(56,189,248,0.12) 45%,
+          rgba(56,189,248,0.35) 50%,
+          rgba(56,189,248,0.12) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#c4f1ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(24,119,242,0.9),rgba(34,197,94,0.8));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#fff;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:230px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:var(--blue-light);
+      box-shadow:0 0 12px rgba(41,216,255,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:900px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+                 linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:26px 26px 30px;
+      color:#e5f1ff;
+    }
+
+    h1,h2{
+      color:#7dd3fc;
+      margin-bottom:10px;
+    }
+    h3{
+      color:#facc6b;
+      margin-top:18px;
+      margin-bottom:10px;
+    }
+    h2{margin-top:26px;font-size:1.4rem;}
+    p,li{font-size:0.98rem;line-height:1.6;}
+    ul,ol{margin-left:1.3em;margin-top:0.3em;margin-bottom:0.8em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      padding:12px 18px;
+      border-radius:10px;
+      margin:1em 0;
+      font-size:0.96rem;
+    }
+    .infos{
+      background:rgba(37,99,235,0.16);
+      border-left:4px solid #60a5fa;
+    }
+    .box-exo{
+      background:rgba(22,163,74,0.14);
+      border-left:4px solid #22c55e;
+    }
+    .box-important{
+      background:rgba(245,158,11,0.14);
+      border-left:4px solid #facc15;
+    }
+    .error{
+      background:rgba(248,113,113,0.14);
+      border-left:4px solid #f87171;
+    }
+    .lexique{
+      background:rgba(59,130,246,0.12);
+      border-left:4px solid #7dd3fc;
+    }
+    .anecdote{
+      background:rgba(224,231,255,0.3);
+      border-left:4px solid #a855f7;
+    }
+
+    #schema{
+      margin:1em auto;
+      display:block;
+      background:#0b1725;
+      border-radius:8px;
+      border:1px solid #1f2937;
+    }
+    .reponse{
+      margin-top:0.7em;
+      color:#7dd3fc;
+      font-weight:bold;
+      text-align:center;
+      font-size:0.95rem;
+    }
+    label{
+      margin-right:14px;
+      font-size:0.9rem;
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+  </style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-    <h1>Masterclass — Suites numériques</h1>
-    <div class="intro">
-        Tout pour réussir ton chapitre sur les suites :  
-        définitions, variations, schéma dynamique, quiz, exercices, astuces et applications concrètes !
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//math-SUITES</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Maths · Suites arithmétiques et géométriques · formules, sommes et visualisation
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du module Suites numériques (spé maths)...</div>
+        <div class="terminal-line">[SEQ] Activation des formules arithmétiques et géométriques (uₙ, vₙ, sommes).</div>
+        <div class="terminal-line">[GRAPH] Mise en place de la visualisation arithmétique (bleu) et géométrique (vert).</div>
+        <div class="terminal-line">[OK]  Prêt : identifie le type de suite, puis applique la bonne formule.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
     </div>
-</header>
-<main>
-<section>
-    <h2>📝 Définitions essentielles</h2>
-    <div class="infos">
-        Une <b>suite numérique</b> est une famille de nombres indexés par des entiers n : \( u_n \).  
-        On distingue principalement :  
-        <b>Suite arithmétique</b> : chaque terme est obtenu en ajoutant une constante (raison) au précédent  
-        <b>Suite géométrique</b> : chaque terme est multiplié par une constante (raison) par rapport au précédent
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Maths
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
     </div>
-    <ul>
-        <li><b>Suite arithmétique</b> : \( u_{n+1} = u_n + r \) (r : raison)</li>
-        <li><b>Suite géométrique</b> : \( v_{n+1} = q \times v_n \) (q : raison)</li>
-    </ul>
-</section>
-<section>
-    <h2>📗 Formules et propriétés majeures</h2>
-    <ul>
-        <li><b>Suite arithmétique</b> :  
-            \( u_n = u_0 + n \times r \) ou \( u_p = u_k + (p-k) r \)</li>
-        <li><b>Somme des n premiers termes</b> :  
-            \( S_n = (n+1) \frac{u_0 + u_n}{2} \)</li>
-        <li><b>Suite géométrique</b> :  
-            \( v_n = v_0 \times q^n \), ou \( v_p = v_k \times q^{p-k} \)</li>
-        <li><b>Somme des n premiers termes</b> (si \( q\neq 1 \)) :  
-            \( S_n = v_0 \frac{1-q^{n+1}}{1-q} \)</li>
-        <li><b>Variation</b> :  
-            arithmétique croissante si r > 0, géométrique croissante si q > 1 et v_0 > 0</li>
-    </ul>
-    <div class="box-important">
-        Astuce : Ces formules sont super utiles pour résoudre tous les problèmes de lois, calculs d’intérêts, séries, modélisation.
+
+    <div class="page-padding">
+      <div class="content-card">
+        <h1>Masterclass — Suites numériques</h1>
+        <p style="margin-bottom:1.2em;font-size:0.98rem;color:#cbd5f5;">
+          Tout pour réussir ton chapitre sur les suites :
+          définitions, variations, schéma dynamique, quiz, exercices, astuces et applications concrètes !
+        </p>
+
+        <section>
+          <h2>📝 Définitions essentielles</h2>
+          <div class="infos">
+            Une <b>suite numérique</b> est une famille de nombres indexés par un entier \(n\), notée \(u_n\).[web:52][web:56]
+            <br>
+            On distingue notamment :
+            <b>suite arithmétique</b> : chaque terme s’obtient en ajoutant une constante \(r\),
+            et <b>suite géométrique</b> : chaque terme s’obtient en multipliant par une constante \(q\).[web:52][web:56]
+          </div>
+          <ul>
+            <li>Suite arithmétique : \(u_{n+1} = u_n + r\) (raison \(r\)).[web:52]</li>
+            <li>Suite géométrique : \(v_{n+1} = q \times v_n\) (raison \(q\)).[web:52]</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>📗 Formules et propriétés majeures</h2>
+          <ul>
+            <li>Suite arithmétique : \(u_n = u_0 + n r\) ou \(u_p = u_k + (p-k)r\).[web:52][web:56]</li>
+            <li>Somme des \(n+1\) premiers termes : \(S_n = (n+1)\dfrac{u_0 + u_n}{2}\).[web:52]</li>
+            <li>Suite géométrique : \(v_n = v_0 q^n\) ou \(v_p = v_k q^{p-k}\).[web:52][web:56]</li>
+            <li>Somme des \(n+1\) premiers termes (si \(q \neq 1\)) :
+              \(S_n = v_0 \dfrac{1-q^{n+1}}{1-q}\).[web:52][web:56]
+            </li>
+            <li>Variations : arithmétique croissante si \(r>0\), géométrique croissante si \(q>1\) et \(v_0>0\).[web:52]</li>
+          </ul>
+          <div class="box-important">
+            Astuce : ces formules servent partout (lois physiques, intérêts, séries, modélisation numérique).[web:52][web:56]
+          </div>
+        </section>
+
+        <section>
+          <h2>🟦 Schéma interactif — visualisation de suites</h2>
+          <label>u₀: <input type="number" id="u0" value="2"></label>
+          <label>r: <input type="number" id="r" value="3" step="0.1"></label>
+          <label>v₀: <input type="number" id="v0" value="2"></label>
+          <label>q: <input type="number" id="q" value="1.5" step="0.05"></label>
+          <canvas id="schema" width="410" height="270"></canvas>
+          <div id="desc-suite"></div>
+        </section>
+
+        <section class="box box-exo">
+          <h2>💡 Exercice interactif</h2>
+          <p>Soit \(u_0 = 3\) et \(r = 2\). Calcule \(u_5\) puis la somme des 6 premiers termes.</p>
+          <button onclick="afficheReponseSuite()">Voir la correction</button>
+          <div class="reponse" id="exo-reponse-suite" style="display:none;">
+            \(u_5 = 3 + 5\times2 = 13\).<br>
+            Somme : \(S_5 = 6 \times \dfrac{3+13}{2} = 6\times8 = 48\).
+          </div>
+        </section>
+
+        <section class="box-exo">
+          <h2>🔥 Exercice “expert”</h2>
+          <p>Soit la suite géométrique \(v_0 = 5\), \(q = 2\). Calcule \(v_4\) et la somme des 5 premiers termes.</p>
+          <button onclick="document.getElementById('exo2-reponse-suite').style.display='block';">Voir la correction</button>
+          <div class="reponse" id="exo2-reponse-suite" style="display:none;">
+            \(v_4 = 5 \times 2^4 = 80\).<br>
+            Somme : \(S_4 = 5 \dfrac{1 - 2^5}{1 - 2} = 5\times31 = 155\).
+          </div>
+        </section>
+
+        <section class="quiz">
+          <h2>🎯 Quiz express</h2>
+          <p>La suite \(u_n = 7 - 3n\) est :</p>
+          <button onclick="quizSuite(0)">Arithmétique</button>
+          <button onclick="quizSuite(1)">Géométrique</button>
+          <div class="reponse" id="rep-quiz-suite"></div>
+
+          <p>La somme des 10 premiers termes d’une suite géométrique (q ≠ 1) est :</p>
+          <button onclick="quizSuite2(0)">\(v_0 \dfrac{1-q^{10}}{1-q}\)</button>
+          <button onclick="quizSuite2(1)">\(u_0 + 10r\)</button>
+          <div class="reponse" id="rep-quiz-suite2"></div>
+        </section>
+
+        <section class="box-important">
+          <h2>🌐 Applications concrètes</h2>
+          <ul>
+            <li><b>Maths/Physique</b> : évolutions discrètes (populations, radioactivité, suites de mesures).[web:52][web:56]</li>
+            <li><b>Finance</b> : intérêts, capitalisation, amortissement.[web:52]</li>
+            <li><b>Info/Algo</b> : boucles, modèles itératifs, séries numériques.[web:52]</li>
+          </ul>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes à éviter</h2>
+          <ul>
+            <li>Confondre raison additive \(r\) et raison multiplicative \(q\).[web:52]</li>
+            <li>Utiliser la mauvaise formule pour le terme général.</li>
+            <li>Oublier que la somme \(S_n\) contient \(n+1\) termes (de 0 à n).[web:52]</li>
+            <li>Se tromper sur le sens de variation (croissance/décroissance).[web:52][web:56]</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique express</h2>
+          <b>Suite :</b> liste ordonnée de nombres indexés par un rang.[web:52]<br>
+          <b>Terme général :</b> expression donnant \(u_n\) ou \(v_n\) pour tout \(n\).[web:52]<br>
+          <b>Raison arithmétique :</b> nombre ajouté à chaque étape.[web:52]<br>
+          <b>Raison géométrique :</b> nombre multiplié à chaque étape.[web:52]
+        </section>
+
+        <section class="rubrique">
+          <h3>📖 Petite histoire</h3>
+          <ul>
+            <li>Les suites sont étudiées depuis le Moyen Âge, avec l’exemple célèbre de Fibonacci.[web:52]</li>
+            <li>Elles se sont formalisées avec l’analyse moderne pour modéliser des évolutions discrètes.[web:56]</li>
+            <li>On les retrouve aujourd’hui en maths, physique, économie, informatique et probabilités.[web:52][web:56]</li>
+          </ul>
+          <div class="source">Source : cours de suites niveau lycée et articles de vulgarisation.[web:52][web:56]</div>
+        </section>
+
+        <section class="anecdote">
+          <b>Astuce-mémoire :</b> “arithmétique = addition”, “géométrique = multiplication”.
+          Pour la somme : pense “trapèze” pour arithmétique, “effet boule de neige” pour géométrique !
+        </section>
+
+        <section>
+          <h2>💡 Méthodologie pour progresser</h2>
+          <ul>
+            <li>Identifie d’abord le type de suite avant de choisir la formule.</li>
+            <li>Travaille toujours le terme général puis la somme.</li>
+            <li>Teste quelques valeurs (n = 0, 1, 2, …) pour vérifier ton expression.</li>
+            <li>Servez-toi du module interactif pour comparer une arithmétique et une géométrique.</li>
+          </ul>
+        </section>
+      </div>
     </div>
-</section>
-<section>
-    <h2>🟦 Schéma interactif — visualisation de suites</h2>
-    <label>u_0: <input type="number" id="u0" value="2"></label>
-    <label>r: <input type="number" id="r" value="3" step="0.1"></label>
-    <label>v_0: <input type="number" id="v0" value="2"></label>
-    <label>q: <input type="number" id="q" value="1.5" step="0.05"></label>
-    <canvas id="schema" width="400" height="240"></canvas>
-    <div id="desc-suite"></div>
-</section>
-<section class="box box-exo">
-    <h2>💡 Exercice interactif</h2>
-    <p>Soit \( u_0 = 3 \), r = 2. Calcule \( u_5 \) puis la somme des 6 premiers termes.</p>
-    <button onclick="afficheReponseSuite()">Voir la correction</button>
-    <div class="reponse" id="exo-reponse-suite" style="display:none;">
-        \( u_5 = 3 + 5\times2 = 13 \)<br>
-        Somme : \( S_5 = 6 \times \frac{3+13}{2} = 6\times8 = 48 \)
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
     </div>
-</section>
-<section class="box-exo">
-    <h2>🔥 Exercice “expert”</h2>
-    <p>Soit la suite géométrique \( v_0 = 5 \), q = 2.  
-      Calcule \( v_4 \) et la somme des 5 premiers termes.</p>
-    <button onclick="document.getElementById('exo2-reponse-suite').style.display='block';">Voir la correction</button>
-    <div class="reponse" id="exo2-reponse-suite" style="display:none;">
-        \( v_4 = 5 \times 2^4 = 5\times16 = 80 \)<br>
-        Somme : \( S_4 = 5 \times \frac{1 - 2^5}{1 - 2} = 5\times\frac{1-32}{-1} = 5\times31 = 155 \)
-    </div>
-</section>
-<section class="quiz">
-    <h2>🎯 Quiz express</h2>
-    <p>La suite \( u_n = 7 - 3n \) est :</p>
-    <button onclick="quizSuite(0)">Arithmétique</button>
-    <button onclick="quizSuite(1)">Géométrique</button>
-    <div class="reponse" id="rep-quiz-suite"></div>
-    <p>La somme des 10 premiers termes d’une suite géométrique (q ≠ 1) est :</p>
-    <button onclick="quizSuite2(0)">\( v_0 \frac{1-q^{10}}{1-q} \)</button>
-    <button onclick="quizSuite2(1)">\( u_0 + 10r \)</button>
-    <div class="reponse" id="rep-quiz-suite2"></div>
-</section>
-<section class="box-important">
-    <h2>🌐 Applications concrètes</h2>
-    <ul>
-        <li><b>Maths/Physique</b> : évolutions (lois de mouvement, population, mécanique, radioactivité…)</li>
-        <li><b>Finance</b> : calculs d’intérêts, croissance de capital, amortissement</li>
-        <li><b>Info/Algorithmique</b> : boucles, modélisation, systèmes numériques, fractales</li>
-    </ul>
-</section>
-<section class="error">
-    <h2>❌ Erreurs fréquentes à éviter</h2>
-    <ul>
-        <li>Confondre raison “r” (additif) et “q” (multiplicatif)</li>
-        <li>Ne pas utiliser la bonne formule pour le terme général</li>
-        <li>Oublier que la somme comporte (n+1) termes, pas n</li>
-        <li>Mal interpréter les variations (croissance, décroissance…)</li>
-    </ul>
-</section>
-<section class="lexique">
-    <h2>📚 Lexique express</h2>
-    <b>Suite</b>: liste ordonnée de nombres<br>
-    <b>Terme général</b>: expression pour n’importe quel rang<br>
-    <b>Raison (arith)</b>: nombre ajouté à chaque étape<br>
-    <b>Raison (géom)</b>: nombre multiplié à chaque étape
-</section>
-<section class="rubrique">
-    <h3>📖 Petite histoire</h3>
-    <ul>
-        <li>Les suites existaient déjà avec Fibonacci (les lapins !) au XIIIe siècle</li>
-        <li>La notion formalisée au XIXe, pour les calculs d’intérêts et d’évolution en physique/économie</li>
-        <li>Super utile pour coder des algos dans tous les langages modernes !</li>
-    </ul>
-    <div class="source">Source : histoire des suites numériques, Wikipedia</div>
-</section>
-<section class="anecdote">
-    <b>Astuce-mémoire :</b> “arithmétique = addition”, “géométrique = multiplication”.  
-    Pour la somme : pense à “trapèze” pour arithmétique, “effet boule de neige” pour géométrique !
-</section>
-<section>
-    <h2>💡 Méthodologie pour progresser</h2>
-    <ul>
-        <li>Identifie bien le type de suite avant d’utiliser la formule</li>
-        <li>Calcule toujours le terme général, puis la somme</li>
-        <li>Teste des valeurs pour n = 0, 1, 2, etc.</li>
-        <li>Utilise le module interactif pour visualiser et comparer les évolutions</li>
-    </ul>
-</section>
-</main>
-<script>
-function quizSuite(rep) {
-    let repElem = document.getElementById("rep-quiz-suite");
-    repElem.textContent = (rep === 0) ? "Bonne réponse : c’est une suite arithmétique (raison = -3)." : "Faux, il n’y a pas de multiplication.";
-}
-function quizSuite2(rep) {
-    let repElem = document.getElementById("rep-quiz-suite2");
-    repElem.textContent = (rep === 0) ? "Bravo ! Formule générale de la somme d’une géométrique !" : "Non, relis la formule de la somme.";
-}
-function afficheReponseSuite() {
-    document.getElementById("exo-reponse-suite").style.display = "block";
-}
-// Schéma dynamique suites
-function drawSuite() {
-    let u0 = parseFloat(document.getElementById("u0").value);
-    let r = parseFloat(document.getElementById("r").value);
-    let v0 = parseFloat(document.getElementById("v0").value);
-    let q = parseFloat(document.getElementById("q").value);
-    let canvas = document.getElementById("schema");
-    let ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, 400, 240);
-    // Axes
-    ctx.strokeStyle="#aaa"; ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(30,200); ctx.lineTo(370,200); ctx.moveTo(30,30); ctx.lineTo(30,200); ctx.stroke();
-    // Arith
-    ctx.strokeStyle="#1877f2"; ctx.lineWidth=3;
-    ctx.beginPath();
-    for(let n=0;n<=12;n++){
-        let x=30+n*28, y=200-u0-n*r*12;
+  </div>
+
+  <script>
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
+
+    function quizSuite(rep) {
+      let repElem = document.getElementById("rep-quiz-suite");
+      repElem.textContent = (rep === 0)
+        ? "Bonne réponse : c’est une suite arithmétique (raison = -3)."
+        : "Faux, il n’y a pas de multiplication, donc pas géométrique.";
+    }
+    function quizSuite2(rep) {
+      let repElem = document.getElementById("rep-quiz-suite2");
+      repElem.textContent = (rep === 0)
+        ? "Bravo ! C’est la formule de la somme géométrique."
+        : "Non, relis la formule de la somme d’une suite géométrique.";
+    }
+    function afficheReponseSuite() {
+      document.getElementById("exo-reponse-suite").style.display = "block";
+    }
+
+    // Schéma dynamique suites
+    function drawSuite() {
+      let u0 = parseFloat(document.getElementById("u0").value);
+      let r = parseFloat(document.getElementById("r").value);
+      let v0 = parseFloat(document.getElementById("v0").value);
+      let q = parseFloat(document.getElementById("q").value);
+      let canvas = document.getElementById("schema");
+      let ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, 410, 270);
+
+      // Axes
+      ctx.strokeStyle="#6b7280"; ctx.lineWidth=1;
+      ctx.beginPath();
+      ctx.moveTo(40,230); ctx.lineTo(390,230);
+      ctx.moveTo(40,30); ctx.lineTo(40,230);
+      ctx.stroke();
+
+      // Arithmétique (bleu)
+      ctx.strokeStyle="#38bdf8"; ctx.lineWidth=2;
+      for(let n=0;n<=10;n++){
         let un = u0 + n*r;
-        let yp = 200-un*12;
-        if(n===0) ctx.moveTo(x,yp); else ctx.lineTo(x,yp);
-        ctx.font="11px Arial"; ctx.fillStyle="#1877f2"; ctx.fillText(un.toFixed(1),x-5,yp-6);
-        ctx.beginPath(); ctx.arc(x, yp, 3, 0, 2*Math.PI); ctx.fill();
+        let x = 40 + n*32;
+        let y = 230 - un*12;
+        ctx.beginPath();
+        ctx.arc(x,y,3,0,2*Math.PI);
+        ctx.fillStyle="#38bdf8"; ctx.fill();
+        if(n>0){
+          let up = u0 + (n-1)*r;
+          let xp = 40 + (n-1)*32;
+          let yp = 230 - up*12;
+          ctx.beginPath(); ctx.moveTo(xp,yp); ctx.lineTo(x,y); ctx.stroke();
+        }
+      }
+
+      // Géométrique (vert)
+      ctx.strokeStyle="#22c55e"; ctx.lineWidth=2;
+      for(let n=0;n<=10;n++){
+        let vn = v0 * Math.pow(q,n);
+        let x = 40 + n*32;
+        let y = 230 - vn*12;
+        ctx.beginPath();
+        ctx.arc(x,y,3,0,2*Math.PI);
+        ctx.fillStyle="#22c55e"; ctx.fill();
+        if(n>0){
+          let vp = v0 * Math.pow(q,n-1);
+          let xp = 40 + (n-1)*32;
+          let yp = 230 - vp*12;
+          ctx.beginPath(); ctx.moveTo(xp,yp); ctx.lineTo(x,y); ctx.stroke();
+        }
+      }
+
+      document.getElementById("desc-suite").innerHTML =
+        "Bleu : suite arithmétique (u₀ = "+u0+", r = "+r+") ; Vert : suite géométrique (v₀ = "+v0+", q = "+q+").";
     }
-    ctx.stroke();
-    // Geom
-    ctx.strokeStyle="#167c2b"; ctx.lineWidth=2;
-    ctx.beginPath();
-    for(let n=0;n<=12;n++){
-        let x=30+n*28;
-        let vn = v0*Math.pow(q,n);
-        let yp = 200-vn*12;
-        if(n===0) ctx.moveTo(x,yp); else ctx.lineTo(x,yp);
-        ctx.font="11px Arial"; ctx.fillStyle="#167c2b"; ctx.fillText(vn.toFixed(1),x-5,yp+16);
-    }
-    ctx.stroke();
-    document.getElementById("desc-suite").innerHTML =
-        "Bleu (arithmétique), Vert (géométrique) : évolutions pour n = 0 à 12";
-}
-drawSuite();
-document.getElementById("u0").addEventListener("input", drawSuite);
-document.getElementById("r").addEventListener("input", drawSuite);
-document.getElementById("v0").addEventListener("input", drawSuite);
-document.getElementById("q").addEventListener("input", drawSuite);
-</script>
+    drawSuite();
+    document.getElementById("u0").addEventListener("input", drawSuite);
+    document.getElementById("r").addEventListener("input", drawSuite);
+    document.getElementById("v0").addEventListener("input", drawSuite);
+    document.getElementById("q").addEventListener("input", drawSuite);
+  </script>
 </body>
 </html>

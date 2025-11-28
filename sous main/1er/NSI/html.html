@@ -2,158 +2,506 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Masterclass HTML — Cours détaillé & interactif</title>
-  <meta name="description" content="Le cours HTML le plus détaillé pour tous : structure, balises, attributs, liens, images, formulaires, sémantique, bonnes pratiques et quiz !" />
+  <title>Global - Web · Masterclass HTML</title>
+  <meta name="description" content="Le cours HTML le plus détaillé pour tous : structure, balises, attributs, liens, images, formulaires, sémantique, bonnes pratiques et quiz !">
   <style>
-    body {
-      background: #fafafa;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #222;
-      margin: 0;
-      line-height: 1.6;
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-main:#1877f2;
+      --blue-dark:#004a99;
     }
-    header {
-      background: linear-gradient(90deg, #cce7ff, #99ccff);
-      color: #003366;
-      padding: 35px 0 20px;
-      text-align: center;
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.15), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(96,165,250,0.25), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#111827 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
     }
-    header h1 {
-      font-size: 2.7rem;
-      margin: 0 0 10px;
-      color: #004a99;
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
     }
-    header .intro {
-      font-size: 1.2rem;
-      font-weight: 600;
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
     }
-    main {
-      max-width: 960px;
-      background: #fff;
-      margin: 45px auto 25px;
-      padding: 40px 50px;
-      border-radius: 18px;
-      box-shadow: 0 10px 30px rgba(0, 74, 153, 0.15);
+    .loader-hud{
+      position:relative;
+      width:min(540px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(59,130,246,0.35),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(59,130,246,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(59,130,246,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
     }
-    h2 {
-      color: #004a99;
-      margin-top: 42px;
-      border-bottom: 3px solid #99ccff;
-      padding-bottom: 8px;
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
     }
-    h3 {
-      color: #0073e6;
-      margin-top: 35px;
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#dbeafe;
+      margin-bottom:16px;
+      position:relative;
     }
-    ul, ol {
-      margin-left: 2em;
-      margin-bottom: 1.8em;
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#bfdbfe,transparent);
+      box-shadow:0 0 12px rgba(59,130,246,0.95);
     }
-    .infos, .box-exo, .lexique, .error, .anecdote {
-      padding: 18px 28px;
-      border-radius: 8px;
-      margin: 1.8em 0;
-      font-size: 1.1rem;
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
     }
-    .infos {
-      background: #e6f0ff;
-      border-left: 7px solid #3399ff;
-      color: #003366;
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
     }
-    .box-exo {
-      background: #eef6ff;
-      border-left: 8px solid #0066cc;
-      color: #004a99;
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#bfdbfe;
     }
-    .box-important {
-      background: #fffaf0;
-      border-left: 8px solid #ffb84d;
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
     }
-    .error {
-      background: #ffe6e6;
-      border-left: 8px solid #cc3300;
-      color: #b32400;
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(59,130,246,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
     }
-    .lexique {
-      background: #d9eaff;
-      border-left: 8px solid #0073e6;
-      padding: 20px;
-      margin: 2em 0;
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#bfdbfe,#60a5fa,#22c55e);
+      box-shadow:0 0 18px rgba(59,130,246,0.9);
+      animation:barProgress 2.1s ease-in-out infinite;
     }
-    .anecdote {
-      background: #cce0ff;
-      border-left: 8px solid #004a99;
-      font-style: italic;
-      margin: 2em 0;
-      padding: 18px 25px;
-      color: #004a99;
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
     }
-    code {
-      background: #f0f8ff;
-      padding: 0 5px;
-      border-radius: 5px;
-      font-family: 'Consolas', monospace;
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#e5e7eb;
+      opacity:0.95;
     }
-    pre {
-      background: #f0f8ff;
-      padding: 18px;
-      border-radius: 8px;
-      overflow-x: auto;
-      font-family: 'Consolas', monospace;
-      margin: 1em 0 2em;
-      font-size: 1rem;
-      line-height: 1.4;
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(59,130,246,0.2) 45%,
+          rgba(59,130,246,0.45) 50%,
+          rgba(59,130,246,0.2) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
     }
-    button, .btn-expl {
-      background: #0073e6;
-      color: white;
-      border: none;
-      font-weight: 700;
-      border-radius: 7px;
-      padding: 10px 18px;
-      cursor: pointer;
-      margin-right: 10px;
-      margin-top: 10px;
-      transition: background-color 0.3s ease;
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
     }
-    button:hover, .btn-expl:hover {
-      background: #005bb5;
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
     }
-    .reponse {
-      margin-top: 1em;
-      font-weight: 700;
-      color: #004a99;
-      text-align: center;
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#bfdbfe;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(0,74,153,0.95),rgba(59,130,246,0.95));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#f9fafb;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:230px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#bfdbfe;
+      box-shadow:0 0 12px rgba(191,219,254,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:960px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:18px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:40px 40px 32px;
+      color:#e5f1ff;
+    }
+
+    h1,h2{
+      color:#e0ecff;
+      margin-bottom:10px;
+    }
+    h3{
+      color:#93c5fd;
+      margin-top:35px;
+      margin-bottom:10px;
+    }
+    h2{
+      margin-top:42px;
+      border-bottom:3px solid #93c5fd;
+      padding-bottom:8px;
+      font-size:1.5rem;
+    }
+    p,li{font-size:1.02rem;line-height:1.6;}
+    ul,ol{margin-left:2em;margin-bottom:1.8em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      border-radius:8px;
+      margin:1.8em 0;
+      font-size:1.05rem;
+    }
+    .infos{
+      padding:18px 28px;
+      background:#e6f0ff;
+      border-left:7px solid #3399ff;
+      color:#003366;
+    }
+    .box-exo{
+      padding:18px 28px;
+      background:#eef6ff;
+      border-left:8px solid #0066cc;
+      color:#004a99;
+    }
+    .box-important{
+      padding:18px 28px;
+      background:#fffaf0;
+      border-left:8px solid #ffb84d;
+      color:#4a3410;
+    }
+    .error{
+      padding:18px 28px;
+      background:#ffe6e6;
+      border-left:8px solid #cc3300;
+      color:#b32400;
+    }
+    .lexique{
+      padding:20px;
+      background:#d9eaff;
+      border-left:8px solid #0073e6;
+      margin:2em 0;
+      color:#0f172a;
+    }
+    .anecdote{
+      padding:18px 25px;
+      background:#cce0ff;
+      border-left:8px solid #004a99;
+      font-style:italic;
+      margin:2em 0;
+      color:#004a99;
+    }
+
+    code{
+      background:#0b1120;
+      padding:0 5px;
+      border-radius:5px;
+      font-family:"Consolas","SFMono-Regular",monospace;
+      font-size:0.95rem;
+      color:#e5e7eb;
+    }
+    pre{
+      background:#020617;
+      padding:18px;
+      border-radius:8px;
+      overflow-x:auto;
+      font-family:"Consolas","SFMono-Regular",monospace;
+      margin:1em 0 2em;
+      font-size:0.95rem;
+      line-height:1.4;
+      color:#e5e7eb;
+    }
+
+    button,.btn-expl{
+      background:#0073e6;
+      color:white;
+      border:none;
+      font-weight:700;
+      border-radius:7px;
+      padding:10px 18px;
+      cursor:pointer;
+      margin-right:10px;
+      margin-top:10px;
+      transition:background-color 0.2s ease,transform 0.15s ease;
+    }
+    button:hover,.btn-expl:hover{
+      background:#005bb5;
+      transform:translateY(-1px);
+    }
+
+    .reponse{
+      margin-top:1em;
+      font-weight:700;
+      color:#bfdbfe;
+      text-align:center;
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
     }
   </style>
 </head>
 <body>
-<header>
-  <h1>Masterclass HTML — Le cours détaillé & interactif</h1>
-  <div class="intro">Comprends parfaitement tout sur HTML : structure, balises, attributs, liens, images, formulaires, sémantique et bonnes pratiques.</div>
-</header>
-<main>
-  <section>
-    <h2>📄 À quoi sert le HTML ?</h2>
-    <ul>
-      <li><b>HTML</b> signifie <i>HyperText Markup Language</i>, c’est le langage de base qui structure toute page web.</li>
-      <li>Il permet d’organiser le contenu en titres, paragraphes, images, listes, liens, tableaux… bref tout ce que tu vois sur un site web.</li>
-      <li>Un navigateur web lit ce code HTML pour afficher la page visuellement.</li>
-      <li>Le HTML ne gère pas le style ou le comportement (pour ça il y a le CSS et JavaScript), mais uniquement la structure et le sens du contenu.</li>
-    </ul>
-    <div class="infos">
-      <p>Le HTML fonctionne avec des <b>balises</b> qui ouvrent et ferment des parties du contenu, comme par exemple :</p>
-      <pre><code>&lt;h1&gt;Titre principal&lt;/h1&gt;
-&lt;p&gt;Un paragraphe de texte ici.&lt;/p&gt;
-</code></pre>
-      <p>Les balises indiquent ce que ce texte représente, ici un titre puis un paragraphe.</p>
-    </div>
-  </section>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//web-HTML</div>
 
-  <section>
-    <h2>🧱 Structure de base d’un document HTML</h2>
-    <p>Toute page HTML commence par une structure commune, obligatoire pour être valide et bien comprise par les navigateurs :</p>
-    <pre><code>&lt;!DOCTYPE html&gt;
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Masterclass HTML · structure, balises, attributs, liens, images, formulaires et bonnes pratiques.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du squelette HTML5 et des balises sémantiques...</div>
+        <div class="terminal-line">[STRUCT] Mise en place des exemples : titres, paragraphes, liens, images, formulaires.</div>
+        <div class="terminal-line">[OK]  Prêt : cours détaillé, exercices, lexique et anecdotes sur l’origine du HTML.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
+    </div>
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Web
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="content-card">
+        <header style="background:none;padding:0;margin:0 0 10px 0;color:inherit;text-align:left;box-shadow:none;">
+          <h1>Masterclass HTML — Le cours détaillé & interactif</h1>
+          <div class="intro" style="font-size:1.1rem;font-weight:600;color:#dbeafe;">
+            Comprends tout sur HTML : structure, balises, attributs, liens, images, formulaires, sémantique et bonnes pratiques.
+          </div>
+        </header>
+
+        <main>
+          <section>
+            <h2>📄 À quoi sert le HTML ?</h2>
+            <ul>
+              <li><b>HTML</b> (HyperText Markup Language) structure le contenu des pages web.</li>
+              <li>Il définit titres, paragraphes, listes, images, tableaux, liens, etc.</li>
+              <li>Le navigateur lit le HTML pour construire la page affichée à l’écran.</li>
+              <li>HTML décrit la structure et le sens, pas le style (CSS) ni le comportement (JavaScript).</li>
+            </ul>
+            <div class="infos">
+              <p>HTML utilise des <b>balises</b> ouvrantes/fermantes :</p>
+              <pre>de>&lt;h1&gt;Titre principal&lt;/h1&gt;
+&lt;p&gt;Un paragraphe de texte ici.&lt;/p&gt;</code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h2>🧱 Structure de base d’un document HTML</h2>
+            <p>Une page HTML valide suit toujours le même squelette :</p>
+            <pre>de>&lt;!DOCTYPE html&gt;
 &lt;html lang="fr"&gt;
   &lt;head&gt;
     &lt;meta charset="UTF-8"&gt;
@@ -162,109 +510,87 @@
   &lt;body&gt;
     Contenu visible ici
   &lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-    <ul>
-      <li><b>&lt;!DOCTYPE html&gt;</b> : déclaration du type de document (HTML5 ici).</li>
-      <li><b>&lt;html lang="fr"&gt;</b> : 
-        <i>racine du document</i>, avec l’attribut <code>lang</code> précisant la langue.</li>
-      <li><b>&lt;head&gt;</b> : zone pour les métadonnées (titre, encodage, liens vers CSS, scripts).</li>
-      <li><b>&lt;body&gt;</b> : zone visible contenant tout ce qui s’affiche sur la page.</li>
-    </ul>
-    <div class="infos">
-      <p>Cette structure est essentielle : le navigateur s’appuie dessus pour interpréter correctement ta page, afficher le titre dans l’onglet, connaitre la langue pour le référencement, etc.</p>
-    </div>
-  </section>
+&lt;/html&gt;</code></pre>
+            <ul>
+              <li>de>&lt;!DOCTYPE html&gt;</code> : indique HTML5.</li>
+              <li>de>&lt;html lang="fr"&gt;</code> : racine du document et langue.</li>
+              <li>de>&lt;head&gt;</code> : métadonnées (titre, encodage, CSS...).</li>
+              <li>de>&lt;body&gt;</code> : tout ce qui est visible pour l’utilisateur.</li>
+            </ul>
+          </section>
 
-  <section>
-    <h2>🔖 Les balises HTML essentielles</h2>
-    <p>Voici quelques balises de base à connaitre pour bien commencer :</p>
-    <ul>
-      <li><code>&lt;h1&gt;...&lt;/h1&gt;</code> à <code>&lt;h6&gt;...&lt;/h6&gt;</code> : titres de niveaux 1 à 6.</li>
-      <li><code>&lt;p&gt;...&lt;/p&gt;</code> : paragraphe de texte.</li>
-      <li><code>&lt;a href="url"&gt;...&lt;/a&gt;</code> : lien cliquable vers une autre page ou ressource.</li>
-      <li><code>&lt;img src="URL" alt="description"&gt;</code> : image (sans balise de fermeture), <code>alt</code> décrit l’image si elle ne charge pas.</li>
-      <li><code>&lt;ul&gt;</code> / <code>&lt;ol&gt;</code> : listes à puces (ul) ou numérotées (ol), avec <code>&lt;li&gt;</code> pour chaque élément.</li>
-      <li><code>&lt;div&gt;</code> : conteneur générique pour grouper des éléments, utile pour la mise en page.</li>
-      <li><code>&lt;span&gt;</code> : comme div, mais pour du contenu inline (texte).</li>
-    </ul>
-  </section>
+          <section>
+            <h2>🔖 Balises HTML essentielles</h2>
+            <ul>
+              <li>de>&lt;h1&gt;...&lt;/h1&gt;</code> à de>&lt;h6&gt;...&lt;/h6&gt;</code> : titres hiérarchisés.</li>
+              <li>de>&lt;p&gt;...&lt;/p&gt;</code> : paragraphe.</li>
+              <li>de>&lt;a href="url"&gt;...&lt;/a&gt;</code> : lien.</li>
+              <li>de>&lt;img src="URL" alt="description"&gt;</code> : image.</li>
+              <li>de>&lt;ul&gt;</code>/de>&lt;ol&gt;</code> + de>&lt;li&gt;</code> : listes.</li>
+              <li>de>&lt;div&gt;</code> : bloc générique.</li>
+              <li>de>&lt;span&gt;</code> : conteneur en ligne pour du texte.</li>
+            </ul>
+          </section>
 
-  <section>
-    <h2>🖼️ Attributs et leurs rôles</h2>
-    <p>Les balises peuvent contenir des <b>attributs</b> pour préciser ou modifier leur comportement :</p>
-    <ul>
-      <li><code>href</code> dans <code>&lt;a&gt;</code> : adresse du lien.</li>
-      <li><code>src</code> dans <code>&lt;img&gt;</code> : source de l’image.</li>
-      <li><code>alt</code> dans <code>&lt;img&gt;</code> : texte alternatif pour accessibilité et SEO.</li>
-      <li><code>id</code> et <code>class</code> pour identifier ou classifier un élément, utiles pour le style CSS et le script.</li>
-      <li><code>title</code> ajoute un tooltip au survol d’un élément.</li>
-    </ul>
-    <div class="infos">
-      <p>Les attributs sont toujours placés dans la balise d’ouverture et s’écrivent sous la forme <code>nom="valeur"</code>. Ils personnalisent le comportement ou l’apparence.</p>
-    </div>
-  </section>
+          <section>
+            <h2>🖼️ Attributs et rôles</h2>
+            <ul>
+              <li>de>href</code> : cible du lien dans de>&lt;a&gt;</code>.</li>
+              <li>de>src</code> : source d’une image ou d’un média.</li>
+              <li>de>alt</code> : texte alternatif d’une image.</li>
+              <li>de>id</code> / de>class</code> : identifiant ou catégorie, utiles pour CSS/JS.</li>
+              <li>de>title</code> : info-bulle au survol.</li>
+            </ul>
+            <div class="infos">
+              <p>Les attributs se placent dans la balise d’ouverture : de>&lt;tag attribut="valeur"&gt;</code>.</p>
+            </div>
+          </section>
 
-  <section>
-    <h2>🧩 La sémantique HTML expliquée</h2>
-    <p>Utiliser les bonnes balises selon le contenu, c’est la <b>sémantique</b>. Cela aide les navigateurs, moteurs de recherche, et aides techniques à mieux comprendre la page.</p>
-    <ul>
-      <li><code>&lt;header&gt;</code> : en-tête de page ou section.</li>
-      <li><code>&lt;nav&gt;</code> : zone de navigation.</li>
-      <li><code>&lt;main&gt;</code> : contenu principal unique de la page.</li>
-      <li><code>&lt;section&gt;</code> : section thématique.</li>
-      <li><code>&lt;article&gt;</code> : contenu indépendant (article, billet de blog).</li>
-      <li><code>&lt;footer&gt;</code> : pied de page de section ou document.</li>
-    </ul>
-    <div class="infos">
-      <p>Respecter la sémantique facilite aussi le travail du CSS et améliore l’accessibilité web (lecteurs d’écran...).</p>
-    </div>
-  </section>
+          <section>
+            <h2>🧩 Sémantique HTML</h2>
+            <ul>
+              <li>de>&lt;header&gt;</code> : en-tête de page ou de section.</li>
+              <li>de>&lt;nav&gt;</code> : navigation principale.</li>
+              <li>de>&lt;main&gt;</code> : contenu principal unique.</li>
+              <li>de>&lt;section&gt;</code> : bloc thématique.</li>
+              <li>de>&lt;article&gt;</code> : contenu autonome.</li>
+              <li>de>&lt;footer&gt;</code> : pied de page.</li>
+            </ul>
+            <div class="infos">
+              <p>Une bonne sémantique améliore le SEO, l’accessibilité et la lisibilité du code.</p>
+            </div>
+          </section>
 
-  <section>
-    <h2>🔗 Liens, images et médias</h2>
-    <p>Les liens et images sont les briques pour rendre une page riche et connectée :</p>
-    <pre><code>&lt;a href="https://exemple.com"&gt;Visitez notre site&lt;/a&gt;
-&lt;img src="chat.jpg" alt="Photo d'un chat mignon"&gt;
-</code></pre>
-    <ul>
-      <li>Le <code>href</code> du lien indique l’adresse ciblée.</li>
-      <li>Le <code>alt</code> de l’image est indispensable pour l’accessibilité.</li>
-      <li>Les balises <code>&lt;video&gt;</code> et <code>&lt;audio&gt;</code> permettent d’intégrer facilement des médias multimédia.</li>
-      <li>Pour un lien ouvrant dans un nouvel onglet, ajoute <code>target="_blank"</code> à la balise <code>&lt;a&gt;</code>.</li>
-    </ul>
-  </section>
+          <section>
+            <h2>🔗 Liens, images et médias</h2>
+            <pre>de>&lt;a href="https://exemple.com"&gt;Visitez notre site&lt;/a&gt;
+&lt;img src="chat.jpg" alt="Photo d'un chat mignon"&gt;</code></pre>
+            <ul>
+              <li>de>target="_blank"</code> ouvre un lien dans un nouvel onglet.</li>
+              <li>de>&lt;video&gt;</code>, de>&lt;audio&gt;</code> intègrent des médias.</li>
+            </ul>
+          </section>
 
-  <section>
-    <h2>📝 Formulaires HTML : interagir avec l’utilisateur</h2>
-    <p>Les formulaires recueillent des données : textes, choix, boutons, fichiers...</p>
-    <pre><code>&lt;form action="/envoyer" method="post"&gt;
+          <section>
+            <h2>📝 Formulaires HTML</h2>
+            <pre>de>&lt;form action="/envoyer" method="post"&gt;
   &lt;label for="nom"&gt;Votre nom:&lt;/label&gt;
   &lt;input type="text" id="nom" name="nom"&gt;
   &lt;input type="submit" value="Envoyer"&gt;
-&lt;/form&gt;
-</code></pre>
-    <ul>
-      <li><code>&lt;form&gt;</code> regroupe des champs envoyés au serveur.</li>
-      <li><code>action</code> : URL du serveur qui traite les données.</li>
-      <li><code>method</code> : type de requête HTTP (GET ou POST).</li>
-      <li>Champs classiques : <code>input</code> (texte, bouton, fichier…), <code>textarea</code>, <code>select</code> (liste déroulante).</li>
-      <li>Les <code>label</code> améliorent l’accessibilité en désignant les champs.</li>
-    </ul>
-  </section>
+&lt;/form&gt;</code></pre>
+            <ul>
+              <li>de>&lt;form&gt;</code> : conteneur des champs.</li>
+              <li>de>action</code> : URL du traitement.</li>
+              <li>de>method</code> : GET ou POST.</li>
+              <li>Champs : de>input</code>, de>textarea</code>, de>select</code>, etc.</li>
+            </ul>
+          </section>
 
-  <section class="box-exo">
-    <h2>💡 Exercices pratiques : créer ta première page HTML</h2>
-    <p>Crée une page avec :</p>
-    <ol>
-      <li>Un titre principal.</li>
-      <li>Un paragraphe de texte décrivant ton site.</li>
-      <li>Une image avec description.</li>
-      <li>Un lien vers un site que tu aimes.</li>
-    </ol>
-    <button onclick="showExoCode()">Voir correction complète</button>
-    <pre id="exo-code" style="display:none; color:#004a99;">
-&lt;!DOCTYPE html&gt;
+          <section class="box-exo">
+            <h2>💡 Exercice pratique : première page</h2>
+            <p>Créer une page avec un titre, un paragraphe, une image et un lien.</p>
+            <button onclick="showExoCode()">Voir correction complète</button>
+            <pre id="exo-code" style="display:none;color:#bfdbfe;">de>&lt;!DOCTYPE html&gt;
 &lt;html lang="fr"&gt;
   &lt;head&gt;
     &lt;meta charset="UTF-8"&gt;
@@ -276,44 +602,52 @@
     &lt;img src="chaton.jpg" alt="Un chaton mignon"&gt;
     &lt;a href="https://www.example.com"&gt;Visitez Example.com&lt;/a&gt;
   &lt;/body&gt;
-&lt;/html&gt;
-    </pre>
-  </section>
+&lt;/html&gt;</code></pre>
+          </section>
 
-  <section class="box-important">
-    <h2>🧠 Méthodologie & bonnes pratiques</h2>
-    <ul>
-      <li>Utilise toujours une indentation propre pour bien visualiser la structure.</li>
-      <li>Toujours déclarer la langue avec <code>lang</code> dans la balise <code>html</code>.</li>
-      <li>Ne pas oublier le <code>&lt;!DOCTYPE html&gt;</code> pour un rendu moderne.</li>
-      <li>Remplis toujours le <code>alt</code> des images pour l’accessibilité.</li>
-      <li>Teste ta page dans plusieurs navigateurs pour vérifier la compatibilité.</li>
-    </ul>
-  </section>
+          <section class="box-important">
+            <h2>🧠 Méthodologie & bonnes pratiques</h2>
+            <ul>
+              <li>Indenter correctement le code.</li>
+              <li>Mettre de>lang</code> sur la balise de>html</code>.</li>
+              <li>Utiliser systématiquement un de>alt</code> pertinent sur les images.</li>
+              <li>Tester la page dans plusieurs navigateurs.</li>
+            </ul>
+          </section>
 
-  <section class="lexique">
-    <h2>📚 Lexique HTML</h2>
-    <b>Balise :</b> élément structurant du HTML, en général pair avec une ouverture et une fermeture.<br />
-    <b>Attribut :</b> information supplémentaire dans la balise d’ouverture.<br />
-    <b>Doctype :</b> déclaration du type de document HTML.<br />
-    <b>Sémantique :</b> usage approprié des balises selon le sens du contenu.<br />
-    <b>Élément inline vs block :</b> différence d’affichage et de comportement des balises.<br />
-  </section>
+          <section class="lexique">
+            <h2>📚 Lexique HTML</h2>
+            <b>Balise</b> : élément structurant (souvent ouvrant/fermant).<br>
+            <b>Attribut</b> : information additionnelle sur un élément.<br>
+            <b>Doctype</b> : type de document (ex : HTML5).<br>
+            <b>Sémantique</b> : choix de balises selon le sens du contenu.<br>
+            <b>Block / inline</b> : éléments de bloc ou en ligne.
+          </section>
 
-  <section class="anecdote">
-    <b>Anecdote :</b> Le HTML a été inventé par Tim Berners-Lee en 1991 pour permettre de créer des pages web riches et accessibles via le navigateur web Mosaic, le premier navigateur graphique au monde.
-  </section>
-</main>
+          <section class="anecdote">
+            <b>Anecdote :</b> Tim Berners‑Lee invente HTML au début des années 1990 au CERN pour partager facilement des documents entre chercheurs.
+          </section>
+        </main>
+      </div>
+    </div>
 
-<script>
-  function toggleQuiz(id) {
-    let el = document.getElementById(id);
-    el.style.display = (el.style.display === "none" || !el.style.display) ? "inline" : "none";
-  }
-  function showExoCode() {
-    document.getElementById("exo-code").style.display = "block";
-  }
-</script>
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
+    </div>
+  </div>
 
+  <script>
+    // Masquer le loader après 3 secondes[web:38][web:2][web:29][web:12]
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
+
+    function showExoCode() {
+      document.getElementById("exo-code").style.display = "block";
+    }
+  </script>
 </body>
 </html>

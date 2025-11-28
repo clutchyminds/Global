@@ -4,101 +4,597 @@
   <meta charset="UTF-8" />
   <title>Global - Mes projets</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
+    /* RESET + VARIABLES */
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
+    :root {
+      --blue-light: #29d8ff;
+      --blue-main: #007BFF;
+      --blue-dark: #004a9f;
+      --white: #ffffff;
+    }
+
+    /* FOND GLOBAL */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
+        linear-gradient(135deg, #020617 0%, #031633 40%, #001a3b 100%);
+      color: #e5f1ff;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.08;
+      mix-blend-mode: soft-light;
+      background-image:
+        linear-gradient(0deg, rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 3px 3px, 3px 3px;
+      z-index: -1;
+    }
+
+    /* ===== LOADER HACKING PROJETS ===== */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, #0b1220 0, #020617 45%, #000 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      overflow: hidden;
+    }
+    .loader-hud {
+      position: relative;
+      width: min(520px, 90vw);
+      padding: 26px 26px 30px 26px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 0 0, rgba(56,189,248,0.26), transparent 60%),
+        linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
+      border: 1px solid rgba(56,189,248,0.8);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(56,189,248,0.7);
+      color: #e5f1ff;
+      font-family: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      overflow: hidden;
+    }
+    .loader-hud::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size: 100% 3px;
+      mix-blend-mode: soft-light;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .loader-title {
+      font-size: 0.9rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #7dd3fc;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .loader-title::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 210px;
+      height: 2px;
+      background: linear-gradient(90deg, #7dd3fc, transparent);
+      box-shadow: 0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 1rem;
+      margin-bottom: 14px;
+    }
+    .status-label {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 600;
+    }
+    .status-dots {
+      display: inline-block;
+      min-width: 18px;
+      animation: blinkDots 1s steps(2, start) infinite;
+      color: #38bdf8;
+    }
+    @keyframes blinkDots {
+      0%, 50% { opacity: 1; }
+      50.01%, 100% { opacity: 0; }
+    }
+    .loader-bar {
+      position: relative;
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.9);
+      background: rgba(15,23,42,0.9);
+      overflow: hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom: 10px;
+    }
+    .loader-bar-fill {
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      background: linear-gradient(90deg, #22c1c3, #29d8ff, #007bff);
+      box-shadow: 0 0 18px rgba(56,189,248,0.9);
+      animation: barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress {
+      0%   { width: 0%;   transform: translateX(-5%); }
+      40%  { width: 65%;  transform: translateX(0); }
+      70%  { width: 100%; transform: translateX(0); }
+      100% { width: 35%;  transform: translateX(90%); }
+    }
+    .loader-subtext {
+      font-size: 0.72rem;
+      margin-top: 4px;
+      color: #a5b4fc;
+      opacity: 0.9;
+    }
+    .loader-scan {
+      position: absolute;
+      inset: -40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(56,189,248,0.12) 45%,
+          rgba(56,189,248,0.35) 50%,
+          rgba(56,189,248,0.12) 55%,
+          transparent 100%
+        );
+      mix-blend-mode: screen;
+      animation: scanMove 2.6s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes scanMove {
+      0%   { transform: translateY(-40%); opacity: 0; }
+      10%  { opacity: 0.9; }
+      60%  { opacity: 0.9; }
+      100% { transform: translateY(40%); opacity: 0; }
+    }
+    .loader-terminal {
+      margin-top: 14px;
+      padding: 10px 10px 8px 10px;
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.9), rgba(15,23,42,0.98));
+      border-radius: 10px;
+      border: 1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height: 140px;
+      overflow: hidden;
+      font-size: 0.7rem;
+      line-height: 1.5;
+      color: #c4f1ff;
+      position: relative;
+    }
+    .terminal-line {
+      opacity: 0;
+      transform: translateY(6px);
+      animation: lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1) { animation-delay: 0.1s; }
+    .terminal-line:nth-child(2) { animation-delay: 0.6s; }
+    .terminal-line:nth-child(3) { animation-delay: 1.2s; }
+    .terminal-line:nth-child(4) { animation-delay: 1.9s; }
+    .terminal-line:nth-child(5) { animation-delay: 2.5s; }
+    .terminal-line:nth-child(6) { animation-delay: 3.1s; }
+    .terminal-line:nth-child(7) { animation-delay: 3.7s; }
+    .terminal-line:nth-child(8) { animation-delay: 4.3s; }
+    .terminal-line:nth-child(9) { animation-delay: 4.9s; }
+    @keyframes lineIn {
+      0%   { opacity: 0; transform: translateY(6px); }
+      8%   { opacity: 1; transform: translateY(0); }
+      70%  { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-12px); }
+    }
+    .terminal-cursor {
+      display: inline-block;
+      width: 8px;
+      animation: cursorBlink 0.6s steps(1, start) infinite;
+      color: #38bdf8;
+    }
+    @keyframes cursorBlink {
+      0%, 49%  { opacity: 1; }
+      50%,100% { opacity: 0; }
+    }
+
+    /* CONTENU PRINCIPAL (fade-in) */
+    #main-content {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.7s ease forwards;
+      animation-delay: 0.2s;
+      display: none;
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* HEADER + NAV GLASS */
     .top-banner {
-      background-color: #007BFF;
-      color: white;
-      padding: 18px 0 0 0;
-      font-size: 2rem;
-      letter-spacing: 1px;
-      font-weight: bold;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background: linear-gradient(
+        135deg,
+        rgba(0, 123, 255, 0.82),
+        rgba(3, 105, 161, 0.82)
+      );
+      border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      color: var(--white);
+      padding: 18px 7vw 4px 7vw;
+      font-size: 1.9rem;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .top-banner::after {
+      content: "";
+      height: 2px;
+      width: 210px;
+      margin-top: 4px;
+      background: linear-gradient(90deg, var(--white), rgba(255,255,255,0));
+      opacity: 0.9;
     }
     .nav-bar {
       display: flex;
-      justify-content: center;
-      gap: 40px;
-      background-color: #007BFF;
-      padding: 10px 0 18px 0;
-      margin: 0;
+      justify-content: flex-start;
+      gap: 26px;
+      padding-bottom: 10px;
+      margin-top: 4px;
     }
     .nav-bar a {
-      color: white;
+      position: relative;
+      color: #e0f2ff;
       text-decoration: none;
-      font-size: 1.1rem;
+      font-size: 0.98rem;
       font-weight: 500;
-      padding: 5px 18px;
-      border-radius: 12px;
-      transition: background 0.2s, color 0.2s;
+      padding: 7px 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.24), transparent 60%);
+      border: 1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition:
+        transform 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        background 0.18s ease-out;
+    }
+    .nav-bar a::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--blue-light);
+      box-shadow: 0 0 12px rgba(41,216,255,0.9);
     }
     .nav-bar a:hover {
-      background: #0057b8;
-      color: #fffbea;
+      transform: translateY(-1px) scale(1.02);
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.5), transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148, 163, 184, 0.25),
+        0 10px 25px rgba(15,23,42,0.9);
     }
-    .icon-container {
+
+    .page-padding {
+      padding: 26px 7vw 90px 7vw;
+    }
+
+    /* BLOC ARGUMENTATION */
+    .intro-card {
+      max-width: 900px;
+      margin: 0 auto 18px auto;
+      border-radius: 20px;
+      padding: 18px 20px 16px 20px;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.18), transparent 60%),
+                  linear-gradient(145deg, rgba(15,23,42,0.96), rgba(15,23,42,0.9));
+      box-shadow:
+        0 16px 34px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(15,23,42,1);
+      border: 1px solid rgba(148,163,184,0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      font-size: 0.98rem;
+      line-height: 1.6;
+      color: #e5f1ff;
+    }
+    .intro-card h2 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      color: #7dd3fc;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .intro-card p {
+      margin-bottom: 6px;
+    }
+    .intro-highlight {
+      color: #a5b4fc;
+      font-style: italic;
+    }
+
+    /* GRILLE DES PROJETS AVEC ICÔNES DE MAJ */
+    .projects-grid {
+      max-width: 900px;
+      margin: 10px auto 0 auto;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0px;  /* Icônes rapprochées */
-      padding: 20px 0px 0 0px;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 24px;
       justify-items: center;
     }
-    .icon {
-      text-decoration: none;
-      color: #222;
+    @media (max-width: 900px) {
+      .projects-grid {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+      }
+    }
+    @media (max-width: 600px) {
+      .projects-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .project-card {
+      width: 100%;
+      max-width: 260px;
+      border-radius: 22px;
+      padding: 12px 14px 14px 14px;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.16), transparent 60%),
+                  linear-gradient(145deg, rgba(15,23,42,0.96), rgba(15,23,42,0.9));
+      border: 1px solid rgba(148,163,184,0.65);
+      box-shadow:
+        0 16px 32px rgba(15,23,42,0.95),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       display: flex;
       flex-direction: column;
+      gap: 8px;
+      color: #e5f1ff;
+      transition:
+        transform 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        border-color 0.18s ease-out;
+    }
+    .project-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      border-color: rgba(56,189,248,0.9);
+      box-shadow:
+        0 22px 44px rgba(15,23,42,1),
+        0 0 30px rgba(56,189,248,0.7);
+    }
+
+    .project-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .project-title {
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    /* zone icônes de statut/MAJ – tu peux remplacer les span par <img src="..."> */
+    .project-status-icons {
+      display: inline-flex;
+      gap: 6px;
       align-items: center;
     }
-    .icon img {
-      width: 180px;
-      height: 180px;
-      object-fit: cover;
-      border-radius: 22px;
-      border: 2.5px solid #ccc;
-      transition: border-color 0.3s, transform 0.3s;
+    .status-pill {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: 1px solid rgba(148,163,184,0.9);
+      background: rgba(15,23,42,0.96);
+      color: #e5f1ff;
     }
-    .icon img:hover {
-      border-color: #007BFF;
-      transform: scale(1.08);
+    .status-pill.new {
+      border-color: rgba(56,189,248,0.95);
+      color: #7dd3fc;
     }
-    .icon span {
-      margin-top: 17px;
-      font-weight: bold;
-      font-size: 1.15rem;
+    .status-pill.wip {
+      border-color: rgba(251,191,36,0.95);
+      color: #fde68a;
     }
+    .status-pill.update {
+      border-color: rgba(52,211,153,0.95);
+      color: #6ee7b7;
+    }
+
+    .project-desc {
+      font-size: 0.86rem;
+      color: #cbd5ff;
+    }
+
+    /* FOOTER */
     .bottom-footer {
-      background-color: #333;
-      color: #eee;
-      padding: 16px 0;
+      background: linear-gradient(
+        135deg,
+        rgba(15,23,42,0.98),
+        rgba(15,23,42,0.98)
+      );
+      color: #cbd5f5;
+      padding: 14px 7vw 12px 7vw;
       text-align: center;
-      font-size: 1rem;
+      font-size: 0.9rem;
       position: fixed;
-      left: 0; right: 0; bottom: 0;
-      box-shadow: 0 -1px 8px #bbb;
-    }
-    .page-padding {
-      padding-bottom: 60px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-top: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
     }
   </style>
 </head>
 <body>
-  <div class="top-banner">
-    Global - Mest projets
-    <nav class="nav-bar">
-      <a href="index.html">Accueil</a>
-      <a href="apropos.html">À propos</a>
-    </nav>
+  <!-- Loader hacking Mes Projets -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//PROJECTS-ENGINE</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Connexion</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Chargement des projets · Statuts · Icônes de mise à jour
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Scan des projets en cours (jeux, outils, sites)...</div>
+        <div class="terminal-line">[OK]  Section “Mes projets” connectée au hub Global.</div>
+        <div class="terminal-line">[STATUS] Préparation des badges : Nouveau, MAJ, En cours.</div>
+        <div class="terminal-line">[ICONS] Emplacements d’icônes prêts pour chaque carte.</div>
+        <div class="terminal-line">[ROADMAP] Intégration des idées futures à afficher.</div>
+        <div class="terminal-line">[UI] Activation du thème glassmorphism pour la page projets.</div>
+        <div class="terminal-line">[OK]  Interface prête pour suivre l’évolution de tes créations.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
+    </div>
   </div>
-  <div class="page-padding">
-    <p>(désolé pour les fautes d'orthographe)</p>
-    <p>je compte encor beaucoup améliorer le site, il est en cour de devellopement</p>
-    <p>je compte crée d'autre parties ( et oui pas que du cour ) comme pour les jeux vidéo ou d'autre truque commme ca</p>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Mes projets
+      <nav class="nav-bar">
+        <a href="index.html">Accueil</a>
+        <a href="apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="intro-card">
+        <h2>À propos de cette page</h2>
+        <p>
+          Cette section est dédiée à tous les projets qui construisent petit à petit l’univers de Global :
+          outils de dev, mini‑jeux, scripts, expériences web et tout ce qui permet de progresser.
+        </p>
+        <p>
+          La page est en constante évolution : certains projets sont encore des prototypes, d’autres sont déjà
+          utilisables, et de nouveaux arriveront au fil du temps.
+        </p>
+        <p class="intro-highlight">
+          Les petites pastilles en haut des cartes (Nouveau, MAJ, En cours...) servent à repérer rapidement ce qui vient
+          d’être ajouté ou mis à jour, comme un changelog visuel.
+        </p>
+      </div>
+
+      <!-- Grille de projets avec zone pour icônes / badges
+           Tu peux dupliquer .project-card et/ou remplacer les span.status-pill
+           par des <img src="img/ton_icone.png"> si tu veux des vraies icônes. -->
+      <div class="projects-grid">
+        <div class="project-card">
+          <div class="project-header">
+            <div class="project-title">Lanceur de jeux Global</div>
+            <div class="project-status-icons">
+              <!-- remplace éventuellement par une icône image -->
+              <span class="status-pill new">Nouveau</span>
+            </div>
+          </div>
+          <p class="project-desc">
+            Un mini‑hub pour centraliser plusieurs jeux et expériences que je développe, directement depuis le site Global.
+          </p>
+        </div>
+
+        <div class="project-card">
+          <div class="project-header">
+            <div class="project-title">Outils dev & scripts</div>
+            <div class="project-status-icons">
+              <span class="status-pill wip">En cours</span>
+            </div>
+          </div>
+          <p class="project-desc">
+            Scripts Python, helpers Git, petits outils pour automatiser ce qui prend du temps pendant les projets.
+          </p>
+        </div>
+
+        <div class="project-card">
+          <div class="project-header">
+            <div class="project-title">Espace jeux vidéos</div>
+            <div class="project-status-icons">
+              <span class="status-pill update">MAJ</span>
+            </div>
+          </div>
+          <p class="project-desc">
+            Futur espace dédié aux jeux (Brawl‑like, mini‑plateformers, etc.), connecté au reste du site et mis à jour régulièrement.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (ia)
+    </div>
   </div>
-  <div class="bottom-footer">
-    © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Comptenu : Perplexity (ia) 
-  </div>
+
+  <script>
+    // Masquer le loader après 5 s
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      const main = document.getElementById('main-content');
+      main.style.display = 'block';
+    }, 5000);
+  </script>
 </body>
 </html>

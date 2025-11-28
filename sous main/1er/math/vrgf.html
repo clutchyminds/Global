@@ -1,231 +1,678 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Masterclass — Variations et représentations des fonctions</title>
-    <meta name="description" content="Tout sur les variations et les représentations graphiques des fonctions : définitions, schéma interactif, quiz, exercices, analyse, applications et histoire.">
-    <style>
-        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
-        header { background: linear-gradient(90deg,#eef4fb,#ffeeda 90%); color: #243552; padding: 28px 0 12px; text-align: center;}
-        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
-        .intro { font-size: 1.01rem;}
-        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.15);}
-        h2 { color: #1877f2; margin-top: 32px;}
-        h3 { color: #f5a623; margin-top: 22px;}
-        ul, ol { margin-left: 1.4em;}
-        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
-        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
-        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
-        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
-        .error {background: #ffeaea; border-left: 7px solid #e06359;}
-        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
-        .anecdote {background: #ffe8ff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
-        .source { font-size: 0.9em; color: #999; text-align: right;}
-        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
-        button:hover { background: #145ac3;}
-        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
-        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
-        label { margin-right: 14px;}
-        @media (max-width: 768px) { main { padding: 12px 2px; } }
-    </style>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <meta charset="UTF-8">
+  <title>Global - Maths · Variations & Représentations</title>
+  <meta name="description" content="Tout sur les variations et les représentations graphiques des fonctions : définitions, schéma interactif, quiz, exercices, analyse, applications et histoire.">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-main:#1877f2;
+      --violet-main:#6366f1;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(129,140,248,0.2), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#111827 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(520px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(129,140,248,0.3),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(129,140,248,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(129,140,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#c7d2fe;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#c7d2fe,transparent);
+      box-shadow:0 0 12px rgba(129,140,248,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#a5b4fc;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(129,140,248,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#c4b5fd,#6366f1,#22c55e);
+      box-shadow:0 0 18px rgba(129,140,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#e0e7ff;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(129,140,248,0.2) 45%,
+          rgba(129,140,248,0.45) 50%,
+          rgba(129,140,248,0.2) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#a5b4fc;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(24,119,242,0.9),rgba(251,191,36,0.95));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#fff;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:230px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#c7d2fe;
+      box-shadow:0 0 12px rgba(199,210,254,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:900px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:26px 26px 30px;
+      color:#e5f1ff;
+    }
+
+    h1,h2{
+      color:#c7d2fe;
+      margin-bottom:10px;
+    }
+    h3{
+      color:#facc6b;
+      margin-top:18px;
+      margin-bottom:10px;
+    }
+    h2{margin-top:26px;font-size:1.4rem;}
+    p,li{font-size:0.98rem;line-height:1.6;}
+    ul,ol{margin-left:1.3em;margin-top:0.3em;margin-bottom:0.8em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      padding:12px 18px;
+      border-radius:10px;
+      margin:1em 0;
+      font-size:0.96rem;
+    }
+    .infos{
+      background:rgba(226,232,240,0.95);
+      color:#111827;
+      border-left:4px solid #4f46e5;
+    }
+    .box-exo{
+      background:rgba(22,163,74,0.14);
+      border-left:4px solid #22c55e;
+    }
+    .box-important{
+      background:rgba(245,158,11,0.14);
+      border-left:4px solid #facc15;
+    }
+    .error{
+      background:rgba(248,113,113,0.14);
+      border-left:4px solid #f87171;
+    }
+    .lexique{
+      background:rgba(59,130,246,0.12);
+      border-left:4px solid #7dd3fc;
+    }
+    .anecdote{
+      background:rgba(254,240,255,0.95);
+      border-left:4px solid #a855f7;
+    }
+
+    #schema{
+      margin:1em auto;
+      display:block;
+      background:#0b1725;
+      border-radius:8px;
+      border:1px solid #1f2937;
+    }
+    .reponse{
+      margin-top:0.7em;
+      color:#c7d2fe;
+      font-weight:bold;
+      text-align:center;
+      font-size:0.95rem;
+    }
+    label{
+      margin-right:14px;
+      font-size:0.9rem;
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-    <h1>Masterclass — Variations et représentations graphiques des fonctions</h1>
-    <div class="intro">
-        Comprends comment lire, tracer et analyser les fonctions pour déduire leurs variations, leurs extremums et leur comportement global !
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//math-VARIATIONS</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Variations de fonctions · dérivée, tableaux de variations, tangentes et comportement global.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du module Variations & Représentations graphiques...</div>
+        <div class="terminal-line">[DEF] Mise en place des fonctions de test (x², x³, sin x, eˣ, 1/x).</div>
+        <div class="terminal-line">[GRAPH] Tracé de la courbe et de la tangente au point d’étude.</div>
+        <div class="terminal-line">[OK]  Prêt : quiz, exercices et visualisation des variations.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
     </div>
-</header>
-<main>
-<section>
-    <h2>📝 Définitions et notions-clé</h2>
-    <div class="infos">
-        La <b>variation</b> d’une fonction décrit comment les valeurs changent selon l’abscisse x : croissante (y augmente), décroissante (y diminue) ou constante.<br>
-        La représentation graphique permet de “visualiser” la fonction : max/min, inflexions, tangentes, asymptotes...
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Maths
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
     </div>
-    <ul>
-        <li>Pour <b>déterminer les variations</b> : analyse la dérivée ou le tableau de valeurs</li>
-        <li><b>Extremum</b> : minimum ou maximum local ou global</li>
-        <li><b>Points particuliers</b> : maximum, minimum, point d’inflexion, zéro/facteur, asymptote…</li>
-    </ul>
-</section>
-<section>
-    <h2>📗 Méthode d’étude des variations</h2>
-    <ol>
-        <li>Définir la fonction f(x) et son domaine</li>
-        <li>Calculer sa dérivée f'(x) pour repérer croissance/décroissance</li>
-        <li>Étudier le signe de f'(x) pour déduire les intervalles de variation</li>
-        <li>Identifier les extremums (f'(x)=0), points d’inflexion si possible</li>
-        <li>Tracer la courbe avec les points clés, asymptotes/non-définis, etc.</li>
-    </ol>
-    <div class="box-important">
-        Astuce : Un schéma bien tracé t’aide à visualiser les problèmes complexes et à comprendre tout de suite le comportement global !
+
+    <div class="page-padding">
+      <div class="content-card">
+        <h1>Masterclass — Variations et représentations graphiques des fonctions</h1>
+        <p style="margin-bottom:1.2em;font-size:0.98rem;color:#e0e7ff;">
+          Comprends comment lire, tracer et analyser les fonctions pour déduire leurs variations, leurs extremums et leur comportement global.
+        </p>
+
+        <section>
+          <h2>📝 Définitions et notions-clé</h2>
+          <div class="infos">
+            La <b>variation</b> d’une fonction décrit comment ses valeurs évoluent quand \(x\) change : croissante, décroissante ou constante.<br>
+            La représentation graphique permet de visualiser extremums, points d’inflexion, tangentes et asymptotes.
+          </div>
+          <ul>
+            <li>Pour déterminer les variations : utiliser la dérivée ou un tableau de valeurs précis.</li>
+            <li><b>Extremum</b> : minimum ou maximum local ou global.</li>
+            <li>Points particuliers : zéros, extrema, points d’inflexion, asymptotes, etc.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>📗 Méthode d’étude des variations</h2>
+          <ol>
+            <li>Définir la fonction \(f(x)\) et son domaine.</li>
+            <li>Calculer la dérivée \(f'(x)\).</li>
+            <li>Étudier le signe de \(f'(x)\) pour déduire les intervalles de croissance/décroissance.</li>
+            <li>Identifier les extremums aux points où \(f'(x)=0\) (et change de signe).</li>
+            <li>Tracer la courbe en plaçant points clés et éventuelles asymptotes.</li>
+          </ol>
+          <div class="box-important">
+            Astuce : un tableau de variations clair + un schéma propre donnent une excellente vision globale de la fonction.
+          </div>
+        </section>
+
+        <section>
+          <h2>🟦 Schéma interactif — visualisation et tangente</h2>
+          <label>Domaine : [<input type="number" id="xmin" value="-3"> ; <input type="number" id="xmax" value="3">]</label>
+          <select id="select">
+            <option value="x*x">f(x)=x²</option>
+            <option value="x*x*x">f(x)=x³</option>
+            <option value="Math.sin(x)">f(x)=sin(x)</option>
+            <option value="Math.exp(x)">f(x)=eˣ</option>
+            <option value="1/x">f(x)=1/x</option>
+          </select>
+          <input type="number" id="pt" value="0" step="0.1" min="-3" max="3"> (point d’étude de la tangente)
+          <canvas id="schema" width="410" height="260"></canvas>
+          <div id="desc-var"></div>
+        </section>
+
+        <section class="box-exo">
+          <h2>💡 Exercice interactif</h2>
+          <p>Pour \(f(x) = x^3 - 3x^2 + 2\), trouver les extremums et la nature des variations.</p>
+          <button onclick="afficheReponseVar()">Voir la correction</button>
+          <div class="reponse" id="exo-reponse-var" style="display:none;">
+            \(f'(x) = 3x^2 - 6x\). Elle s’annule en \(x = 0\) et \(x = 2\).<br>
+            Croissante sur \((-\infty,0)\), décroissante sur \((0,2)\), croissante sur \((2,+\infty)\) ; maximum local en 0 et minimum local en 2.
+          </div>
+        </section>
+
+        <section class="box-exo">
+          <h2>🔥 Exercice “expert”</h2>
+          <p>Pour \(f(x) = e^x\), décrire les variations sur \(\mathbb{R}\).</p>
+          <button onclick="document.getElementById('exo2-reponse-var').style.display='block';">Voir la correction</button>
+          <div class="reponse" id="exo2-reponse-var" style="display:none;">
+            \(f'(x) = e^x &gt; 0\) pour tout \(x\), donc \(f\) est strictement croissante sur \(\mathbb{R}\).
+          </div>
+        </section>
+
+        <section class="quiz">
+          <h2>🎯 Quiz express</h2>
+          <p>La dérivée de \(f(x)=\sin x\) s’annule notamment pour :</p>
+          <button onclick="quizVar(0)">x = 0</button>
+          <button onclick="quizVar(1)">x = π/2</button>
+          <button onclick="quizVar(2)">x = π/4</button>
+          <div class="reponse" id="rep-quiz-var"></div>
+
+          <p>La courbe de \(f(x)=1/x\) possède :</p>
+          <button onclick="quizVar2(0)">une asymptote verticale seulement</button>
+          <button onclick="quizVar2(1)">une asymptote horizontale seulement</button>
+          <button onclick="quizVar2(2)">une verticale et une horizontale</button>
+          <div class="reponse" id="rep-quiz-var2"></div>
+        </section>
+
+        <section class="box-important">
+          <h2>🌐 Applications concrètes</h2>
+          <ul>
+            <li><b>Maths</b> : optimisation, modélisation de phénomènes, étude de limites.</li>
+            <li><b>Physique</b> : vitesses, accélérations, croissance / décroissance.</li>
+            <li><b>Info / IA</b> : courbes d’apprentissage, analyse de performances.</li>
+            <li><b>Technologie</b> : conception de profils, courbes en architecture ou design.</li>
+          </ul>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes à éviter</h2>
+          <ul>
+            <li>Oublier que le signe de \(f'(x)\) indique le sens de variation local.</li>
+            <li>Mal positionner zéros, extrema ou asymptotes sur le graphique.</li>
+            <li>Confondre minimum et maximum, ou global et local.</li>
+            <li>Ne pas utiliser la tangente comme approximation locale de la courbe.</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique express</h2>
+          <b>Variation</b> : sens d’évolution d’une fonction (monte, descend, reste constante).<br>
+          <b>Extremum</b> : maximum ou minimum d’une fonction sur un intervalle donné.<br>
+          <b>Tangente</b> : droite qui approche au mieux la courbe en un point, de pente \(f'(x_0)\).<br>
+          <b>Asymptote</b> : droite que la courbe approche sans la couper à l’infini (ou sur une borne).
+        </section>
+
+        <section class="rubrique">
+          <h3>📖 Petite histoire</h3>
+          <ul>
+            <li>L’étude des variations via la dérivée naît avec Newton et Leibniz au XVIIᵉ siècle.</li>
+            <li>La représentation graphique reste un outil central pour donner une intuition visuelle des fonctions en sciences et en ingénierie.</li>
+          </ul>
+          <div class="source">Source : histoire du calcul différentiel et de l’analyse, ressources de cours et encyclopédies.</div>
+        </section>
+
+        <section class="anecdote">
+          <b>Astuce-mémoire :</b> « La courbe monte ⇒ dérivée positive, elle se calme ⇒ dérivée nulle, elle descend ⇒ dérivée négative. »
+        </section>
+
+        <section>
+          <h2>💡 Méthodologie pour progresser</h2>
+          <ul>
+            <li>Établir systématiquement le tableau de variations après avoir trouvé \(f'(x)\).</li>
+            <li>Tracer la courbe pour vérifier visuellement les conclusions du tableau.</li>
+            <li>Identifier et marquer zéros, extrema, asymptotes et points remarquables.</li>
+            <li>Utiliser le module interactif pour voir l’effet du point d’étude sur la tangente.</li>
+          </ul>
+        </section>
+      </div>
     </div>
-</section>
-<section>
-    <h2>🟦 Schéma interactif — visualisation et tangente</h2>
-    <label>Domaine : [<input type="number" id="xmin" value="-3"> ; <input type="number" id="xmax" value="3">]</label>
-    <select id="select">
-        <option value="x*x">f(x)=x²</option>
-        <option value="x*x*x">f(x)=x³</option>
-        <option value="Math.sin(x)">f(x)=sin(x)</option>
-        <option value="Math.exp(x)">f(x)=eˣ</option>
-        <option value="1/x">f(x)=1/x</option>
-    </select>
-    <input type="number" id="pt" value="0" step="0.1" min="-3" max="3"> (point d’étude de la tangente)
-    <canvas id="schema" width="410" height="260"></canvas>
-    <div id="desc-var"></div>
-</section>
-<section class="box box-exo">
-    <h2>💡 Exercice interactif</h2>
-    <p>Pour f(x) = x³ - 3x² + 2, trouve les extremums et la nature des variations.</p>
-    <button onclick="afficheReponseVar()">Voir la correction</button>
-    <div class="reponse" id="exo-reponse-var" style="display:none;">
-        f'(x) = 3x² - 6x ;  
-        Signe de f'(x) : <br>
-        - S’annule en x=0 et x=2  
-        - Croissante sur ]-∞,0[, décroissante sur ]0,2[, croissante sur ]2,+∞[  
-        - Extrema : max local en x=0, min local en x=2
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
     </div>
-</section>
-<section class="box-exo">
-    <h2>🔥 Exercice “expert”</h2>
-    <p>Pour f(x) = eˣ, quelle est la nature de ses variations ?</p>
-    <button onclick="document.getElementById('exo2-reponse-var').style.display='block';">Voir la correction</button>
-    <div class="reponse" id="exo2-reponse-var" style="display:none;">
-        f'(x) = eˣ > 0 pour tout x, donc f(x) est strictement croissante partout !
-    </div>
-</section>
-<section class="quiz">
-    <h2>🎯 Quiz express</h2>
-    <p>La dérivée de f(x)=sin x s’annule en…</p>
-    <button onclick="quizVar(0)">x=0</button>
-    <button onclick="quizVar(1)">x=π/2</button>
-    <button onclick="quizVar(2)">x=π</button>
-    <div class="reponse" id="rep-quiz-var"></div>
-    <p>La courbe de f(x)=1/x possède une asymptote…</p>
-    <button onclick="quizVar2(0)">verticale</button>
-    <button onclick="quizVar2(1)">horizontale</button>
-    <button onclick="quizVar2(2)">les deux</button>
-    <div class="reponse" id="rep-quiz-var2"></div>
-</section>
-<section class="box-important">
-    <h2>🌐 Applications concrètes</h2>
-    <ul>
-        <li><b>Maths</b> : optimisation, modélisation, prédiction de comportements</li>
-        <li><b>Physique</b> : mécanique, croissance/décroissance, fréquence, énergie…</li>
-        <li><b>Info/IA</b> : graphiques, simulation, courbes d’apprentissage</li>
-        <li><b>Technologie</b> : design d’objets, économie, architecture</li>
-    </ul>
-</section>
-<section class="error">
-    <h2>❌ Erreurs fréquentes à éviter</h2>
-    <ul>
-        <li>Oublier que le signe de la dérivée donne la variation locale</li>
-        <li>Mal placer les points d’annulation, extrema ou asymptotes</li>
-        <li>Confondre minimum et maximum</li>
-        <li>Oublier que les tangentes visualisent localement la fonction</li>
-    </ul>
-</section>
-<section class="lexique">
-    <h2>📚 Lexique express</h2>
-    <b>Variation</b> : sens dans lequel une fonction évolue<br>
-    <b>Extremum</b> : valeur max ou min local/global<br>
-    <b>Tangente</b> : droite qui “colle” à la courbe, coefficient directeur = dérivée<br>
-    <b>Asymptote</b> : droite que la courbe va “rejoindre” à l’infini
-</section>
-<section class="rubrique">
-    <h3>📖 Petite histoire</h3>
-    <ul>
-        <li>L’étude des variations est fondatrice pour les sciences, du calcul différentiel (Newton/Leibniz) à l’optimisation industrielle</li>
-        <li>La représentation graphique permet à tous les chercheurs d’avoir “une intuition visuelle” des comportements des fonctions</li>
-    </ul>
-    <div class="source">Source : histoire des maths, Wikipedia</div>
-</section>
-<section class="anecdote">
-    <b>Astuce-mémoire</b> : “La courbe monte = la dérivée est positive, elle stagne = dérivée nulle, elle descend = négative”
-</section>
-<section>
-    <h2>💡 Méthodologie pour progresser</h2>
-    <ul>
-        <li>Etablis toujours le tableau de variations après la dérivée</li>
-        <li>Trace la courbe pour valider visuellement et mieux retenir</li>
-        <li>Analyse les points clefs (zéros, extrema, asymptotes)</li>
-        <li>Utilise le module interactif pour afficher la tangente et les points critiques</li>
-    </ul>
-</section>
-</main>
-<script>
-function quizVar(rep) {
-    let repElem = document.getElementById("rep-quiz-var");
-    repElem.textContent = (rep === 0) ? "Bravo ! (sin x)' = cos x, s’annule en x=0, x=π/2, etc." : "Faux, vérifie les annulations.";
-}
-function quizVar2(rep) {
-    let repElem = document.getElementById("rep-quiz-var2");
-    repElem.textContent = (rep === 2) ? "Bonne réponse ! 1/x possède à la fois une asymptote verticale en x=0 et horizontale en y=0." : "Faux, vérifie les comportements aux bornes.";
-}
-function afficheReponseVar() {
-    document.getElementById("exo-reponse-var").style.display = "block";
-}
-// Schéma interactif
-function evalFunc(expr, x) {
-    if(expr === "x*x") return x*x;
-    if(expr === "x*x*x") return x*x*x;
-    if(expr === "Math.sin(x)") return Math.sin(x);
-    if(expr === "Math.exp(x)") return Math.exp(x);
-    if(expr === "1/x") return (x!==0)?1/x:0;
-    return 0;
-}
-function derivFunc(expr, x, h=1e-5) {
-    return (evalFunc(expr, x+h)-evalFunc(expr, x-h))/(2*h);
-}
-function drawVar() {
-    let xmin = parseFloat(document.getElementById("xmin").value);
-    let xmax = parseFloat(document.getElementById("xmax").value);
-    let expr = document.getElementById("select").value;
-    let pt = parseFloat(document.getElementById("pt").value);
-    let canvas = document.getElementById("schema");
-    let ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, 410, 260);
-    // Axes
-    ctx.strokeStyle="#aaa"; ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(20,130); ctx.lineTo(400,130); ctx.moveTo(210,20); ctx.lineTo(210,240); ctx.stroke();
-    // Courbe
-    ctx.beginPath();
-    for(let xPx=0;xPx<=410;xPx++){
-        let x=xmin+(xmax-xmin)*xPx/410;
-        let y=evalFunc(expr, x);
-        let yPx=130-y*32;
+  </div>
+
+  <script>
+    // Masquer le loader et afficher le contenu après 3 s[web:38][web:2][web:12][web:29]
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
+
+    function quizVar(rep) {
+      let repElem = document.getElementById("rep-quiz-var");
+      repElem.textContent = (rep === 0)
+        ? "Bravo ! (sin x)' = cos x, donc la dérivée s’annule en x = π/2 + kπ, y compris x = 0 modulo π."
+        : "Faux : pense à cos x, la dérivée de sin x, et à ses zéros.";
+    }
+    function quizVar2(rep) {
+      let repElem = document.getElementById("rep-quiz-var2");
+      repElem.textContent = (rep === 2)
+        ? "Bonne réponse : 1/x a une asymptote verticale en x = 0 et horizontale en y = 0."
+        : "Faux : regarde le comportement près de 0 et pour |x| très grand.";
+    }
+    function afficheReponseVar() {
+      document.getElementById("exo-reponse-var").style.display = "block";
+    }
+
+    // Fonctions test
+    function evalFunc(expr, x) {
+      if(expr === "x*x") return x*x;
+      if(expr === "x*x*x") return x*x*x;
+      if(expr === "Math.sin(x)") return Math.sin(x);
+      if(expr === "Math.exp(x)") return Math.exp(x);
+      if(expr === "1/x") return (x!==0)?1/x:0;
+      return 0;
+    }
+    function derivFunc(expr, x, h=1e-4) {
+      return (evalFunc(expr, x+h)-evalFunc(expr, x-h))/(2*h);
+    }
+
+    function drawVar() {
+      let xmin = parseFloat(document.getElementById("xmin").value);
+      let xmax = parseFloat(document.getElementById("xmax").value);
+      let expr = document.getElementById("select").value;
+      let pt = parseFloat(document.getElementById("pt").value);
+
+      let canvas = document.getElementById("schema");
+      let ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, 410, 260);
+
+      // Axes
+      ctx.strokeStyle="#9ca3af"; ctx.lineWidth=1;
+      ctx.beginPath();
+      ctx.moveTo(20,130); ctx.lineTo(400,130);
+      ctx.moveTo(210,20); ctx.lineTo(210,240);
+      ctx.stroke();
+
+      // Courbe
+      ctx.beginPath();
+      for(let xPx=0;xPx<=410;xPx++){
+        let x = xmin + (xmax-xmin)*xPx/410;
+        let y = evalFunc(expr, x);
+        let yPx = 130 - y*32;
         if(xPx===0) ctx.moveTo(xPx,yPx); else ctx.lineTo(xPx,yPx);
-    }
-    ctx.strokeStyle="#1877f2"; ctx.lineWidth=3; ctx.stroke();
-    // Tangente
-    let At=210+410*(pt-xmin)/(xmax-xmin);
-    let yt=evalFunc(expr, pt);
-    let fpt=derivFunc(expr, pt);
-    let Ayt=130-yt*32;
-    ctx.beginPath(); ctx.arc(At,Ayt,5,0,2*Math.PI); ctx.fillStyle="#fa9100"; ctx.fill();
-    ctx.font="12px Arial"; ctx.fillStyle="#fa9100"; ctx.fillText("("+pt.toFixed(1)+" ; "+yt.toFixed(1)+")",At+7,Ayt-8);
-    // Tangente
-    ctx.beginPath();
-    for(let dx=-120;dx<=120;dx++){
-        let xx=pt+dx*0.02;
-        let yy=yt+fpt*(xx-pt);
-        let xPx=210+410*(xx-xmin)/(xmax-xmin);
-        let yPx=130-yy*32;
+      }
+      ctx.strokeStyle="#3b82f6"; ctx.lineWidth=3; ctx.stroke();
+
+      // Tangente au point pt
+      let yt = evalFunc(expr, pt);
+      let fpt = derivFunc(expr, pt);
+      let At = 210 + 410*(pt-xmin)/(xmax-xmin);
+      let Ayt = 130 - yt*32;
+
+      ctx.beginPath();
+      ctx.arc(At,Ayt,5,0,2*Math.PI);
+      ctx.fillStyle="#f97316"; ctx.fill();
+      ctx.font="12px Arial"; ctx.fillStyle="#fbbf24";
+      ctx.fillText("("+pt.toFixed(1)+" ; "+yt.toFixed(1)+")",At+7,Ayt-8);
+
+      ctx.beginPath();
+      for(let dx=-120;dx<=120;dx++){
+        let xx = pt + dx*0.02;
+        let yy = yt + fpt*(xx-pt);
+        let xPx = 210 + 410*(xx-xmin)/(xmax-xmin);
+        let yPx = 130 - yy*32;
         if(dx===-120) ctx.moveTo(xPx,yPx); else ctx.lineTo(xPx,yPx);
+      }
+      ctx.strokeStyle="#a855f7"; ctx.setLineDash([5,4]); ctx.lineWidth=2; ctx.stroke();
+      ctx.setLineDash([]);
+
+      document.getElementById("desc-var").innerHTML =
+        "Fonction sélectionnée, point x = "+pt.toFixed(2)+
+        " ; pente de la tangente f'(x) ≈ "+fpt.toFixed(2)+".";
     }
-    ctx.strokeStyle="#a133ff"; ctx.setLineDash([5,4]); ctx.lineWidth=2; ctx.stroke(); ctx.setLineDash([]);
-    document.getElementById("desc-var").innerHTML =
-        "Tangente au point x = "+pt.toFixed(2)+", f'(x) ≈ "+fpt.toFixed(2);
-}
-drawVar();
-document.getElementById("xmin").addEventListener("input", drawVar);
-document.getElementById("xmax").addEventListener("input", drawVar);
-document.getElementById("select").addEventListener("input", drawVar);
-document.getElementById("pt").addEventListener("input", drawVar);
-</script>
+
+    drawVar();
+    document.getElementById("xmin").addEventListener("input", drawVar);
+    document.getElementById("xmax").addEventListener("input", drawVar);
+    document.getElementById("select").addEventListener("input", drawVar);
+    document.getElementById("pt").addEventListener("input", drawVar);
+  </script>
 </body>
 </html>

@@ -1,195 +1,640 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Masterclass — Indépendance (probabilités)</title>
-    <meta name="description" content="Tout sur l’indépendance en probabilités : définitions, propriété, schéma interactif, quiz, exercices, erreurs, applications, lexique et histoire.">
-    <style>
-        body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
-        header { background: linear-gradient(90deg,#eef4fb,#dadafa 80%); color: #243552; padding: 28px 0 12px; text-align: center;}
-        header h1 { font-size: 2.2rem; margin: 0 0 12px; color: #1877f2;}
-        .intro { font-size: 1.01rem;}
-        main { max-width: 730px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(24,119,242,0.12);}
-        h2 { color: #1877f2; margin-top: 32px;}
-        h3 { color: #f5a623; margin-top: 22px;}
-        ul, ol { margin-left: 1.4em;}
-        .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
-        .infos {background: #e7f3fa; border-left: 6px solid #1877f2;}
-        .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
-        .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
-        .error {background: #ffeaea; border-left: 7px solid #e06359;}
-        .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
-        .anecdote {background: #efe8ff; border-left: 7px solid #a133ff; margin: 1em 0; padding: 12px 18px; border-radius: 6px;}
-        .source { font-size: 0.9em; color: #999; text-align: right;}
-        button {background: #1877f2; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; margin-right: 7px; margin-top: 7px; transition: background 0.2s;}
-        button:hover { background: #145ac3;}
-        #schema { margin: 1em auto; display: block; background: #e7f3f7; border-radius: 8px; border: 1px solid #d1d5db;}
-        .reponse { margin-top: 0.7em; color: #1877f2; font-weight: bold; text-align: center;}
-        label { margin-right: 14px;}
-        @media (max-width: 768px) { main { padding: 12px 2px; } }
-    </style>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <meta charset="UTF-8">
+  <title>Global - Probas · Indépendance</title>
+  <meta name="description" content="Tout sur l’indépendance en probabilités : définitions, propriété, schéma interactif, quiz, exercices, erreurs, applications, lexique et histoire.">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-main:#1877f2;
+      --violet-main:#6366f1;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(129,140,248,0.2), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#111827 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(520px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(129,140,248,0.3),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(129,140,248,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(129,140,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#c7d2fe;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#c7d2fe,transparent);
+      box-shadow:0 0 12px rgba(129,140,248,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#a5b4fc;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(129,140,248,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#c4b5fd,#6366f1,#22c55e);
+      box-shadow:0 0 18px rgba(129,140,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#e0e7ff;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(129,140,248,0.2) 45%,
+          rgba(129,140,248,0.45) 50%,
+          rgba(129,140,248,0.2) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#a5b4fc;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(24,119,242,0.9),rgba(129,140,248,0.9));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#fff;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:230px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#c7d2fe;
+      box-shadow:0 0 12px rgba(199,210,254,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:900px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+                 linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:22px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:26px 26px 30px;
+      color:#e5f1ff;
+    }
+
+    h1,h2{
+      color:#c7d2fe;
+      margin-bottom:10px;
+    }
+    h3{
+      color:#facc6b;
+      margin-top:18px;
+      margin-bottom:10px;
+    }
+    h2{margin-top:26px;font-size:1.4rem;}
+    p,li{font-size:0.98rem;line-height:1.6;}
+    ul,ol{margin-left:1.3em;margin-top:0.3em;margin-bottom:0.8em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      padding:12px 18px;
+      border-radius:10px;
+      margin:1em 0;
+      font-size:0.96rem;
+    }
+    .infos{
+      background:rgba(226,232,240,0.95);
+      color:#111827;
+      border-left:4px solid #4f46e5;
+    }
+    .box-exo{
+      background:rgba(22,163,74,0.14);
+      border-left:4px solid #22c55e;
+    }
+    .box-important{
+      background:rgba(245,158,11,0.14);
+      border-left:4px solid #facc15;
+    }
+    .error{
+      background:rgba(248,113,113,0.14);
+      border-left:4px solid #f87171;
+    }
+    .lexique{
+      background:rgba(59,130,246,0.12);
+      border-left:4px solid #7dd3fc;
+    }
+    .anecdote{
+      background:rgba(237,233,254,0.8);
+      border-left:4px solid #a855f7;
+    }
+
+    #schema{
+      margin:1em auto;
+      display:block;
+      background:#0b1725;
+      border-radius:8px;
+      border:1px solid #1f2937;
+    }
+    .reponse{
+      margin-top:0.7em;
+      color:#c7d2fe;
+      font-weight:bold;
+      text-align:center;
+      font-size:0.95rem;
+    }
+    label{
+      margin-right:14px;
+      font-size:0.9rem;
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+  </style>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async
+          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-<header>
-    <h1>Masterclass — Indépendance (probabilités)</h1>
-    <div class="intro">
-        Comprends la notion fondamentale d’indépendance entre événements, ses propriétés, comment la tester, calculer et l’utiliser en proba, stats et sciences !
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//proba-INDEP</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Probas · Indépendance · P(A∩B)=P(A)P(B), événements liés ou non
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du module Indépendance en probabilités...</div>
+        <div class="terminal-line">[DEF] Mise en place de P(A∩B)=P(A)P(B) et P(A|B)=P(A) si A,B indépendants.</div>
+        <div class="terminal-line">[GRAPH] Schéma de test : P(A), P(B), P(A∩B) vs produit P(A)P(B).</div>
+        <div class="terminal-line">[OK]  Prêt : compare produit et intersection pour conclure sur l’indépendance.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
     </div>
-</header>
-<main>
-<section>
-    <h2>📝 Définitions et base conceptuelle</h2>
-    <div class="infos">
-        Deux événements A et B sont <b>indépendants</b> si la réalisation de l’un n’a aucune influence sur la réalisation de l’autre.<br>
-        En probabilités :  
-        <b>\( P(A \cap B) = P(A) \times P(B) \)</b>
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Probas
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
     </div>
-    <ul>
-        <li>Cas typiques : lancer deux dés, tirages avec remise, épreuves répétées…</li>
-        <li>Si A et B sont indépendants :  
-            \( P(A|B) = P(A) \) et \( P(B|A) = P(B) \)</li>
-        <li>Indépendance ≠ incompatibilité (incompatible : événements ne peuvent pas arriver ensemble)</li>
-    </ul>
-</section>
-<section>
-    <h2>📗 Propriétés et méthodes de vérification</h2>
-    <ul>
-        <li>Tester : 
-            - \( P(A \cap B) = P(A)P(B) \) ?
-            - Si non, événements sont dépendants ou liés</li>
-        <li>Indépendance généralisée : pour n événements, il faut que chaque sous-ensemble soit indépendant</li>
-        <li>Si la proba change en connaissant la réalisation de l’autre : dépendance !</li>
-    </ul>
-    <div class="box-important">
-        Astuce : Pour vérifier l’indépendance : multiplie les probabilités “simples”, compare au résultat “double”. Si égalité, c’est bon !
+
+    <div class="page-padding">
+      <div class="content-card">
+        <h1>Masterclass — Indépendance (probabilités)</h1>
+        <p style="margin-bottom:1.2em;font-size:0.98rem;color:#e0e7ff;">
+          Comprends la notion fondamentale d’indépendance entre événements, ses propriétés,
+          comment la tester, calculer et l’utiliser en proba, stats et sciences.
+        </p>
+
+        <section>
+          <h2>📝 Définitions et base conceptuelle</h2>
+          <div class="infos">
+            Deux événements \(A\) et \(B\) sont <b>indépendants</b> si le fait que l’un se réalise
+            ne modifie pas la probabilité de l’autre.[web:128][web:135]
+            <br>
+            En probabilités, cela s’écrit :
+            <b>\(P(A\cap B)=P(A)\times P(B)\)</b> (avec \(P(A)>0\), \(P(B)>0\)).[web:128][web:135]
+          </div>
+          <ul>
+            <li>Cas typiques : lancer de deux dés, tirages avec remise, répétitions d’une même épreuve.[web:131]</li>
+            <li>Si \(A\) et \(B\) sont indépendants, alors \(P(A|B)=P(A)\) et \(P(B|A)=P(B)\).[web:128][web:135]</li>
+            <li>Indépendance ≠ incompatibilité : incompatibles signifie \(P(A\cap B)=0\), ce qui exclut l’indépendance si \(P(A)\) et \(P(B)\) sont non nulles.[web:132][web:133]</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>📗 Propriétés et méthodes de vérification</h2>
+          <ul>
+            <li>Test pratique : calcule \(P(A\cap B)\) et compare à \(P(A)P(B)\); si égalité, A et B sont indépendants.[web:128][web:132]</li>
+            <li>Indépendance généralisée : pour plusieurs événements, il faut que tout sous-ensemble (paires, triplets, etc.) respecte la propriété.[web:135]</li>
+            <li>Si la probabilité d’un événement change en sachant que l’autre s’est produit, les événements sont dépendants.[web:128]</li>
+          </ul>
+          <div class="box-important">
+            Astuce : pense “produit vs intersection” : produit des probas simples d’un côté, proba du cas “A et B à la fois” de l’autre; si ça colle, c’est indépendant.[web:128][web:132]
+          </div>
+        </section>
+
+        <section>
+          <h2>🟦 Schéma interactif (simulation de 2 événements)</h2>
+          <label>P(A): <input type="number" id="pa" step="0.01" value="0.4"></label>
+          <label>P(B): <input type="number" id="pb" step="0.01" value="0.7"></label>
+          <label>P(A∩B): <input type="number" id="pab" step="0.01" value="0.28"></label>
+          <canvas id="schema" width="410" height="270"></canvas>
+          <div id="desc-indep"></div>
+        </section>
+
+        <section class="box box-exo">
+          <h2>💡 Exercice interactif</h2>
+          <p>Jeu : P(A)=0,4 (gagner au 1ᵉʳ lancer), P(B)=0,7 (gagner au 2ᵉ), P(A ∩ B)=0,28. A et B sont-ils indépendants ?</p>
+          <button onclick="afficheReponseIndep()">Voir la correction</button>
+          <div class="reponse" id="exo-reponse-indep" style="display:none;">
+            Vérification : \(0{,}4 \times 0{,}7 = 0{,}28\), donc OUI, A et B sont indépendants.
+          </div>
+        </section>
+
+        <section class="box-exo">
+          <h2>🔥 Exercice “expert”</h2>
+          <p>Avec P(A)=0,5, P(B)=0,6 et P(A∩B)=0,35, les événements sont-ils indépendants ?</p>
+          <button onclick="document.getElementById('exo2-reponse-indep').style.display='block';">Voir la correction</button>
+          <div class="reponse" id="exo2-reponse-indep" style="display:none;">
+            \(0{,}5\times0{,}6=0{,}3 \neq 0{,}35\), donc A et B sont dépendants.
+          </div>
+        </section>
+
+        <section class="quiz">
+          <h2>🎯 Quiz express</h2>
+          <p>Deux événements incompatibles sont toujours indépendants ?</p>
+          <button onclick="quizIndep(0)">Oui</button>
+          <button onclick="quizIndep(1)">Non</button>
+          <div class="reponse" id="rep-quiz-indep"></div>
+
+          <p>Si \(P(A|B)=P(A)\), alors :</p>
+          <button onclick="quizIndep2(0)">A et B sont indépendants</button>
+          <button onclick="quizIndep2(1)">Ils sont incompatibles</button>
+          <div class="reponse" id="rep-quiz-indep2"></div>
+        </section>
+
+        <section class="box-important">
+          <h2>🌐 Applications concrètes</h2>
+          <ul>
+            <li><b>Maths/Statistiques</b> : lois de Bernoulli et binomiale, schémas d’épreuves indépendantes.[web:131][web:135]</li>
+            <li><b>Info/IA</b> : classifieur naïf Bayes, modèles probabilistes supposant des variables indépendantes.[web:135]</li>
+            <li><b>Sciences</b> : expériences répétées, systèmes supposés indépendants, tests statistiques.[web:131][web:135]</li>
+          </ul>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes à éviter</h2>
+          <ul>
+            <li>Confondre indépendants et incompatibles : incompatibles avec proba non nulles ne peuvent pas être indépendants.[web:132][web:133]</li>
+            <li>Se contenter de \(P(A|B)\) sans vérifier \(P(A\cap B)\) et \(P(A)P(B)\).[web:128]</li>
+            <li>Interpréter “dépendant” comme “causal” alors qu’il s’agit juste d’un lien probabiliste.[web:128]</li>
+            <li>Oublier que, sur des données réelles, l’indépendance se teste par des outils statistiques (tests d’indépendance).[web:135]</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique express</h2>
+          <b>Événements indépendants :</b> \(P(A\cap B)=P(A)P(B)\) et \(P(A|B)=P(A)\).[web:128][web:135]<br>
+          <b>Événements dépendants :</b> la connaissance de l’un modifie la proba de l’autre.[web:128]<br>
+          <b>Incompatibles :</b> \(A\cap B=\varnothing\), donc \(P(A\cap B)=0\).[web:133]<br>
+          <b>Produit des probabilités :</b> critère de test de l’indépendance pour deux événements.[web:128][web:132]
+        </section>
+
+        <section class="rubrique">
+          <h3>📖 Petite histoire</h3>
+          <ul>
+            <li>La notion d’indépendance apparaît dès les premiers travaux sur les jeux de hasard (Pascal, Bernoulli, etc.).[web:135]</li>
+            <li>Elle est devenue centrale en théorie des probabilités et en statistique moderne.[web:135]</li>
+          </ul>
+          <div class="source">Source : articles de cours sur l’indépendance et ressources historiques.[web:128][web:135]</div>
+        </section>
+
+        <section class="anecdote">
+          <b>Astuce-mémoire</b> : “indépendant” = chaque événement vit sa vie de son côté, sans changer la proba de l’autre.
+        </section>
+
+        <section>
+          <h2>💡 Méthodologie pour progresser</h2>
+          <ul>
+            <li>Commence toujours par calculer \(P(A)\), \(P(B)\), \(P(A\cap B)\) puis \(P(A)P(B)\).</li>
+            <li>Compare intersection et produit pour décider s’il y a indépendance ou dépendance.</li>
+            <li>Travaille sur des exemples concrets (dés, cartes, tirages successifs) pour automatiser le réflexe.</li>
+            <li>Utilise le schéma interactif pour voir rapidement comment changer les proba fait passer de l’indépendance à la dépendance.</li>
+          </ul>
+        </section>
+      </div>
     </div>
-</section>
-<section>
-    <h2>🟦 Schéma interactif (simulation de 2 événements)</h2>
-    <label>P(A): <input type="number" id="pa" step="0.01" value="0.4"></label>
-    <label>P(B): <input type="number" id="pb" step="0.01" value="0.7"></label>
-    <label>P(A∩B): <input type="number" id="pab" step="0.01" value="0.28"></label>
-    <canvas id="schema" width="380" height="120"></canvas>
-    <div id="desc-indep"></div>
-</section>
-<section class="box box-exo">
-    <h2>💡 Exercice interactif</h2>
-    <p>Dans un jeu, P(A)=0,4 (gagner au 1er lancer), P(B)=0,7 (gagner au 2e lancer), P(A ∩ B) = 0,28.  
-        A et B sont-ils indépendants ?</p>
-    <button onclick="afficheReponseIndep()">Voir la correction</button>
-    <div class="reponse" id="exo-reponse-indep" style="display:none;">
-        Vérification : 0,4 × 0,7 = 0,28 — donc OUI, A et B sont indépendants !
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
     </div>
-</section>
-<section class="box-exo">
-    <h2>🔥 Exercice “expert”</h2>
-    <p>Tente avec P(A)=0,5, P(B)=0,6, P(A∩B)=0,35. Sont-ils indépendants ?</p>
-    <button onclick="document.getElementById('exo2-reponse-indep').style.display='block';">Voir la correction</button>
-    <div class="reponse" id="exo2-reponse-indep" style="display:none;">
-        0,5×0,6=0,3 ≠ 0,35 — donc événements DÉPENDANTS.
-    </div>
-</section>
-<section class="quiz">
-    <h2>🎯 Quiz express</h2>
-    <p>Deux événements incompatibles sont toujours indépendants ?</p>
-    <button onclick="quizIndep(0)">Oui</button>
-    <button onclick="quizIndep(1)">Non</button>
-    <div class="reponse" id="rep-quiz-indep"></div>
-    <p>Si \( P(A|B) = P(A) \), alors ?</p>
-    <button onclick="quizIndep2(0)">A et B sont indépendants</button>
-    <button onclick="quizIndep2(1)">Ils sont incompatibles</button>
-    <div class="reponse" id="rep-quiz-indep2"></div>
-</section>
-<section class="box-important">
-    <h2>🌐 Applications concrètes</h2>
-    <ul>
-        <li><b>Maths/Statistiques</b> : lois de Bernoulli, binomiale, analyse de protocoles</li>
-        <li><b>Info/IA</b> : machine learning “naïf Bayes”, modèles probabilistes</li>
-        <li><b>Physique/Chimie</b> : systèmes indépendants, analyse d’expériences, tests</li>
-    </ul>
-</section>
-<section class="error">
-    <h2>❌ Erreurs fréquentes à éviter</h2>
-    <ul>
-        <li>Confondre independent/incompatible</li>
-        <li>Oublier de calculer P(A ∩ B), pas seulement P(A|B)</li>
-        <li>Pense à tester tous les cas (dépendance ≠ causalité !)</li>
-        <li>Oublier qu’indépendance peut être testée statistiquement (échantillon)</li>
-    </ul>
-</section>
-<section class="lexique">
-    <h2>📚 Lexique express</h2>
-    <b>Indépendants</b> : probas ne s'influencent pas<br>
-    <b>Dépendants</b> : réalisation d’un change la proba de l’autre<br>
-    <b>Incompatibles</b> : ne peuvent PAS arriver en même temps<br>
-    <b>Produit</b> : test d’indépendance = multiplication des proba simples
-</section>
-<section class="rubrique">
-    <h3>📖 Petite histoire</h3>
-    <ul>
-        <li>L’indépendance est la clé de la théorie des probabilités, du calcul des lois simples à la statistique avancée</li>
-        <li>Elle permet l’émergence des grands modèles aléatoires modernes</li>
-    </ul>
-    <div class="source">Source : histoire de la proba, Wikipedia, mathcurve.com</div>
-</section>
-<section class="anecdote">
-    <b>Astuce-mémoire</b> : “Indépendant = les événements vivent leur vie sans se parler !”   
-</section>
-<section>
-    <h2>💡 Méthodologie pour progresser</h2>
-    <ul>
-        <li>Toujours comparer P(A∩B) à P(A)×P(B)</li>
-        <li>Exerce-toi avec des exemples concrets de la vie courante</li>
-        <li>Fais la différence entre incompatibilité (jamais ensemble) et indépendance (pas d'influence)</li>
-        <li>Utilise le schéma pour visualiser les liens ou non-liens</li>
-    </ul>
-</section>
-</main>
-<script>
-function quizIndep(rep) {
-    let repElem = document.getElementById("rep-quiz-indep");
-    repElem.textContent = (rep === 1) ? "Bonne réponse ! Incompatible : ne peuvent arriver ensemble (P(A∩B)=0), mais pas forcément indépendante !" : "Faux, ils sont juste exclusifs, pas forcément indépendants.";
-}
-function quizIndep2(rep) {
-    let repElem = document.getElementById("rep-quiz-indep2");
-    repElem.textContent = (rep === 0) ? "Oui ! C'est la définition clé." : "Non, relis la propriété d'indépendance...";
-}
-function afficheReponseIndep() {
-    document.getElementById("exo-reponse-indep").style.display = "block";
-}
-// Schéma de simulation
-function drawIndep() {
-    let pa = parseFloat(document.getElementById("pa").value);
-    let pb = parseFloat(document.getElementById("pb").value);
-    let pab = parseFloat(document.getElementById("pab").value);
-    let canvas = document.getElementById("schema");
-    let ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, 380, 120);
-    // Représentation proba simples
-    ctx.font="15px Arial";
-    ctx.fillStyle="#1877f2";
-    ctx.fillText("P(A) = "+pa,30,34); ctx.fillText("P(B) = "+pb,150,34);
-    ctx.fillStyle="#a133ff"; ctx.fillText("P(A∩B) = "+pab,85,74);
-    // Test d’indépendance
-    let pprod = pa*pb;
-    ctx.fillStyle="#243552"; ctx.fillText("Test : P(A)×P(B) = "+pprod.toFixed(3),40,104);
-    if(Math.abs(pprod-pab)<0.001) {
-      ctx.fillStyle="#127e3c";
-      ctx.fillText("⇒ Indépendant ! ✅",220,104);
+  </div>
+
+  <script>
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
+
+    function quizIndep(rep) {
+      let repElem = document.getElementById("rep-quiz-indep");
+      repElem.textContent = (rep === 1)
+        ? "Bonne réponse ! Incompatibles veulent juste dire P(A∩B)=0, pas indépendants."
+        : "Faux : deux événements à proba non nulle et incompatibles ne peuvent pas être indépendants.";
     }
-    else {
-      ctx.fillStyle="#e06359";
-      ctx.fillText("⇒ Dépendant ❌",220,104);
+    function quizIndep2(rep) {
+      let repElem = document.getElementById("rep-quiz-indep2");
+      repElem.textContent = (rep === 0)
+        ? "Oui ! C’est une caractérisation de l’indépendance."
+        : "Non, P(A|B)=P(A) signifie justement qu’il n’y a pas d’influence, donc indépendance.";
     }
-    document.getElementById("desc-indep").innerHTML =
-      "Compare P(A∩B) à P(A)×P(B) pour tester l’indépendance.";
-}
-drawIndep();
-document.getElementById("pa").addEventListener("input", drawIndep);
-document.getElementById("pb").addEventListener("input", drawIndep);
-document.getElementById("pab").addEventListener("input", drawIndep);
-</script>
+    function afficheReponseIndep() {
+      document.getElementById("exo-reponse-indep").style.display = "block";
+    }
+
+    function drawIndep() {
+      let pa = parseFloat(document.getElementById("pa").value);
+      let pb = parseFloat(document.getElementById("pb").value);
+      let pab = parseFloat(document.getElementById("pab").value);
+      let canvas = document.getElementById("schema");
+      let ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, 410, 270);
+
+      let prod = pa*pb;
+
+      ctx.font="14px Arial";
+      ctx.fillStyle="#e5e7eb";
+      ctx.fillText("P(A) = "+pa.toFixed(2),30,40);
+      ctx.fillText("P(B) = "+pb.toFixed(2),30,65);
+      ctx.fillStyle="#a855f7";
+      ctx.fillText("P(A∩B) = "+pab.toFixed(2),30,95);
+      ctx.fillStyle="#22c55e";
+      ctx.fillText("P(A)×P(B) = "+prod.toFixed(2),30,125);
+
+      // Barre visuelle
+      let baseY = 170;
+      let maxW = 320;
+
+      function bar(y, val, color){
+        ctx.fillStyle=color;
+        ctx.fillRect(30,y,maxW*val,14);
+        ctx.strokeStyle="#0f172a";
+        ctx.strokeRect(30,y,maxW,14);
+      }
+      bar(baseY,pa,"#3b82f6");
+      bar(baseY+24,pb,"#6366f1");
+      bar(baseY+48,pab,"#a855f7");
+      bar(baseY+72,prod,"#22c55e");
+
+      let msg = Math.abs(prod-pab)<1e-3
+        ? "Résultat : P(A∩B) ≈ P(A)×P(B) ⇒ événements INDÉPENDANTS."
+        : "Résultat : P(A∩B) ≠ P(A)×P(B) ⇒ événements DÉPENDANTS.";
+      document.getElementById("desc-indep").innerHTML = msg;
+    }
+    drawIndep();
+    ["pa","pb","pab"].forEach(id=>{
+      document.getElementById(id).addEventListener("input",drawIndep);
+    });
+  </script>
 </body>
 </html>

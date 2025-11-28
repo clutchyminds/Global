@@ -2,294 +2,748 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Masterclass NSI : Traitement des données en tables (interactif)</title>
+  <title>Global - NSI · Données en tables</title>
   <meta name="description" content="Cours complet NSI pour traiter les données en tables : structure tableau, analyse, tris, quiz, erreurs, astuces et lexique.">
   <style>
-    body { background: #f6f8fa; font-family: 'Segoe UI', Arial, sans-serif; color: #222; margin: 0;}
-    header { background: linear-gradient(90deg,#eef4fb,#e7fff7 80%); color: #243552; padding: 30px 0 12px; text-align: center;}
-    header h1 { font-size: 2.3rem; margin: 0 0 10px; color: #167c2b;}
-    header .intro { font-size: 1rem;}
-    main { max-width: 950px; background: #fff; margin: 45px auto 20px; padding: 30px 45px; border-radius: 18px; box-shadow: 0 9px 28px rgba(22,124,43,0.12);}
-    h2 { color: #167c2b; margin-top: 32px;}
-    h3 { color: #f5a623; margin-top: 22px;}
-    ul, ol { margin-left: 1.4em;}
-    .box, .infos { padding: 12px 20px; border-radius: 6px; margin: 1.1em 0; font-size: 0.97rem;}
-    .infos {background: #e7f3fa; border-left: 6px solid #167c2b;}
-    .box-exo {background: #e5ffe7; border-left: 7px solid #167c2b;}
-    .box-important {background: #fff7ec; border-left: 7px solid #f5a623;}
-    .error {background: #ffeaea; border-left: 7px solid #e06359;}
-    .lexique {background: #f7fafd; border-left: 7px solid #243552; padding: 12px; border-radius: 6px; margin: 1.2em 0;}
-    .anecdote {background: #e7fff7; border-left: 7px solid #167c2b; font-style: italic; margin: 1em 0; padding: 12px 17px; border-radius: 6px;}
-    .source { font-size: 0.9em; color: #999; text-align: right;}
-    button, .btn-expl {background: #167c2b; color: #fff; font-weight: bold; border: none; border-radius: 6px; padding: 8px 14px; cursor: pointer; margin-right: 8px; margin-top: 7px; transition: background 0.2s;}
-    button:hover, .btn-expl:hover { background: #0e7c1b;}
-    #schema { margin: 2em auto 1em; display: block; background: #f9fcf6; border-radius: 8px; border: 1px solid #d1d5db;}
-    .info-bulle {display:none;position: absolute; background:#fffefc; border:1px solid #243552; border-radius:5px;padding:10px;font-size:1rem;z-index:10; box-shadow: 0 3px 12px rgba(22,124,43,0.10);}
-    .reponse { margin-top: 0.7em; color: #167c2b; font-weight: bold; text-align: center;}
-    #desc-schema { background: #e7f3fa; border-radius: 6px; color: #167c2b; font-weight: bold; padding: 10px; text-align: center; min-height: 25px; margin-bottom: 10px;}
-    label { margin-right: 12px;}
-    table { border-collapse:collapse; margin: 10px auto;}
-    th, td { border:1px solid #167c2b; padding:7px 15px; text-align:center;}
-    th { background:#eef4fb;}
-    td.type { font-weight:bold; }
-    @media (max-width: 900px) { main { padding: 12px 2px; } }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --green-main:#167c2b;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(34,197,94,0.25), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#111827 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(540px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(34,197,94,0.32),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(34,197,94,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(34,197,94,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#bbf7d0;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#bbf7d0,transparent);
+      box-shadow:0 0 12px rgba(34,197,94,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#a7f3d0;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(34,197,94,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#bbf7d0,#22c55e,#4ade80);
+      box-shadow:0 0 18px rgba(34,197,94,0.9);
+      animation:barProgress 2.1s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#dcfce7;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(34,197,94,0.2) 45%,
+          rgba(34,197,94,0.45) 50%,
+          rgba(34,197,94,0.2) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#bbf7d0;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(22,124,43,0.95),rgba(37,99,235,0.9));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#f9fafb;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:260px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#bbf7d0;
+      box-shadow:0 0 12px rgba(187,247,208,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .content-card{
+      max-width:950px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:18px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:30px 30px 32px;
+      color:#e5f1ff;
+    }
+
+    h1,h2{
+      color:#dcfce7;
+      margin-bottom:10px;
+    }
+    h3{
+      color:#fde68a;
+      margin-top:22px;
+      margin-bottom:10px;
+    }
+    h2{margin-top:32px;font-size:1.5rem;}
+    p,li{font-size:0.98rem;line-height:1.6;}
+    ul,ol{margin-left:1.4em;margin-bottom:1.5em;}
+
+    .infos,
+    .box-exo,
+    .box-important,
+    .error,
+    .lexique,
+    .anecdote{
+      padding:12px 20px;
+      border-radius:6px;
+      margin:1.1em 0;
+      font-size:0.97rem;
+    }
+    .infos{
+      background:#e7f3fa;
+      border-left:6px solid #167c2b;
+      color:#0f172a;
+    }
+    .box-exo{
+      background:#e5ffe7;
+      border-left:7px solid #167c2b;
+      color:#052e16;
+    }
+    .box-important{
+      background:#fff7ec;
+      border-left:7px solid #f5a623;
+      color:#3b2710;
+    }
+    .error{
+      background:#ffeaea;
+      border-left:7px solid #e06359;
+      color:#7f1d1d;
+    }
+    .lexique{
+      background:#f7fafd;
+      border-left:7px solid #243552;
+      padding:12px;
+      color:#0f172a;
+    }
+    .anecdote{
+      background:#e7fff7;
+      border-left:7px solid #167c2b;
+      font-style:italic;
+      padding:12px 17px;
+      color:#064e3b;
+    }
+
+    #schema{
+      margin:2em auto 1em;
+      display:block;
+      background:#f9fcf6;
+      border-radius:8px;
+      border:1px solid #d1d5db;
+    }
+    .info-bulle{
+      display:none;
+      position:absolute;
+      background:#fffefc;
+      border:1px solid #243552;
+      border-radius:5px;
+      padding:10px;
+      font-size:1rem;
+      z-index:10;
+      box-shadow:0 3px 12px rgba(22,124,43,0.18);
+      max-width:260px;
+      color:#111827;
+    }
+    .reponse{
+      margin-top:0.7em;
+      color:#bbf7d0;
+      font-weight:bold;
+      text-align:center;
+      font-size:0.95rem;
+    }
+    #desc-schema{
+      background:#e7f3fa;
+      border-radius:6px;
+      color:#167c2b;
+      font-weight:bold;
+      padding:10px;
+      text-align:center;
+      min-height:25px;
+      margin-bottom:10px;
+    }
+    table{
+      border-collapse:collapse;
+      margin:10px auto;
+      background:#020617;
+      color:#e5e7eb;
+    }
+    th,td{
+      border:1px solid #167c2b;
+      padding:7px 15px;
+      text-align:center;
+    }
+    th{
+      background:#eef4fb;
+      color:#0f172a;
+    }
+    td.type{font-weight:bold;}
+    button,.btn-expl{
+      background:#167c2b;
+      color:#fff;
+      font-weight:bold;
+      border:none;
+      border-radius:6px;
+      padding:8px 14px;
+      cursor:pointer;
+      margin-right:8px;
+      margin-top:7px;
+      transition:background 0.2s,transform 0.15s;
+    }
+    button:hover,.btn-expl:hover{
+      background:#0e7c1b;
+      transform:translateY(-1px);
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
   </style>
 </head>
 <body>
-<header>
-  <h1>Masterclass NSI : Traitement des données en tables</h1>
-  <div class="intro">Analyse, recherche, tri, modification et synthèse de données en tableaux. De l’Excel à la base de données.</div>
-</header>
-<main>
-<section>
-  <h2>📚 Cours complet – Traitement des données en tables</h2>
-  <p>
-    <b>Une table</b> est une collection structurée de données disposées en lignes et colonnes. 
-    On retrouve cette organisation dans les tableurs (Excel), bases de données, grilles de jeux, carnets, bulletins scolaires…
-  </p>
-  <table>
-    <tr><th>Exemple</th><th>Colonnes</th><th>Lignes</th><th>Utilisation</th></tr>
-    <tr>
-      <td>Table de contacts</td>
-      <td>Nom, Prénom, Téléphone</td>
-      <td>Chaque personne</td>
-      <td>Recherche rapide, rangement ordonné</td>
-    </tr>
-    <tr>
-      <td>Table de notes</td>
-      <td>Élève, Matière, Note</td>
-      <td>Chaque contrôle</td>
-      <td>Calculs statistiques, tri, affichage synthèse</td>
-    </tr>
-    <tr>
-      <td>Table des ventes</td>
-      <td>Produit, Date, Prix</td>
-      <td>Chaque achat</td>
-      <td>Bilan chiffre d’affaires, tri, recherches ciblées</td>
-    </tr>
-  </table>
-  <p>
-    <b>Principales opérations :</b>
-    <br>
-    - <b>Création</b> et <b>remplissage</b> d’une table.
-    <br>
-    - <b>Recherche</b> d’informations (filtre sur une colonne, sur une valeur…)
-    <br>
-    - <b>Tri</b> (par ordre alphabétique, croissant, etc.)
-    <br>
-    - <b>Calculs statistiques</b> (moyenne, somme, max, min…)
-    <br>
-    - <b>Modification</b> ou suppression de lignes ou colonnes.
-  </p>
-  <ul>
-    <li>En <b>Python</b> on utilise souvent la structure <code>listes de listes</code> : <br>
-      <code>table = [[nom, age], [“Alice”,17], [“Bob”,16]]</code></li>
-    <li>En base de données (SQL), une table structure les enregistrements par colonnes.</li>
-    <li>Avec les <b>tableaux NumPy</b> en NSI spécialité, on peut gérer de grands volumes et faire des calculs rapides.</li>
-  </ul>
-  <p>
-    Ex : Pour chercher tous les élèves ayant plus de 17 ans : on parcours les lignes et on teste la valeur de la colonne “âge”.
-  </p>
-</section>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//nsi-TABLES</div>
 
-<section>
-  <h2>📋 Fiche synthèse interactive</h2>
-  <ul id="ul-synthese">
-    <li><b>Comment accéder à la 2<sup>e</sup> colonne d’une table ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('indexcol')">Voir explication</button>
-      <span id="syn-indexcol" style="display:none;color:#167c2b;">
-        Par l’<b>indice</b> 1 : <code>ligne[1]</code> (indices commencent à 0 !)
-      </span>
-    </li>
-    <li><b>Comment trier une table selon une colonne ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('tri')">Réponse !</button>
-      <span id="syn-tri" style="display:none;color:#f5a623;">
-        Utilise la fonction <b>sorted()</b> en Python avec clé : <code>sorted(table, key=lambda l:l[1])</code>
-      </span>
-    </li>
-    <li><b>Peut-on supprimer une ligne dans une table ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('supp')">Clique ici</button>
-      <span id="syn-supp" style="display:none;color:#e06359;">
-        Oui, avec <code>del table[i]</code> ou une fonction “delete” en SQL !
-      </span>
-    </li>
-    <li><b>Défi : Pour calculer la moyenne de la colonne “Note” d’une table, que faire ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('moy')">Affiche la solution</button>
-      <span id="syn-moy" style="display:none;color:#243552;">
-        Parcourir toute la colonne, additionner, puis diviser par le nombre de lignes : <br><code>moyenne = sum(notes)/len(notes)</code>
-      </span>
-    </li>
-    <li><b>Comment chercher une valeur précise dans une colonne ?</b>
-      <button class="btn-expl" onclick="afficheSynthese('find')">Afficher</button>
-      <span id="syn-find" style="display:none;color:#1877f2;">
-        On teste chaque ligne : <code>for ligne in table: if ligne[2]==valeur: ...</code>
-      </span>
-    </li>
-  </ul>
-  <div>
-    <button onclick="quizSynthese()">Quiz surprise</button>
-    <span class="reponse" id="quiz-synthese-res"></span>
+      <div class="loader-status-row">
+        <span class="status-label">Chargement</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Tables, lignes, colonnes, filtres, tris, statistiques et manipulations en Python/NSI.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[DATA] Structuration en lignes/colonnes, contacts, notes, ventes...</div>
+        <div class="terminal-line">[OPS] Configuration des opérations : recherche, tri, filtre, moyenne, somme.</div>
+        <div class="terminal-line">[OK]  Table prête : accès par indices, compréhension de listes, CSV et bonnes pratiques.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
+    </div>
   </div>
-</section>
-<section>
-  <h2>📊 Schéma interactif – Table</h2>
-  <canvas id="schema" width="900" height="250"></canvas>
-  <div id="desc-schema">Survole chaque zone pour retrouver colonnes, listes de données, operations.</div>
-  <div id="info-bulle" class="info-bulle"></div>
-</section>
-<section class="box box-exo">
-  <h2>💡 Exercices interactifs</h2>
-  <p>Dans la table <code>[["Alice",15],["Bob",17],["Cara",17]]</code>, quelle commande donne tous les âges ?
-    <button onclick="afficheReponseNSI1()">Voir la correction</button>
-  </p>
-  <div class="reponse" id="exo-reponse-nsi1" style="display:none;">
-    <code>[ligne[1] for ligne in table]</code> — on parcourt la colonne {âge}.
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - NSI
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="content-card">
+        <h1>Masterclass NSI : Traitement des données en tables</h1>
+        <div class="intro" style="color:#dcfce7;margin-bottom:6px;">
+          Analyse, recherche, tri, modification et synthèse de données tabulaires, du tableur au code Python.
+        </div>
+
+        <main>
+          <!-- Cours -->
+          <section>
+            <h2>📚 Cours complet – Données en tables</h2>
+            <p>Une table organise des données en lignes (enregistrements) et colonnes (attributs).</p>
+            <table>
+              <tr><th>Exemple</th><th>Colonnes</th><th>Lignes</th><th>Utilisation</th></tr>
+              <tr>
+                <td>Contacts</td>
+                <td>Nom, Prénom, Téléphone</td>
+                <td>Une personne</td>
+                <td>Recherche rapide, tri alphabétique.</td>
+              </tr>
+              <tr>
+                <td>Notes</td>
+                <td>Élève, Matière, Note</td>
+                <td>Un contrôle</td>
+                <td>Moyennes, classements, filtres.</td>
+              </tr>
+              <tr>
+                <td>Ventes</td>
+                <td>Produit, Date, Prix</td>
+                <td>Un achat</td>
+                <td>Statistiques de chiffre d’affaires.</td>
+              </tr>
+            </table>
+            <ul>
+              <li>Représentation Python typique : liste de listes, ex de>table = [["Alice",17],["Bob",16]]</code>.</li>
+              <li>Opérations clés : création, recherche, tri, filtre, statistiques, suppression/ajout de lignes.</li>
+            </ul>
+          </section>
+
+          <!-- Synthèse -->
+          <section>
+            <h2>📋 Fiche synthèse interactive</h2>
+            <ul id="ul-synthese">
+              <li><b>Accès à la 2ᵉ colonne ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('indexcol')">Voir</button>
+                <span id="syn-indexcol" style="display:none;color:#16a34a;">
+                  Avec l’indice 1 : de>ligne[1]</code> (indices commencent à 0).
+                </span>
+              </li>
+              <li><b>Trier par colonne en Python ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('tri')">Voir</button>
+                <span id="syn-tri" style="display:none;color:#f5a623;">
+                  de>sorted(table, key=lambda l: l[1])</code> pour trier selon la colonne d’indice 1.
+                </span>
+              </li>
+              <li><b>Supprimer une ligne ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('supp')">Voir</button>
+                <span id="syn-supp" style="display:none;color:#e06359;">
+                  de>del table[i]</code> ou requête de>DELETE</code> en SQL.
+                </span>
+              </li>
+              <li><b>Moyenne d’une colonne de notes ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('moy')">Afficher</button>
+                <span id="syn-moy" style="display:none;color:#111827;">
+                  Extraire la colonne, puis de>moy = sum(notes)/len(notes)</code>.
+                </span>
+              </li>
+              <li><b>Recherche d’une valeur ?</b>
+                <button class="btn-expl" onclick="afficheSynthese('find')">Voir</button>
+                <span id="syn-find" style="display:none;color:#1d4ed8;">
+                  de>for ligne in table: if ligne[2] == valeur: ...</code>
+                </span>
+              </li>
+            </ul>
+            <div>
+              <button onclick="quizSynthese()">Quiz surprise</button>
+              <span class="reponse" id="quiz-synthese-res"></span>
+            </div>
+          </section>
+
+          <!-- Schéma -->
+          <section>
+            <h2>📊 Schéma interactif – Table</h2>
+            anvas id="schema" width="900" height="250"></canvas>
+            <div id="desc-schema">Survole les zones pour distinguer table, lignes, colonnes et filtres.</div>
+            <div id="info-bulle" class="info-bulle"></div>
+          </section>
+
+          <!-- Exercices -->
+          <section class="box-exo">
+            <h2>💡 Exercices interactifs</h2>
+            <p>Âges de de>[["Alice",15],["Bob",17],["Cara",17]]</code> ?</p>
+            <button onclick="afficheReponseNSI1()">Voir la correction</button>
+            <div class="reponse" id="exo-reponse-nsi1" style="display:none;">
+              de>[ligne[1] for ligne in table]</code>.
+            </div>
+            <p>Noms des élèves de 17 ans ?</p>
+            <button onclick="document.getElementById('exo2-reponse-nsi').style.display='block';">Voir la correction</button>
+            <div class="reponse" id="exo2-reponse-nsi" style="display:none;">
+              de>[ligne[0] for ligne in table if ligne[1] == 17]</code>.
+            </div>
+          </section>
+
+          <!-- Quiz rapide -->
+          <section class="quiz">
+            <h2>🎯 Quiz rapide</h2>
+            <p>Format courant pour échanger des tables ?</p>
+            <button onclick="quizNSI(0)">.txt</button>
+            <button onclick="quizNSI(1)">.csv</button>
+            <button onclick="quizNSI(2)">.py</button>
+            <div class="reponse" id="rep-quiz-nsi"></div>
+
+            <p>Nom d’une table à deux dimensions ?</p>
+            <button onclick="quizNSI2(0)">Tableau</button>
+            <button onclick="quizNSI2(1)">Tuple</button>
+            <button onclick="quizNSI2(2)">Ensemble</button>
+            <div class="reponse" id="rep-quiz-nsi2"></div>
+          </section>
+
+          <!-- Applications -->
+          <section class="box-important">
+            <h2>🌍 Applications concrètes</h2>
+            <ul>
+              <li>Notes, bulletins, fiches patients, inventaires, logs.</li>
+              <li>Excel, Google Sheets, bases de données SQL.</li>
+              <li>Traitement de CSV, scripts d’analyse en Python.</li>
+            </ul>
+          </section>
+
+          <!-- Erreurs -->
+          <section class="error">
+            <h2>❌ Erreurs fréquentes</h2>
+            <ul>
+              <li>Oublier que les indices commencent à 0.</li>
+              <li>Confondre ligne (enregistrement) et colonne (attribut).</li>
+              <li>Faire une moyenne sans filtrer les lignes concernées.</li>
+            </ul>
+          </section>
+
+          <!-- Lexique -->
+          <section class="lexique">
+            <h2>📚 Lexique express</h2>
+            Table, ligne, colonne, enregistrement, attribut, CSV, filtre, tri, clé primaire.
+          </section>
+
+          <!-- Anecdote -->
+          <section class="anecdote">
+            Le format CSV, très simple, est utilisé partout pour échanger des tables entre logiciels différents.
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
+    </div>
   </div>
-  <p>Sur la même table, comment afficher les noms de ceux qui ont 17 ans ?
-    <button onclick="document.getElementById('exo2-reponse-nsi').style.display='block';">Voir la correction</button>
-  </p>
-  <div class="reponse" id="exo2-reponse-nsi" style="display:none;">
-    <code>[ligne[0] for ligne in table if ligne[1]==17]</code>
-  </div>
-</section>
-<section class="quiz">
-  <h2>🎯 Quiz rapide</h2>
-  <p>Quel fichier permet souvent d’importer une table dans Python ou Excel ?</p>
-  <button onclick="quizNSI(0)">.txt</button>
-  <button onclick="quizNSI(1)">.csv</button>
-  <button onclick="quizNSI(2)">.py</button>
-  <div class="reponse" id="rep-quiz-nsi"></div>
-  <p>Comment appelle-t-on une table à deux dimensions (lignes et colonnes) ?</p>
-  <button onclick="quizNSI2(0)">Tableau</button>
-  <button onclick="quizNSI2(1)">Tuple</button>
-  <button onclick="quizNSI2(2)">Ensemble</button>
-  <div class="reponse" id="rep-quiz-nsi2"></div>
-</section>
-<section class="box-important">
-  <h2>🌍 Applications concrètes</h2>
-  <ul>
-    <li>Notes, bulletins scolaires, fiche de patients, inventaire d’entreprise, grille de Sudoku...</li>
-    <li>Tableaux Excel, Google Sheets, base de données SQL</li>
-    <li>Import/export de données (CSV, TXT), calculs, tris, statistiques</li>
-  </ul>
-</section>
-<section class="error">
-  <h2>❌ Erreurs fréquentes à éviter</h2>
-  <ul>
-    <li>Oublier que les indices commencent à 0 en Python</li>
-    <li>Confondre ligne et colonne (ligne = personne entière, colonne = même info pour tous)</li>
-    <li>Ne pas filtrer une table avant de faire moyenne ou somme</li>
-    <li>Renommer ou supprimer sans faire attention à l’ordre des colonnes</li>
-    <li>Oublier le format CSV pour importer/exporter</li>
-  </ul>
-</section>
-<section class="lexique">
-  <h2>📚 Lexique express</h2>
-  <b>Table</b> : grille de données (lignes/colonnes)<br>
-  <b>Colonne</b> : attribut (ex : nom, âge, note)<br>
-  <b>Ligne</b> : enregistrement (ex : un élève)<br>
-  <b>CSV</b> : texte structuré où chaque ligne est une entrée de table ; séparateur = “,”<br>
-  <b>Filtrer</b> : ne conserver que certains résultats (condition)<br>
-  <b>Tri</b> : réorganiser selon l’ordre voulu
-</section>
-<section class="rubrique">
-  <h3>📖 Anecdotes et histoire</h3>
-  <ul>
-    <li>Le format CSV (Comma Separated Values) existe depuis 1972 : universel, il est lu par la plupart des logiciels !</li>
-    <li>Les bases de données structurées “relationnelles” s’appuient sur des tables dont chaque colonne porte un nom (clé primaire, étrangère…)</li>
-    <li>Derrière Google Sheets ou Excel, ce sont des lignes et colonnes qui organisent TOUT.</li>
-  </ul>
-  <div class="source">Source : NSI, informatique pratique</div>
-</section>
-<section class="anecdote">
-  <b>Astuces mémoire</b> :
-  Table = “grille” ; chaque ligne : une fiche, chaque colonne : la même info pour tous. Dans Excel, “$” bloque la colonne ou la ligne !
-</section>
-<section>
-  <h2>💡 Méthodologie pour réussir ton contrôle</h2>
-  <ul>
-    <li>Sache créer, remplir et parcourir une table</li>
-    <li>Maîtrise la syntaxe des accès (indices, colonnes, lignes)</li>
-    <li>Sache filtrer puis calculer sur une colonne uniquement</li>
-    <li>Explique la différence entre ligne (enregistrement) et colonne (attribut)</li>
-    <li>Justifie chaque opération (tri selon une colonne ; calcul moyenne…)</li>
-  </ul>
-</section>
-</main>
-<script>
-function afficheSynthese(id) {
-  var el = document.getElementById("syn-"+id);
-  if (el.style.display==="none") { el.style.display="inline"; }
-  else { el.style.display="none"; }
-}
-function quizSynthese() {
-  let qs = [
-    {q:"Vrai ou faux : En Python, table[0][1] accède à la 2e colonne de la 1ère ligne ?", rep:"vrai"},
-    {q:"Le format universel pour les tables importées ?", rep:"csv"},
-    {q:"Comment calcule-t-on la somme d'une colonne ?", rep:"sum"},
-    {q:"En SQL, quelle requête pour trier la table ?", rep:"order by"}
-  ];
-  let idx = Math.floor(Math.random()*qs.length);
-  let ask = qs[idx]; let reponse = prompt(ask.q);
-  let result = (reponse && reponse.toLowerCase().includes(ask.rep.toLowerCase())) ?
-    "Bravo ! " + ask.rep : "Réponse attendue : " + ask.rep;
-  document.getElementById("quiz-synthese-res").textContent = result;
-}
-// Schéma interactif Table
-const schemaData = [
-  {x:70, y:95, w:700, h:40, zone:"Table", bulle:"La table regroupe les données en lignes et colonnes.<br>Ex : liste d’élèves et de notes.", color:"#167c2b"},
-  {x:70, y:138, w:180, h:38, zone:"Colonne", bulle:"Colonne = tous les âges, ou tous les noms<br>Accès : [ligne[idx_colonne]]", color:"#79acee"},
-  {x:250, y:180, w:320, h:38, zone:"Ligne", bulle:"Ligne = toutes les informations sur une personne<br>Accès : table[idx_ligne]", color:"#f5a623"},
-  {x:610, y:138, w:160, h:38, zone:"Filtre", bulle:"Filtrer = ne garder que les lignes qui vérifient une condition<br>Ex : lignes où Age > 16", color:"#e06359"},
-];
-var canvas = document.getElementById("schema");
-var ctx = canvas.getContext("2d");
-function drawSchema() {
-  ctx.clearRect(0,0,900,250);
-  ctx.font="17px Arial";
-  ctx.fillStyle="#243552";
-  ctx.fillText("Table (structure) : chaque case contient une donnée ; accès par ligne et colonne, opérations sur toute la grille.",45,65);
-  for(let d of schemaData){
-    ctx.fillStyle=d.color; ctx.globalAlpha=0.18; ctx.fillRect(d.x,d.y,d.w,d.h); ctx.globalAlpha=1.0;
-    ctx.strokeStyle="#333"; ctx.lineWidth=2; ctx.strokeRect(d.x,d.y,d.w,d.h);
-    ctx.fillStyle="#243552"; ctx.font="bold 19px Arial"; ctx.fillText(d.zone, d.x+15, d.y+28);
-  }
-  // liens symboliques
-  ctx.strokeStyle="#167c2b"; ctx.lineWidth=2;
-  ctx.beginPath(); ctx.moveTo(160,138); ctx.lineTo(410,180); ctx.stroke();
-}
-drawSchema();
-canvas.addEventListener('mousemove', function(e){
-  var rect = canvas.getBoundingClientRect();
-  var x = e.clientX - rect.left, y = e.clientY - rect.top;
-  var bulle = document.getElementById("info-bulle"); let found = false;
-  for(let d of schemaData){
-    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
-      bulle.style.left = (rect.left + d.x + 33) + "px";
-      bulle.style.top = (rect.top + d.y + 13) + "px";
-      bulle.style.display = "block"; bulle.innerHTML = d.bulle; found=true; break;
+
+  <script>
+    // Masquer le loader après 3 secondes[web:38][web:2][web:62][web:29]
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+    },3000);
+
+    function afficheSynthese(id) {
+      var el = document.getElementById("syn-"+id);
+      el.style.display = (el.style.display==="none" || !el.style.display) ? "inline" : "none";
     }
-  }
-  if(!found) bulle.style.display="none";
-});
-canvas.addEventListener('click', function(e){
-  var rect = canvas.getBoundingClientRect();
-  var x = e.clientX - rect.left, y = e.clientY - rect.top;
-  for(let d of schemaData){
-    if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
-      alert(d.bulle.replace(/<br>/g,"\n")); break;
+    function quizSynthese() {
+      let qs = [
+        {q:"Vrai ou faux : table[0][1] = 2ᵉ colonne de la 1ʳᵉ ligne ?", rep:"vrai"},
+        {q:"Format universel pour les tables importées ?", rep:"csv"},
+        {q:"Fonction Python pour additionner une colonne ?", rep:"sum"},
+        {q:"Mot‑clé SQL pour trier ?", rep:"order by"}
+      ];
+      let idx = Math.floor(Math.random()*qs.length);
+      let ask = qs[idx];
+      let reponse = prompt(ask.q);
+      let ok = reponse && reponse.toLowerCase().includes(ask.rep.toLowerCase());
+      document.getElementById("quiz-synthese-res").textContent =
+        ok ? "Bravo ! "+ask.rep : "Réponse attendue : "+ask.rep;
     }
-  }
-});
-function afficheReponseNSI1() { document.getElementById("exo-reponse-nsi1").style.display = "block"; }
-function quizNSI(rep) {
-  let rq = document.getElementById("rep-quiz-nsi");
-  rq.textContent = (rep === 1) ? "Bravo ! .csv = Comma separated values, format universel tableur." : "Non, ce n’est pas le bon format pour importer une table.";
-}
-function quizNSI2(rep) {
-  let rq = document.getElementById("rep-quiz-nsi2");
-  rq.textContent = (rep === 0) ? "Bonne réponse : Tableau à deux dimensions = table !" : "Ce n’est pas un tuple ni un ensemble.";
-}
-</script>
+
+    const schemaData = [
+      {x:70,  y:95,  w:700, h:40, zone:"Table",    bulle:"Grille complète : lignes = enregistrements, colonnes = attributs.", color:"#167c2b"},
+      {x:70,  y:138, w:180, h:38, zone:"Colonne",  bulle:"Même information pour tous : ex. tous les âges ou tous les noms.",  color:"#60a5fa"},
+      {x:250, y:180, w:320, h:38, zone:"Ligne",    bulle:"Toutes les infos d’un enregistrement : ex. un élève, une vente.",   color:"#f5a623"},
+      {x:610, y:138, w:160, h:38, zone:"Filtre",   bulle:"On ne garde que les lignes qui vérifient une condition (Age > 16).", color:"#e06359"},
+    ];
+
+    var canvas = document.getElementById("schema");
+    var ctx = canvas.getContext("2d");
+
+    function drawSchema() {
+      ctx.clearRect(0,0,900,250);
+      ctx.font="17px Arial";
+      ctx.fillStyle="#243552";
+      ctx.fillText("Table : structure en lignes/colonnes pour chercher, trier et calculer sur des données.",90,60);
+
+      for(let d of schemaData){
+        ctx.fillStyle=d.color; ctx.globalAlpha=0.18;
+        ctx.fillRect(d.x,d.y,d.w,d.h); ctx.globalAlpha=1.0;
+        ctx.strokeStyle="#333"; ctx.lineWidth=2;
+        ctx.strokeRect(d.x,d.y,d.w,d.h);
+        ctx.fillStyle="#243552"; ctx.font="bold 19px Arial";
+        ctx.fillText(d.zone, d.x+15, d.y+28);
+      }
+
+      ctx.strokeStyle="#167c2b"; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(160,138); ctx.lineTo(410,180); ctx.stroke();
+    }
+    drawSchema();
+
+    canvas.addEventListener('mousemove', function(e){
+      var rect = canvas.getBoundingClientRect();
+      var x = e.clientX - rect.left, y = e.clientY - rect.top;
+      var bulle = document.getElementById("info-bulle"); let found = false;
+      for(let d of schemaData){
+        if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
+          bulle.style.left = (rect.left + d.x + 33) + "px";
+          bulle.style.top  = (rect.top + d.y + 13) + "px";
+          bulle.style.display = "block"; bulle.innerHTML = d.bulle;
+          found=true; break;
+        }
+      }
+      if(!found) bulle.style.display="none";
+    });
+
+    canvas.addEventListener('click', function(e){
+      var rect = canvas.getBoundingClientRect();
+      var x = e.clientX - rect.left, y = e.clientY - rect.top;
+      for(let d of schemaData){
+        if(x>=d.x&&x<=d.x+d.w && y>=d.y&&y<=d.y+d.h){
+          alert(d.bulle.replace(/<br>/g,"\n")); break;
+        }
+      }
+    });
+
+    function afficheReponseNSI1() {
+      document.getElementById("exo-reponse-nsi1").style.display = "block";
+    }
+    function quizNSI(rep) {
+      let rq = document.getElementById("rep-quiz-nsi");
+      rq.textContent = (rep === 1)
+        ? "Bravo : .csv est le format classique pour échanger des tables."
+        : "Non : .txt est trop générique et .py est du code.";
+    }
+    function quizNSI2(rep) {
+      let rq = document.getElementById("rep-quiz-nsi2");
+      rq.textContent = (rep === 0)
+        ? "Correct : un tableau 2D est une table de données."
+        : "Un tuple ou un ensemble ne représentent pas une table complète.";
+    }
+  </script>
 </body>
 </html>
