@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Accueil - Global</title>
   <style>
-    /* ===== RESET RAPIDE ===== */
     * {
       margin: 0;
       padding: 0;
@@ -17,9 +16,13 @@
       --blue-dark: #004a9f;
       --bg-dark: #050816;
       --white: #ffffff;
+      --pink: #ff4ecd;
+      --lime: #7fff4f;
+      --amber: #ffb347;
+      --violet: #8b5cf6;
+      --red: #ff4b4b;
     }
 
-    /* ===== FOND GLOBAL AVEC TEXTURE / DÉGRADÉ ===== */
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       min-height: 100vh;
@@ -46,7 +49,7 @@
       z-index: -1;
     }
 
-    /* ===== LOADER HACKING HUD ===== */
+    /* ===== LOADER GLOBAL ===== */
     #loader {
       position: fixed;
       inset: 0;
@@ -58,24 +61,85 @@
       overflow: hidden;
     }
 
-    .loader-hud {
-      position: relative;
-      width: min(520px, 90vw);
-      padding: 26px 26px 30px 26px;
+    /* halo animé */
+    .loader-bg-orbit {
+      position: absolute;
+      width: 1500px;
+      height: 1500px;
+      border-radius: 50%;
+      background:
+        conic-gradient(from 0deg,
+          rgba(41,216,255,0.1),
+          rgba(139,92,246,0.3),
+          rgba(255,78,205,0.3),
+          rgba(127,255,79,0.25),
+          rgba(255,179,71,0.3),
+          rgba(41,216,255,0.1)
+        );
+      filter: blur(45px);
+      animation: orbitGlow 16s linear infinite;
+      opacity: 0.75;
+    }
+
+    @keyframes orbitGlow {
+      0%   { transform: rotate(0deg) scale(1); }
+      50%  { transform: rotate(180deg) scale(1.08); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    /* particules */
+    .loader-particles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.9);
+      box-shadow: 0 0 10px rgba(148,163,184,0.9);
+      opacity: 0.3;
+      animation: particleFloat 8s linear infinite;
+    }
+    .particle:nth-child(odd) {
+      background: rgba(56,189,248,0.9);
+      box-shadow: 0 0 10px rgba(56,189,248,0.9);
+    }
+    .particle.p1 { top: 5%; left: 20%; animation-duration: 8s; }
+    .particle.p2 { top: 20%; left: 80%; animation-duration: 10s; }
+    .particle.p3 { top: 75%; left: 15%; animation-duration: 9s; }
+    .particle.p4 { top: 60%; left: 90%; animation-duration: 7s; }
+    .particle.p5 { top: 35%; left: 50%; animation-duration: 11s; }
+
+    @keyframes particleFloat {
+      0%   { transform: translate3d(0,0,0); opacity: 0.2; }
+      50%  { transform: translate3d(30px,-30px,0); opacity: 0.9; }
+      100% { transform: translate3d(-20px,-60px,0); opacity: 0.1; }
+    }
+
+    /* ========= PANNEAUX, tous même taille (centre + 33%) ========= */
+    .panel {
+      position: absolute;
+      width: min(690px, 95vw); /* 520 * 1.33 ≈ 690 */
+      padding: 34px 32px 36px 32px;
       border-radius: 18px;
       background:
         radial-gradient(circle at 0 0, rgba(56,189,248,0.26), transparent 60%),
         linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
       border: 1px solid rgba(56,189,248,0.8);
       box-shadow:
-        0 22px 55px rgba(0,0,0,0.9),
-        0 0 35px rgba(56,189,248,0.7);
+        0 26px 65px rgba(0,0,0,0.95),
+        0 0 38px rgba(56,189,248,0.7);
       color: #e5f1ff;
       font-family: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       overflow: hidden;
     }
 
-    .loader-hud::before {
+    .panel::before {
       content: "";
       position: absolute;
       inset: 0;
@@ -90,32 +154,49 @@
       pointer-events: none;
     }
 
-    .loader-title {
-      font-size: 0.9rem;
+    .panel-title {
+      font-size: 1rem;
       letter-spacing: 0.35em;
       text-transform: uppercase;
       color: #7dd3fc;
-      margin-bottom: 16px;
+      margin-bottom: 18px;
       position: relative;
+      white-space: nowrap;
     }
 
-    .loader-title::after {
+    .panel-title::after {
       content: "";
       position: absolute;
       left: 0;
       bottom: -6px;
-      width: 80px;
+      width: 110px;
       height: 2px;
       background: linear-gradient(90deg, #7dd3fc, transparent);
       box-shadow: 0 0 12px rgba(56,189,248,0.9);
     }
 
+    /* centre */
+    .panel.center {
+      position: relative;
+      z-index: 20;
+      animation: hudPop 0.8s cubic-bezier(.18,.89,.32,1.28) forwards;
+      transform: scale(0.93);
+      opacity: 0;
+    }
+
+    @keyframes hudPop {
+      0%   { transform: scale(0.8) translateY(20px); opacity: 0; }
+      60%  { transform: scale(1.03) translateY(0); opacity: 1; }
+      100% { transform: scale(0.93) translateY(0); opacity: 1; }
+    }
+
     .loader-status-row {
       display: flex;
       align-items: baseline;
-      gap: 6px;
+      justify-content: space-between;
+      gap: 8px;
       font-size: 1rem;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
     }
 
     .status-label {
@@ -131,15 +212,25 @@
       color: #38bdf8;
     }
 
+    .status-percent {
+      font-size: 0.95rem;
+      color: #a5b4fc;
+      animation: percentPulse 2.2s ease-in-out infinite;
+    }
+
     @keyframes blinkDots {
-      0%, 50% { opacity: 1; }
-      50.01%, 100% { opacity: 0; }
+      0%, 50%   { opacity: 1; }
+      50.01%,100% { opacity: 0; }
+    }
+    @keyframes percentPulse {
+      0%,100% { transform: translateY(0); opacity: 0.8; }
+      50%     { transform: translateY(-2px); opacity: 1; }
     }
 
     .loader-bar {
       position: relative;
       width: 100%;
-      height: 12px;
+      height: 14px;
       border-radius: 999px;
       border: 1px solid rgba(148,163,184,0.9);
       background: rgba(15,23,42,0.9);
@@ -147,69 +238,59 @@
       box-shadow:
         inset 0 0 8px rgba(15,23,42,1),
         0 0 18px rgba(15,23,42,0.9);
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
     .loader-bar-fill {
       position: absolute;
       inset: 0;
       width: 0%;
-      background: linear-gradient(90deg, #22c1c3, #29d8ff, #007bff);
+      background: linear-gradient(90deg, #22c1c3, #29d8ff, #007bff, #ff4ecd);
       box-shadow: 0 0 18px rgba(56,189,248,0.9);
-      animation: barProgress 2.2s ease-in-out infinite;
+      animation: barProgress 2.3s ease-in-out infinite;
+    }
+
+    .loader-bar-glow {
+      position: absolute;
+      inset: -40%;
+      background: radial-gradient(circle at 50% 50%, rgba(41,216,255,0.4), transparent 60%);
+      opacity: 0.3;
+      animation: barGlow 2.3s ease-in-out infinite;
+      pointer-events: none;
     }
 
     @keyframes barProgress {
       0%   { width: 0%;   transform: translateX(-5%); }
-      40%  { width: 65%;  transform: translateX(0); }
+      40%  { width: 70%;  transform: translateX(0); }
       70%  { width: 100%; transform: translateX(0); }
       100% { width: 35%;  transform: translateX(90%); }
     }
 
+    @keyframes barGlow {
+      0%   { transform: translateX(-40%); opacity: 0.1; }
+      50%  { transform: translateX(0%);   opacity: 0.5; }
+      100% { transform: translateX(40%);  opacity: 0.1; }
+    }
+
     .loader-subtext {
-      font-size: 0.72rem;
+      font-size: 0.78rem;
       margin-top: 4px;
       color: #a5b4fc;
       opacity: 0.9;
     }
 
-    .loader-scan {
-      position: absolute;
-      inset: -40%;
-      background:
-        linear-gradient(
-          to bottom,
-          transparent 0%,
-          rgba(56,189,248,0.12) 45%,
-          rgba(56,189,248,0.35) 50%,
-          rgba(56,189,248,0.12) 55%,
-          transparent 100%
-        );
-      mix-blend-mode: screen;
-      animation: scanMove 2.6s linear infinite;
-      pointer-events: none;
-    }
-
-    @keyframes scanMove {
-      0%   { transform: translateY(-40%); opacity: 0; }
-      10%  { opacity: 0.9; }
-      60%  { opacity: 0.9; }
-      100% { transform: translateY(40%); opacity: 0; }
-    }
-
-    /* --- zone terminal dans la fenêtre de hack --- */
     .loader-terminal {
-      margin-top: 14px;
-      padding: 10px 10px 8px 10px;
+      margin-top: 16px;
+      padding: 12px 12px 10px 12px;
       background: radial-gradient(circle at 0 0, rgba(15,23,42,0.9), rgba(15,23,42,0.98));
-      border-radius: 10px;
+      border-radius: 12px;
       border: 1px solid rgba(15,23,42,1);
       box-shadow:
         inset 0 0 18px rgba(0,0,0,0.9),
         0 0 14px rgba(15,23,42,0.9);
-      height: 140px;
+      height: 170px;
       overflow: hidden;
-      font-size: 0.7rem;
+      font-size: 0.74rem;
       line-height: 1.5;
       color: #c4f1ff;
       position: relative;
@@ -246,11 +327,341 @@
     }
 
     @keyframes cursorBlink {
-      0%, 49%  { opacity: 1; }
-      50%,100% { opacity: 0; }
+      0%,49%  { opacity: 1; }
+      50%,100%{ opacity: 0; }
     }
 
-    /* ===== CONTENU PRINCIPAL (FADE-IN) ===== */
+    .loader-scan {
+      position: absolute;
+      inset: -40%;
+      background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(56,189,248,0.12) 45%,
+        rgba(56,189,248,0.4) 50%,
+        rgba(56,189,248,0.12) 55%,
+        transparent 100%
+      );
+      mix-blend-mode: screen;
+      animation: scanMove 2.6s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes scanMove {
+      0%   { transform: translateY(-40%); opacity: 0; }
+      10%  { opacity: 0.9; }
+      60%  { opacity: 0.9; }
+      100% { transform: translateY(40%); opacity: 0; }
+    }
+
+    /* ===== POSITION / ANIM DES GROS PANNEAUX (RESSERRÉS) ===== */
+
+    .panel.map-world {
+      top: 8%;
+      left: 6%;
+      transform: scale(0.9);
+      opacity: 0.98;
+      border-color: rgba(255,75,75,0.8);
+      box-shadow: 0 0 34px rgba(255,75,75,0.7);
+      z-index: 9;
+      animation: floatUpDown 5s ease-in-out infinite;
+    }
+
+    .panel.stats {
+      top: 10%;
+      right: 6%;
+      transform: scale(0.9);
+      opacity: 0.98;
+      border-color: rgba(127,255,79,0.8);
+      box-shadow: 0 0 34px rgba(127,255,79,0.7);
+      z-index: 9;
+      animation: floatLeftRight 6s ease-in-out infinite;
+    }
+
+    .panel.alert-log {
+      bottom: 8%;
+      left: 6%;
+      transform: scale(0.9);
+      opacity: 0.98;
+      border-color: rgba(255,179,71,0.9);
+      box-shadow: 0 0 34px rgba(255,179,71,0.9);
+      z-index: 9;
+      animation: floatDiagonal 7s ease-in-out infinite;
+    }
+
+    .panel.code-stream {
+      bottom: 10%;
+      right: 6%;
+      transform: scale(0.9);
+      opacity: 0.98;
+      border-color: rgba(139,92,246,0.9);
+      box-shadow: 0 0 34px rgba(139,92,246,0.9);
+      z-index: 9;
+      animation: floatPulse 6s ease-in-out infinite;
+    }
+
+    /* 4 fenêtres supplémentaires rapprochées autour du centre */
+    .panel.extra1 {
+      top: 28%;
+      left: 2%;
+      transform: scale(0.86);
+      opacity: 0.95;
+      border-color: rgba(41,216,255,0.9);
+      box-shadow: 0 0 34px rgba(41,216,255,0.9);
+      z-index: 8;
+      animation: floatUpDown 7.5s ease-in-out infinite;
+    }
+
+    .panel.extra2 {
+      top: 26%;
+      right: 2%;
+      transform: scale(0.86);
+      opacity: 0.95;
+      border-color: rgba(248,250,252,0.7);
+      box-shadow: 0 0 34px rgba(148,163,184,0.9);
+      z-index: 8;
+      animation: floatLeftRight 7.2s ease-in-out infinite;
+    }
+
+    .panel.extra3 {
+      top: 2%;
+      left: 22%;
+      transform: scale(0.84);
+      opacity: 0.9;
+      border-color: rgba(59,130,246,0.9);
+      box-shadow: 0 0 34px rgba(59,130,246,0.9);
+      z-index: 7;
+      animation: floatDiagonal 8s ease-in-out infinite;
+    }
+
+    .panel.extra4 {
+      bottom: 2%;
+      left: 24%;
+      transform: scale(0.84);
+      opacity: 0.9;
+      border-color: rgba(34,197,94,0.9);
+      box-shadow: 0 0 34px rgba(34,197,94,0.9);
+      z-index: 7;
+      animation: floatPulse 8s ease-in-out infinite;
+    }
+
+    @keyframes floatUpDown {
+      0%,100% { transform: scale(0.9) translateY(0); }
+      50%     { transform: scale(0.9) translateY(-20px); }
+    }
+    @keyframes floatLeftRight {
+      0%,100% { transform: scale(0.9) translateX(0); }
+      50%     { transform: scale(0.9) translateX(22px); }
+    }
+    @keyframes floatDiagonal {
+      0%,100% { transform: scale(0.9) translate(0,0); }
+      50%     { transform: scale(0.9) translate(20px,-16px); }
+    }
+    @keyframes floatPulse {
+      0%,100% { transform: scale(0.9); box-shadow: 0 0 28px rgba(139,92,246,0.7); }
+      50%     { transform: scale(0.95); box-shadow: 0 0 42px rgba(139,92,246,1); }
+    }
+
+    /* ===== MAP MONDE ===== */
+    .world-map-wrapper {
+      margin-top: 20px;
+      height: 220px;
+      border-radius: 16px;
+      border: 1px solid rgba(148,163,184,0.7);
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(41,216,255,0.2), transparent 55%),
+        radial-gradient(circle at 80% 90%, rgba(15,118,230,0.3), transparent 55%),
+        #020617;
+    }
+
+    .world-map-shape {
+      position: absolute;
+      inset: 8%;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(56,189,248,0.7), transparent 55%),
+        radial-gradient(circle at 40% 40%, rgba(52,211,153,0.6), transparent 55%),
+        radial-gradient(circle at 60% 35%, rgba(96,165,250,0.65), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(34,197,94,0.7), transparent 55%),
+        radial-gradient(circle at 35% 75%, rgba(56,189,248,0.6), transparent 55%);
+      filter: blur(1px);
+      opacity: 0.95;
+    }
+
+    .world-map-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(0deg, rgba(15,23,42,0.7) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15,23,42,0.7) 1px, transparent 1px);
+      background-size: 14px 14px, 14px 14px;
+      opacity: 0.65;
+      animation: gridDrift 10s linear infinite;
+    }
+
+    @keyframes gridDrift {
+      0%   { transform: translate(0,0); }
+      100% { transform: translate(-24px,-18px); }
+    }
+
+    .world-map-dot {
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--red);
+      box-shadow: 0 0 18px rgba(255,75,75,1);
+      animation: worldDotBlink 1.3s ease-in-out infinite;
+    }
+    .world-map-dot:nth-child(1) { top: 30%; left: 25%; animation-delay: 0s; }
+    .world-map-dot:nth-child(2) { top: 40%; left: 55%; animation-delay: 0.3s; }
+    .world-map-dot:nth-child(3) { top: 60%; left: 45%; animation-delay: 0.6s; }
+    .world-map-dot:nth-child(4) { top: 35%; left: 75%; animation-delay: 0.9s; }
+    .world-map-dot:nth-child(5) { top: 55%; left: 15%; animation-delay: 1.2s; }
+
+    @keyframes worldDotBlink {
+      0%,100% { transform: scale(0.8); opacity: 0.4; }
+      50%     { transform: scale(1.3); opacity: 1; }
+    }
+
+    /* ===== STATS PANEL ===== */
+    .stats-grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 18px;
+      font-size: 0.78rem;
+    }
+    .stats-label {
+      opacity: 0.75;
+    }
+    .stats-value {
+      text-align: right;
+    }
+    .stats-bar-track {
+      margin-top: 4px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      overflow: hidden;
+      position: relative;
+    }
+    .stats-bar-fill {
+      position: absolute;
+      inset: 0;
+      width: 0;
+      background: linear-gradient(90deg, #22c55e, #7fff4f);
+      animation: statsFill 3s ease-in-out infinite;
+    }
+    .stats-bar-fill.lat {
+      background: linear-gradient(90deg, #ef4444, #f97316);
+      animation: statsFillSlow 3.3s ease-in-out infinite;
+    }
+
+    @keyframes statsFill {
+      0%   { width: 20%; }
+      40%  { width: 80%; }
+      70%  { width: 55%; }
+      100% { width: 95%; }
+    }
+    @keyframes statsFillSlow {
+      0%   { width: 10%; }
+      40%  { width: 60%; }
+      70%  { width: 30%; }
+      100% { width: 85%; }
+    }
+
+    /* ===== ALERT LOG ===== */
+    .alert-scroll {
+      margin-top: 16px;
+      height: 150px;
+      overflow: hidden;
+      position: relative;
+      font-size: 0.76rem;
+    }
+
+    .alert-line {
+      position: absolute;
+      width: 100%;
+      left: 0;
+      color: var(--amber);
+      text-shadow: 0 0 8px rgba(255,179,71,0.7);
+      animation: alertScroll 6s linear infinite;
+      white-space: nowrap;
+    }
+
+    .alert-line:nth-child(2) { animation-delay: 1.5s; }
+    .alert-line:nth-child(3) { animation-delay: 3s; }
+    .alert-line:nth-child(4) { animation-delay: 4.5s; }
+
+    @keyframes alertScroll {
+      0%   { top: 110%; }
+      20%  { top: 70%; }
+      50%  { top: 35%; }
+      80%  { top: 0%; }
+      100% { top: -60%; }
+    }
+
+    /* ===== CODE STREAM ===== */
+    .code-stream-body {
+      margin-top: 18px;
+      height: 190px;
+      border-radius: 12px;
+      border: 1px solid rgba(15,23,42,1);
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.95), rgba(15,23,42,1));
+      overflow: hidden;
+      position: relative;
+      color: #00ff88;
+      text-shadow: 0 0 10px rgba(34,197,94,0.9);
+      font-size: 0.74rem;
+    }
+
+    .code-column {
+      position: absolute;
+      top: 0;
+      width: 50%;
+      padding: 10px 12px;
+      line-height: 1.4;
+      white-space: nowrap;
+      animation: codeScroll 4.5s linear infinite;
+    }
+    .code-column.right {
+      left: 50%;
+      animation-duration: 5.2s;
+      animation-delay: 0.8s;
+    }
+
+    @keyframes codeScroll {
+      0%   { transform: translateY(100%); opacity: 0.1; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { transform: translateY(-110%); opacity: 0.1; }
+    }
+
+    .code-line span.var    { color: #22c55e; }
+    .code-line span.str    { color: #22d3ee; }
+    .code-line span.num    { color: #facc15; }
+    .code-line span.op     { color: #f97316; }
+    .code-line span.kw     { color: #38bdf8; }
+
+    /* ===== PANNEAUX EXTRA (contenu simple) ===== */
+    .extra-body {
+      margin-top: 18px;
+      font-size: 0.76rem;
+      line-height: 1.5;
+      color: #cbd5f5;
+      opacity: 0.9;
+    }
+
+    .extra-body small {
+      display: block;
+      margin-top: 6px;
+      font-size: 0.68rem;
+      opacity: 0.7;
+    }
+
+    /* ===== CONTENU PRINCIPAL ===== */
     #main-content {
       opacity: 0;
       transform: translateY(10px);
@@ -266,7 +677,6 @@
       }
     }
 
-    /* ===== HEADER + NAV GLASSMORPHIQUES ===== */
     .top-banner {
       position: sticky;
       top: 0;
@@ -357,7 +767,6 @@
         0 3px 8px rgba(15,23,42,0.9);
     }
 
-    /* ===== CONTENEUR DES ICÔNES ===== */
     .page-padding {
       padding: 26px 7vw 90px 7vw;
     }
@@ -392,8 +801,9 @@
       overflow: hidden;
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.16), transparent 60%),
-                  linear-gradient(145deg, rgba(15,23,42,0.95), rgba(15,23,42,0.8));
+      background:
+        radial-gradient(circle at 0 0, rgba(255,255,255,0.16), transparent 60%),
+        linear-gradient(145deg, rgba(15,23,42,0.95), rgba(15,23,42,0.8));
       border: 1px solid rgba(148, 163, 184, 0.5);
       box-shadow:
         0 18px 40px rgba(15,23,42,0.9),
@@ -418,9 +828,7 @@
         radial-gradient(circle at 100% 100%, rgba(56,189,248,0.5), transparent 55%);
       opacity: 0;
       transform: translate3d(-15%, -15%, 0);
-      transition:
-        opacity 0.35s ease-out,
-        transform 0.35s ease-out;
+      transition: opacity 0.35s ease-out, transform 0.35s ease-out;
       z-index: -1;
     }
 
@@ -430,8 +838,9 @@
       box-shadow:
         0 25px 55px rgba(15,23,42,1),
         0 0 35px rgba(56,189,248,0.65);
-      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.28), transparent 70%),
-                  linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
+      background:
+        radial-gradient(circle at 0 0, rgba(255,255,255,0.28), transparent 70%),
+        linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
     }
 
     .icon:hover::before {
@@ -482,7 +891,6 @@
       opacity: 0.7;
     }
 
-    /* ===== FOOTER ===== */
     .bottom-footer {
       background: linear-gradient(
         135deg,
@@ -518,35 +926,177 @@
 <body>
   <!-- Loader hacking -->
   <div id="loader">
-    <div class="loader-hud">
-      <div class="loader-title">GLOBAL//SYSTEM</div>
+    <div class="loader-bg-orbit"></div>
 
+    <div class="loader-particles">
+      <div class="particle p1"></div>
+      <div class="particle p2"></div>
+      <div class="particle p3"></div>
+      <div class="particle p4"></div>
+      <div class="particle p5"></div>
+    </div>
+
+    <!-- centre -->
+    <div class="panel center">
+      <div class="panel-title">GLOBAL//SYSTEM</div>
       <div class="loader-status-row">
-        <span class="status-label">Connexion</span>
-        <span class="status-dots">...</span>
+        <div>
+          <span class="status-label">Connexion</span>
+          <span class="status-dots">...</span>
+        </div>
+        <div class="status-percent">87%</div>
       </div>
-
       <div class="loader-bar">
         <div class="loader-bar-fill"></div>
+        <div class="loader-bar-glow"></div>
       </div>
-
       <div class="loader-subtext">
-        Initialisation du pare-feu · Scan des ports · Injection des clés
+        Initialisation du pare-feu · Scan des ports · Injection des clés · Sync des modules
       </div>
-
       <div class="loader-terminal">
         <div class="terminal-line">[INIT] Chargement du noyau de sécurité...</div>
-        <div class="terminal-line">[OK]  Clés de chiffrement chargées.</div>
+        <div class="terminal-line">[OK] Clés de chiffrement chargées.</div>
         <div class="terminal-line">[SCAN] Analyse des ports distants 1‒65535...</div>
         <div class="terminal-line">[WARN] Latence réseau détectée, recalibrage...</div>
         <div class="terminal-line">[TRACE] Paquets suspects identifiés.</div>
         <div class="terminal-line">[BRIDGE] Ouverture d’un tunnel chiffré...</div>
         <div class="terminal-line">[ACCESS] Jeton d’authentification généré.</div>
-        <div class="terminal-line">[OK]  Connexion sécurisée établie.</div>
+        <div class="terminal-line">[OK] Connexion sécurisée établie.</div>
         <div class="terminal-line terminal-cursor">_</div>
       </div>
-
       <div class="loader-scan"></div>
+    </div>
+
+    <!-- MAP MONDE -->
+    <div class="panel map-world">
+      <div class="panel-title">WORLD//MAP</div>
+      <div class="world-map-wrapper">
+        <div class="world-map-shape"></div>
+        <div class="world-map-grid"></div>
+        <div class="world-map-dot"></div>
+        <div class="world-map-dot"></div>
+        <div class="world-map-dot"></div>
+        <div class="world-map-dot"></div>
+        <div class="world-map-dot"></div>
+      </div>
+    </div>
+
+    <!-- STATS CPU/NET -->
+    <div class="panel stats">
+      <div class="panel-title">SYSTEM//STATS</div>
+      <div class="stats-grid">
+        <span class="stats-label">CPU LOAD</span>
+        <span class="stats-value">GLOBAL</span>
+        <div class="stats-bar-track">
+          <div class="stats-bar-fill"></div>
+        </div>
+        <div></div>
+
+        <span class="stats-label">MEMORY</span>
+        <span class="stats-value">SECURE</span>
+        <div class="stats-bar-track">
+          <div class="stats-bar-fill"></div>
+        </div>
+        <div></div>
+
+        <span class="stats-label">NET I/O</span>
+        <span class="stats-value">ACTIVE</span>
+        <div class="stats-bar-track">
+          <div class="stats-bar-fill"></div>
+        </div>
+        <div></div>
+
+        <span class="stats-label">LATENCY</span>
+        <span class="stats-value">TUNNEL</span>
+        <div class="stats-bar-track">
+          <div class="stats-bar-fill lat"></div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+
+    <!-- ALERT LOG -->
+    <div class="panel alert-log">
+      <div class="panel-title">ALERT//LOG</div>
+      <div class="alert-scroll">
+        <div class="alert-line">[ALERT] Suspicious IP cluster rerouted to honeypot...</div>
+        <div class="alert-line">[TRACE] Deep packet inspection enabled on high-risk ports...</div>
+        <div class="alert-line">[SHIELD] Firewall rules auto-updated from GLOBAL signatures...</div>
+        <div class="alert-line">[INFO] Anonymized telemetry synced with central node...</div>
+      </div>
+    </div>
+
+    <!-- CODE QUI DÉFILE -->
+    <div class="panel code-stream">
+      <div class="panel-title">CORE//CODE</div>
+      <div class="code-stream-body">
+        <div class="code-column left">
+          <div class="code-line"><span class="kw">for</span>(<span class="var">i</span><span class="op">=</span><span class="num">0</span>; <span class="var">i</span><span class="op">&lt;</span><span class="num">4096</span>; <span class="var">i</span><span class="op">++</span>){</div>
+          <div class="code-line">  <span class="var">seed</span> <span class="op">^=</span> (<span class="var">hash</span>(<span class="var">i</span>) <span class="op">&amp;</span> <span class="num">0xff</span>);</div>
+          <div class="code-line">  <span class="var">entropy</span> <span class="op">+=</span> (<span class="var">seed</span> <span class="op">&gt;&gt;</span> <span class="num">3</span>);</div>
+          <div class="code-line">}</div>
+          <div class="code-line"><span class="kw">while</span>(<span class="var">packet</span><span class="op">=</span>next()){</div>
+          <div class="code-line">  <span class="kw">if</span>(match(<span class="str">&quot;SIG_GLOBAL&quot;</span>, <span class="var">packet</span>)){</div>
+          <div class="code-line">    <span class="var">route</span>(<span class="var">packet</span>, <span class="str">&quot;TUNNEL_SEC&quot;</span>);</div>
+          <div class="code-line">  }</div>
+          <div class="code-line">}</div>
+        </div>
+        <div class="code-column right">
+          <div class="code-line"><span class="var">matrix</span>[<span class="var">x</span>][<span class="var">y</span>] <span class="op">=</span> (<span class="var">rand</span>() <span class="op">%</span> <span class="num">2</span>);</div>
+          <div class="code-line"><span class="kw">if</span>(<span class="var">matrix</span>[<span class="num">42</span>][<span class="num">7</span>]) {</div>
+          <div class="code-line">  <span class="var">inject</span>(<span class="str">&quot;GLOBAL_KEY&quot;</span>, <span class="var">session</span>);</div>
+          <div class="code-line">}</div>
+          <div class="code-line"><span class="var">hash</span> <span class="op">=</span> sha256(<span class="str">&quot;GLOBAL_NODE&quot;</span> <span class="op">+</span> <span class="var">entropy</span>);</div>
+          <div class="code-line"><span class="kw">return</span> (<span class="var">hash</span> <span class="op">&amp;</span> <span class="num">0xffff</span>);</div>
+          <div class="code-line"><span class="kw">for</span>(<span class="var">n</span><span class="op">=</span><span class="num">0</span>; <span class="var">n</span><span class="op">&lt;</span><span class="num">128</span>; <span class="var">n</span><span class="op">++</span>) { log(<span class="var">n</span>); }</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 FENÊTRES SUPPLÉMENTAIRES -->
+
+    <div class="panel extra1">
+      <div class="panel-title">SESSION//TOKENS</div>
+      <div class="extra-body">
+        SESSION_ID: 0xA2F9:GLOBAL-01<br>
+        ACTIVE TUNNELS: 04 / 08<br>
+        KEY ROTATION: ENABLED (32s)<br>
+        HASH ALGOS: SHA-256 · CHACHA20<br>
+        <small>Monitoring en temps réel des sessions et renouvellement automatique des clés.</small>
+      </div>
+    </div>
+
+    <div class="panel extra2">
+      <div class="panel-title">FIREWALL//RULES</div>
+      <div class="extra-body">
+        RULESET: GLOBAL_SEC_V3<br>
+        BLOCKED PORTS: 23, 445, 3389, 5357<br>
+        WAF STATUS: ACTIVE (XSS · SQLi)<br>
+        IDS: ANOMALY MODE ON<br>
+        <small>Profil adaptatif en fonction du trafic et des signatures de menaces.</small>
+      </div>
+    </div>
+
+    <div class="panel extra3">
+      <div class="panel-title">NODES//CLUSTER</div>
+      <div class="extra-body">
+        NODES ONLINE: 12 / 16<br>
+        REGION: EU-WEST · US-EAST<br>
+        SYNC LATENCY: &lt; 35 ms<br>
+        HEALTH: 99.982% UPTIME<br>
+        <small>Répartition intelligente des requêtes entre les nœuds disponibles.</small>
+      </div>
+    </div>
+
+    <div class="panel extra4">
+      <div class="panel-title">LOG//STREAM</div>
+      <div class="extra-body">
+        [OK] /auth/validate · 200 · 18ms<br>
+        [OK] /api/secure/data · 200 · 24ms<br>
+        [WARN] /api/legacy · 301 · redirect<br>
+        [BLOCK] /admin/panel · 403 · FW_RULE_23<br>
+        <small>Flux condensé des dernières requêtes HTTP et décisions du pare-feu.</small>
+      </div>
     </div>
   </div>
 
@@ -570,12 +1120,6 @@
           <img src="img/projets.png" alt="Site 2" />
           <span>Mes Projets</span>
         </a>
-<!--
-        <a href="main-SMP.html" class="icon">
-          <img src="img/SMP.jpeg" alt="Site 3" />
-          <span>SMP</span>
-        </a>
--->        
         <a href="main-jeux.html" class="icon">
           <img src="img/Jeux.jpeg" alt="Site 3" />
           <span>jeux</span>
@@ -600,9 +1144,11 @@
     </div>
 
     <div class="bottom-footer">
-      ©Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (ia) VISITEUR :
+      ©Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (ia)
+      VISITEUR :
       <a href="https://www.hitwebcounter.com/" target="_blank">
-        <img src="https://hitwebcounter.com/counter/counter.php?page=21458336&style=0024&nbdigits=5&type=page&initCount=0" title="Free Tools" alt="Free Tools" border="0" />
+        <img src="https://hitwebcounter.com/counter/counter.php?page=21458336&style=0024&nbdigits=5&type=page&initCount=0"
+             title="Free Tools" alt="Free Tools" border="0" />
       </a>
     </div>
 
