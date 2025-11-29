@@ -4,11 +4,10 @@
   <meta charset="UTF-8" />
   <title>Accueil - Global</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    /* =====================================================================
+       STYLE GLOBAL EXISTANT
+       ===================================================================== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
       --blue-light: #29d8ff;
@@ -49,7 +48,6 @@
       z-index: -1;
     }
 
-    /* ===== LOADER GLOBAL ===== */
     #loader {
       position: fixed;
       inset: 0;
@@ -61,7 +59,6 @@
       overflow: hidden;
     }
 
-    /* halo animé */
     .loader-bg-orbit {
       position: absolute;
       width: 1500px;
@@ -87,7 +84,6 @@
       100% { transform: rotate(360deg) scale(1); }
     }
 
-    /* particules */
     .loader-particles {
       position: absolute;
       inset: 0;
@@ -121,10 +117,9 @@
       100% { transform: translate3d(-20px,-60px,0); opacity: 0.1; }
     }
 
-    /* ========= PANNEAUX, tous même taille (centre + 33%) ========= */
     .panel {
       position: absolute;
-      width: min(690px, 95vw); /* 520 * 1.33 ≈ 690 */
+      width: min(690px, 95vw);
       padding: 34px 32px 36px 32px;
       border-radius: 18px;
       background:
@@ -175,7 +170,6 @@
       box-shadow: 0 0 12px rgba(56,189,248,0.9);
     }
 
-    /* centre */
     .panel.center {
       position: relative;
       z-index: 20;
@@ -354,8 +348,6 @@
       100% { transform: translateY(40%); opacity: 0; }
     }
 
-    /* ===== POSITION / ANIM DES GROS PANNEAUX (RESSERRÉS) ===== */
-
     .panel.map-world {
       top: 8%;
       left: 6%;
@@ -400,7 +392,6 @@
       animation: floatPulse 6s ease-in-out infinite;
     }
 
-    /* 4 fenêtres supplémentaires rapprochées autour du centre */
     .panel.extra1 {
       top: 28%;
       left: 2%;
@@ -462,7 +453,6 @@
       50%     { transform: scale(0.95); box-shadow: 0 0 42px rgba(139,92,246,1); }
     }
 
-    /* ===== MAP MONDE ===== */
     .world-map-wrapper {
       margin-top: 20px;
       height: 220px;
@@ -525,7 +515,6 @@
       50%     { transform: scale(1.3); opacity: 1; }
     }
 
-    /* ===== STATS PANEL ===== */
     .stats-grid {
       margin-top: 18px;
       display: grid;
@@ -533,12 +522,9 @@
       gap: 10px 18px;
       font-size: 0.78rem;
     }
-    .stats-label {
-      opacity: 0.75;
-    }
-    .stats-value {
-      text-align: right;
-    }
+    .stats-label { opacity: 0.75; }
+    .stats-value { text-align: right; }
+
     .stats-bar-track {
       margin-top: 4px;
       height: 6px;
@@ -572,7 +558,6 @@
       100% { width: 85%; }
     }
 
-    /* ===== ALERT LOG ===== */
     .alert-scroll {
       margin-top: 16px;
       height: 150px;
@@ -603,7 +588,6 @@
       100% { top: -60%; }
     }
 
-    /* ===== CODE STREAM ===== */
     .code-stream-body {
       margin-top: 18px;
       height: 190px;
@@ -645,7 +629,6 @@
     .code-line span.op     { color: #f97316; }
     .code-line span.kw     { color: #38bdf8; }
 
-    /* ===== PANNEAUX EXTRA (contenu simple) ===== */
     .extra-body {
       margin-top: 18px;
       font-size: 0.76rem;
@@ -661,7 +644,6 @@
       opacity: 0.7;
     }
 
-    /* ===== CONTENU PRINCIPAL ===== */
     #main-content {
       opacity: 0;
       transform: translateY(10px);
@@ -767,9 +749,7 @@
         0 3px 8px rgba(15,23,42,0.9);
     }
 
-    .page-padding {
-      padding: 26px 7vw 90px 7vw;
-    }
+    .page-padding { padding: 26px 7vw 90px 7vw; }
 
     .icon-container {
       display: grid;
@@ -777,17 +757,11 @@
       gap: 28px;
       justify-items: center;
     }
-
     @media (max-width: 900px) {
-      .icon-container {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+      .icon-container { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
-
     @media (max-width: 600px) {
-      .icon-container {
-        grid-template-columns: 1fr;
-      }
+      .icon-container { grid-template-columns: 1fr; }
     }
 
     .icon {
@@ -858,18 +832,6 @@
         0 8px 26px rgba(15,23,42,0.9),
         0 0 0 1px rgba(15,23,42,1);
       transform-origin: center center;
-      transition:
-        transform 0.35s ease-out,
-        box-shadow 0.35s ease-out,
-        border-color 0.35s ease-out;
-    }
-
-    .icon:hover img {
-      transform: scale(1.06) translateY(-4px);
-      border-color: rgba(56,189,248,0.95);
-      box-shadow:
-        0 18px 45px rgba(15,23,42,1),
-        0 0 35px rgba(56,189,248,0.8);
     }
 
     .icon span {
@@ -918,16 +880,662 @@
       filter: drop-shadow(0 0 6px rgba(56,189,248,0.7));
     }
 
-    .page-padding {
-      padding-bottom: 100px;
+    .page-padding { padding-bottom: 100px; }
+
+    /* =====================================================================
+       TERMINAL OVERLAY + ACHIEVEMENTS
+       ===================================================================== */
+    #matrix-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 900;
+      opacity: 0.12;
+      pointer-events: none;
+      display: none;
     }
+
+    #global-terminal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      background: radial-gradient(circle at 0 0, rgba(0,255,65,0.08), transparent 60%), rgba(0,0,0,0.96);
+      color: #00ff41;
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    #terminal-header {
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #00bfff;
+      background: linear-gradient(90deg, rgba(0,0,0,0.9), rgba(0,31,63,0.9));
+    }
+
+    #terminal-header span {
+      letter-spacing: 0.2em;
+      font-size: 0.9rem;
+    }
+
+    #terminal-close {
+      background: none;
+      border: 1px solid #00bfff;
+      color: #00bfff;
+      padding: 4px 8px;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    #terminal-output {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      scroll-behavior: smooth;
+      position: relative;
+    }
+
+    .prompt { color: #00bfff; font-weight: 600; }
+    .output { color: #00ff41; }
+    .error  { color: #ff4b4b; }
+    .success{ color: #7fff4f; }
+
+    .typing {
+      overflow: hidden;
+      white-space: nowrap;
+      animation: typing 1.2s steps(40) forwards;
+    }
+
+    @keyframes typing {
+      from { width: 0; }
+      to   { width: 100%; }
+    }
+
+    .glitch {
+      animation: glitch 0.3s infinite;
+    }
+
+    @keyframes glitch {
+      0%,100%{transform:translate(0);}
+      20%{transform:translate(-2px,2px);}
+      40%{transform:translate(-2px,-2px);}
+      60%{transform:translate(2px,2px);}
+      80%{transform:translate(2px,-2px);}
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #111827;
+      border: 1px solid #00ff41;
+      margin: 4px 0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00ff41, #00bfff);
+      width: 0%;
+      box-shadow: 0 0 10px #00ff41;
+      transition: width 0.1s linear;
+    }
+
+    #terminal-input-row {
+      padding: 10px 16px;
+      border-top: 1px solid #00bfff;
+      background: rgba(0,0,0,0.9);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    #terminal-input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: #00bfff;
+      font-family: inherit;
+      font-size: 0.85rem;
+      caret-color: #00ff41;
+    }
+
+    #global-terminal-open-btn {
+      position: fixed;
+      top: 90px;
+      right: 20px;
+      z-index: 60;
+      background: radial-gradient(circle at 0 0, rgba(56,189,248,0.6), transparent 70%);
+      color: #e5f1ff;
+      border-radius: 999px;
+      padding: 8px 16px;
+      border: 1px solid rgba(56,189,248,0.9);
+      font-size: 0.78rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow:
+        0 14px 28px rgba(15,23,42,0.9),
+        0 0 24px rgba(56,189,248,0.7);
+    }
+
+    #achievements-overlay {
+      position: fixed;
+      inset: 8% 6%;
+      z-index: 1100;
+      background: radial-gradient(circle at 0 0, rgba(0,191,255,0.25), transparent 60%), rgba(0,0,0,0.97);
+      border: 1px solid #00bfff;
+      border-radius: 16px;
+      display: none;
+      flex-direction: column;
+      color: #00ff41;
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    #achievements-overlay-header {
+      padding: 10px 16px;
+      border-bottom: 1px solid #00bfff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+    }
+
+    #achievements-grid {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 16px 16px 16px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      font-size: 0.75rem;
+    }
+
+    .achievement-branch {
+      border: 1px solid #1f2937;
+      border-radius: 12px;
+      padding: 8px;
+      background: radial-gradient(circle at 0 0, rgba(0,255,65,0.08), transparent 60%);
+    }
+
+    .achievement-branch h3 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      margin-bottom: 6px;
+      color: #7dd3fc;
+    }
+
+    .achievement-node {
+      border-radius: 8px;
+      border: 1px solid #374151;
+      padding: 6px;
+      margin-bottom: 4px;
+      position: relative;
+    }
+
+    .achievement-node.locked {
+      border-color: #111827;
+      color: #111827;
+      background: #020617;
+    }
+    .achievement-node.discovered {
+      border-color: #3b82f6;
+    }
+    .achievement-node.unlocked {
+      border-color: #22c55e;
+      box-shadow: 0 0 16px rgba(34,197,94,0.7);
+      background: radial-gradient(circle at 50% 0, rgba(34,197,94,0.25), transparent 70%);
+    }
+
+    .achievement-node .ach-name { font-weight: 600; font-size: 0.72rem; }
+    .achievement-node .ach-desc { font-size: 0.68rem; opacity: 0.85; }
+
+    @media (max-width: 768px) {
+      #terminal-output { font-size: 0.78rem; }
+      #terminal-input-row { font-size: 0.78rem; }
+      #achievements-overlay { inset: 12% 4%; }
+      #global-terminal-open-btn {
+        top: auto;
+        bottom: 80px;
+        right: 12px;
+      }
+    }
+
+    /* === EFFETS SUPPLÉMENTAIRES TERMINAL === */
+    #terminal-output.scan-effect {
+      position: relative;
+      overflow: hidden;
+    }
+    #terminal-output.scan-effect::after {
+      content: "";
+      position: absolute;
+      inset: -30%;
+      background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(56,189,248,0.12) 45%,
+        rgba(56,189,248,0.5) 50%,
+        rgba(56,189,248,0.12) 55%,
+        transparent 100%
+      );
+      mix-blend-mode: screen;
+      animation: terminalScanMove 0.9s linear forwards;
+      pointer-events: none;
+    }
+    @keyframes terminalScanMove {
+      0%   { transform: translateY(-60%); opacity: 0; }
+      10%  { opacity: 0.9; }
+      60%  { opacity: 0.9; }
+      100% { transform: translateY(60%); opacity: 0; }
+    }
+
+    #terminal-access-flash {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.1rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      pointer-events: none;
+      z-index: 5;
+    }
+    #terminal-access-flash span {
+      padding: 12px 22px;
+      border-radius: 999px;
+      border: 1px solid;
+      box-shadow: 0 0 24px currentColor;
+      background: rgba(0,0,0,0.7);
+    }
+    #terminal-access-flash.granted span {
+      color: #7fff4f;
+      border-color: #7fff4f;
+    }
+    #terminal-access-flash.denied span {
+      color: #ff4b4b;
+      border-color: #ff4b4b;
+    }
+    #terminal-access-flash.show {
+      display: flex;
+      animation: accessFlashPop 0.6s ease-out forwards;
+    }
+    @keyframes accessFlashPop {
+      0%   { transform: scale(0.7); opacity: 0; }
+      40%  { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); opacity: 0; }
+    }
+
+    #global-terminal.pulse-border {
+      animation: terminalPulseBorder 0.8s ease-out;
+    }
+    @keyframes terminalPulseBorder {
+      0%   { box-shadow: 0 0 0 rgba(34,197,94,0); }
+      40%  { box-shadow: 0 0 42px rgba(34,197,94,0.9); }
+      100% { box-shadow: 0 0 0 rgba(34,197,94,0); }
+    }
+
+    /* === Effets MC & Undertale === */
+    #terminal-theme-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+      overflow: hidden;
+    }
+
+    .theme-mc-cube {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      top: -90px;
+      border-radius: 12px;
+      border: 2px solid #facc15;
+      box-shadow: 0 0 18px rgba(250, 204, 21, 0.9);
+      background: linear-gradient(145deg,#16a34a,#22c55e,#bbf7d0);
+      opacity: 0.95;
+      animation: mcCubeDrop 0.9s cubic-bezier(.18,.89,.32,1.28) forwards;
+    }
+    .theme-mc-cube::after {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border-radius: 8px;
+      border: 1px dashed rgba(15,23,42,0.6);
+    }
+    @keyframes mcCubeDrop {
+      0%   { transform: translate(-50%, -120px) scale(0.7); opacity: 0; }
+      60%  { transform: translate(-50%, 35vh) scale(1.02); opacity: 1; }
+      100% { transform: translate(-50%, 32vh) scale(1); opacity: 0; }
+    }
+
+    .theme-heart-pulse {
+      position: absolute;
+      width: 40px;
+      height: 36px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: #f97316;
+      text-shadow: 0 0 16px rgba(248,113,113,0.9);
+      font-size: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: heartPulse 0.8s ease-out forwards;
+    }
+    @keyframes heartPulse {
+      0%   { transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+      40%  { transform: translate(-50%, -55%) scale(1.1); opacity: 1; }
+      100% { transform: translate(-50%, -45%) scale(1); opacity: 0; }
+    }
+
+    .theme-soul-wave {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(248,113,113,0.8),
+        transparent
+      );
+      opacity: 0.0;
+      animation: soulWave 0.9s ease-out forwards;
+    }
+    @keyframes soulWave {
+      0%   { transform: translateX(-50%) translateY(40px); opacity: 0; }
+      30%  { opacity: 0.75; }
+      100% { transform: translateX(-50%) translateY(-40px); opacity: 0; }
+    }
+    /* === BOOST INTENSITY PACK (RÉSEAU + MC + SOUL) === */
+
+    /* Shake du terminal (réseau, attaques, explosions) */
+    #global-terminal.terminal-shake {
+      animation: terminalShake 0.5s cubic-bezier(.36,.07,.19,.97);
+    }
+    @keyframes terminalShake {
+      10%, 90% { transform: translate3d(-1px, 0, 0); }
+      20%, 80% { transform: translate3d(2px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+
+    /* Overlay noirci pendant les gros scans */
+    #terminal-output.scan-intense::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0, rgba(15,23,42,0.9), transparent 70%);
+      pointer-events: none;
+      opacity: 0;
+      animation: scanDarken 0.9s ease-out forwards;
+    }
+    @keyframes scanDarken {
+      0%   { opacity: 0; }
+      30%  { opacity: 0.5; }
+      100% { opacity: 0; }
+    }
+
+    /* Second rayon de scan (vertical) */
+    #terminal-output.scan-intense::after {
+      content: "";
+      position: absolute;
+      top: -40%;
+      bottom: -40%;
+      width: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(56,189,248,0.9),
+        transparent
+      );
+      mix-blend-mode: screen;
+      opacity: 0;
+      animation: scanBeamVert 0.9s ease-out forwards;
+    }
+    @keyframes scanBeamVert {
+      0%   { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      20%  { opacity: 0.9; }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+    }
+
+    /* MC: particules autour du cube */
+    .theme-mc-particle {
+    position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(250,204,21,0.9);
+      box-shadow: 0 0 12px rgba(250,204,21,0.9);
+      opacity: 0;
+      animation: mcParticleBurst 0.6s ease-out forwards;
+    }
+    @keyframes mcParticleBurst {
+      0%   { transform: translate(0,0) scale(0.4); opacity: 0; }
+      40%  { opacity: 1; }
+      100% { transform: translate(var(--dx), var(--dy)) scale(0.6); opacity: 0; }
+    }
+
+    /* SOUL: halo rouge sur tout le terminal */
+    #global-terminal.soul-intense::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(248,113,113,0.3), transparent 70%);
+      pointer-events: none;
+      opacity: 0;
+      animation: soulHalo 0.9s ease-out forwards;
+    }
+    @keyframes soulHalo {
+      0%   { opacity: 0; }
+      30%  { opacity: 0.7; }
+      100% { opacity: 0; }
+    }
+
+    /* SOUL: deuxième wave plus fine */
+    .theme-soul-wave-thin {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      left: 40%;
+      transform: translateX(-50%);
+      background: linear-gradient(
+    to bottom,
+        transparent,
+        rgba(248,113,113,0.7),
+        transparent
+      );
+      opacity: 0.0;
+      animation: soulWaveThin 0.9s ease-out forwards;
+    }
+    @keyframes soulWaveThin {
+      0%   { transform: translateX(-50%) translateY(60px); opacity: 0; }
+      30%  { opacity: 0.6; }
+      100% { transform: translateX(-50%) translateY(-60px); opacity: 0; }
+    }
+
+/* === ANIMATION SPÉCIALE /technoblade (10s) — VERSION BOOST === */
+
+#terminal-techno-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 6;
+  display: none;
+}
+
+#terminal-techno-overlay.show {
+  display: block;
+  animation: technoFade 10s linear forwards;
+}
+
+/* Fond dégradé violet/rose + léger zoom */
+.techno-bg {
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(236,72,153,0.6), transparent 60%),
+    radial-gradient(circle at 80% 80%, rgba(59,130,246,0.6), transparent 60%),
+    rgba(15,23,42,0.98);
+  opacity: 0;
+  animation: technoBg 10s ease-in-out forwards;
+}
+
+.techno-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(252,211,77,0.18), transparent 70%);
+  mix-blend-mode: screen;
+}
+
+/* Couronne “pixel” au centre avec rotation douce */
+.techno-crown {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 160px;
+  height: 90px;
+  box-shadow:
+    0 0 0 4px rgba(248,250,252,0.9),
+    0 0 30px rgba(239,68,68,0.9);
+  background:
+    linear-gradient(90deg,#facc15 0,#f97316 40%,#facc15 100%);
+  clip-path: polygon(
+    0% 100%, 0% 40%,
+    20% 0%, 40% 40%,
+    50% 10%,
+    60% 40%, 80% 0%,
+    100% 40%, 100% 100%
+  );
+  opacity: 0;
+  animation: technoCrown 10s ease-out forwards;
+}
+
+/* Ligne brillante sous la couronne */
+.techno-crown::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: -12px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(248,250,252,0.9), transparent);
+  box-shadow: 0 0 18px rgba(248,250,252,0.9);
+}
+
+/* Texte central */
+.techno-title {
+  position: absolute;
+  top: 58%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 1.5rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: #fee2e2;
+  text-shadow:
+    0 0 8px rgba(248,113,113,1),
+    0 0 18px rgba(248,113,113,0.9);
+  opacity: 0;
+  animation: technoTitle 10s ease-out forwards;
+}
+
+/* Particules qui montent en continu */
+.techno-particle {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(248,250,252,0.95);
+  box-shadow: 0 0 10px rgba(248,250,252,0.9);
+  opacity: 0;
+  animation: technoParticle 2s ease-out forwards;
+}
+
+/* “Rayons” radiaux */
+.techno-ray {
+  position: absolute;
+  width: 2px;
+  height: 120px;
+  background: linear-gradient(to top, transparent, rgba(252,211,77,0.9));
+  top: 35%;
+  left: 50%;
+  transform-origin: 50% 100%;
+  opacity: 0;
+  animation: technoRay 10s ease-out forwards;
+}
+
+/* Keyframes */
+@keyframes technoBg {
+  0%   { opacity: 0; transform: scale(1); }
+  10%  { opacity: 1; transform: scale(1.02); }
+  50%  { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 0; transform: scale(1.02); }
+}
+
+@keyframes technoCrown {
+  0%   { transform: translate(-50%, -40%) scale(0.6) rotate(-6deg); opacity: 0; }
+  15%  { transform: translate(-50%, -50%) scale(1.15) rotate(3deg); opacity: 1; }
+  40%  { transform: translate(-50%, -50%) scale(1.05) rotate(-2deg); }
+  80%  { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: translate(-50%, -60%) scale(0.85) rotate(4deg); opacity: 0; }
+}
+
+@keyframes technoTitle {
+  0%   { opacity: 0; transform: translate(-50%, -35%) scale(0.7); letter-spacing: 0.4em; }
+  20%  { opacity: 1; transform: translate(-50%, -50%) scale(1); letter-spacing: 0.28em; }
+  60%  { opacity: 1; transform: translate(-50%, -50%) scale(1.02); }
+  100% { opacity: 0; transform: translate(-50%, -65%) scale(0.9); }
+}
+
+@keyframes technoParticle {
+  0%   { transform: translateY(30px) scale(0.4); opacity: 0; }
+  20%  { opacity: 1; }
+  100% { transform: translateY(-60px) scale(0.2); opacity: 0; }
+}
+
+@keyframes technoRay {
+  0%   { opacity: 0; transform: scaleY(0.2); }
+  15%  { opacity: 1; transform: scaleY(1); }
+  70%  { opacity: 1; transform: scaleY(1); }
+  100% { opacity: 0; transform: scaleY(0.5); }
+}
+
+@keyframes technoFade {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+
   </style>
 </head>
 <body>
   <!-- Loader hacking -->
   <div id="loader">
     <div class="loader-bg-orbit"></div>
-
     <div class="loader-particles">
       <div class="particle p1"></div>
       <div class="particle p2"></div>
@@ -936,7 +1544,6 @@
       <div class="particle p5"></div>
     </div>
 
-    <!-- centre -->
     <div class="panel center">
       <div class="panel-title">GLOBAL//SYSTEM</div>
       <div class="loader-status-row">
@@ -967,7 +1574,6 @@
       <div class="loader-scan"></div>
     </div>
 
-    <!-- MAP MONDE -->
     <div class="panel map-world">
       <div class="panel-title">WORLD//MAP</div>
       <div class="world-map-wrapper">
@@ -981,41 +1587,27 @@
       </div>
     </div>
 
-    <!-- STATS CPU/NET -->
     <div class="panel stats">
       <div class="panel-title">SYSTEM//STATS</div>
       <div class="stats-grid">
         <span class="stats-label">CPU LOAD</span>
         <span class="stats-value">GLOBAL</span>
-        <div class="stats-bar-track">
-          <div class="stats-bar-fill"></div>
-        </div>
-        <div></div>
+        <div class="stats-bar-track"><div class="stats-bar-fill"></div></div><div></div>
 
         <span class="stats-label">MEMORY</span>
         <span class="stats-value">SECURE</span>
-        <div class="stats-bar-track">
-          <div class="stats-bar-fill"></div>
-        </div>
-        <div></div>
+        <div class="stats-bar-track"><div class="stats-bar-fill"></div></div><div></div>
 
         <span class="stats-label">NET I/O</span>
         <span class="stats-value">ACTIVE</span>
-        <div class="stats-bar-track">
-          <div class="stats-bar-fill"></div>
-        </div>
-        <div></div>
+        <div class="stats-bar-track"><div class="stats-bar-fill"></div></div><div></div>
 
         <span class="stats-label">LATENCY</span>
         <span class="stats-value">TUNNEL</span>
-        <div class="stats-bar-track">
-          <div class="stats-bar-fill lat"></div>
-        </div>
-        <div></div>
+        <div class="stats-bar-track"><div class="stats-bar-fill lat"></div></div><div></div>
       </div>
     </div>
 
-    <!-- ALERT LOG -->
     <div class="panel alert-log">
       <div class="panel-title">ALERT//LOG</div>
       <div class="alert-scroll">
@@ -1026,7 +1618,6 @@
       </div>
     </div>
 
-    <!-- CODE QUI DÉFILE -->
     <div class="panel code-stream">
       <div class="panel-title">CORE//CODE</div>
       <div class="code-stream-body">
@@ -1036,24 +1627,22 @@
           <div class="code-line">  <span class="var">entropy</span> <span class="op">+=</span> (<span class="var">seed</span> <span class="op">&gt;&gt;</span> <span class="num">3</span>);</div>
           <div class="code-line">}</div>
           <div class="code-line"><span class="kw">while</span>(<span class="var">packet</span><span class="op">=</span>next()){</div>
-          <div class="code-line">  <span class="kw">if</span>(match(<span class="str">&quot;SIG_GLOBAL&quot;</span>, <span class="var">packet</span>)){</div>
-          <div class="code-line">    <span class="var">route</span>(<span class="var">packet</span>, <span class="str">&quot;TUNNEL_SEC&quot;</span>);</div>
+          <div class="code-line">  <span class="kw">if</span>(match(<span class="str">"SIG_GLOBAL"</span>, <span class="var">packet</span>)){</div>
+          <div class="code-line">    <span class="var">route</span>(<span class="var">packet</span>, <span class="str">"TUNNEL_SEC"</span>);</div>
           <div class="code-line">  }</div>
           <div class="code-line">}</div>
         </div>
         <div class="code-column right">
           <div class="code-line"><span class="var">matrix</span>[<span class="var">x</span>][<span class="var">y</span>] <span class="op">=</span> (<span class="var">rand</span>() <span class="op">%</span> <span class="num">2</span>);</div>
           <div class="code-line"><span class="kw">if</span>(<span class="var">matrix</span>[<span class="num">42</span>][<span class="num">7</span>]) {</div>
-          <div class="code-line">  <span class="var">inject</span>(<span class="str">&quot;GLOBAL_KEY&quot;</span>, <span class="var">session</span>);</div>
+          <div class="code-line">  <span class="var">inject</span>(<span class="str">"GLOBAL_KEY"</span>, <span class="var">session</span>);</div>
           <div class="code-line">}</div>
-          <div class="code-line"><span class="var">hash</span> <span class="op">=</span> sha256(<span class="str">&quot;GLOBAL_NODE&quot;</span> <span class="op">+</span> <span class="var">entropy</span>);</div>
+          <div class="code-line"><span class="var">hash</span> <span class="op">=</span> sha256(<span class="str">"GLOBAL_NODE"</span> <span class="op">+</span> <span class="var">entropy</span>);</div>
           <div class="code-line"><span class="kw">return</span> (<span class="var">hash</span> <span class="op">&amp;</span> <span class="num">0xffff</span>);</div>
           <div class="code-line"><span class="kw">for</span>(<span class="var">n</span><span class="op">=</span><span class="num">0</span>; <span class="var">n</span><span class="op">&lt;</span><span class="num">128</span>; <span class="var">n</span><span class="op">++</span>) { log(<span class="var">n</span>); }</div>
         </div>
       </div>
     </div>
-
-    <!-- 4 FENÊTRES SUPPLÉMENTAIRES -->
 
     <div class="panel extra1">
       <div class="panel-title">SESSION//TOKENS</div>
@@ -1110,6 +1699,8 @@
       </nav>
     </div>
 
+    <button id="global-terminal-open-btn">GLOBAL//TERMINAL</button>
+
     <div class="page-padding">
       <div class="icon-container">
         <a href="main-cour.html" class="icon">
@@ -1156,13 +1747,1080 @@
     <script type="module" src="/auth.js"></script>
   </div>
 
-  <!-- Script pour masquer le loader après 5s -->
+  <!-- Matrix + Terminal Overlay + Achievements -->
+  anvas id="matrix-bg"></canvas>
+    <section id="global-terminal">
+      <div id="terminal-header">
+        <span>GLOBAL//FIREWALL_TERMINAL</span>
+        <button id="terminal-close">CLOSE</button>
+      </div>
+
+      <!-- Overlay ACCESS flash -->
+      <div id="terminal-access-flash"><span></span></div>
+      <!-- Overlay thématique (MC / Undertale) -->
+      <div id="terminal-theme-overlay"></div>
+      <!-- Overlay spécial TECHNOBLADE -->
+      <div id="terminal-techno-overlay"></div>
+
+      <div id="terminal-output"></div>
+      <div id="terminal-input-row">
+        <span class="prompt">[GLOBAL//SYSTEM] $ </span>
+        <input id="terminal-input" type="text"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false" />
+      </div>
+    </section>
+
+
+  <div id="achievements-overlay">
+    <div id="achievements-overlay-header">
+      <div>ACHIEVEMENTS//MAP — Progression : <span id="ach-progress">0</span>%</div>
+      <button id="ach-close" style="background:none;border:1px solid #00bfff;color:#00bfff;padding:2px 8px;border-radius:6px;cursor:pointer;">X</button>
+    </div>
+    <div id="achievements-grid"></div>
+  </div>
+
+  <!-- Loader hide -->
   <script>
     setTimeout(() => {
       document.getElementById('loader').style.display = 'none';
       const main = document.getElementById('main-content');
       main.style.display = 'block';
     }, 5000);
+  </script>
+
+  <!-- TERMINAL + ACHIEVEMENTS JS -->
+  <script>
+    const termOutput = document.getElementById('terminal-output');
+    const termInput  = document.getElementById('terminal-input');
+    const globalTerminal = document.getElementById('global-terminal');
+    const matrixBg = document.getElementById('matrix-bg');
+    const openBtn = document.getElementById('global-terminal-open-btn');
+    const closeBtn = document.getElementById('terminal-close');
+    const achOverlay = document.getElementById('achievements-overlay');
+    const achProgressSpan = document.getElementById('ach-progress');
+    const achCloseBtn = document.getElementById('ach-close');
+    const accessFlash = document.getElementById('terminal-access-flash');
+    const themeOverlay = document.getElementById('terminal-theme-overlay');
+    const technoOverlay = document.getElementById('terminal-techno-overlay');
+
+    // === ANIMATION SPÉCIALE /technoblade (10s) — VERSION BOOST ===
+    function playTechnoBladeAnimation() {
+      if (!technoOverlay) return;
+      technoOverlay.innerHTML = ''; // reset contenu
+
+      // Fond
+      const bg = document.createElement('div');
+      bg.className = 'techno-bg';
+
+      // Couronne
+      const crown = document.createElement('div');
+      crown.className = 'techno-crown';
+
+      // Titre
+      const title = document.createElement('div');
+      title.className = 'techno-title';
+      title.textContent = 'TECHNO//MODE';
+
+      technoOverlay.appendChild(bg);
+      technoOverlay.appendChild(crown);
+      technoOverlay.appendChild(title);
+
+      // Rayons radiaux autour de la couronne
+      const rayCount = 12;
+      for (let i = 0; i < rayCount; i++) {
+        const ray = document.createElement('div');
+        ray.className = 'techno-ray';
+        const angle = (360 / rayCount) * i;
+        ray.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+        technoOverlay.appendChild(ray);
+      }
+
+      // Particules en plusieurs vagues pendant 10s
+      const startTime = performance.now();
+      function spawnWave() {
+        const now = performance.now();
+        if (now - startTime > 9500) return; // on arrête juste avant la fin
+
+        for (let i = 0; i < 10; i++) {
+          const p = document.createElement('div');
+          p.className = 'techno-particle';
+          const x = 10 + Math.random()*80;
+          const y = 45 + Math.random()*20;
+          p.style.left = x + '%';
+          p.style.top  = y + '%';
+          technoOverlay.appendChild(p);
+          setTimeout(() => p.remove(), 2000);
+        }
+        setTimeout(spawnWave, 600); // nouvelle vague toutes les 0,6s
+      }
+      spawnWave();
+
+      technoOverlay.classList.add('show');
+      setTimeout(() => {
+        technoOverlay.classList.remove('show');
+        technoOverlay.innerHTML = '';
+      }, 10000);
+    }
+
+
+    let termState = {
+      history: [],
+      historyIndex: -1,
+      prefs: { sounds: true, animSpeed: 1 },
+      stats: { commandsRun: 0, gamesPlayed: 0 },
+      achievements: {},
+      konami: [],
+      activeGame: null
+    };
+
+    const ACH_TREE = {
+      'NETWORK//SCANNER': {
+        scan_basic: { name:'SCAN//INIT', desc:'Exécuter /scan', prereq:[] },
+        scan_deep: { name:'SCAN//DEEP', desc:'Exécuter /deep_scan', prereq:['scan_basic'] },
+        nmap_full: { name:'NMAP//FULL', desc:'/nmap complété', prereq:['scan_deep'] },
+        ports_open: { name:'PORTS//OPEN', desc:'/ports listé', prereq:['nmap_full'] },
+        firewall_bypass: { name:'FW//BYPASS', desc:'/firewall réussi', prereq:['ports_open'] },
+        trace_route: { name:'TRACE//ROUTE', desc:'/trace utilisé', prereq:['scan_basic'] }
+      },
+      'MINE//CRAFTED': {
+        mine_first: { name:'MINE//FIRST', desc:'/mine exécuté', prereq:[] },
+        diamond_combo: { name:'DIAMOND//CHAIN', desc:'/mine puis /diamond', prereq:['mine_first'] },
+        creeper_alert: { name:'CREEPER//ALERT', desc:'/creeper déclenché', prereq:['mine_first'] },
+        nether_gateway: { name:'NETHER//GATE', desc:'/nether utilisé', prereq:['diamond_combo'] },
+        redstone_logic: { name:'REDSTONE//LOGIC', desc:'/redstone', prereq:['mine_first'] }
+      },
+      'SOUL//RESET': {
+        heart_seen: { name:'HEART//SEEN', desc:'/heart inspecté', prereq:[] },
+        mercy_path: { name:'MERCY//PATH', desc:'/mercy plusieurs fois', prereq:['heart_seen'] },
+        savepoint_used: { name:'SAVE//POINT', desc:'/savepoint', prereq:['heart_seen'] },
+        determination_loop: { name:'DETERMINATION//LOOP', desc:'/reset plusieurs fois', prereq:['savepoint_used'] }
+      },
+      'GLOBAL//LORE': {
+        konami_master: { name:'KONAMI//MASTER', desc:'Konami code', prereq:[] },
+        cmd_master: { name:'CMD//MASTER', desc:'Beaucoup de commandes', prereq:[] },
+        lore_unlocked: { name:'LORE//NODE', desc:'/lore trouvé', prereq:[] }
+      },
+      'UTILITY//OPS': {
+        timer_set: { name:'TIMER//SET', desc:'/timer utilisé', prereq:[] },
+        todo_used: { name:'TODO//USED', desc:'/todo consulté', prereq:['timer_set'] },
+        theme_switch: { name:'THEME//SWAP', desc:'/theme utilisé', prereq:[] }
+      }
+    };
+
+    function initAchievements() {
+      Object.entries(ACH_TREE).forEach(([branch, nodes]) => {
+        Object.keys(nodes).forEach(id => {
+          if (!termState.achievements[id]) {
+            termState.achievements[id] = { state: 'locked', branch };
+          }
+        });
+      });
+    }
+
+    function calcAchProgress() {
+      const total = Object.values(ACH_TREE).reduce((a,b)=>a+Object.keys(b).length,0);
+      const unlocked = Object.values(termState.achievements).filter(a=>a.state==='unlocked').length;
+      return total ? Math.round(unlocked/total*100) : 0;
+    }
+
+    function saveTermState() {
+      localStorage.setItem('globalTerminalState', JSON.stringify(termState));
+    }
+
+    function loadTermState() {
+      const saved = localStorage.getItem('globalTerminalState');
+      if(saved) {
+        try { termState = JSON.parse(saved); } catch(e){}
+      }
+      initAchievements();
+    }
+
+    function resetTermState() {
+      localStorage.removeItem('globalTerminalState');
+      termState = {
+        history: [],
+        historyIndex: -1,
+        prefs: { sounds: true, animSpeed: 1 },
+        stats: { commandsRun: 0, gamesPlayed: 0 },
+        achievements: {},
+        konami: [],
+        activeGame: null
+      };
+      initAchievements();
+      termOutput.innerHTML = '';
+      printLine('SAVE//RESET DONE', 'success');
+      saveTermState();
+    }
+
+    function printLine(text, cls='output') {
+      const div = document.createElement('div');
+      div.className = cls + ' typing';
+      div.textContent = text;
+      termOutput.appendChild(div);
+      termOutput.scrollTop = termOutput.scrollHeight;
+      setTimeout(()=>div.classList.remove('typing'), 50);
+    }
+
+    function printProgress(title, max, cb) {
+      printLine(title + ' [');
+      const bar = document.createElement('div');
+      bar.className = 'progress-bar';
+      const fill = document.createElement('div');
+      fill.className = 'progress-fill';
+      bar.appendChild(fill);
+      termOutput.appendChild(bar);
+      let p = 0;
+      const id = setInterval(()=>{
+        p += Math.random()*15;
+        if(p>=max) {
+          p = max;
+          clearInterval(id);
+          fill.style.width = '100%';
+          setTimeout(cb, 300);
+        } else {
+          fill.style.width = p + '%';
+        }
+      }, 120 / termState.prefs.animSpeed);
+    }
+
+    function playScanEffect() {
+      termOutput.classList.add('scan-effect');
+      setTimeout(() => {
+        termOutput.classList.remove('scan-effect');
+      }, 900);
+    }
+
+    function playAccessFlash(type) {
+      accessFlash.className = '';
+      accessFlash.classList.add(type);
+      const span = accessFlash.querySelector('span');
+      span.textContent = type === 'granted' ? 'ACCESS GRANTED//' : 'ACCESS DENIED//';
+      accessFlash.classList.add('show');
+      setTimeout(() => {
+        accessFlash.classList.remove('show');
+      }, 600);
+    }
+
+    function playBorderPulse() {
+      globalTerminal.classList.add('pulse-border');
+      setTimeout(() => {
+        globalTerminal.classList.remove('pulse-border');
+      }, 800);
+    }
+
+    function playMinecraftEffect() {
+      if (!themeOverlay) return;
+      const cube = document.createElement('div');
+      cube.className = 'theme-mc-cube';
+      themeOverlay.appendChild(cube);
+      setTimeout(() => {
+        cube.remove();
+      }, 900);
+    }
+
+    function playSoulEffect() {
+      if (!themeOverlay) return;
+      const heart = document.createElement('div');
+      heart.className = 'theme-heart-pulse';
+      heart.textContent = '♥';
+
+      const wave = document.createElement('div');
+      wave.className = 'theme-soul-wave';
+
+      themeOverlay.appendChild(heart);
+      themeOverlay.appendChild(wave);
+
+      setTimeout(() => {
+        heart.remove();
+        wave.remove();
+      }, 900);
+    }
+
+    function checkAchievement(id) {
+      const ach = termState.achievements[id];
+      if(!ach) return;
+      if(ach.state === 'unlocked') return;
+      if(ach.state === 'locked') {
+        ach.state = 'discovered';
+        const data = ACH_TREE[ach.branch][id];
+        printLine('ACHIEVEMENT//DISCOVERED → ' + data.name);
+      }
+      ach.state = 'unlocked';
+      const data = ACH_TREE[ach.branch][id];
+      printLine('UNLOCKED// ' + data.name + ' ✨', 'success');
+      playBorderPulse();
+      saveTermState();
+      updateAchievementsOverlay();
+    }
+
+    function openTerminal() {
+      globalTerminal.style.display = 'flex';
+      matrixBg.style.display = 'block';
+      termInput.focus();
+    }
+
+    function closeTerminal() {
+      globalTerminal.style.display = 'none';
+      matrixBg.style.display = 'none';
+    }
+
+    function toggleAchievementsOverlay() {
+      if(achOverlay.style.display === 'flex') {
+        achOverlay.style.display = 'none';
+      } else {
+        updateAchievementsOverlay();
+        achOverlay.style.display = 'flex';
+      }
+    }
+
+    function updateAchievementsOverlay() {
+      achProgressSpan.textContent = calcAchProgress();
+      const grid = document.getElementById('achievements-grid');
+      grid.innerHTML = '';
+      Object.entries(ACH_TREE).forEach(([branch, nodes]) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'achievement-branch';
+        const h = document.createElement('h3');
+        h.textContent = branch;
+        wrap.appendChild(h);
+        Object.entries(nodes).forEach(([id, data]) => {
+          const state = termState.achievements[id]?.state || 'locked';
+          const node = document.createElement('div');
+          node.className = 'achievement-node ' + state;
+
+          const nameDiv = document.createElement('div');
+          nameDiv.className = 'ach-name';
+          const descDiv = document.createElement('div');
+          descDiv.className = 'ach-desc';
+
+          if(state === 'locked') {
+            nameDiv.textContent = '???';
+            descDiv.textContent = 'UNKNOWN NODE';
+          } else if(state === 'discovered') {
+            nameDiv.textContent = data.name;
+            descDiv.textContent = 'CONDITION: ???';
+          } else {
+            nameDiv.textContent = data.name;
+            descDiv.textContent = data.desc;
+          }
+
+          node.appendChild(nameDiv);
+          node.appendChild(descDiv);
+          wrap.appendChild(node);
+        });
+        grid.appendChild(wrap);
+      });
+    }
+
+    const COMMANDS = {};
+    function addCommand(name, fn, category) {
+      COMMANDS[name] = { run: fn, category };
+    }
+
+    addCommand('help', () => {
+      printLine('HELP//GLOBAL — Aperçu 20% des commandes');
+      const names = Object.keys(COMMANDS);
+      const subsetCount = Math.max(5, Math.floor(names.length * 0.2));
+      const subset = names.slice(0, subsetCount);
+      subset.forEach(cmd => {
+        printLine('/' + cmd + '  [' + COMMANDS[cmd].category + ']');
+      });
+      printLine('Le reste est à découvrir via exploration du système.');
+    }, 'system');
+
+    addCommand('clear', () => { termOutput.innerHTML = ''; }, 'system');
+
+    addCommand('stats', () => {
+      printLine('STATS//GLOBAL');
+      printLine('Commands: ' + termState.stats.commandsRun);
+      printLine('Games: ' + termState.stats.gamesPlayed);
+      printLine('Achievements: ' + calcAchProgress() + '%');
+      checkAchievement('cmd_master');
+    }, 'system');
+
+    addCommand('achievements', () => { toggleAchievementsOverlay(); }, 'system');
+
+    addCommand('reset_save', () => {
+      printLine('CONFIRM//RESET ? tape /confirm_reset pour valider');
+    }, 'system');
+
+    addCommand('confirm_reset', () => { resetTermState(); }, 'system');
+
+    addCommand('whoami', () => {
+      printLine('USER//PROFILE');
+      printLine('ID: WHITEHAT_001');
+      printLine('ROLE: GLOBAL OPERATOR');
+    }, 'system');
+
+    addCommand('uptime', () => {
+      printLine('UPTIME//GLOBAL');
+      printLine('CORE ONLINE: 99.99%');
+    }, 'system');
+
+    addCommand('about_global', () => {
+      printLine('ABOUT//GLOBAL');
+      printLine('Interface expérimentale de pare-feu ludique.');
+    }, 'system');
+
+    addCommand('credits', () => {
+      printLine('CREDITS//GLOBAL');
+      printLine('Code & design: Thomas Lewis');
+    }, 'system');
+
+    addCommand('scan', () => {
+      playScanEffect();
+      playIntenseScan(); // boost
+      printProgress('SCAN//BASIC', 100, () => {
+        printLine('192.168.1.1:80 OPEN');
+        printLine('FW_RULE_23: ACTIVE');
+        checkAchievement('scan_basic');
+      });
+    }, 'network');
+
+
+    addCommand('deep_scan', () => {
+      playScanEffect();
+      playIntenseScan();
+      printProgress('SCAN//DEEP', 100, () => {
+        printLine('NODE_47: VULN INDICATOR');
+        checkAchievement('scan_deep');
+      });
+    }, 'network');
+
+
+    addCommand('nmap', () => {
+      playScanEffect();
+      printProgress('NMAP//FULL', 100, () => {
+        printLine('22/ssh: FILTERED');
+        printLine('443/https: OPEN');
+        checkAchievement('nmap_full');
+      });
+    }, 'network');
+
+    addCommand('ports', () => {
+      printLine('PORTS//LIST');
+      printLine('80, 443, 8080, 25565');
+      checkAchievement('ports_open');
+    }, 'network');
+
+    addCommand('firewall', () => {
+      playScanEffect();
+      playIntenseScan();
+      printProgress('FW//BYPASS', 80, () => {
+        printLine('FW_RULE_23 TEMP DISABLED');
+        playAccessFlash('granted');
+        checkAchievement('firewall_bypass');
+      });
+    }, 'network');
+
+
+    addCommand('trace', () => {
+      printLine('TRACE//ROUTE');
+      printLine('1> 192.168.1.1');
+      printLine('2> 10.0.0.47');
+      printLine('3> GLOBAL//CORE');
+      checkAchievement('trace_route');
+    }, 'network');
+
+    addCommand('inject', () => {
+      playScanEffect();
+      printProgress('INJECT//PAYLOAD', 60, () => {
+        printLine('PAYLOAD DROPPED INTO SANDBOX');
+      });
+    }, 'network');
+
+    addCommand('bruteforce', () => {
+      playScanEffect();
+      playIntenseScan();
+      playTerminalShake();
+      printProgress('BRUTEFORCE//SIM', 100, () => {
+        printLine('SIMULATION COMPLETE: MOT DE PASSE IMAGINAIRE TROUVÉ');
+        playAccessFlash('denied');
+      });
+    }, 'network');
+
+
+    addCommand('secure', () => {
+      printLine('SECURE//HARDENING');
+      printLine('Règles renforcées, surface d’attaque réduite.');
+    }, 'network');
+
+    addCommand('encrypt', (args) => {
+      const txt = args.join(' ') || 'sample';
+      const b = btoa(txt);
+      printLine('ENCRYPT//DATA → ' + b);
+    }, 'network');
+
+    addCommand('decrypt', (args) => {
+      const txt = args[0] || btoa('sample');
+      try {
+        const d = atob(txt);
+        printLine('DECRYPT//DATA → ' + d);
+      } catch {
+        printLine('DECRYPT//ERROR', 'error');
+      }
+    }, 'network');
+
+    addCommand('fw_rules', () => {
+      printLine('FW//RULESET');
+      printLine('FW_RULE_23, FW_RULE_42, FW_RULE_GLOBAL');
+    }, 'network');
+
+    addCommand('packet_sniff', () => {
+      playScanEffect();
+      printProgress('SNIFF//PACKETS', 90, () => {
+        printLine('Several noisy flows detected and tagged.');
+      });
+    }, 'network');
+
+    addCommand('netstat', () => {
+      printLine('NETSTAT//SUMMARY');
+      printLine('[LISTEN] 0.0.0.0:443');
+      printLine('[ACTIVE] 192.168.1.10:443 → 34.56.78.90:443');
+    }, 'network');
+
+    addCommand('dns_check', () => {
+      printLine('DNS//CHECK');
+      printLine('global.local → 127.0.0.1');
+    }, 'network');
+
+    addCommand('latency', () => {
+      printLine('LATENCY//MEASURE');
+      printLine('TUNNEL RTT: 32 ms (simulé)');
+    }, 'network');
+
+    addCommand('route_map', () => {
+      printLine('ROUTE//MAP');
+      printLine('GLOBAL_NODES: EU-WEST, US-EAST');
+    }, 'network');
+
+    addCommand('hackgame', () => {
+      termState.activeGame = 'reaction';
+      termState.stats.gamesPlayed++;
+      printLine('HACKGAME//REACTION');
+      printLine('Quand "GO" apparaît, appuie sur ESPACE aussi vite que possible.');
+      setTimeout(() => {
+        printLine('→ GO!');
+        let start = performance.now();
+        function handler(e) {
+          if(e.code === 'Space') {
+            const delta = performance.now() - start;
+            printLine('Temps de réaction: ' + Math.round(delta) + ' ms');
+            if(delta < 250) {
+              printLine('EXCELLENT//HACKER REFLEX');
+            }
+            document.removeEventListener('keydown', handler);
+            termState.activeGame = null;
+          }
+        }
+        document.addEventListener('keydown', handler);
+      }, 1000 + Math.random()*2000);
+    }, 'minigame');
+
+    addCommand('tracegame', () => {
+      termState.activeGame = 'tracegame';
+      termState.stats.gamesPlayed++;
+      printLine('TRACEGAME//CHOIX');
+      printLine('Noeuds: A → B → C ; A → X → Y.');
+      printLine('Tape /choose C ou /choose Y pour sélectionner la route finale.');
+    }, 'minigame');
+
+    addCommand('choose', (args) => {
+      if(termState.activeGame !== 'tracegame') {
+        printLine('AUCUN TRACEGAME ACTIF', 'error');
+        return;
+      }
+      const dest = (args[0]||'').toUpperCase();
+      if(dest === 'C') {
+        printLine('ROUTE//OK → Chemin discret choisi.');
+      } else {
+        printLine('ROUTE//NOISY → Chemin très surveillé.', 'error');
+      }
+      termState.activeGame = null;
+    }, 'minigame');
+
+    addCommand('guess_hash', () => {
+      termState.activeGame = { type:'guess_hash', secret: Math.floor(Math.random()*10) };
+      termState.stats.gamesPlayed++;
+      printLine('GUESS_HASH//START');
+      printLine('Le nombre est entre 0 et 9. Utilise /guess <n>.');
+    }, 'minigame');
+
+    addCommand('guess', (args) => {
+      if(!termState.activeGame || termState.activeGame.type !== 'guess_hash') {
+        printLine('AUCUN GUESS_HASH EN COURS', 'error');
+        return;
+      }
+      const n = parseInt(args[0]||'-1',10);
+      if(isNaN(n)) {
+        printLine('ENTRÉE INVALIDE', 'error'); return;
+      }
+      if(n === termState.activeGame.secret) {
+        printLine('CORRECT//HASH GUESS');
+        termState.activeGame = null;
+      } else {
+        printLine('FAUX//HASH → réessaie');
+      }
+    }, 'minigame');
+
+    addCommand('memory', () => {
+      termState.activeGame = { type:'memory', seq:[1,2,3] };
+      termState.stats.gamesPlayed++;
+      printLine('MEMORY//GAME');
+      printLine('Séquence: 1 2 3  (prototype). Réponds avec /repeat 1-2-3.');
+    }, 'minigame');
+
+    addCommand('repeat', (args) => {
+      if(!termState.activeGame || termState.activeGame.type !== 'memory') {
+        printLine('AUCUN MEMORY EN COURS', 'error');
+        return;
+      }
+      const resp = args.join('');
+      if(resp === '1-2-3') {
+        printLine('MEMORY//OK');
+        termState.activeGame = null;
+      } else {
+        printLine('MEMORY//FAIL', 'error');
+      }
+    }, 'minigame');
+
+    addCommand('slots', () => {
+      termState.stats.gamesPlayed++;
+      const symbols = ['◆','■','▲','●'];
+      const r = () => symbols[Math.floor(Math.random()*symbols.length)];
+      const a = r(), b = r(), c = r();
+      printLine('SLOTS//ROLL → ' + a + ' ' + b + ' ' + c);
+      if(a===b && b===c) printLine('JACKPOT//VISUEL');
+    }, 'minigame');
+
+    addCommand('mine', () => {
+      playMinecraftEffect();
+      playMinecraftParticles(); // boost
+      printLine('MINE//START');
+      printLine('CHUNK_LOADING...');
+      printLine('STONE x64, COAL x12');
+      checkAchievement('mine_first');
+    }, 'minecraft');
+
+
+    addCommand('tnt', () => {
+      playMinecraftEffect();
+      playMinecraftParticles();
+      playTerminalShake(); // explosion → shake
+      printLine('TNT//ARMED');
+      printLine('Détonation simulée, aucune structure réelle affectée.');
+    }, 'minecraft');
+
+
+    addCommand('creeper', () => {
+      playMinecraftEffect();
+      printLine('CREEPER//SIGNAL');
+      printLine('Anomalie verte repérée, explosion évitée.');
+      checkAchievement('creeper_alert');
+    }, 'minecraft');
+
+    addCommand('redstone', () => {
+      playMinecraftEffect();
+      printLine('REDSTONE//SIGNAL');
+      printLine('Impulsions logiques stables.');
+      checkAchievement('redstone_logic');
+    }, 'minecraft');
+
+    addCommand('nether', () => {
+      playMinecraftEffect();
+      printLine('NETHER//GATE');
+      printLine('Portail énergétique simulé.');
+      checkAchievement('nether_gateway');
+    }, 'minecraft');
+
+    addCommand('tnt', () => {
+      playMinecraftEffect();
+      playMinecraftParticles();
+      playTerminalShake(); // explosion → shake
+      printLine('TNT//ARMED');
+      printLine('Détonation simulée, aucune structure réelle affectée.');
+    }, 'minecraft');
+
+
+    addCommand('ender', () => {
+      playMinecraftEffect();
+      printLine('ENDER//SIGNAL');
+      printLine('Déplacement instantané vers un point fictif.');
+    }, 'minecraft');
+
+    addCommand('totem', () => {
+      playMinecraftEffect();
+      printLine('TOTEM//SYMBOL');
+      printLine('Protection symbolique activée.');
+    }, 'minecraft');
+
+    addCommand('chunk_info', () => {
+      playMinecraftEffect();
+      printLine('CHUNK//INFO');
+      printLine('CHUNK_0_0: SAFE, SIMULATION ONLY.');
+    }, 'minecraft');
+
+    addCommand('biome', () => {
+      playMinecraftEffect();
+      printLine('BIOME//SCAN');
+      printLine('Type: cyber-plain imaginaire.');
+    }, 'minecraft');
+
+    addCommand('heart', () => {
+      playSoulEffect();
+      playSoulIntensity(); // boost
+      printLine('HEART//STATUS');
+      printLine('Choix: /fight ou /mercy.');
+      checkAchievement('heart_seen');
+    }, 'undertale');
+
+
+    addCommand('mercy', () => {
+      playSoulEffect();
+      printLine('MERCY//SELECTED');
+      printLine('Chemin pacifiste simulé.');
+      checkAchievement('mercy_path');
+    }, 'undertale');
+
+    addCommand('fight', () => {
+      playSoulEffect();
+      printLine('FIGHT//SELECTED');
+      printLine('Attaque symbolique enregistrée.');
+    }, 'undertale');
+
+    addCommand('savepoint', () => {
+      playSoulEffect();
+      printLine('SAVE//POINT');
+      printLine('Données imaginaires préservées.');
+      checkAchievement('savepoint_used');
+    }, 'undertale');
+
+    addCommand('reset', () => {
+      playSoulEffect();
+      playSoulIntensity();
+      printLine('SOUL//RESET');
+      printLine('Boucle temporelle fictive relancée.');
+      checkAchievement('determination_loop');
+    }, 'undertale');
+
+
+    addCommand('lv', () => {
+      playSoulEffect();
+      printLine('LV//STATUS');
+      printLine('LV: symbolique, sans impact réel.');
+    }, 'undertale');
+
+    addCommand('soul_color', () => {
+      playSoulEffect();
+      printLine('SOUL//COLOR');
+      printLine('Couleur de l’âme: variable selon les choix.');
+    }, 'undertale');
+
+    addCommand('pacifist', () => {
+      playSoulEffect();
+      printLine('PACIFIST//ROUTE');
+      printLine('Toujours choisir les options non destructives.');
+    }, 'undertale');
+
+    addCommand('genocide', () => {
+      playSoulEffect();
+      printLine('GENOCIDE//ROUTE');
+      printLine('Scénario purement textuel, sans contenu violent explicite.');
+    }, 'undertale');
+
+    addCommand('timeline', () => {
+      playSoulEffect();
+      printLine('TIMELINE//INFO');
+      printLine('Plusieurs branches de scénario coexistent.');
+    }, 'undertale');
+
+    addCommand('theme', () => {
+      printLine('THEME//SWAP');
+      printLine('Changement de palette interne simulé.');
+      checkAchievement('theme_switch');
+    }, 'utility');
+
+    addCommand('timer', () => {
+      printLine('TIMER//SET');
+      printLine('Timer utilitaire (implémentation détaillée à compléter).');
+      checkAchievement('timer_set');
+    }, 'utility');
+
+    addCommand('todo', () => {
+      printLine('TODO//LIST');
+      printLine('- Ajouter des commandes');
+      printLine('- Explorer le GLOBAL//SYSTEM');
+      checkAchievement('todo_used');
+    }, 'utility');
+
+    addCommand('sound_on', () => {
+      termState.prefs.sounds = true;
+      printLine('SOUND//ON');
+    }, 'utility');
+
+    addCommand('sound_off', () => {
+      termState.prefs.sounds = false;
+      printLine('SOUND//OFF');
+    }, 'utility');
+
+    addCommand('ping', () => {
+      printLine('PING//GLOBAL');
+      printLine('Réponse simulée: 21 ms');
+    }, 'utility');
+
+    addCommand('lore', () => {
+      printLine('LORE//NODE');
+      printLine('Fragment de récit système déverrouillé.');
+      checkAchievement('lore_unlocked');
+    }, 'utility');
+
+    addCommand('node_info', () => {
+      printLine('NODE//INFO');
+      printLine('GLOBAL_CORE: statut opérationnel, trafic stable.');
+    }, 'utility');
+
+    addCommand('konami', () => {
+      printLine('KONAMI//HINT');
+      printLine('Essaye la séquence célèbre directement au clavier...');
+    }, 'utility');
+
+    addCommand('rain', () => {
+      printLine('RAIN//EFFECT');
+      printLine('La matrice en arrière-plan tombe déjà.');
+    }, 'utility');
+
+    addCommand('glitch', () => {
+      const div = document.createElement('div');
+      div.className = 'output glitch';
+      div.textContent = 'GLITCH//FRAME';
+      termOutput.appendChild(div);
+      termOutput.scrollTop = termOutput.scrollHeight;
+    }, 'utility');
+
+    addCommand('scan_ach', () => {
+      printLine('SCAN//ACH');
+      printLine('Plusieurs achievements encore cachés.');
+    }, 'utility');
+
+    addCommand('session', () => {
+      printLine('SESSION//STATUS');
+      printLine('ID: GLOBAL-LOCAL, stable.');
+    }, 'utility');
+
+    addCommand('echo', (args) => {
+      printLine('ECHO// ' + args.join(' '));
+    }, 'utility');
+
+    addCommand('ascii', () => {
+      printLine('ASCII//ART');
+      printLine('[*]  GLOBAL NODE  [*]');
+    }, 'fun');
+
+    addCommand('matrix', () => {
+      printLine('MATRIX//STREAM');
+      printLine('Le flux de caractères est déjà actif en fond.');
+    }, 'fun');
+
+    addCommand('random', () => {
+      printLine('RANDOM//VALUE → ' + Math.floor(Math.random()*1000));
+    }, 'fun');
+
+    addCommand('echo_ip', () => {
+      printLine('IP//ECHO → 127.0.0.1 (loopback simulé)');
+    }, 'fun');
+
+    addCommand('hash_demo', () => {
+      printLine('HASH//DEMO');
+      printLine('Entrée "GLOBAL" → valeur condensée simulée.');
+    }, 'fun');
+
+    addCommand('fire', () => {
+      printLine('FIRE//STATUS');
+      printLine('Tous les foyers critiques sont éteints.');
+    }, 'fun');
+
+    addCommand('shield', () => {
+      printLine('SHIELD//UP');
+      printLine('Protection visuelle renforcée.');
+    }, 'fun');
+
+    addCommand('portal', () => {
+      printLine('PORTAL//SIM');
+      printLine('Ouverture vers un espace abstrait.');
+    }, 'fun');
+
+    addCommand('global', () => {
+      printLine('GLOBAL//PING');
+      printLine('Le noyau semble te répondre.');
+    }, 'fun');
+    addCommand('technoblade', () => {
+      printLine('TECHNO//SEQUENCE INIT', 'output');
+      printLine('Mode spécial 10s: affichage visuel intensif.', 'output');
+      playTechnoBladeAnimation();
+    }, 'fun');
+
+
+    function handleCommand(input) {
+      const txt = input.trim();
+      if(!txt) return;
+      termState.stats.commandsRun++;
+      termState.history.unshift(txt);
+      termState.historyIndex = -1;
+
+      if(!txt.startsWith('/')) {
+        printLine('ERREUR//CMD → Utilise le préfixe "/"', 'error');
+        return;
+      }
+
+      const [cmd, ...args] = txt.slice(1).split(' ');
+      printLine('[GLOBAL] $ ' + txt, 'prompt');
+
+      if(COMMANDS[cmd]) {
+        COMMANDS[cmd].run(args);
+      } else {
+        printLine('CMD//NOT_FOUND: /' + cmd, 'error');
+      }
+      saveTermState();
+    }
+
+    termInput.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter') {
+        const value = termInput.value;
+        termInput.value = '';
+        handleCommand(value);
+      } else if(e.key === 'ArrowUp') {
+        e.preventDefault();
+        if(termState.historyIndex + 1 < termState.history.length) {
+          termState.historyIndex++;
+          termInput.value = termState.history[termState.historyIndex];
+        }
+      } else if(e.key === 'ArrowDown') {
+        e.preventDefault();
+        if(termState.historyIndex > 0) {
+          termState.historyIndex--;
+          termInput.value = termState.history[termState.historyIndex];
+        } else {
+          termState.historyIndex = -1;
+          termInput.value = '';
+        }
+      } else if(e.key === 'Tab') {
+        e.preventDefault();
+        const val = termInput.value.trim();
+        if(val.startsWith('/')) {
+          const partial = val.slice(1);
+          const matches = Object.keys(COMMANDS).filter(c => c.startsWith(partial));
+          if(matches.length === 1) {
+            termInput.value = '/' + matches[0] + ' ';
+          }
+        }
+      }
+    });
+
+    const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','KeyB','KeyA'];
+    document.addEventListener('keydown', (e) => {
+      termState.konami.push(e.code);
+      if(termState.konami.length > KONAMI.length) termState.konami.shift();
+      if(JSON.stringify(termState.konami) === JSON.stringify(KONAMI)) {
+        printLine('KONAMI//CODE → SECRET ACCESS');
+        checkAchievement('konami_master');
+        termState.konami = [];
+      }
+    });
+
+    function initMatrix() {
+      const c = matrixBg;
+      const ctx = c.getContext('2d');
+      function resize() {
+        c.width = window.innerWidth;
+        c.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+      const chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      const fontSize = 14;
+      const columns = Math.floor(c.width / fontSize);
+      const drops = Array(columns).fill(1);
+      function draw() {
+        ctx.fillStyle = 'rgba(0,0,0,0.1)';
+        ctx.fillRect(0,0,c.width,c.height);
+        ctx.fillStyle = '#00ff41';
+        ctx.font = fontSize + 'px monospace';
+        for(let i=0;i<drops.length;i++) {
+          const txt = chars.charAt(Math.floor(Math.random()*chars.length));
+          ctx.fillText(txt, i*fontSize, drops[i]*fontSize);
+          if(drops[i]*fontSize > c.height && Math.random()>0.975) drops[i] = 0;
+          drops[i]++;
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    openBtn.addEventListener('click', openTerminal);
+    closeBtn.addEventListener('click', closeTerminal);
+    achCloseBtn.addEventListener('click', ()=> achOverlay.style.display='none');
+
+    loadTermState();
+    initMatrix();
+    printLine('GLOBAL//TERMINAL READY');
+    printLine('Tape /help pour un aperçu (20%) des commandes.');
+    // === BOOST INTENSITY PACK JS ===
+
+    // Réseau: scan intense + darken + beam + éventuel shake
+    function playIntenseScan() {
+      termOutput.classList.add('scan-intense');
+      setTimeout(() => {
+        termOutput.classList.remove('scan-intense');
+      }, 900);
+    }
+
+    // Shake terminal (ex: /bruteforce, /tnt)
+    function playTerminalShake() {
+      globalTerminal.classList.add('terminal-shake');
+      setTimeout(() => {
+        globalTerminal.classList.remove('terminal-shake');
+      }, 500);
+    }
+
+    // MC: ajoute 4 petites particules autour du cube
+    function playMinecraftParticles() {
+      if (!themeOverlay) return;
+      const offsets = [
+        { dx: '-40px', dy: '-20px' },
+        { dx: '40px',  dy: '-10px' },
+        { dx: '-30px', dy: '30px'  },
+        { dx: '30px',  dy: '25px'  }
+      ];
+      offsets.forEach(o => {
+        const p = document.createElement('div');
+        p.className = 'theme-mc-particle';
+        p.style.setProperty('--dx', o.dx);
+        p.style.setProperty('--dy', o.dy);
+        // point de départ : centre du cube (approx milieu écran)
+        p.style.left = '50%';
+        p.style.top = '32vh';
+        themeOverlay.appendChild(p);
+        setTimeout(() => p.remove(), 600);
+      });
+    }
+
+    // SOUL: active halo rouge et deuxième wave
+    function playSoulIntensity() {
+      globalTerminal.classList.add('soul-intense');
+      setTimeout(() => {
+        globalTerminal.classList.remove('soul-intense');
+      }, 900);
+
+      if (!themeOverlay) return;
+      const waveThin = document.createElement('div');
+      waveThin.className = 'theme-soul-wave-thin';
+      themeOverlay.appendChild(waveThin);
+      setTimeout(() => waveThin.remove(), 900);
+    }
+
   </script>
 </body>
 </html>
