@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GLOBAL//CLICKER</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --blue-light: #29d8ff;
+      --blue-main: #007BFF;
+      --bg-dark: #050816;
+      --white: #ffffff;
+      --lime: #7fff4f;
+      --amber: #ffb347;
+      --violet: #8b5cf6;
+      --red: #ff4b4b;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
+        linear-gradient(135deg, #020617 0%, #031633 40%, #001a3b 100%);
+      color: #e5f1ff;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.09;
+      mix-blend-mode: soft-light;
+      background-image:
+        linear-gradient(0deg, rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 3px 3px, 3px 3px;
+      z-index: -1;
+    }
+
+    .top-banner {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background: linear-gradient(
+        135deg,
+        rgba(0, 123, 255, 0.75),
+        rgba(3, 105, 161, 0.75)
+      );
+      border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      color: var(--white);
+      padding: 18px 7vw 10px 7vw;
+      font-size: 1.9rem;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .top-banner::after {
+      content: "";
+      height: 2px;
+      width: 120px;
+      margin-top: 4px;
+      background: linear-gradient(90deg, var(--white), rgba(255,255,255,0));
+      opacity: 0.9;
+    }
+
+    .nav-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      padding-bottom: 8px;
+      font-size: 0.9rem;
+    }
+
+    .nav-bar a {
+      position: relative;
+      color: #e0f2ff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.24), transparent 60%);
+      border: 1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition:
+        transform 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        background 0.18s ease-out;
+    }
+
+    .nav-bar a::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--blue-light);
+      box-shadow: 0 0 12px rgba(41,216,255,0.9);
+    }
+
+    .nav-bar a:hover {
+      transform: translateY(-1px) scale(1.02);
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.5), transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148, 163, 184, 0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding {
+      padding: 26px 7vw 90px 7vw;
+    }
+
+    .clicker-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.5fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .clicker-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 0 0, rgba(56,189,248,0.26), transparent 60%),
+        linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
+      border: 1px solid rgba(56,189,248,0.7);
+      box-shadow:
+        0 20px 48px rgba(0,0,0,0.9),
+        0 0 32px rgba(56,189,248,0.5);
+      color: #e5f1ff;
+      padding: 18px 18px 16px 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size: 100% 3px;
+      mix-blend-mode: soft-light;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .panel-title {
+      font-size: 0.9rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #7dd3fc;
+      white-space: nowrap;
+    }
+
+    .panel-title::after {
+      content: "";
+      display: block;
+      margin-top: 6px;
+      width: 95px;
+      height: 2px;
+      background: linear-gradient(90deg, #7dd3fc, transparent);
+      box-shadow: 0 0 12px rgba(56,189,248,0.9);
+    }
+
+    .panel-sub {
+      font-size: 0.75rem;
+      color: #a5b4fc;
+      opacity: 0.9;
+    }
+
+    .score-display {
+      margin-top: 6px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.1rem;
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .score-label {
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      font-size: 0.8rem;
+      opacity: 0.85;
+    }
+
+    .score-value-main {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--lime);
+      text-shadow: 0 0 18px rgba(34,197,94,0.9);
+    }
+
+    .score-secondary {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+
+    .pps-display {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 0.78rem;
+      color: #a5b4fc;
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    .click-button-wrap {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+    }
+
+    #packet-button {
+      width: 220px;
+      height: 220px;
+      border-radius: 999px;
+      border: 2px solid rgba(56,189,248,0.9);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(56,189,248,0.4), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(34,197,94,0.4), transparent 55%),
+        #020617;
+      box-shadow:
+        0 18px 40px rgba(0,0,0,0.9),
+        0 0 45px rgba(56,189,248,0.8);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #e5f1ff;
+      font-family: "JetBrains Mono", monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 0.8rem;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition:
+        transform 0.07s ease-out,
+        box-shadow 0.07s ease-out,
+        border-color 0.07s ease-out;
+    }
+
+    #packet-button::before {
+      content: "";
+      position: absolute;
+      inset: -30%;
+      background:
+        radial-gradient(circle at 0 0, rgba(56,189,248,0.5), transparent 65%),
+        radial-gradient(circle at 100% 100%, rgba(34,197,94,0.4), transparent 65%);
+      opacity: 0;
+      transition: opacity 0.3s ease-out;
+    }
+
+    #packet-button:hover {
+      transform: translateY(-4px) scale(1.03);
+      border-color: var(--lime);
+      box-shadow:
+        0 24px 50px rgba(0,0,0,1),
+        0 0 55px rgba(74,222,128,0.9);
+    }
+
+    #packet-button:hover::before {
+      opacity: 1;
+    }
+
+    #packet-button:active {
+      transform: translateY(2px) scale(0.97);
+      box-shadow:
+        0 10px 22px rgba(0,0,0,1),
+        0 0 35px rgba(56,189,248,0.7);
+    }
+
+    .packet-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 0 0 16px rgba(56,189,248,0.9);
+    }
+
+    .float-text {
+      position: fixed;
+      pointer-events: none;
+      color: #7fff4f;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.85rem;
+      text-shadow: 0 0 10px rgba(34,197,94,0.9);
+      animation: floatUp 0.7s ease-out forwards;
+      z-index: 999;
+    }
+
+    @keyframes floatUp {
+      0%   { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-30px); opacity: 0; }
+    }
+
+    .upgrades-list {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      position: relative;
+      z-index: 2;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.78rem;
+    }
+
+    .upgrade-card {
+      border-radius: 10px;
+      border: 1px solid rgba(148,163,184,0.7);
+      padding: 8px 10px;
+      background: radial-gradient(circle at 0 0, rgba(56,189,248,0.18), transparent 60%);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+      transition:
+        transform 0.12s ease-out,
+        box-shadow 0.12s ease-out,
+        border-color 0.12s ease-out,
+        background 0.12s ease-out;
+    }
+
+    .upgrade-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--blue-light);
+      box-shadow: 0 14px 25px rgba(15,23,42,0.9);
+      background: radial-gradient(circle at 0 0, rgba(56,189,248,0.28), transparent 70%);
+    }
+
+    .upgrade-card.disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .upgrade-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .upgrade-name {
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.74rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .upgrade-icon {
+      font-size: 1rem;
+    }
+
+    .upgrade-level {
+      font-size: 0.7rem;
+      color: #a5b4fc;
+    }
+
+    .upgrade-desc {
+      font-size: 0.72rem;
+      color: #cbd5f5;
+      opacity: 0.9;
+    }
+
+    .upgrade-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: #a5b4fc;
+    }
+
+    .achievements-list {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.76rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .achievement {
+      border-radius: 9px;
+      border: 1px solid #111827;
+      padding: 6px 8px;
+      background: radial-gradient(circle at 0 0, rgba(0,255,65,0.08), transparent 60%);
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .achievement-main {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .achievement-name {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    .achievement-desc {
+      font-size: 0.7rem;
+      opacity: 0.85;
+    }
+
+    .achievement-state {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .achievement.locked {
+      opacity: 0.35;
+      border-color: #020617;
+    }
+    .achievement.discovered {
+      border-color: #3b82f6;
+    }
+    .achievement.unlocked {
+      border-color: #22c55e;
+      box-shadow: 0 0 16px rgba(34,197,94,0.7);
+      background: radial-gradient(circle at 50% 0, rgba(34,197,94,0.3), transparent 70%);
+    }
+
+    .ach-progress {
+      margin-top: 6px;
+      font-size: 0.72rem;
+      color: #a5b4fc;
+    }
+
+    .progress-bar {
+      margin-top: 4px;
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.9);
+      background: rgba(15,23,42,0.9);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #22c55e, #7fff4f);
+      box-shadow: 0 0 12px rgba(34,197,94,0.9);
+      transition: width 0.25s ease-out;
+    }
+
+    .log-stream {
+      margin-top: 10px;
+      height: 130px;
+      border-radius: 11px;
+      border: 1px solid rgba(15,23,42,1);
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.95), rgba(15,23,42,1));
+      overflow: hidden;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.72rem;
+      padding: 6px 8px;
+    }
+
+    .log-line {
+      white-space: nowrap;
+      color: #cbd5f5;
+    }
+
+    .log-line.ok { color: #7fff4f; }
+    .log-line.warn { color: #ffb347; }
+    .log-line.block { color: #ff4b4b; }
+
+    .bottom-footer {
+      background: linear-gradient(
+        135deg,
+        rgba(15,23,42,0.98),
+        rgba(15,23,42,0.98)
+      );
+      color: #cbd5f5;
+      padding: 12px 7vw;
+      text-align: center;
+      font-size: 0.85rem;
+      border-top: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+    /* ANIMATION AURA SUR LES UPGRADES AFK */
+.upgrade-card.afk-animated {
+  position: relative;
+  overflow: visible;
+}
+
+.upgrade-card.afk-animated::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 12px;
+  border: 1px solid rgba(56,189,248,0.35);
+  box-shadow:
+    0 0 8px rgba(56,189,248,0.35),
+    0 0 16px rgba(34,197,94,0.18);
+  pointer-events: none;
+  animation: afkGlow 2.4s ease-in-out infinite;
+}
+
+/* Légère respiration / glow */
+@keyframes afkGlow {
+  0% {
+    opacity: 0.35;
+    transform: scale(1);
+    box-shadow:
+      0 0 8px rgba(56,189,248,0.35),
+      0 0 16px rgba(34,197,94,0.18);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.02);
+    box-shadow:
+      0 0 14px rgba(56,189,248,0.7),
+      0 0 26px rgba(34,197,94,0.35);
+  }
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+    box-shadow:
+      0 0 8px rgba(56,189,248,0.35),
+      0 0 16px rgba(34,197,94,0.18);
+  }
+}
+
+  </style>
+</head>
+<body>
+  <header class="top-banner">
+    GLOBAL//CLICKER
+    <nav class="nav-bar">
+      <a href="index.html">ACCUEIL</a>
+      <a href="#">GLOBAL//SYSTEM</a>
+      <a href="#">GLOBAL//TERMINAL</a>
+      <a href="#">GLOBAL//CLICKER</a>
+    </nav>
+  </header>
+
+  <main class="page-padding">
+    <section class="clicker-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">PACKET//CLICKER</div>
+            <div class="panel-sub">Simulateur de nettoyage de paquets en temps réel.</div>
+          </div>
+          <div class="panel-sub">SAVE: LOCALSTORAGE</div>
+        </div>
+
+        <div class="score-display">
+          <div>
+            <div class="score-label">PACKETS SÉCURISÉS</div>
+            <div id="score-value" class="score-value-main">0</div>
+          </div>
+          <div class="score-secondary">
+            <div id="total-clicks">CLICKS: 0</div>
+            <div id="pps-display">AUTO: 0.0 p/s</div>
+          </div>
+        </div>
+
+        <div class="click-button-wrap">
+          <button id="packet-button">
+            <div class="packet-icon">🛡️</div>
+            <div>INSPECT PACKET</div>
+            <div style="font-size:0.7rem; opacity:0.8; margin-top:4px;">CLICK TO SECURE</div>
+          </button>
+        </div>
+
+        <div class="pps-display">
+          SESSION//TOKENS — FIREWALL LEVEL: <span id="fw-level">0</span> · IDS NODES: <span id="ids-level">0</span>
+        </div>
+
+        <div class="log-stream" id="log-stream"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">UPGRADE//SECURITY</div>
+            <div class="panel-sub">Investis dans le pare-feu, IDS & honeypots.</div>
+          </div>
+          <div class="panel-sub">GLOBAL NODE</div>
+        </div>
+
+        <div class="upgrades-list" id="upgrades-list"></div>
+
+        <div style="margin-top:16px; border-top:1px solid rgba(148,163,184,0.4); padding-top:10px;">
+          <div class="panel-header" style="margin-bottom:6px;">
+            <div>
+              <div class="panel-title">ACHIEVEMENTS//MAP</div>
+            </div>
+            <div class="panel-sub" id="ach-count">0% COMPLETE</div>
+          </div>
+
+          <div class="ach-progress">
+            Progression globale des succès.
+            <div class="progress-bar">
+              <div class="progress-fill" id="ach-progress-fill"></div>
+            </div>
+          </div>
+
+          <div class="achievements-list" id="achievements-list"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bottom-footer">
+    ©GLOBAL//CLICKER — Progression stockée localement (localStorage). Efface ton cache pour tout réinitialiser.
+  </footer>
+
+  <script>
+    const SAVE_KEY = 'GLOBAL_CLICKER_SAVE_V2';
+
+    const defaultState = {
+      packets: 0,
+      totalClicks: 0,
+      packetsPerClick: 1,
+      packetsPerSecond: 0,
+      upgrades: {},
+      achievements: {
+        firstPacket: 'locked',
+        hundredPackets: 'locked',
+        thousandPackets: 'locked',
+        clickFrenzy: 'locked',
+        autoOnline: 'locked',
+        maxUpgrade: 'locked'
+      }
+    };
+
+    let state = loadState();
+
+    const scoreValueEl = document.getElementById('score-value');
+    const totalClicksEl = document.getElementById('total-clicks');
+    const ppsDisplayEl = document.getElementById('pps-display');
+    const fwLevelEl = document.getElementById('fw-level');
+    const idsLevelEl = document.getElementById('ids-level');
+    const logStreamEl = document.getElementById('log-stream');
+    const upgradesListEl = document.getElementById('upgrades-list');
+    const achListEl = document.getElementById('achievements-list');
+    const achCountEl = document.getElementById('ach-count');
+    const achProgressFill = document.getElementById('ach-progress-fill');
+    const packetButton = document.getElementById('packet-button');
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(SAVE_KEY);
+        if (!raw) {
+          return structuredClone(defaultState);
+        }
+        const parsed = JSON.parse(raw);
+        return {
+          ...structuredClone(defaultState),
+          ...parsed,
+          upgrades: { ...(parsed.upgrades || {}) },
+          achievements: { ...defaultState.achievements, ...(parsed.achievements || {}) }
+        };
+      } catch (e) {
+        return structuredClone(defaultState);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    }
+
+    function formatNumber(n) {
+      if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(1) + 'B';
+      if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
+      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+      return Math.floor(n).toString();
+    }
+
+    function updateMainUI() {
+      scoreValueEl.textContent = formatNumber(state.packets);
+      totalClicksEl.textContent = 'CLICKS: ' + state.totalClicks;
+      ppsDisplayEl.textContent = 'AUTO: ' + state.packetsPerSecond.toFixed(1) + ' p/s';
+      fwLevelEl.textContent = state.upgrades.fwBoost || 0;
+      idsLevelEl.textContent = state.upgrades.idsBoost || 0;
+    }
+
+    const MAX_LOG_LINES = 12;
+    function pushLog(text, type = 'ok') {
+      const line = document.createElement('div');
+      line.className = 'log-line ' + type;
+      const now = new Date();
+      const t = now.toTimeString().slice(0, 8);
+      line.textContent = '[' + t + '] ' + text;
+      logStreamEl.appendChild(line);
+
+      while (logStreamEl.children.length > MAX_LOG_LINES) {
+        logStreamEl.removeChild(logStreamEl.firstChild);
+      }
+      logStreamEl.scrollTop = logStreamEl.scrollHeight;
+    }
+
+    packetButton.addEventListener('click', (e) => {
+      state.packets += state.packetsPerClick;
+      state.totalClicks += 1;
+      spawnFloatText(e.clientX, e.clientY, '+' + state.packetsPerClick);
+
+      if (state.totalClicks === 1) unlockAchievement('firstPacket');
+      if (state.totalClicks >= 100) unlockAchievement('clickFrenzy');
+
+      if (Math.random() < 0.25) {
+        pushLog('PACKET sanitized · 200 OK · +' + state.packetsPerClick + 'p', 'ok');
+      }
+
+      checkPacketAchievements();
+      applyUpgradeStats();
+      updateMainUI();
+      updateAchievementsUI();
+      renderUpgrades();
+      saveState();
+    });
+
+    function spawnFloatText(x, y, text) {
+      const span = document.createElement('span');
+      span.className = 'float-text';
+      span.textContent = text;
+      span.style.left = x + 'px';
+      span.style.top = y + 'px';
+      document.body.appendChild(span);
+      setTimeout(() => span.remove(), 700);
+    }
+
+    setInterval(() => {
+      if (state.packetsPerSecond > 0) {
+        state.packets += state.packetsPerSecond / 10;
+        if (Math.random() < 0.1) {
+          pushLog(
+            'AUTO-IDS cleaned traffic · +' + (state.packetsPerSecond / 10).toFixed(1) + 'p',
+            'ok'
+          );
+        }
+        checkPacketAchievements();
+        applyUpgradeStats();
+        updateMainUI();
+        updateAchievementsUI();
+        renderUpgrades();
+        saveState();
+      }
+    }, 100);
+
+const upgradeDefs = [
+  { id: 'fwBoost',  icon: '🧱', name: 'Firewall Node',       desc: 'Augmente les PACKETS/click.',                     baseCost: 20,     costMult: 1.6,  ppcGain: 1,   ppsGain: 0,    afk: false },
+  { id: 'idsBoost', icon: '📡', name: 'IDS Sensor',          desc: 'Active un gain automatique de PACKETS/sec.',     baseCost: 50,     costMult: 1.7,  ppcGain: 0,   ppsGain: 0.5,  afk: true  },
+
+  { id: 'netProbe',     icon: '🛰️', name: 'Network Probe',     desc: 'Sondes réseau passives sur tout le LAN.',           baseCost: 120,    costMult: 1.7,  ppcGain: 0,   ppsGain: 1,    afk: true  },
+  { id: 'logHarvester', icon: '📜', name: 'Log Harvester',     desc: 'Collecte et corrèle les logs suspects.',             baseCost: 260,    costMult: 1.8,  ppcGain: 0,   ppsGain: 2,    afk: true  },
+  { id: 'honeypot',     icon: '🍯', name: 'Honeypot Cluster',  desc: 'Attire les attaques vers des faux serveurs.',        baseCost: 600,    costMult: 1.9,  ppcGain: 0,   ppsGain: 4,    afk: true  },
+  { id: 'vpnMesh',      icon: '🕸️', name: 'VPN Mesh',         desc: 'Segmentation chiffrée du trafic interne.',           baseCost: 1400,   costMult: 2.0,  ppcGain: 0,   ppsGain: 7,    afk: true  },
+  { id: 'ratHunter',    icon: '🐀', name: 'RAT Hunter',        desc: 'Chasse les remote shells et backdoors.',             baseCost: 3200,   costMult: 2.0,  ppcGain: 0,   ppsGain: 12,   afk: true  },
+  { id: 'siemCore',     icon: '📊', name: 'SIEM Core',         desc: 'Corrèle en temps réel tous les événements.',         baseCost: 7500,   costMult: 2.1,  ppcGain: 0,   ppsGain: 20,   afk: true  },
+  { id: 'mlDetector',   icon: '🤖', name: 'ML Detector',       desc: 'Détecte les patterns anormaux via ML.',             baseCost: 16000,  costMult: 2.1,  ppcGain: 0,   ppsGain: 35,   afk: true  },
+  { id: 'threatIntel',  icon: '🌐', name: 'Threat Intel Feed', desc: 'Abonnements flux IOC mondiaux.',                    baseCost: 35000,  costMult: 2.2,  ppcGain: 0,   ppsGain: 55,   afk: true  },
+  { id: 'sandboxGrid',  icon: '🧪', name: 'Sandbox Grid',      desc: 'Exécute les malwares en environnement isolé.',      baseCost: 80000,  costMult: 2.2,  ppcGain: 0,   ppsGain: 85,   afk: true  },
+  { id: 'forensicLab',  icon: '🔬', name: 'Forensic Lab',      desc: 'Analyse profonde des compromissions.',              baseCost: 180000, costMult: 2.25, ppcGain: 0,   ppsGain: 130,  afk: true  },
+  { id: 'globalShield', icon: '🛡️', name: 'Global Shield',    desc: 'Couche de défense mutualisée multi-sites.',         baseCost: 400000, costMult: 2.3,  ppcGain: 0,   ppsGain: 200,  afk: true  },
+  { id: 'aiCore',       icon: '🧠', name: 'AI Analyzer',       desc: 'Boost global PPC + PPS.',                          baseCost: 900000, costMult: 2.35, ppcGain: 3,   ppsGain: 260,  afk: true  },
+  { id: 'quantumIDS',   icon: '⚛️', name: 'Quantum IDS',       desc: 'Analyse quantique des flux chiffrés.',             baseCost: 2000000,costMult: 2.4,  ppcGain: 4,   ppsGain: 380,  afk: true  },
+  { id: 'sentinelNet',  icon: '👁️', name: 'Sentinel Network',  desc: 'Superviseur autonome de tout le trafic.',          baseCost: 4500000,costMult: 2.45, ppcGain: 5,   ppsGain: 550,  afk: true  },
+  { id: 'omegaWall',    icon: '🔥', name: 'OMEGA WALL',        desc: 'Dernière ligne de défense, presque impénétrable.', baseCost: 10000000,costMult: 2.5,  ppcGain: 7,   ppsGain: 800,  afk: true  }
+];
+
+    function getUpgradeLevel(id) {
+      return state.upgrades[id] || 0;
+    }
+
+    function getUpgradeCost(def) {
+      const level = getUpgradeLevel(def.id);
+      return Math.floor(def.baseCost * Math.pow(def.costMult, level));
+    }
+
+    function applyUpgradeStats() {
+      let ppc = 1;
+      let pps = 0;
+
+      upgradeDefs.forEach(def => {
+        const level = getUpgradeLevel(def.id);
+        ppc += def.ppcGain * level;
+        pps += def.ppsGain * level;
+      });
+
+      state.packetsPerClick = ppc;
+      state.packetsPerSecond = pps;
+    }
+
+    function renderUpgrades() {
+      upgradesListEl.innerHTML = '';
+
+      upgradeDefs.forEach(def => {
+        const level = getUpgradeLevel(def.id);
+        const cost = getUpgradeCost(def);
+
+        const card = document.createElement('div');
+        card.className = 'upgrade-card';
+        if (def.afk) {
+            card.classList.add('afk-animated');
+        }
+
+        if (state.packets < cost) card.classList.add('disabled');
+
+        card.innerHTML = `
+          <div class="upgrade-title-row">
+            <div class="upgrade-name">
+              <span class="upgrade-icon">${def.icon}</span>
+              <span>${def.name}</span>
+            </div>
+            <div class="upgrade-level">LVL ${level}</div>
+          </div>
+          <div class="upgrade-desc">${def.desc}</div>
+          <div class="upgrade-meta">
+            <span>COUT: ${formatNumber(cost)} p</span>
+            <span>+${def.ppcGain} p/click · +${def.ppsGain} p/s</span>
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          const currentCost = getUpgradeCost(def);
+          if (state.packets < currentCost) {
+            pushLog('INSUFFICIENT PACKETS for ' + def.name, 'warn');
+            return;
+          }
+
+          state.packets -= currentCost;
+          state.upgrades[def.id] = getUpgradeLevel(def.id) + 1;
+          applyUpgradeStats();
+
+          if (def.id === 'idsBoost' && state.upgrades[def.id] === 1) {
+            unlockAchievement('autoOnline');
+          }
+          if (Object.values(state.upgrades).length > 0 &&
+              upgradeDefs.every(d => (state.upgrades[d.id] || 0) >= 1)) {
+            unlockAchievement('maxUpgrade');
+          }
+
+          pushLog('UPGRADE acquired: ' + def.name + ' · LVL ' + state.upgrades[def.id], 'warn');
+          updateMainUI();
+          renderUpgrades();
+          updateAchievementsUI();
+          saveState();
+        });
+
+        upgradesListEl.appendChild(card);
+      });
+    }
+
+    const achDefs = {
+      firstPacket: {
+        name: 'FIRST PACKET CLEANED',
+        desc: 'Nettoyer ton tout premier paquet.'
+      },
+      hundredPackets: {
+        name: 'PORT 80 MASTER',
+        desc: 'Atteindre 100 PACKETS sécurisés.'
+      },
+      thousandPackets: {
+        name: 'GLOBAL SECURE',
+        desc: 'Atteindre 1000 PACKETS sécurisés.'
+      },
+      clickFrenzy: {
+        name: 'CLICK FRENZY',
+        desc: 'Cliquer au moins 100 fois.'
+      },
+      autoOnline: {
+        name: 'IDS ONLINE',
+        desc: 'Débloquer le premier gain automatique.'
+      },
+      maxUpgrade: {
+        name: 'NODE FULLY ARMED',
+        desc: 'Posséder au moins 1 niveau dans chaque upgrade.'
+      }
+    };
+
+    function unlockAchievement(key) {
+      if (state.achievements[key] === 'unlocked') return;
+
+      if (state.achievements[key] === 'locked') {
+        state.achievements[key] = 'discovered';
+      }
+      state.achievements[key] = 'unlocked';
+      pushLog('ACHIEVEMENT//UNLOCKED: ' + achDefs[key].name, 'ok');
+    }
+
+    function checkPacketAchievements() {
+      if (state.packets >= 100 && state.achievements.hundredPackets !== 'unlocked') {
+        unlockAchievement('hundredPackets');
+      }
+      if (state.packets >= 1000 && state.achievements.thousandPackets !== 'unlocked') {
+        unlockAchievement('thousandPackets');
+      }
+    }
+
+    function calcAchProgress() {
+      const keys = Object.keys(achDefs);
+      let unlocked = 0;
+      keys.forEach(k => {
+        if (state.achievements[k] === 'unlocked') unlocked++;
+      });
+      return Math.round((unlocked / keys.length) * 100);
+    }
+
+    function updateAchievementsUI() {
+      achListEl.innerHTML = '';
+      const keys = Object.keys(achDefs);
+
+      keys.forEach(k => {
+        const def = achDefs[k];
+        const stateFlag = state.achievements[k] || 'locked';
+
+        const wrap = document.createElement('div');
+        wrap.className = 'achievement ' + stateFlag;
+
+        const main = document.createElement('div');
+        main.className = 'achievement-main';
+
+        const name = document.createElement('div');
+        name.className = 'achievement-name';
+        const desc = document.createElement('div');
+        desc.className = 'achievement-desc';
+
+        if (stateFlag === 'locked') {
+          name.textContent = 'UNKNOWN NODE';
+          desc.textContent = 'CONDITION: ???';
+        } else if (stateFlag === 'discovered') {
+          name.textContent = def.name;
+          desc.textContent = 'CONDITION: ???';
+        } else {
+          name.textContent = def.name;
+          desc.textContent = def.desc;
+        }
+
+        main.appendChild(name);
+        main.appendChild(desc);
+
+        const stateSpan = document.createElement('div');
+        stateSpan.className = 'achievement-state';
+        stateSpan.textContent =
+          stateFlag === 'unlocked' ? 'UNLOCKED' :
+          stateFlag === 'discovered' ? 'DISCOVERED' : 'LOCKED';
+
+        wrap.appendChild(main);
+        wrap.appendChild(stateSpan);
+        achListEl.appendChild(wrap);
+      });
+
+      const progress = calcAchProgress();
+      achCountEl.textContent = progress + '% COMPLETE';
+      achProgressFill.style.width = progress + '%';
+    }
+
+    applyUpgradeStats();
+    updateMainUI();
+    renderUpgrades();
+    updateAchievementsUI();
+    pushLog('GLOBAL//CLICKER - SESSION INITIALIZED', 'warn');
+  </script>
+</body>
+</html>
