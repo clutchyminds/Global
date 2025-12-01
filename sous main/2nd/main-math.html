@@ -234,11 +234,12 @@
       display:flex;
       flex-direction:column;
       gap:12px;
+      text-align:left;
     }
     .top-banner::after{
       content:"";
       height:2px;
-      width:260px;
+      width:380px;
       margin-top:4px;
       background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
       opacity:0.9;
@@ -313,6 +314,7 @@
       -webkit-backdrop-filter:blur(18px);
       border:1px solid rgba(148,163,184,0.7);
       transition:transform 0.18s,box-shadow 0.18s,border-color 0.2s;
+      text-align:center;
     }
     .icon:hover{
       transform:translateY(-3px) scale(1.02);
@@ -332,9 +334,9 @@
         0 6px 16px rgba(15,23,42,0.9);
     }
     .icon span {
-      margin-top:12px;
+      margin-top:10px;
       font-weight:bold;
-      font-size:1.05rem;
+      font-size:0.98rem;
     }
 
     .bottom-footer{
@@ -358,7 +360,7 @@
   <!-- Loader -->
   <div id="loader">
     <div class="loader-hud">
-      <div class="loader-title">GLOBAL//HOME-2ND</div>
+      <div class="loader-title">GLOBAL//MATH-1ER-SPE</div>
 
       <div class="loader-status-row">
         <span class="status-label">Connexion</span>
@@ -370,14 +372,14 @@
       </div>
 
       <div class="loader-subtext">
-        Portail 2nde · Accès rapide aux matières
+        Spé Maths 1re · Vecteurs · Suites · Probabilités
       </div>
 
       <div class="loader-terminal">
-        <div class="terminal-line">[INIT] Préparation du tableau de bord Global 2nde...</div>
-        <div class="terminal-line">[LINK] Chargement des liens Math, Physique, Langues, Histoire‑Géo...</div>
-        <div class="terminal-line">[UI] Application du thème glassmorphism et des cartes de matières.</div>
-        <div class="terminal-line">[OK]  Accueil prêt : choisis ta matière.</div>
+        <div class="terminal-line">[INIT] Chargement du portail Mathématiques spé 1re...</div>
+        <div class="terminal-line">[LINK] Rattachement des chapitres : vecteurs, suites, dérivation, expo, trigo...</div>
+        <div class="terminal-line">[PROBA] Ajout des modules de probabilités et variables aléatoires.</div>
+        <div class="terminal-line">[OK]  Accès direct à chaque chapitre prêt.</div>
         <div class="terminal-line terminal-cursor">_</div>
       </div>
 
@@ -388,46 +390,18 @@
   <!-- Contenu principal -->
   <div id="main-content">
     <div class="top-banner">
-      Global - 2nd
+      Global - Mathématiques Spé 1er
       <nav class="nav-bar">
-        <a href="../index.html">Accueil</a>
-        <a href="../apropos.html">À propos</a>
+        <a href="../../index.html">Accueil</a>
+        <a href="../../apropos.html">À propos</a>
       </nav>
     </div>
 
     <div class="page-padding">
       <div class="icon-container">
-        <a href="2nd/main-math.html" class="icon">
-          <img src="../img/math.png" alt="Mathématiques" />
-          <span>Mathématiques</span>
-        </a>
-        <a href="2nd/main-physique.html" class="icon">
-          <img src="../img/vide.png" alt="Physique-Chimie" />
-          <span>Physique-Chimie</span>
-        </a>
-        <a href="2nd/main-anglais.html" class="icon">
-          <img src="../img/vide.png" alt="Anglais" />
-          <span>Anglais</span>
-        </a>
-        <a href="2nd/main-espagnol.html" class="icon">
-          <img src="../img/vide.png" alt="Espagnol" />
-          <span>Espagnol</span>
-        </a>
-        <a href="2nd/main-Histoire.html" class="icon">
-          <img src="../img/vide.png" alt="Histoire" />
-          <span>Histoire</span>
-        </a>
-        <a href="2nd/main-Géographie.html" class="icon">
-          <img src="../img/vide.png" alt="Géographie" />
-          <span>Géographie</span>
-        </a>
-        <a href="2nd/main-SVT.html" class="icon">
-          <img src="../img/vide.png" alt="SVT" />
-          <span>SVT</span>
-        </a>
-        <a href="2nd/main-Francais.html" class="icon">
-          <img src="../img/vide.png" alt="Français" />
-          <span>Français</span>
+        <a href="math/mvp.html" class="icon">
+          <img src="../../img/mvp.png" alt="Calcul vectoriel" />
+          <span>Manipuler vecteurs du plan</span>
         </a>
       </div>
     </div>
@@ -447,3 +421,48 @@
   </script>
 </body>
 </html>
+
+
+<!--
+Manipuler les nombres réels (intervalles, valeur absolue, irrationnels comme √2).
+
+Utiliser notions de multiple, diviseur, nombre premier.
+
+Calcul littéral (puissances, identités remarquables, équations/inéquations 1er degré).​
+
+
+
+
+Manipuler vecteurs du plan (somme, produit scalaire, colinéarité).
+
+Résoudre problèmes géométrie (projections orthogonales, théorèmes Pythagore/Thalès).
+
+Représenter droites du plan (équations cartésiennes, pentes).​
+
+
+
+
+Répertoire fonctions référence (affines, carré, inverse, racine carrée, cube).
+
+Représenter algébriquement/graphiquement.
+
+Étudier variations, extremums, résolution f(x)=k.​
+
+
+
+
+Information chiffrée (pourcentages, moyennes, écart-type).
+
+Modéliser hasard (lois finies, événements, simulations).
+
+Échantillonnage aléatoire.​
+
+
+
+
+Variables, instructions élémentaires en Python.
+
+Notion de fonction.
+
+Applications transversales aux autres thèmes.​
+-->

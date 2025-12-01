@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Global - Maths · Vecteurs du plan</title>
+  <meta name="description" content="Cours interactif lycée : vecteurs du plan, somme, produit scalaire, colinéarité. QCM, exos, schémas, mini-quiz, LaTeX, fiche, lexique, sauvegarde notes.">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.15), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(59,130,246,0.25), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#0b1120 40%,#020420 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#020617 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(560px,90vw);
+      padding:26px 26px 30px;
+      border-radius:20px;
+      background:
+        radial-gradient(circle at 0 0,rgba(59,130,246,0.35),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(59,130,246,0.9);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.95),
+        0 0 35px rgba(59,130,246,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.5) 1px,
+        rgba(15,23,42,0.95) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#dbeafe;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:280px;
+      height:2px;
+      background:linear-gradient(90deg,#bfdbfe,transparent);
+      box-shadow:0 0 14px rgba(59,130,246,0.95);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#bfdbfe;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(59,130,246,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#22c55e,#60a5fa,#a855f7);
+      box-shadow:0 0 18px rgba(59,130,246,0.9);
+      animation:barProgress 2.1s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#e5e7eb;
+      opacity:0.95;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(59,130,246,0.25) 45%,
+          rgba(59,130,246,0.6) 50%,
+          rgba(59,130,246,0.25) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.92),rgba(15,23,42,1));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#e0e7ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#bfdbfe;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(24,119,242,0.95),rgba(34,197,94,0.95));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#f9fafb;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:260px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:#bfdbfe;
+      box-shadow:0 0 12px rgba(191,219,254,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    main.page{
+      max-width:960px;
+      margin:0 auto;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
+              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
+      border-radius:20px;
+      border:1px solid rgba(148,163,184,0.7);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(15,23,42,1);
+      padding:36px 60px 32px;
+      color:#e5f1ff;
+    }
+    @media (max-width:1040px){main.page{padding:12px 10px;}}
+
+    header.inner{background:none;padding:0;margin:0 0 8px 0;text-align:left;box-shadow:none;color:inherit;}
+    h1{font-size:2.1rem;margin-bottom:8px;color:#e5f1ff;}
+    header.inner .intro{font-size:1.02rem;}
+
+    h2,h3{color:#e5f1ff;margin-top:34px;}
+    h3{color:#f5a623;margin-top:27px;}
+    ul,ol{margin-left:2em;margin-bottom:0.8em;}
+    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.02rem;}
+    .infos{background:#e7f3fa;border-left:7px solid #1877f2;color:#0f172a;}
+    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;color:#052e16;}
+    .box-important{background:#fff7ec;border-left:8px solid #f5a623;color:#3b2710;}
+    .error{background:#ffeaea;border-left:8px solid #e06359;color:#7f1d1d;}
+    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;color:#0f172a;}
+    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;color:#064e3b;}
+    .source{font-size:0.88em;color:#9ca3af;text-align:right;margin-top:10px;}
+
+    button{
+      background:#1877f2;
+      color:#fff;
+      font-weight:bold;
+      border:none;
+      border-radius:7px;
+      padding:9px 18px;
+      cursor:pointer;
+      margin:6px 6px 0 0;
+      transition:background 0.2s,transform 0.15s;
+      font-size:0.95em;
+    }
+    button:hover{background:#145ac3;transform:translateY(-1px);}
+    .reponse{margin-top:0.5em;color:#bfdbfe;font-weight:bold;text-align:left;font-size:0.9em;}
+    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;color:#064e3b;}
+    input[type='text'],textarea{
+      border-radius:5px;
+      border:1px solid #6b7280;
+      padding:5px;
+      margin-top:6px;
+      background:#020617;
+      color:#e5e7eb;
+    }
+    .flex-exercices{display:flex;flex-wrap:wrap;gap:14px;}
+    .exo-block{flex:1 1 300px;min-width:290px;}
+    .popup{
+      display:none;
+      position:fixed;
+      top:40%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      background:#020617;
+      border-radius:20px;
+      box-shadow:0 10px 34px rgba(24,119,242,0.4);
+      padding:24px;
+      width:min(380px,90vw);
+      z-index:2000;
+      border:1px solid #1d4ed8;
+      color:#e5e7eb;
+    }
+    .popup h3{color:#60a5fa;}
+    .overlay{
+      display:none;
+      position:fixed;
+      top:0;left:0;
+      width:100vw;height:100vh;
+      background:rgba(15,23,42,0.7);
+      z-index:1800;
+    }
+    .show{display:block;}
+    .scoreQCM{font-weight:bold;color:#bbf7d0;margin-top:8px;}
+
+    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.9em;border-radius:999px;cursor:pointer;}
+
+    .note-area{width:100%;min-height:120px;}
+
+    /* Canvas vecteurs */
+    #vect-canvas{
+      margin:1em auto;
+      display:block;
+      background:#e7f3f7;
+      border-radius:10px;
+      border:1px solid #d1d5db;
+      box-shadow:0 3px 10px #020617;
+    }
+    .slider-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:6px;
+      font-size:0.9em;
+    }
+    .slider-row label{min-width:70px;}
+
+    .mini-quiz-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:12px;
+      margin-top:8px;
+    }
+    .mini-quiz-card{
+      background:rgba(15,23,42,0.9);
+      border-radius:10px;
+      border:1px solid rgba(148,163,184,0.7);
+      padding:10px 12px;
+      font-size:0.9em;
+    }
+  </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//MATH-VECTEURS</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Chargement</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Somme de vecteurs, produit scalaire, colinéarité, QCM, mini-jeux, schémas dynamiques.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[VEC] \(\vec u = (x_u,y_u)\), \(\vec v = (x_v,y_v)\) dans un repère.[web:71][web:78]</div>
+        <div class="terminal-line">[SOMME] \(\vec u + \vec v = (x_u+x_v,\;y_u+y_v)\).[web:71]</div>
+        <div class="terminal-line">[SCALAIRE] \(\vec u \cdot \vec v = x_u x_v + y_u y_v\).[web:74][web:75]</div>
+        <div class="terminal-line">[ANGLE] \(\vec u \cdot \vec v = \|\vec u\|\,\|\vec v\|\cos\theta\).[web:74]</div>
+        <div class="terminal-line">[COLIN] \(\vec u\) et \(\vec v\) colinéaires si \(\vec u = k\vec v\) ou \(x_u y_v - x_v y_u = 0\).[web:73]</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
+    </div>
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Maths
+      <nav class="nav-bar">
+        <a href="../../../index.html">Accueil</a>
+        <a href="../../../apropos.html">À propos</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <main class="page">
+        <header class="inner">
+          <h1>Vecteurs du plan : somme, produit scalaire, colinéarité</h1>
+          <div class="intro">
+            Somme géométrique et coordonnée, produit scalaire, angle, orthogonalité, colinéarité et applications à la résolution de problèmes géométriques.[web:71][web:74][web:75]
+          </div>
+        </header>
+
+        <section class="box infos">
+          <h2>📚 Objectifs</h2>
+          <ul>
+            <li>Construire la somme de deux vecteurs graphiquement et par les coordonnées.[web:71]</li>
+            <li>Calculer un produit scalaire et l’utiliser pour les longueurs et les angles.[web:74][web:75]</li>
+            <li>Détecter la colinéarité de vecteurs, et l’utiliser pour montrer qu’un point appartient à une droite ou que des points sont alignés.[web:73]</li>
+          </ul>
+          <button onclick="openPopup('popup-sommediag')">Voir la somme en parallélogramme</button>
+          <button onclick="openPopup('popup-scalairedef')">Rappel produit scalaire</button>
+        </section>
+
+        <section>
+          <h2>1. Vecteurs et somme</h2>
+          <ul>
+            <li>Un vecteur \(\vec u\) est défini par une direction, un sens et une longueur (norme).[web:71][web:78]</li>
+            <li>Somme géométrique : \(\vec u + \vec v\) se construit par la règle du parallélogramme ou du “bout-à-bout”.[web:71]</li>
+            <li>En coordonnées : si \(\vec u=(x_u,y_u)\) et \(\vec v=(x_v,y_v)\), alors \(\vec u+\vec v=(x_u+x_v,\;y_u+y_v)\).[web:71][web:78]</li>
+          </ul>
+
+          <canvas id="vect-canvas" width="430" height="220"></canvas>
+
+          <div class="slider-row">
+            <div>
+              <label for="ux">uₓ :</label>
+              <input type="range" id="ux" min="-4" max="4" value="2">
+            </div>
+            <div>
+              <label for="uy">u_y :</label>
+              <input type="range" id="uy" min="-4" max="4" value="1">
+            </div>
+            <div>
+              <label for="vx">vₓ :</label>
+              <input type="range" id="vx" min="-4" max="4" value="-1">
+            </div>
+            <div>
+              <label for="vy">v_y :</label>
+              <input type="range" id="vy" min="-4" max="4" value="2">
+            </div>
+          </div>
+          <div class="reponse" id="vect-info"></div>
+        </section>
+
+        <section>
+          <h2>2. Produit scalaire</h2>
+          <ul>
+            <li>Définition dans le plan repéré : si \(\vec u=(x_u,y_u)\) et \(\vec v=(x_v,y_v)\), alors \(\vec u\cdot\vec v = x_u x_v + y_u y_v\).[web:74][web:75]</li>
+            <li>Formule avec l’angle \(\theta\) : \(\vec u\cdot\vec v = \|\vec u\|\,\|\vec v\|\cos\theta\).[web:74]</li>
+            <li>Orthogonalité : \(\vec u\cdot\vec v=0\) si et seulement si les vecteurs sont perpendiculaires.[web:74][web:75]</li>
+          </ul>
+          <button onclick="openPopup('popup-scalairegeo')">Applications du produit scalaire</button>
+
+          <div class="mini-quiz-grid">
+            <div class="mini-quiz-card">
+              <b>Mini-quiz 1</b><br>
+              \(\vec u=(3,1)\), \(\vec v=(1,2)\). Calculer \(\vec u\cdot\vec v\).
+              <input type="text" id="mq1" placeholder="...">
+              <button onclick="checkMiniQuiz(1)">OK</button>
+              <div class="reponse" id="mq1-res"></div>
+            </div>
+            <div class="mini-quiz-card">
+              <b>Mini-quiz 2</b><br>
+              \(\vec u=(2,-1)\), \(\vec v=(k,1)\) sont orthogonaux. Trouver \(k\).
+              <input type="text" id="mq2" placeholder="k = ...">
+              <button onclick="checkMiniQuiz(2)">OK</button>
+              <div class="reponse" id="mq2-res"></div>
+            </div>
+            <div class="mini-quiz-card">
+              <b>Mini-quiz 3</b><br>
+              \(\|\vec u\|=5\), \(\|\vec v\|=3\) et \(\theta=60^\circ\). Donner \(\vec u\cdot\vec v\).
+              <input type="text" id="mq3" placeholder="...">
+              <button onclick="checkMiniQuiz(3)">OK</button>
+              <div class="reponse" id="mq3-res"></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>3. Colinéarité</h2>
+          <ul>
+            <li>Deux vecteurs \(\vec u\) et \(\vec v\) sont colinéaires s’il existe un réel \(k\) tel que \(\vec u = k\vec v\).[web:73]</li>
+            <li>En coordonnées : \(\vec u=(x_u,y_u)\), \(\vec v=(x_v,y_v)\) sont colinéaires si \(x_u y_v - x_v y_u = 0\).[web:73]</li>
+            <li>Application : prouver que trois points sont alignés ou qu’un point appartient à une droite.[web:73]</li>
+          </ul>
+
+          <div class="mini-quiz-grid">
+            <div class="mini-quiz-card">
+              <b>Jeu colinéarité 1</b><br>
+              \(\vec u=(2,4)\), \(\vec v=(1,2)\). Colinéaires ?
+              <button onclick="colTest(1,true)">Oui</button>
+              <button onclick="colTest(1,false)">Non</button>
+              <div class="reponse" id="col1-res"></div>
+            </div>
+            <div class="mini-quiz-card">
+              <b>Jeu colinéarité 2</b><br>
+              \(\vec u=(3,1)\), \(\vec v=(6,3)\). Colinéaires ?
+              <button onclick="colTest(2,true)">Oui</button>
+              <button onclick="colTest(2,false)">Non</button>
+              <div class="reponse" id="col2-res"></div>
+            </div>
+            <div class="mini-quiz-card">
+              <b>Jeu colinéarité 3</b><br>
+              \(\vec u=(1,2)\), \(\vec v=(2,-1)\). Colinéaires ?
+              <button onclick="colTest(3,true)">Oui</button>
+              <button onclick="colTest(3,false)">Non</button>
+              <div class="reponse" id="col3-res"></div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>4. Exercices interactifs (niveau contrôle)</h2>
+          <div class="flex-exercices">
+            <div class="box-exo exo-block">
+              <b>Ex 1 — Somme de vecteurs</b><br>
+              \(\vec u=(3,-1)\), \(\vec v=(-2,4)\). Donner \(\vec u+\vec v\).<br>
+              <input type="text" id="exo1" placeholder="( ..., ... )">
+              <button onclick="checkExo(1)">Valider</button>
+              <div class="reponse" id="rep-exo1"></div>
+            </div>
+
+            <div class="box-exo exo-block">
+              <b>Ex 2 — Produit scalaire</b><br>
+              \(\vec a=(1,2)\), \(\vec b=(4,-1)\). Calculer \(\vec a\cdot\vec b\).<br>
+              <input type="text" id="exo2" placeholder="...">
+              <button onclick="checkExo(2)">Valider</button>
+              <div class="reponse" id="rep-exo2"></div>
+            </div>
+
+            <div class="box-exo exo-block">
+              <b>Ex 3 — Colinéarité</b><br>
+              \(\overrightarrow{AB}=(4,6)\), \(\overrightarrow{AC}=(2,3)\). Les points A,B,C sont-ils alignés ?<br>
+              <input type="text" id="exo3" placeholder="oui / non">
+              <button onclick="checkExo(3)">Valider</button>
+              <div class="reponse" id="rep-exo3"></div>
+            </div>
+
+            <div class="box-exo exo-block">
+              <b>Ex 4 — Orthogonalité</b><br>
+              \(\vec u=(x,2)\), \(\vec v=(3,-1)\) sont orthogonaux. Trouver \(x\).<br>
+              <input type="text" id="exo4" placeholder="x = ...">
+              <button onclick="checkExo(4)">Valider</button>
+              <div class="reponse" id="rep-exo4"></div>
+            </div>
+          </div>
+          <button onclick="resetExos()">Effacer mes réponses</button>
+        </section>
+
+        <section class="qcm-block">
+          <h2>🎯 QCM interactif (8 questions)</h2>
+          <div id="qcm-interactif"></div>
+          <div class="scoreQCM" id="qcm-score"></div>
+          <button onclick="reloadQCM()">Recommencer le QCM</button>
+        </section>
+
+        <section class="box-important">
+          <h2>🔖 Fiche de révision rapide</h2>
+          <div class="fiche">
+            <ul>
+              <li>\(\vec u=(x_u,y_u)\), \(\vec v=(x_v,y_v)\), \(\vec u+\vec v=(x_u+x_v,\;y_u+y_v)\).[web:71][web:78]</li>
+              <li>\(\|\vec u\|=\sqrt{x_u^2+y_u^2}\).[web:74]</li>
+              <li>\(\vec u\cdot\vec v=x_u x_v + y_u y_v = \|\vec u\|\,\|\vec v\|\cos\theta\).[web:74][web:75]</li>
+              <li>Orthogonalité : \(\vec u\cdot\vec v=0\).[web:74]</li>
+              <li>Colinéarité : \(x_u y_v - x_v y_u = 0\).[web:73]</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="error">
+          <h2>❌ Erreurs fréquentes</h2>
+          <ul>
+            <li>Confondre la somme des coordonnées et la somme des normes de vecteurs.[web:71]</li>
+            <li>Oublier de vérifier que les deux vecteurs sont non nuls avant d’utiliser la formule avec l’angle.[web:74]</li>
+            <li>Dire que deux vecteurs sont colinéaires car leurs normes sont égales (ce n’est pas un critère).[web:73]</li>
+          </ul>
+        </section>
+
+        <section class="lexique">
+          <h2>📚 Lexique express</h2>
+          Vecteur, norme, somme de vecteurs, produit scalaire, angle, orthogonal, colinéaire, projection.[web:71][web:74][web:75]
+        </section>
+
+        <section>
+          <h2>🗒️ Tes propres notes</h2>
+          <textarea class="note-area" id="notes" placeholder="Tes exemples perso, méthodes, pièges à éviter…"></textarea>
+          <button onclick="saveNotes()">Enregistrer</button>
+          <span id="savemsg" style="color:#4ade80;font-weight:bold;"></span>
+        </section>
+
+        <section class="source">
+          Sources : cours de 1re spé maths, manuels, fiches sur le produit scalaire et la colinéarité.[web:71][web:73][web:74][web:75]
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Popups -->
+  <div class="overlay" id="overlay"></div>
+
+  <div class="popup" id="popup-sommediag">
+    <h3>Somme en parallélogramme</h3>
+    Pour construire \(\vec u + \vec v\), on place les vecteurs de même origine, on complète le parallélogramme, puis la diagonale issue de l’origine représente la somme.[web:71]
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <div class="popup" id="popup-scalairedef">
+    <h3>Produit scalaire : deux points de vue</h3>
+    Coordonnées : \(\vec u\cdot\vec v = x_u x_v + y_u y_v\).<br>
+    Géométrique : \(\vec u\cdot\vec v = \|\vec u\|\,\|\vec v\|\cos\theta\).<br>
+    Utile pour calculer des longueurs, des angles et tester l’orthogonalité.[web:74][web:75]
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <div class="popup" id="popup-scalairegeo">
+    <h3>Applications du produit scalaire</h3>
+    - Trouver un angle : \(\cos\theta = \dfrac{\vec u\cdot\vec v}{\|\vec u\|\,\|\vec v\|}\).<br>
+    - Déterminer si un triangle est rectangle (produit scalaire nul).<br>
+    - Calculer une projection ou une distance dans des problèmes de géométrie analytique.[web:74][web:75]
+    <br><br><button onclick="closePopup()">Fermer</button>
+  </div>
+
+  <script>
+    // Loader + MathJax
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+      if(window.MathJax && MathJax.typesetPromise){MathJax.typesetPromise();}
+    },3000);
+
+    function reloadMathJax(){
+      if(window.MathJax && MathJax.typesetPromise){MathJax.typesetPromise();}
+    }
+
+    // Popups & notes
+    function openPopup(id){
+      document.getElementById('overlay').classList.add("show");
+      document.getElementById(id).classList.add("show");
+      reloadMathJax();
+    }
+    function closePopup(){
+      document.getElementById('overlay').classList.remove("show");
+      document.querySelectorAll('.popup').forEach(p=>p.classList.remove('show'));
+    }
+    function saveNotes(){
+      localStorage.setItem("notesVecteurs",document.getElementById("notes").value);
+      document.getElementById("savemsg").textContent="Enregistré";
+      setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);
+    }
+    if(localStorage.getItem("notesVecteurs")){
+      document.getElementById("notes").value=localStorage.getItem("notesVecteurs");
+    }
+
+    // Canvas vecteurs : u, v, u+v
+    function drawVectors(){
+      const c=document.getElementById('vect-canvas'); if(!c) return;
+      const ctx=c.getContext('2d');
+      const w=c.width,h=c.height;
+      ctx.clearRect(0,0,w,h);
+
+      // axe
+      ctx.strokeStyle="#cbd5e1";ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(30,h-30);ctx.lineTo(w-20,h-30);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(30,h-30);ctx.lineTo(30,20);ctx.stroke();
+
+      const ux=Number(document.getElementById('ux').value);
+      const uy=Number(document.getElementById('uy').value);
+      const vx=Number(document.getElementById('vx').value);
+      const vy=Number(document.getElementById('vy').value);
+      const scale=20;
+
+      function drawArrow(x0,y0,x1,y1,color,label){
+        ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=3;
+        ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x1,y1);ctx.stroke();
+        const ang=Math.atan2(y1-y0,x1-x0);
+        const size=9;
+        ctx.beginPath();
+        ctx.moveTo(x1,y1);
+        ctx.lineTo(x1-size*Math.cos(ang-Math.PI/8),y1-size*Math.sin(ang-Math.PI/8));
+        ctx.lineTo(x1-size*Math.cos(ang+Math.PI/8),y1-size*Math.sin(ang+Math.PI/8));
+        ctx.closePath();ctx.fill();
+        ctx.font="12px system-ui";ctx.fillText(label,x1+4,y1-4);
+      }
+
+      const OX=30, OY=h-30;
+      drawArrow(OX,OY,OX+ux*scale,OY-uy*scale,"#3b82f6","u");
+      drawArrow(OX,OY,OX+vx*scale,OY-vy*scale,"#22c55e","v");
+      const sx=(ux+vx), sy=(uy+vy);
+      drawArrow(OX,OY,OX+sx*scale,OY-sy*scale,"#f97316","u+v");
+
+      const info=`u = (${ux},${uy}), v = (${vx},${vy}), u+v = (${sx},${sy})`;
+      document.getElementById('vect-info').textContent=info;
+    }
+    ["ux","uy","vx","vy"].forEach(id=>{
+      document.getElementById(id).addEventListener("input",()=>{drawVectors();});
+    });
+    drawVectors();
+
+    // Mini-quiz produit scalaire
+    function checkMiniQuiz(n){
+      if(n===1){
+        const val=document.getElementById("mq1").value.replace(",","."), rep=Number(val);
+        const corr=3*1+1*2; // 5
+        document.getElementById("mq1-res").textContent =
+          Math.abs(rep-corr)<1e-6 ? "Parfait : 3×1 + 1×2 = 5." : "Faux : le résultat attendu est 5.";
+      }
+      if(n===2){
+        const val=document.getElementById("mq2").value.replace(",","."), k=Number(val);
+        // (2,-1)·(k,1)=0 => 2k-1=0 => k=0,5
+        document.getElementById("mq2-res").textContent =
+          Math.abs(k-0.5)<1e-3 ? "Bien vu : 2k-1=0, donc k=0,5." : "À revoir : il faut résoudre 2k-1=0.";
+      }
+      if(n===3){
+        const val=document.getElementById("mq3").value.replace(",","."), rep=Number(val);
+        // 5*3*cos60 = 15*0,5 = 7,5
+        const corr=7.5;
+        document.getElementById("mq3-res").textContent =
+          Math.abs(rep-corr)<1e-1 ? "OK : 5×3×cos60° = 7,5." : "Non : la bonne valeur est 7,5.";
+      }
+      reloadMathJax();
+    }
+
+    // Jeux colinéarité
+    function colTest(n,answer){
+      let correct=false, txt="";
+      if(n===1){ // (2,4) et (1,2)
+        correct=true;
+        txt="Oui, (2,4) = 2×(1,2) donc les vecteurs sont colinéaires.";
+      }
+      if(n===2){ // (3,1) et (6,3)
+        correct=true;
+        txt="Oui, (6,3) = 2×(3,1) donc colinéaires.";
+      }
+      if(n===3){ // (1,2) et (2,-1)
+        correct=false;
+        txt="Non, 1×(-1)-2×2 = -5 ≠ 0, donc non colinéaires.";
+      }
+      const id="col"+n+"-res";
+      document.getElementById(id).textContent =
+        (answer===correct) ? "Bonne intuition : " + txt : "Incorrect : " + txt;
+      reloadMathJax();
+    }
+
+    // Exercices
+    function checkExo(ex){
+      if(ex===1){
+        const rep=document.getElementById("exo1").value.replace(/\s/g,"");
+        const ok = rep==="(1,3)" || rep==="(1;3)" || rep==="[1,3]";
+        document.getElementById("rep-exo1").textContent =
+          ok ? "Correct : (3-2, -1+4) = (1,3)." : "Non : (3-2, -1+4) = (1,3).";
+      }
+      if(ex===2){
+        const val=document.getElementById("exo2").value.replace(",","."), r=Number(val);
+        const corr=1*4+2*(-1); // 2
+        document.getElementById("rep-exo2").textContent =
+          Math.abs(r-corr)<1e-6 ? "Correct : 1×4 + 2×(-1) = 2." : "Faux : le produit scalaire vaut 2.";
+      }
+      if(ex===3){
+        let rep=document.getElementById("exo3").value.toLowerCase().trim();
+        const ok = rep.startsWith("oui");
+        document.getElementById("rep-exo3").textContent =
+          ok ? "Oui : (4,6)=2×(2,3), donc AB et AC sont colinéaires, A,B,C alignés." :
+               "En réalité, les vecteurs sont colinéaires, donc A,B,C sont alignés.";
+      }
+      if(ex===4){
+        const val=document.getElementById("exo4").value.replace(",","."), x=Number(val);
+        // (x,2)·(3,-1)=0 => 3x-2=0 => x=2/3
+        document.getElementById("rep-exo4").textContent =
+          Math.abs(x-2/3)<1e-3 ? "Bien : 3x-2=0, donc x = 2/3." : "Non : il faut 3x-2=0, d’où x = 2/3.";
+      }
+      reloadMathJax();
+    }
+    function resetExos(){
+      ["exo1","exo2","exo3","exo4"].forEach(id=>{
+        const e=document.getElementById(id); if(e) e.value="";
+      });
+      ["rep-exo1","rep-exo2","rep-exo3","rep-exo4"].forEach(id=>{
+        const e=document.getElementById(id); if(e) e.textContent="";
+      });
+    }
+
+    // QCM (8 questions)
+    const qcmData=[
+      {question:"Q1. Somme : u=(1,2), v=(3,-1). u+v = ?",choices:["(4,1)","(2,1)","(4,-3)"],correct:0,explanation:"On additionne coordonnée à coordonnée : (1+3, 2+(-1)) = (4,1)."},
+      {question:"Q2. Norme de u=(3,4) ?",choices:["5","7","√25"],correct:0,explanation:"‖u‖ = √(3²+4²) = 5."},
+      {question:"Q3. Produit scalaire : (1,0)·(0,1) ?",choices:["0","1","2"],correct:0,explanation:"Les vecteurs de base i et j sont orthogonaux, produit scalaire nul."},
+      {question:"Q4. Si u·v=0 et u≠0, v≠0, alors :",choices:["u et v sont parallèles","u et v sont perpendiculaires","u et v sont colinéaires"],correct:1,explanation:"Produit scalaire nul équivaut à l’orthogonalité."},
+      {question:"Q5. u=(2,4), v=(1,2). Sont-ils colinéaires ?",choices:["Oui","Non","On ne peut pas savoir"],correct:0,explanation:"u = 2v donc ils sont colinéaires."},
+      {question:"Q6. Critère colinéarité : u=(x1,y1), v=(x2,y2).",choices:["x1 y2 - x2 y1 = 0","x1+x2=y1+y2","‖u‖=‖v‖"],correct:0,explanation:"Le déterminant nul caractérise la colinéarité."},
+      {question:"Q7. Expression du produit scalaire avec l’angle :",choices:["u·v = ‖u‖+‖v‖","u·v = ‖u‖‖v‖cosθ","u·v = cosθ"],correct:1,explanation:"Par définition, u·v = ‖u‖‖v‖cosθ."},
+      {question:"Q8. Si u·u = 0, alors :",choices:["u est unitaire","u est nul","u est vertical"],correct:1,explanation:"u·u=‖u‖², donc u·u=0 implique ‖u‖=0, donc u est nul."}
+    ];
+    let qcmScore=0,qcmDone=Array(qcmData.length).fill(false);
+
+    function displayQCM(){
+      let html="";
+      for(let i=0;i<qcmData.length;i++){
+        html += `<div style="margin-bottom:0.8em"><b>${qcmData[i].question}</b><br>`;
+        for(let j=0;j<qcmData[i].choices.length;j++){
+          html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>`;
+        }
+        html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
+      }
+      document.getElementById("qcm-interactif").innerHTML=html;
+      document.getElementById("qcm-score").innerHTML="";
+      qcmScore=0;qcmDone=Array(qcmData.length).fill(false);
+      reloadMathJax();
+    }
+    displayQCM();
+
+    function checkQCM(qnum,num){
+      if(qcmDone[qnum])return;
+      const target=document.getElementById('qcm-r'+qnum);
+      if(num===qcmData[qnum].correct){
+        target.innerHTML = `<span style="color:#16a34a;font-weight:bold">Bonne réponse !</span><br>${qcmData[qnum].explanation}`;
+        qcmScore++;
+      }else{
+        target.innerHTML = `<span style="color:#e11d48;font-weight:bold">Faux.</span><br>${qcmData[qnum].explanation}`;
+      }
+      qcmDone[qnum]=true;
+      document.getElementById("qcm-score").innerHTML="Score : "+qcmScore+"/"+qcmData.length;
+      reloadMathJax();
+    }
+    function reloadQCM(){displayQCM();}
+
+    setTimeout(reloadMathJax,200);
+  </script>
+</body>
+</html>
