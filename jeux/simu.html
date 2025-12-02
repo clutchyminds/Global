@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Grid Defender - Tribes</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #00ff41;
+            overflow: hidden;
+            height: 100vh;
+            cursor: crosshair;
+        }
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        #canvas {
+            display: block;
+            background: radial-gradient(circle at center, #001100 0%, #000 100%);
+            cursor: crosshair;
+            width: 100%;
+            height: 100%;
+        }
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 100;
+            background: rgba(0,20,0,0.9);
+            padding: 15px;
+            border: 2px solid #00ff41;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px #00ff41;
+            max-width: 420px;
+        }
+        #controls button, #presets button {
+            background: rgba(0,255,65,0.2);
+            color: #00ff41;
+            border: 1px solid #00ff41;
+            padding: 6px 8px;
+            margin: 2px;
+            cursor: pointer;
+            font-family: inherit;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 11px;
+        }
+        #controls button:hover, #presets button:hover {
+            background: rgba(0,255,65,0.4);
+            box-shadow: 0 0 10px #00ff41;
+        }
+        #stats {
+            margin-top: 8px;
+            font-size: 12px;
+        }
+        #tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.95);
+            color: #00ff41;
+            padding: 10px;
+            border: 1px solid #00ff41;
+            border-radius: 4px;
+            font-size: 11px;
+            max-width: 260px;
+            z-index: 200;
+            display: none;
+            box-shadow: 0 0 20px #00ff41;
+        }
+        #chart-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 280px;
+            height: 180px;
+            background: rgba(0,20,0,0.9);
+            border: 2px solid #00ff41;
+            border-radius: 8px;
+            padding: 8px;
+            z-index: 100;
+        }
+        #tutorial {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.9);
+            color: #00ff41;
+            padding: 15px;
+            border: 1px solid #00ff41;
+            border-radius: 8px;
+            max-height: 160px;
+            overflow-y: auto;
+            font-size: 12px;
+            display: none;
+        }
+        .mode-active { background: #00ff41 !important; color: #000 !important; }
+        .placement-active { background: #00ff41 !important; color: #000 !important; }
+        @media (max-width: 768px) {
+            #ui { font-size: 11px; padding: 10px; max-width: 95vw; }
+            #chart-container { width: 230px; height: 150px; }
+            button { padding: 5px 6px; font-size: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <canvas id="canvas"></canvas>
+        <div id="ui">
+            <div id="controls">
+                <button id="playPause">▶️ Play</button>
+                <button id="clear">Clear</button>
+                <button id="random">Random doux</button>
+                <button id="save">💾 Save</button>
+                <button id="load">📂 Load</button>
+                <select id="speed">
+                    <option value="1">x0.5 (lent)</option>
+                    <option value="2">x1</option>
+                    <option value="4">x2</option>
+                </select>
+                <button id="zoomIn">+</button>
+                <button id="zoomOut">-</button>
+                <br>
+                <button id="modePeace">🕊️ Paix</button>
+                <button id="modeWar">⚔️ Guerre</button>
+                <button id="modeChaos">💥 Chaos</button>
+                <br>
+                Tribu:
+                <button id="tribeSafe">🛡️ Sécu</button>
+                <button id="tribeInfect">☣️ Infect</button>
+                <button id="tribeChaos">🔥 Chaos</button>
+                <button id="tribeNone" class="placement-active">❌ Off</button>
+            </div>
+            <div id="presets">
+                Presets auto:
+                <button onclick="loadPreset('glider')">Glider</button>
+                <button onclick="loadPreset('oscillator')">Oscillo</button>
+                <button onclick="loadPreset('defense')">Défense</button>
+            </div>
+            <div id="stats">
+                Gen: <span id="gen">0</span> | Pop: <span id="pop">0</span> | Score: <span id="score">0</span> | Best: <span id="highscore">0</span>
+            </div>
+        </div>
+        <div id="chart-container">
+            <canvas id="populationChart"></canvas>
+        </div>
+        <div id="tooltip"></div>
+        <div id="tutorial"></div>
+    </div>
+
+    <script>
+        class CyberGrid {
+            constructor() {
+                this.canvas = document.getElementById('canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.chartCtx = document.getElementById('populationChart').getContext('2d');
+                
+                this.cols = 100;
+                this.rows = 80;
+                this.grid = [];
+                this.nextGrid = [];
+                this.initGrids();
+                
+                this.cellSize = 8;
+                this.zoom = 1;
+                this.offsetX = 0;
+                this.offsetY = 0;
+                
+                this.isRunning = false;
+                this.generation = 0;
+                this.populationHistory = [];
+                this.maxHistory = 150;
+                this.speed = 1; // sera interprété comme "steps par frame / 2" pour ralentir
+                this.currentMode = 'peace';
+                this.highScore = 0;
+
+                this.placementMode = 'none'; // none, safe, infect, chaos
+                
+                this.colors = [
+                    'rgba(0,0,0,0)',           
+                    '#00ff41',                 
+                    '#00ff88',                 
+                    '#ff0040',                 
+                    '#4169e1',                 
+                    '#ffaa00',                 
+                    '#ff44ff',                 
+                    '#ff0000',                 
+                    '#444444'                  
+                ];
+                
+                this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                this.tooltips = {
+                    1: "Cellule normale – nœud sain du réseau.",
+                    2: "Boostée – nœud renforcé, haute dispo.",
+                    3: "Infectée – malware en propagation contrôlée.",
+                    4: "Firewall – tribu défensive, stabilise la zone.",
+                    5: "Oscillateur – charge périodique modérée.",
+                    6: "Replicateur – ver qui se propage lentement.",
+                    7: "Chaos – attaque violente mais raréfiée.",
+                    8: "Mort stable – nœud définitivement hors ligne."
+                };
+                
+                this.setupControls();
+                this.setupChart();
+                this.resize();
+                this.init();
+                this.loadHighScore();
+                this.showTutorial();
+            }
+            
+            initGrids() {
+                for(let i = 0; i < this.rows; i++) {
+                    this.grid[i] = new Array(this.cols).fill(0);
+                    this.nextGrid[i] = new Array(this.cols).fill(0);
+                }
+            }
+            
+            init() {
+                this.randomize(3);
+                this.draw();
+            }
+            
+            setupControls() {
+                document.getElementById('playPause').onclick = () => this.togglePlay();
+                document.getElementById('clear').onclick = () => this.clear();
+                document.getElementById('random').onclick = () => this.randomize(5);
+                document.getElementById('save').onclick = () => this.save();
+                document.getElementById('load').onclick = () => this.load();
+                
+                document.getElementById('speed').onchange = (e) => {
+                    const v = parseInt(e.target.value);
+                    this.speed = v;
+                };
+                document.getElementById('zoomIn').onclick = () => this.zoomCanvas(1.2);
+                document.getElementById('zoomOut').onclick = () => this.zoomCanvas(0.8);
+                
+                document.getElementById('modePeace').onclick = (e) => this.setMode('peace', e.target);
+                document.getElementById('modeWar').onclick = (e) => this.setMode('war', e.target);
+                document.getElementById('modeChaos').onclick = (e) => this.setMode('chaos', e.target);
+
+                document.getElementById('tribeSafe').onclick = (e) => this.setPlacementMode('safe', e.target);
+                document.getElementById('tribeInfect').onclick = (e) => this.setPlacementMode('infect', e.target);
+                document.getElementById('tribeChaos').onclick = (e) => this.setPlacementMode('chaos', e.target);
+                document.getElementById('tribeNone').onclick = (e) => this.setPlacementMode('none', e.target);
+                
+                this.canvas.addEventListener('click', (e) => this.handleClick(e));
+                this.canvas.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                });
+                this.canvas.addEventListener('wheel', (e) => this.handleWheel(e), { passive: false });
+                this.canvas.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                
+                window.addEventListener('resize', () => this.resize());
+            }
+            
+            setupChart() {
+                this.chart = new Chart(this.chartCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Population',
+                            data: [],
+                            borderColor: '#00ff41',
+                            backgroundColor: 'rgba(0,255,65,0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { display: false },
+                            y: { 
+                                beginAtZero: true,
+                                grid: { color: 'rgba(0,255,65,0.2)' },
+                                ticks: { color: '#00ff41' }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { 
+                                backgroundColor: 'rgba(0,0,0,0.9)',
+                                titleColor: '#00ff41',
+                                bodyColor: '#00ff41'
+                            }
+                        }
+                    }
+                });
+            }
+            
+            resize() {
+                const rect = this.canvas.getBoundingClientRect();
+                this.canvas.width = rect.width;
+                this.canvas.height = rect.height;
+                
+                const gridWidth = this.cols * this.cellSize * this.zoom;
+                const gridHeight = this.rows * this.cellSize * this.zoom;
+                this.offsetX = (this.canvas.width / this.zoom - gridWidth) / 2;
+                this.offsetY = (this.canvas.height / this.zoom - gridHeight) / 2;
+                
+                this.draw();
+            }
+            
+            getCellFromCanvasCoords(px, py) {
+                const x = Math.floor((px / this.zoom - this.offsetX) / this.cellSize);
+                const y = Math.floor((py / this.zoom - this.offsetY) / this.cellSize);
+                if(x >= 0 && x < this.cols && y >= 0 && y < this.rows) {
+                    return { x, y };
+                }
+                return null;
+            }
+
+            getCell(px, py) {
+                const cell = this.getCellFromCanvasCoords(px, py);
+                if(cell) return this.grid[cell.y][cell.x];
+                return 0;
+            }
+            
+            setCell(px, py, state) {
+                const cell = this.getCellFromCanvasCoords(px, py);
+                if(cell) {
+                    this.grid[cell.y][cell.x] = state;
+                }
+            }
+
+            placeTribeAt(cellX, cellY) {
+                const size = 4;
+                const startX = cellX - Math.floor(size/2);
+                const startY = cellY - Math.floor(size/2);
+                let stateForTribe = 1;
+                if(this.placementMode === 'safe') stateForTribe = 4;
+                if(this.placementMode === 'infect') stateForTribe = 3;
+                if(this.placementMode === 'chaos') stateForTribe = 7;
+
+                for(let y = 0; y < size; y++) {
+                    for(let x = 0; x < size; x++) {
+                        const gx = startX + x;
+                        const gy = startY + y;
+                        if(gx >= 0 && gx < this.cols && gy >= 0 && gy < this.rows) {
+                            this.grid[gy][gx] = stateForTribe;
+                        }
+                    }
+                }
+            }
+            
+            countNeighbors(x, y) {
+                let count = { total: 0, infected: 0, firewall: 0, chaos: 0 };
+                for(let dy = -1; dy <= 1; dy++) {
+                    for(let dx = -1; dx <= 1; dx++) {
+                        if(dx === 0 && dy === 0) continue;
+                        const nx = x + dx, ny = y + dy;
+                        if(nx >= 0 && nx < this.cols && ny >= 0 && ny < this.rows) {
+                            const state = this.grid[ny][nx];
+                            if(state > 0) count.total++;
+                            if(state === 3) count.infected++;
+                            if(state === 4) count.firewall++;
+                            if(state === 7) count.chaos++;
+                        }
+                    }
+                }
+                return count;
+            }
+            
+            update() {
+                let population = 0;
+                
+                for(let y = 0; y < this.rows; y++) {
+                    for(let x = 0; x < this.cols; x++) {
+                        const neighbors = this.countNeighbors(x, y);
+                        const current = this.grid[y][x];
+                        
+                        if(current === 0) {
+                            if(neighbors.total === 3 || (neighbors.infected === 2 && neighbors.total >= 1)) {
+                                this.nextGrid[y][x] = Math.random() < 0.2 ? 2 : 1;
+                            } else {
+                                this.nextGrid[y][x] = 0;
+                            }
+                        } else {
+                            let nextState = 8;
+                            
+                            switch(current) {
+                                case 1:
+                                    if(neighbors.total >= 2 && neighbors.total <= 3) nextState = 1;
+                                    else if(neighbors.total > 4) nextState = 2;
+                                    else if(neighbors.chaos > 0 && Math.random() < 0.2) nextState = 3;
+                                    break;
+                                case 2:
+                                    if(neighbors.total >= 2 && neighbors.total <= 4) nextState = 2;
+                                    else nextState = 1;
+                                    break;
+                                case 3:
+                                    if(neighbors.firewall === 0 && neighbors.total <= 5) {
+                                        nextState = 3;
+                                        if(Math.random() < 0.3) {
+                                            for(let dy = -1; dy <= 1; dy++) {
+                                                for(let dx = -1; dx <= 1; dx++) {
+                                                    if(dx === 0 && dy === 0) continue;
+                                                    if(Math.random() < 0.1) {
+                                                        const nx = x + dx, ny = y + dy;
+                                                        if(nx >= 0 && nx < this.cols && ny >= 0 && ny < this.rows && this.grid[ny][nx] === 0) {
+                                                            this.nextGrid[ny][nx] = 3;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        nextState = 8;
+                                    }
+                                    break;
+                                case 4:
+                                    nextState = 4;
+                                    break;
+                                case 5:
+                                    nextState = ((this.generation + x + y) % 4) + 5;
+                                    if(nextState > 8) nextState = 5;
+                                    break;
+                                case 6:
+                                    nextState = 6;
+                                    for(let dy = -2; dy <= 2; dy++) {
+                                        for(let dx = -2; dx <= 2; dx++) {
+                                            if(Math.abs(dx) + Math.abs(dy) === 2 && Math.random() < 0.15) {
+                                                const nx = x + dx, ny = y + dy;
+                                                if(nx >= 0 && nx < this.cols && ny >= 0 && ny < this.rows && this.grid[ny][nx] === 0) {
+                                                    this.nextGrid[ny][nx] = 6;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    break;
+                                case 7:
+                                    nextState = 8;
+                                    for(let dy = -1; dy <= 1; dy++) {
+                                        for(let dx = -1; dx <= 1; dx++) {
+                                            const nx = x + dx, ny = y + dy;
+                                            if(nx >= 0 && nx < this.cols && ny >= 0 && ny < this.rows) {
+                                                if(Math.random() < 0.3) this.nextGrid[ny][nx] = 8;
+                                            }
+                                        }
+                                    }
+                                    break;
+                                case 8:
+                                    nextState = 8;
+                                    break;
+                            }
+                            
+                            if(Math.random() < 0.03 && current !== 4) {
+                                nextState = Math.floor(Math.random() * 7) + 1;
+                            }
+                            
+                            if(y < this.rows - 1 && this.grid[y+1][x] === 0 && neighbors.total < 2 && Math.random() < 0.1) {
+                                this.nextGrid[y+1][x] = nextState;
+                                this.nextGrid[y][x] = 0;
+                                nextState = 0;
+                            }
+                            
+                            if(this.currentMode === 'chaos' && Math.random() < 0.03) {
+                                const windDir = Math.random() < 0.5 ? 1 : -1;
+                                const nx = x + windDir;
+                                if(nx >= 0 && nx < this.cols) {
+                                    this.nextGrid[y][nx] = nextState;
+                                    nextState = 0;
+                                }
+                            }
+                            
+                            this.nextGrid[y][x] = nextState;
+                        }
+                        
+                        if(this.nextGrid[y][x] > 0) population++;
+                    }
+                }
+                
+                [this.grid, this.nextGrid] = [this.nextGrid, this.grid];
+                for(let i = 0; i < this.rows; i++) this.nextGrid[i].fill(0);
+                
+                this.generation++;
+                this.updateStats(population);
+                this.playSound(160 + population * 0.5, 0.01);
+            }
+            
+            updateStats(pop) {
+                document.getElementById('gen').textContent = this.generation;
+                document.getElementById('pop').textContent = pop;
+                
+                this.populationHistory.push(pop);
+                if(this.populationHistory.length > this.maxHistory) {
+                    this.populationHistory.shift();
+                }
+                
+                const score = this.generation * Math.log(pop + 1);
+                document.getElementById('score').textContent = Math.floor(score);
+                
+                if(score > this.highScore) {
+                    this.highScore = score;
+                    this.saveHighScore();
+                }
+                document.getElementById('highscore').textContent = Math.floor(this.highScore);
+                
+                this.chart.data.labels = this.populationHistory.map((_, i) => i);
+                this.chart.data.datasets[0].data = this.populationHistory;
+                this.chart.update('none');
+            }
+            
+            draw() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                this.ctx.save();
+                this.ctx.scale(this.zoom, this.zoom);
+                this.ctx.translate(this.offsetX, this.offsetY);
+                
+                this.ctx.fillStyle = 'rgba(0,20,0,0.3)';
+                this.ctx.fillRect(0, 0, this.cols * this.cellSize, this.rows * this.cellSize);
+                
+                this.ctx.strokeStyle = 'rgba(0,255,65,0.12)';
+                this.ctx.lineWidth = 1 / this.zoom;
+                for(let x = 0; x <= this.cols; x++) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x * this.cellSize, 0);
+                    this.ctx.lineTo(x * this.cellSize, this.rows * this.cellSize);
+                    this.ctx.stroke();
+                }
+                for(let y = 0; y <= this.rows; y++) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y * this.cellSize);
+                    this.ctx.lineTo(this.cols * this.cellSize, y * this.cellSize);
+                    this.ctx.stroke();
+                }
+                
+                for(let y = 0; y < this.rows; y++) {
+                    for(let x = 0; x < this.cols; x++) {
+                        const state = this.grid[y][x];
+                        if(state > 0) {
+                            const xPos = x * this.cellSize;
+                            const yPos = y * this.cellSize;
+                            
+                            const gradient = this.ctx.createRadialGradient(
+                                xPos + this.cellSize/2, yPos + this.cellSize/2, 0,
+                                xPos + this.cellSize/2, yPos + this.cellSize/2, this.cellSize
+                            );
+                            gradient.addColorStop(0, this.colors[state]);
+                            gradient.addColorStop(0.7, this.colors[state] + '66');
+                            gradient.addColorStop(1, this.colors[state] + '00');
+                            
+                            this.ctx.fillStyle = gradient;
+                            this.ctx.fillRect(xPos, yPos, this.cellSize, this.cellSize);
+                            
+                            this.ctx.strokeStyle = this.colors[state];
+                            this.ctx.lineWidth = 1 / this.zoom;
+                            this.ctx.strokeRect(xPos, yPos, this.cellSize, this.cellSize);
+                        }
+                    }
+                }
+                
+                this.ctx.restore();
+            }
+            
+            togglePlay() {
+                this.isRunning = !this.isRunning;
+                document.getElementById('playPause').textContent = this.isRunning ? '⏸️ Pause' : '▶️ Play';
+                if(this.isRunning) this.loop();
+            }
+            
+            loop() {
+                if(!this.isRunning) return;
+                const steps = Math.max(1, this.speed / 2); // ralentit globalement
+                for(let i = 0; i < steps; i++) {
+                    this.update();
+                }
+                this.draw();
+                setTimeout(() => requestAnimationFrame(() => this.loop()), 80); // ~12 fps * steps
+            }
+            
+            handleClick(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * (this.canvas.width / rect.width);
+                const y = (e.clientY - rect.top) * (this.canvas.height / rect.height);
+
+                if(this.placementMode === 'none') {
+                    this.setCell(x, y, 3);
+                } else {
+                    const cell = this.getCellFromCanvasCoords(x, y);
+                    if(cell) this.placeTribeAt(cell.x, cell.y);
+                }
+                this.draw();
+            }
+            
+            handleWheel(e) {
+                e.preventDefault();
+                const rect = this.canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * (this.canvas.width / rect.width);
+                const y = (e.clientY - rect.top) * (this.canvas.height / rect.height);
+                
+                const beforeZoom = this.zoom;
+                const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+                this.zoom *= zoomFactor;
+                this.zoom = Math.max(0.5, Math.min(this.zoom, 4));
+                
+                this.offsetX = (x / this.zoom) - (x / beforeZoom - this.offsetX);
+                this.offsetY = (y / this.zoom) - (y / beforeZoom - this.offsetY);
+                
+                const gridWidth = this.cols * this.cellSize * this.zoom;
+                const gridHeight = this.rows * this.cellSize * this.zoom;
+                if(gridWidth < this.canvas.width) {
+                    this.offsetX = (this.canvas.width / this.zoom - this.cols * this.cellSize) / 2;
+                }
+                if(gridHeight < this.canvas.height) {
+                    this.offsetY = (this.canvas.height / this.zoom - this.rows * this.cellSize) / 2;
+                }
+                
+                this.draw();
+            }
+            
+            handleMouseMove(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const x = (e.clientX - rect.left) * (this.canvas.width / rect.width);
+                const y = (e.clientY - rect.top) * (this.canvas.height / rect.height);
+                const state = this.getCell(x, y);
+                
+                const tooltip = document.getElementById('tooltip');
+                if(state > 0) {
+                    tooltip.style.display = 'block';
+                    tooltip.innerHTML = `<strong>État ${state}:</strong> ${this.tooltips[state] || 'Cellule inconnue'}`;
+                    tooltip.style.left = (e.clientX + 10) + 'px';
+                    tooltip.style.top = (e.clientY + 10) + 'px';
+                } else {
+                    tooltip.style.display = 'none';
+                }
+            }
+            
+            randomize(intensity = 5) {
+                for(let y = 0; y < this.rows; y++) {
+                    for(let x = 0; x < this.cols; x++) {
+                        this.grid[y][x] = Math.random() < intensity / 100 ? Math.floor(Math.random() * 4) + 1 : 0;
+                    }
+                }
+                this.generation = 0;
+                this.populationHistory = [];
+                this.draw();
+            }
+            
+            clear() {
+                for(let y = 0; y < this.rows; y++) {
+                    for(let x = 0; x < this.cols; x++) {
+                        this.grid[y][x] = 0;
+                    }
+                }
+                this.generation = 0;
+                this.populationHistory = [];
+                this.draw();
+            }
+            
+            save() {
+                const data = {
+                    grid: this.grid,
+                    generation: this.generation,
+                    populationHistory: this.populationHistory
+                };
+                localStorage.setItem('cyberGridSave', JSON.stringify(data));
+                this.playSound(800, 0.1);
+            }
+            
+            load() {
+                const data = localStorage.getItem('cyberGridSave');
+                if(data) {
+                    const parsed = JSON.parse(data);
+                    this.grid = parsed.grid;
+                    this.generation = parsed.generation;
+                    this.populationHistory = parsed.populationHistory || [];
+                    this.draw();
+                    this.updateStats(this.populationHistory[this.populationHistory.length - 1] || 0);
+                }
+            }
+            
+            saveHighScore() {
+                localStorage.setItem('cyberGridHighScore', this.highScore);
+            }
+            
+            loadHighScore() {
+                this.highScore = parseFloat(localStorage.getItem('cyberGridHighScore')) || 0;
+                document.getElementById('highscore').textContent = Math.floor(this.highScore);
+            }
+            
+            setMode(mode, button) {
+                this.currentMode = mode;
+                document.querySelectorAll('#controls button').forEach(b => b.classList.remove('mode-active'));
+                if(button) button.classList.add('mode-active');
+            }
+
+            setPlacementMode(mode, button) {
+                this.placementMode = mode;
+                document.querySelectorAll('#controls button').forEach(b => b.classList.remove('placement-active'));
+                if(button) button.classList.add('placement-active');
+            }
+            
+            zoomCanvas(factor) {
+                this.zoom *= factor;
+                this.zoom = Math.max(0.5, Math.min(this.zoom, 4));
+                this.resize();
+            }
+            
+            playSound(frequency = 440, volume = 0.03) {
+                if(!this.audioCtx) return;
+                const oscillator = this.audioCtx.createOscillator();
+                const gainNode = this.audioCtx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(this.audioCtx.destination);
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = 'square';
+                
+                gainNode.gain.setValueAtTime(volume, this.audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.05);
+                
+                oscillator.start(this.audioCtx.currentTime);
+                oscillator.stop(this.audioCtx.currentTime + 0.05);
+            }
+            
+            showTutorial() {
+                const tutorial = document.getElementById('tutorial');
+                tutorial.innerHTML = `
+                    <strong>🎮 Tutoriel Cyber Grid Defender – Tribes</strong><br><br>
+                    • Avant de lancer ▶️, choisis une tribu (Sécu, Infect, Chaos) puis clique sur la grille pour placer tes groupes.<br>
+                    • Mode "Sécu" = firewalls (état 4), "Infect" = malware (3), "Chaos" = nœuds explosifs (7).<br>
+                    • Quand tu es prêt, appuie sur ▶️ Play et regarde l'évolution plus lente et lisible.<br><br>
+                    Défis:<br>
+                    🥉 Crée 3 tribus différentes et observe leurs frontières.<br>
+                    🥈 Tiens 300 générations sans que tout soit mort.<br>
+                    🥇 Atteins un score > 5000 avec une infection contrôlée.<br>
+                `;
+                tutorial.style.display = 'block';
+                setTimeout(() => tutorial.style.display = 'none', 14000);
+            }
+        }
+        
+        function loadPreset(name) {
+            const grid = cyberGrid.grid;
+            cyberGrid.clear();
+            switch(name) {
+                case 'glider':
+                    grid[10][10] = 1; grid[10][11] = 2; grid[10][12] = 1;
+                    grid[11][12] = 1; grid[12][10] = 6;
+                    break;
+                case 'oscillator':
+                    for(let i = 0; i < 5; i++) {
+                        grid[20+i][20] = 5;
+                        grid[20+i][25] = 5;
+                    }
+                    break;
+                case 'defense':
+                    for(let x = 30; x < 70; x++) {
+                        grid[40][x] = 4;
+                    }
+                    for(let y = 35; y < 45; y++) {
+                        for(let x = 10; x < 20; x++) {
+                            grid[y][x] = 3;
+                        }
+                    }
+                    break;
+            }
+            cyberGrid.draw();
+        }
+        
+        const cyberGrid = new CyberGrid();
+    </script>
+</body>
+</html>
