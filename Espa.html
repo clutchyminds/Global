@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>San Francisco — Presentación interactiva</title>
+<style>
+  :root{
+    --bg:#0f172a; --panel:#111827; --text:#e5e7eb; --accent:#22c55e; --muted:#9ca3af; --warn:#ef4444;
+    --card:#1f2937; --link:#38bdf8; --gold:#f59e0b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+  header{position:sticky;top:0;background:rgba(17,24,39,.85);backdrop-filter:saturate(120%) blur(8px);z-index:10;border-bottom:1px solid #0b1022}
+  .bar{display:flex;align-items:center;gap:.75rem;padding:.6rem .9rem;flex-wrap:wrap}
+  .title{font-weight:700;letter-spacing:.3px}
+  .grow{flex:1}
+  .btn{border:1px solid #223; background:#0b1022; color:var(--text); padding:.45rem .7rem; border-radius:.5rem; cursor:pointer}
+  .btn:hover{border-color:#334; background:#0f1328}
+  .pill{padding:.3rem .6rem;border-radius:999px;background:#0b1022;border:1px solid #223;color:var(--muted)}
+  .progress{height:6px;background:#0b1022;border-top:1px solid #0b1022}
+  .progress>div{height:6px;background:linear-gradient(90deg,var(--accent),#06b6d4);width:0%}
+
+  main{max-width:1100px;margin:0 auto;padding:1rem}
+  .grid{display:grid;grid-template-columns:280px 1fr;gap:1rem}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  nav{background:var(--panel);border:1px solid #0b1022;border-radius:.8rem;position:sticky;top:62px;height:max-content}
+  nav h3{margin:.9rem;font-size:1rem;color:var(--muted)}
+  .toc{list-style:none;margin:0;padding:0}
+  .toc li{border-top:1px solid #0b1022}
+  .toc a{display:flex;gap:.6rem;align-items:center;text-decoration:none;color:var(--text);padding:.7rem .9rem}
+  .toc a:hover{background:#0b1022}
+  .toc a.active{background:#0d1326;border-left:3px solid var(--accent);padding-left:.65rem}
+
+  section{background:var(--panel);border:1px solid #0b1022;border-radius:.8rem;padding:1rem;margin-bottom:1rem}
+  section h2{margin:.2rem 0 0.6rem 0;font-size:1.25rem}
+  .qa{display:grid;gap:.6rem}
+  .qa .q{color:var(--gold);font-weight:600}
+  .qa .a{line-height:1.5}
+  .card{background:var(--card);border:1px solid #0b1022;border-radius:.7rem;padding:.8rem}
+  .chips{display:flex;flex-wrap:wrap;gap:.4rem}
+  .chip{background:#0b1022;border:1px solid #223;color:var(--muted);padding:.3rem .5rem;border-radius:.6rem;font-size:.9rem}
+
+  .lang-toggle{display:flex;gap:.5rem;align-items:center}
+  .lang{display:none;margin-top:.5rem;color:#cbd5e1}
+  .lang.show{display:block}
+
+  .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.6rem}
+  .gallery .g{background:#0b1022;border:1px solid #223;border-radius:.6rem;padding:.6rem}
+  .gallery .g h4{margin:.2rem 0 .4rem 0}
+  .gallery .g p{margin:.2rem 0;color:#cbd5e1}
+  .kbd{color:#b9c1d1;font-size:.9rem}
+
+  .flex{display:flex;gap:.6rem;flex-wrap:wrap}
+  input[type="search"]{flex:1;min-width:180px;padding:.45rem .6rem;border-radius:.5rem;border:1px solid #223;background:#0b1022;color:var(--text)}
+  .timer{min-width:110px;text-align:center}
+  .timer .time{font-weight:700;letter-spacing:.5px}
+  .hint{color:#cbd5e1}
+
+  .quiz{display:grid;gap:.6rem}
+  .opt{display:flex;align-items:center;gap:.6rem;padding:.5rem;border:1px solid #223;background:#0b1022;border-radius:.6rem;cursor:pointer}
+  .opt.correct{border-color:#1e764a;background:#0e1e19}
+  .opt.wrong{border-color:#7a1c1c;background:#1a0f12}
+  .score{font-weight:700}
+
+  .present{position:fixed;bottom:16px;right:16px;display:flex;gap:.5rem;z-index:20}
+  .present .btn{box-shadow:0 6px 18px rgba(0,0,0,.35)}
+  .fullscreen{background:#0b1022;border:1px dashed #223;padding:.5rem;border-radius:.6rem;color:#cbd5e1}
+
+  .foot{color:#9ca3af;text-align:center;padding:1rem}
+  .sr-only{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="title">San Francisco — Presentación interactiva (7 preguntas)</div>
+    <div class="grow"></div>
+    <div class="lang-toggle">
+      <span class="pill">Idioma</span>
+      <button class="btn" id="esBtn" aria-pressed="true">Español</button>
+      <button class="btn" id="frBtn" aria-pressed="false">Francés (ayuda)</button>
+    </div>
+    <div class="pill timer">
+      <div>Temporizador</div>
+      <div class="time" id="clock">00:00</div>
+    </div>
+    <button class="btn" id="resetBtn" title="Reiniciar navegación y quiz">Reiniciar</button>
+  </div>
+  <div class="progress"><div id="progressBar"></div></div>
+</header>
+
+<main>
+  <div class="grid">
+    <nav aria-label="Tabla de contenidos">
+      <h3>Preguntas</h3>
+      <ul class="toc" id="toc"></ul>
+      <div class="kbd" style="padding:.7rem .9rem;border-top:1px solid #0b1022">
+        <div>Atajos: ←/→ sección, F11 pantalla completa, F para alternar idioma</div>
+      </div>
+    </nav>
+
+    <div>
+      <section id="searchPanel" aria-label="Búsqueda y control">
+        <h2>Herramientas de presentación</h2>
+        <div class="flex">
+          <input type="search" id="search" placeholder="Buscar palabras clave (barrios, monumentos, historia...)">
+          <div class="hint">Resaltará coincidencias en las respuestas.</div>
+        </div>
+      </section>
+
+      <!-- 1 -->
+      <section id="q1">
+        <h2>1) ¿Dónde se encuentra San Francisco y qué la caracteriza geográficamente?</h2>
+        <div class="qa">
+          <div class="q">Resumen</div>
+          <div class="a">
+            San Francisco se ubica en la costa oeste de Estados Unidos, en el norte de California, sobre una península entre el Océano Pacífico y la Bahía de San Francisco. Su relieve es muy accidentado: más de 40 colinas, calles empinadas y vistas amplias que influyen en la movilidad y el paisaje urbano.
+          </div>
+          <div class="lang" data-lang="fr">
+            Située sur la côte ouest, au nord de la Californie, sur une péninsule entre l’océan Pacifique et la baie. Relief vallonné avec plus de 40 collines, rues pentues, vues panoramiques.
+          </div>
+        </div>
+        <div class="chips">
+          <span class="chip">Costa oeste</span><span class="chip">Bahía</span><span class="chip">Colinas</span><span class="chip">Península</span>
+        </div>
+      </section>
+
+      <!-- 2 -->
+      <section id="q2">
+        <h2>2) Breve historia y momentos clave</h2>
+        <div class="qa">
+          <div class="q">Hitos</div>
+          <div class="a">
+            La ciudad creció con la fiebre del oro (1849), se reconstruyó tras el gran terremoto y fuego de 1906, y se consolidó como centro cultural y tecnológico en el siglo XX, con movimientos como la contracultura de los años 60 y, más tarde, el auge de la tecnología vinculada al cercano Silicon Valley.
+          </div>
+          <div class="lang" data-lang="fr">
+            Essor avec la ruée vers l’or (1849), reconstruction après le séisme et incendie de 1906, puis centre culturel et technologique (contre-culture des années 60, essor tech lié à la Silicon Valley).
+          </div>
+        </div>
+        <div class="card">
+          <strong>Línea temporal interactiva:</strong>
+          <div class="chips">
+            <span class="chip" data-t="1849">1849 — Fiebre del oro</span>
+            <span class="chip" data-t="1906">1906 — Terremoto e incendio</span>
+            <span class="chip" data-t="1967">1967 — Summer of Love</span>
+            <span class="chip" data-t="2000s">2000s — Boom tecnológico</span>
+          </div>
+          <div id="timelineDesc" style="margin-top:.5rem;color:#cbd5e1"></div>
+        </div>
+      </section>
+
+      <!-- 3 -->
+      <section id="q3">
+        <h2>3) Monumentos y lugares emblemáticos</h2>
+        <div class="gallery">
+          <div class="g"><h4>Golden Gate Bridge</h4><p>Pieza icónica que conecta la ciudad con Marin; símbolo de ingeniería y paisaje.</p></div>
+          <div class="g"><h4>Alcatraz</h4><p>Isla histórica, famosa por la prisión; hoy sitio patrimonial y visitas guiadas.</p></div>
+          <div class="g"><h4>Cable Cars</h4><p>Tranvías históricos que vencen las pendientes; patrimonio del transporte.</p></div>
+          <div class="g"><h4>Painted Ladies</h4><p>Casas victorianas frente a Alamo Square con skyline al fondo.</p></div>
+          <div class="g"><h4>Ferry Building</h4><p>Mercado y terminal histórico junto al embarcadero.</p></div>
+          <div class="g"><h4>Chinatown</h4><p>Uno de los barrios chinos más antiguos de EE. UU., vibrante y denso.</p></div>
+        </div>
+        <div class="lang" data-lang="fr">
+          Monuments: Golden Gate, Alcatraz, Cable Cars, Painted Ladies, Ferry Building, Chinatown.
+        </div>
+      </section>
+
+      <!-- 4 -->
+      <section id="q4">
+        <h2>4) Barrios y diversidad urbana</h2>
+        <div class="qa">
+          <div class="q">Panorama</div>
+          <div class="a">
+            San Francisco reúne barrios con identidades fuertes: Mission (arte callejero y cultura latina), Castro (historia LGBTIQ+), North Beach (herencia italiana), Haight-Ashbury (contra‑cultura), SoMa (tecnología y museos), y Financial District (negocios y rascacielos). La mezcla se refleja en gastronomía, lenguas y estilos de vida.
+          </div>
+          <div class="lang" data-lang="fr">
+            Mission (art et culture latine), Castro (histoire LGBTIQ+), North Beach (héritage italien), Haight-Ashbury (contre‑culture), SoMa (tech et musées), Financial District (affaires).
+          </div>
+        </div>
+        <div class="chips">
+          <span class="chip">Diversidad</span><span class="chip">Gastronomía</span><span class="chip">Historia social</span>
+        </div>
+      </section>
+
+      <!-- 5 -->
+      <section id="q5">
+        <h2>5) Economía y tecnología</h2>
+        <div class="qa">
+          <div class="q">Clave</div>
+          <div class="a">
+            La economía local combina turismo, finanzas, innovación y startups tecnológicas. Aunque muchas sedes están en Silicon Valley, San Francisco concentra talento, coworkings y eventos, atrayendo inversión y empresas globales, con efectos tanto positivos (empleo, innovación) como retos (coste de vida, desigualdades).
+          </div>
+          <div class="lang" data-lang="fr">
+            Économie: tourisme, finance, innovation, startups. Effets: emplois, innovation mais coût de la vie élevé et inégalités.
+          </div>
+        </div>
+        <div class="card">
+          <strong>Indicadores visuales:</strong>
+          <div class="chips">
+            <span class="chip">Turismo</span><span class="chip">Finanzas</span><span class="chip">Startups</span><span class="chip">Inversión</span>
+          </div>
+          <div class="progress"><div id="ecoBar" style="width:65%"></div></div>
+          <div class="hint">Barra conceptual: peso relativo de innovación en la economía local (ilustrativo).</div>
+        </div>
+      </section>
+
+      <!-- 6 -->
+      <section id="q6">
+        <h2>6) Cultura y vida cotidiana</h2>
+        <div class="qa">
+          <div class="q">Aspectos</div>
+          <div class="a">
+            La ciudad valora la diversidad, la creatividad y el espacio público: festivales, cafés independientes, librerías, y una fuerte escena musical y tecnológica. El clima con niebla (la famosa “Karl the Fog”) afecta la experiencia urbana y las actividades al aire libre.
+          </div>
+          <div class="lang" data-lang="fr">
+            Diversité, créativité, espaces publics, festivals, cafés, librairies, musique/tech; climat brumeux (“Karl the Fog”) influence la vie quotidienne.
+          </div>
+        </div>
+        <div class="chips">
+          <span class="chip">Festivales</span><span class="chip">Espacio público</span><span class="chip">Niebla</span>
+        </div>
+      </section>
+
+      <!-- 7 -->
+      <section id="q7">
+        <h2>7) Retos urbanos y sostenibilidad</h2>
+        <div class="qa">
+          <div class="q">Desafíos</div>
+          <div class="a">
+            San Francisco enfrenta retos de vivienda asequible, desigualdad y movilidad en terreno complejo, además de riesgos sísmicos. La ciudad impulsa transporte público, ciclismo, energías limpias y planificación resiliente para equilibrar innovación y calidad de vida.
+          </div>
+          <div class="lang" data-lang="fr">
+            Défis: logement abordable, inégalités, mobilité, risques sismiques. Réponses: transports, vélo, énergies propres, résilience.
+          </div>
+        </div>
+        <div class="card">
+          <strong>Actividad rápida: prioriza políticas</strong>
+          <div class="chips" id="priorities">
+            <span class="chip" data-pr="vivienda">Vivienda asequible</span>
+            <span class="chip" data-pr="movilidad">Movilidad sostenible</span>
+            <span class="chip" data-pr="resiliencia">Resiliencia sísmica</span>
+            <span class="chip" data-pr="energía">Energía limpia</span>
+          </div>
+          <div id="priorOut" style="margin-top:.5rem;color:#cbd5e1"></div>
+        </div>
+      </section>
+
+      <!-- Quiz -->
+      <section id="quiz">
+        <h2>Quiz de repaso</h2>
+        <div class="quiz" aria-live="polite">
+          <div class="opt" data-q="geo" data-correct="true">Está en la costa oeste, entre océano y bahía, con muchas colinas.</div>
+          <div class="opt" data-q="geo">Está en la costa este y es completamente plana.</div>
+
+          <div class="opt" data-q="hist" data-correct="true">1906 marcó la ciudad con un gran terremoto e incendio.</div>
+          <div class="opt" data-q="hist">Su historia no incluye ningún evento sísmico importante.</div>
+
+          <div class="opt" data-q="mono" data-correct="true">El Golden Gate es un símbolo mundial de la ciudad.</div>
+          <div class="opt" data-q="mono">El puente símbolo está en Los Ángeles.</div>
+
+          <div class="opt" data-q="eco" data-correct="true">Innovación y startups forman parte clave de la economía local.</div>
+          <div class="opt" data-q="eco">La ciudad depende únicamente de la agricultura.</div>
+        </div>
+        <div style="margin-top:.6rem">
+          <span class="score" id="score">Puntuación: 0</span>
+          <span class="pill" id="quizState" style="margin-left:.6rem">Elige las opciones correctas</span>
+        </div>
+      </section>
+
+      <div class="foot">
+        Usa las flechas para navegar sección por sección. Alterna idioma para apoyo en francés. El temporizador te ayuda a controlar el tiempo.
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="present">
+  <button class="btn" id="prevBtn">← Anterior</button>
+  <button class="btn" id="nextBtn">Siguiente →</button>
+  <div class="fullscreen">Consejo: F11 para pantalla completa</div>
+</div>
+
+<script>
+(function(){
+  // Estado
+  const sections = Array.from(document.querySelectorAll('section[id^="q"]'));
+  const ids = sections.map(s=>s.id);
+  const progressBar = document.getElementById('progressBar');
+  const ecoBar = document.getElementById('ecoBar');
+  const esBtn = document.getElementById('esBtn');
+  const frBtn = document.getElementById('frBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const search = document.getElementById('search');
+  const clock = document.getElementById('clock');
+  const toc = document.getElementById('toc');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const quizScore = document.getElementById('score');
+  const quizState = document.getElementById('quizState');
+
+  let current = 0;
+  let showFR = false;
+  let startTime = Date.now();
+  let score = 0;
+  let answered = new Set();
+
+  // Construir TOC
+  ids.forEach((id, i)=>{
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = '#'+id;
+    a.textContent = document.querySelector('#'+id+' h2').textContent;
+    a.addEventListener('click', (e)=>{
+      e.preventDefault();
+      goTo(i);
+    });
+    li.appendChild(a);
+    toc.appendChild(li);
+  });
+
+  function updateTOC(){
+    Array.from(toc.querySelectorAll('a')).forEach((a, i)=>{
+      a.classList.toggle('active', i===current);
+    });
+  }
+
+  function goTo(i){
+    current = Math.max(0, Math.min(ids.length-1, i));
+    document.getElementById(ids[current]).scrollIntoView({behavior:'smooth', block:'start'});
+    updateProgress();
+    updateTOC();
+    localStorage.setItem('sf_current', String(current));
+  }
+
+  function updateProgress(){
+    const pct = ((current+1)/ids.length)*100;
+    progressBar.style.width = pct+'%';
+  }
+
+  // Navegación
+  prevBtn.addEventListener('click', ()=>goTo(current-1));
+  nextBtn.addEventListener('click', ()=>goTo(current+1));
+  window.addEventListener('keydown', (e)=>{
+    if(e.key==='ArrowRight') goTo(current+1);
+    if(e.key==='ArrowLeft') goTo(current-1);
+    if(e.key.toLowerCase()==='f'){ toggleLang(); }
+  });
+
+  // Idioma FR helper
+  function setLang(fr){
+    showFR = fr;
+    document.querySelectorAll('.lang').forEach(el=>{
+      el.classList.toggle('show', showFR);
+    });
+    esBtn.setAttribute('aria-pressed', String(!showFR));
+    frBtn.setAttribute('aria-pressed', String(showFR));
+    localStorage.setItem('sf_fr', String(showFR));
+  }
+  function toggleLang(){ setLang(!showFR); }
+  esBtn.addEventListener('click', ()=>setLang(false));
+  frBtn.addEventListener('click', ()=>setLang(true));
+
+  // Búsqueda y resaltado
+  let lastMarks = [];
+  function clearMarks(){
+    lastMarks.forEach(m=>{
+      const parent = m.parentNode;
+      if(!parent) return;
+      parent.replaceChild(document.createTextNode(m.textContent), m);
+      parent.normalize();
+    });
+    lastMarks = [];
+  }
+  function markText(node, term){
+    const text = node.textContent;
+    const idx = text.toLowerCase().indexOf(term.toLowerCase());
+    if(idx===-1) return;
+    const span = document.createElement('mark');
+    span.style.background = '#3b82f6';
+    span.style.color = 'white';
+    span.textContent = text.substring(idx, idx+term.length);
+    const before = document.createTextNode(text.substring(0,idx));
+    const after = document.createTextNode(text.substring(idx+term.length));
+    const frag = document.createDocumentFragment();
+    frag.appendChild(before); frag.appendChild(span); frag.appendChild(after);
+    node.replaceWith(frag);
+    lastMarks.push(span);
+  }
+  search.addEventListener('input', ()=>{
+    clearMarks();
+    const term = search.value.trim();
+    if(!term) return;
+    document.querySelectorAll('.a, .g p, .g h4').forEach(el=>{
+      markText(el.firstChild, term);
+    });
+  });
+
+  // Temporizador
+  setInterval(()=>{
+    const diff = Math.floor((Date.now()-startTime)/1000);
+    const m = String(Math.floor(diff/60)).padStart(2,'0');
+    const s = String(diff%60).padStart(2,'0');
+    clock.textContent = m+':'+s;
+  }, 1000);
+
+  // Línea temporal (tooltip simple)
+  const timeline = {
+    "1849":"Migración masiva y crecimiento acelerado por el oro.",
+    "1906":"Destrucción y reconstrucción tras el seísmo e incendios.",
+    "1967":"Cultura juvenil y música transforman Haight-Ashbury.",
+    "2000s":"Ecosistema de startups y expansión tecnológica."
+  };
+  document.querySelectorAll('[data-t]').forEach(ch=>{
+    ch.style.cursor='pointer';
+    ch.addEventListener('click', ()=>{
+      document.getElementById('timelineDesc').textContent = timeline[ch.dataset.t] || '';
+    });
+  });
+
+  // Prioridades (arrastrar mental — clic para ordenar)
+  const prior = document.getElementById('priorities');
+  const out = document.getElementById('priorOut');
+  let order = [];
+  prior.querySelectorAll('.chip').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      const key = c.dataset.pr;
+      const idx = order.indexOf(key);
+      if(idx===-1){ order.push(key); c.style.borderColor = '#38bdf8'; }
+      else { order.splice(idx,1); c.style.borderColor = '#223'; }
+      out.textContent = order.length?('Tu orden: '+order.join(' > ')):'Selecciona prioridades (máx. 4).';
+    });
+  });
+
+  // Quiz
+  document.querySelectorAll('.opt').forEach(opt=>{
+    opt.addEventListener('click', ()=>{
+      const q = opt.dataset.q;
+      if(answered.has(q)) return;
+      const correct = opt.dataset.correct === 'true';
+      if(correct){
+        opt.classList.add('correct');
+        score += 1;
+        quizScore.textContent = 'Puntuación: '+score;
+        quizState.textContent = '¡Bien! Sigue con la siguiente.';
+      }else{
+        opt.classList.add('wrong');
+        quizState.textContent = 'Revisa la sección correspondiente y vuelve a intentarlo.';
+      }
+      answered.add(q);
+    });
+  });
+
+  // Reiniciar
+  resetBtn.addEventListener('click', ()=>{
+    localStorage.removeItem('sf_current');
+    localStorage.removeItem('sf_fr');
+    score = 0; answered.clear();
+    quizScore.textContent = 'Puntuación: 0';
+    quizState.textContent = 'Elige las opciones correctas';
+    document.querySelectorAll('.opt').forEach(o=>o.classList.remove('correct','wrong'));
+    startTime = Date.now();
+    order = []; out.textContent = 'Selecciona prioridades (máx. 4).';
+    document.querySelectorAll('.lang').forEach(el=>el.classList.remove('show'));
+    setLang(false);
+    goTo(0);
+    clearMarks();
+    search.value='';
+  });
+
+  // Persistencia básica
+  const savedIdx = Number(localStorage.getItem('sf_current'));
+  const savedFR = localStorage.getItem('sf_fr')==='true';
+  if(!Number.isNaN(savedIdx)) current = Math.max(0, Math.min(ids.length-1, savedIdx));
+  setLang(savedFR);
+  updateTOC();
+  updateProgress();
+  // Scroll inicial suave
+  setTimeout(()=>goTo(current), 200);
+})();
+</script>
+</body>
+</html>
