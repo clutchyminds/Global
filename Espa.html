@@ -1,483 +1,1008 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>San Francisco — Presentación interactiva</title>
-<style>
-  :root{
-    --bg:#0f172a; --panel:#111827; --text:#e5e7eb; --accent:#22c55e; --muted:#9ca3af; --warn:#ef4444;
-    --card:#1f2937; --link:#38bdf8; --gold:#f59e0b;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-  header{position:sticky;top:0;background:rgba(17,24,39,.85);backdrop-filter:saturate(120%) blur(8px);z-index:10;border-bottom:1px solid #0b1022}
-  .bar{display:flex;align-items:center;gap:.75rem;padding:.6rem .9rem;flex-wrap:wrap}
-  .title{font-weight:700;letter-spacing:.3px}
-  .grow{flex:1}
-  .btn{border:1px solid #223; background:#0b1022; color:var(--text); padding:.45rem .7rem; border-radius:.5rem; cursor:pointer}
-  .btn:hover{border-color:#334; background:#0f1328}
-  .pill{padding:.3rem .6rem;border-radius:999px;background:#0b1022;border:1px solid #223;color:var(--muted)}
-  .progress{height:6px;background:#0b1022;border-top:1px solid #0b1022}
-  .progress>div{height:6px;background:linear-gradient(90deg,var(--accent),#06b6d4);width:0%}
+  <meta charset="UTF-8" />
+  <title>San Francisco Esencial</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    /* ---------- GLOBAL ---------- */
+    html {
+      scroll-behavior: smooth;
+    }
 
-  main{max-width:1100px;margin:0 auto;padding:1rem}
-  .grid{display:grid;grid-template-columns:280px 1fr;gap:1rem}
-  @media(max-width:900px){.grid{grid-template-columns:1fr}}
-  nav{background:var(--panel);border:1px solid #0b1022;border-radius:.8rem;position:sticky;top:62px;height:max-content}
-  nav h3{margin:.9rem;font-size:1rem;color:var(--muted)}
-  .toc{list-style:none;margin:0;padding:0}
-  .toc li{border-top:1px solid #0b1022}
-  .toc a{display:flex;gap:.6rem;align-items:center;text-decoration:none;color:var(--text);padding:.7rem .9rem}
-  .toc a:hover{background:#0b1022}
-  .toc a.active{background:#0d1326;border-left:3px solid var(--accent);padding-left:.65rem}
+    :root {
+      --bg-main: #ded1b7;
+      --rojo-es: #e94b3c;
+      --oro-es: #f6b500;
+      --vino-es: #5a1a22;
+      --azul-noche: #1b2330;
+      --texto-oscuro: #2b2b2b;
+      --texto-clair: #fdfdfd;
+      --radius-card: 18px;
+      --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.18);
+      --transition-main: 0.45s cubic-bezier(0.24, 0.82, 0.21, 0.99);
+    }
 
-  section{background:var(--panel);border:1px solid #0b1022;border-radius:.8rem;padding:1rem;margin-bottom:1rem}
-  section h2{margin:.2rem 0 0.6rem 0;font-size:1.25rem}
-  .qa{display:grid;gap:.6rem}
-  .qa .q{color:var(--gold);font-weight:600}
-  .qa .a{line-height:1.5}
-  .card{background:var(--card);border:1px solid #0b1022;border-radius:.7rem;padding:.8rem}
-  .chips{display:flex;flex-wrap:wrap;gap:.4rem}
-  .chip{background:#0b1022;border:1px solid #223;color:var(--muted);padding:.3rem .5rem;border-radius:.6rem;font-size:.9rem}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  .lang-toggle{display:flex;gap:.5rem;align-items:center}
-  .lang{display:none;margin-top:.5rem;color:#cbd5e1}
-  .lang.show{display:block}
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #fff7e6 0, var(--bg-main) 55%, #d1b69a 100%);
+      color: var(--texto-oscuro);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
 
-  .gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.6rem}
-  .gallery .g{background:#0b1022;border:1px solid #223;border-radius:.6rem;padding:.6rem}
-  .gallery .g h4{margin:.2rem 0 .4rem 0}
-  .gallery .g p{margin:.2rem 0;color:#cbd5e1}
-  .kbd{color:#b9c1d1;font-size:.9rem}
+    /* ---------- BARRE SUPÉRIEURE (ACCEUIL) ---------- */
 
-  .flex{display:flex;gap:.6rem;flex-wrap:wrap}
-  input[type="search"]{flex:1;min-width:180px;padding:.45rem .6rem;border-radius:.5rem;border:1px solid #223;background:#0b1022;color:var(--text)}
-  .timer{min-width:110px;text-align:center}
-  .timer .time{font-weight:700;letter-spacing:.5px}
-  .hint{color:#cbd5e1}
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      background: linear-gradient(90deg, rgba(255, 247, 230, 0.85), rgba(250, 224, 195, 0.9));
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
 
-  .quiz{display:grid;gap:.6rem}
-  .opt{display:flex;align-items:center;gap:.6rem;padding:.5rem;border:1px solid #223;background:#0b1022;border-radius:.6rem;cursor:pointer}
-  .opt.correct{border-color:#1e764a;background:#0e1e19}
-  .opt.wrong{border-color:#7a1c1c;background:#1a0f12}
-  .score{font-weight:700}
+    .top-bar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 18px;
+      gap: 10px;
+    }
 
-  .present{position:fixed;bottom:16px;right:16px;display:flex;gap:.5rem;z-index:20}
-  .present .btn{box-shadow:0 6px 18px rgba(0,0,0,.35)}
-  .fullscreen{background:#0b1022;border:1px dashed #223;padding:.5rem;border-radius:.6rem;color:#cbd5e1}
+    .top-bar-title {
+      font-size: 13px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-family: "Georgia", serif;
+    }
 
-  .foot{color:#9ca3af;text-align:center;padding:1rem}
-  .sr-only{position:absolute;left:-9999px}
-</style>
+    .top-bar-links {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .top-link {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 0, 0, 0.18);
+      background: rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+      transition: background 0.25s ease-out, color 0.25s ease-out, transform 0.2s ease-out;
+    }
+
+    .top-link:hover {
+      background: linear-gradient(120deg, #ffb347, #ff6a4d, #b22222);
+      color: var(--texto-clair);
+      transform: translateY(-1px);
+    }
+
+    /* ---------- PAGE ---------- */
+
+    .sf-page {
+      min-height: 100vh;
+      padding: 30px 18px 100px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    #top {
+      scroll-margin-top: 90px;
+    }
+
+    .badge-es {
+      display: inline-flex;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #ffcc29, #ff5b45, #b22222);
+      color: var(--texto-clair);
+    }
+
+    h1 {
+      font-family: "Georgia", "Times New Roman", serif;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-top: 18px;
+      margin-bottom: 8px;
+      font-size: clamp(28px, 4vw, 40px);
+    }
+
+    .subtitle {
+      max-width: 620px;
+      margin: 0 auto;
+      font-size: 15px;
+      opacity: 0.82;
+    }
+
+    /* ---------- GRILLE SECTIONS PRINCIPALES ---------- */
+
+    .sections-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 26px;
+      margin-top: 40px;
+    }
+
+    @media (min-width: 840px) {
+      .sections-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .sections-grid .card--hero {
+        grid-column: 1 / -1;
+      }
+      .sections-grid .card--night {
+        grid-column: 1 / -1;
+      }
+    }
+
+    /* ---------- CARTES ---------- */
+
+    .card {
+      position: relative;
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: var(--radius-card);
+      padding: 22px 22px 20px;
+      box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+      transform: translateY(24px) scale(0.98);
+      opacity: 0;
+      transition:
+        transform var(--transition-main),
+        box-shadow var(--transition-main),
+        opacity 0.45s ease-out,
+        background 0.4s ease-out;
+      overflow: hidden;
+      cursor: default;
+      will-change: transform, opacity;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.6), transparent 55%);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.45s ease-out;
+    }
+
+    .card.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .card:hover {
+      transform: translateY(-4px) scale(1.01) rotate3d(0.15, -0.08, 0, 0.8deg);
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.24);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+
+    .card-title {
+      font-family: "Georgia", "Times New Roman", serif;
+      font-size: 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .card-tag {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      padding: 3px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      background: rgba(255, 255, 255, 0.75);
+      white-space: nowrap;
+    }
+
+    .card-body {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .accent {
+      color: var(--rojo-es);
+      font-weight: 600;
+    }
+
+    /* ---------- HERO ---------- */
+
+    .card--hero {
+      background: linear-gradient(135deg, #ffebc2, #f9d2a4, #f7a572);
+      color: var(--vino-es);
+      padding: 26px 26px 22px;
+    }
+
+    .card--hero .headline {
+      font-size: clamp(26px, 4vw, 34px);
+      font-family: "Georgia", "Times New Roman", serif;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      margin-bottom: 6px;
+    }
+
+    .card--hero .hero-sub {
+      font-size: 14px;
+      max-width: 540px;
+    }
+
+    .bridge-lines {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      height: 80px;
+      pointer-events: none;
+    }
+
+    .bridge-line {
+      position: absolute;
+      bottom: 0;
+      width: 140%;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(90, 26, 34, 0.9), rgba(233, 75, 60, 0.95));
+      transform-origin: left center;
+      animation: cable-sway 7s ease-in-out infinite alternate;
+      opacity: 0.8;
+    }
+
+    .bridge-line:nth-child(1) {
+      left: -10%;
+      transform: rotate(-2deg);
+    }
+    .bridge-line:nth-child(2) {
+      left: -6%;
+      bottom: 18px;
+      animation-duration: 9s;
+      transform: rotate(-1deg);
+    }
+    .bridge-line:nth-child(3) {
+      left: -2%;
+      bottom: 36px;
+      animation-duration: 11s;
+      transform: rotate(0.5deg);
+    }
+
+    .sun-orb {
+      position: absolute;
+      right: 40px;
+      top: -20px;
+      width: 90px;
+      height: 90px;
+      background: radial-gradient(circle at 30% 20%, #fffbd7 0, #ffd26f 40%, #f6b500 70%, #f07c3a 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 40px rgba(255, 200, 80, 0.8);
+      animation: sun-pulse 6s ease-in-out infinite;
+    }
+
+    /* ---------- HISTOIRE ---------- */
+
+    .card--history::after {
+      content: "SF";
+      position: absolute;
+      right: -10px;
+      top: -40px;
+      font-family: "Georgia", serif;
+      font-size: 70px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: rgba(90, 26, 34, 0.06);
+      pointer-events: none;
+    }
+
+    /* ---------- MISSION ---------- */
+
+    .card--mission {
+      background: radial-gradient(circle at top left, rgba(233, 75, 60, 0.14), rgba(250, 210, 150, 0.3));
+      overflow: hidden;
+    }
+
+    .mission-ribbon {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(233, 75, 60, 0.18), rgba(246, 181, 0, 0.16));
+      mix-blend-mode: multiply;
+      transform: translateX(-12%);
+      transition: transform var(--transition-main);
+    }
+
+    .card--mission:hover .mission-ribbon {
+      transform: translateX(0);
+    }
+
+    /* ---------- GOLDEN GATE ---------- */
+
+    .card--golden {
+      background: linear-gradient(135deg, #ffe9d2, #fbd2c1);
+    }
+
+    .cable {
+      position: absolute;
+      left: -10%;
+      width: 120%;
+      height: 2px;
+      background: rgba(90, 26, 34, 0.85);
+      transform-origin: left;
+      animation: cable-sway 9s ease-in-out infinite alternate;
+    }
+
+    .cable:nth-child(1) {
+      bottom: 16px;
+    }
+    .cable:nth-child(2) {
+      bottom: 32px;
+      opacity: 0.7;
+      animation-duration: 11s;
+    }
+    .cable:nth-child(3) {
+      bottom: 48px;
+      opacity: 0.5;
+      animation-duration: 13s;
+    }
+
+    .golden-pillars {
+      position: absolute;
+      bottom: 10px;
+      left: 16px;
+      display: flex;
+      gap: 14px;
+    }
+
+    .pillar {
+      width: 8px;
+      height: 40px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #b22222, #6d141a);
+      box-shadow: 0 0 18px rgba(178, 34, 34, 0.6);
+      animation: pillar-glow 4.5s ease-in-out infinite alternate;
+    }
+
+    /* ---------- CABLE CARS ---------- */
+
+    .card--cable {
+      background: linear-gradient(135deg, #fdfaf3, #f0ddd0);
+    }
+
+    .rail {
+      position: relative;
+      margin-top: 14px;
+      height: 46px;
+    }
+
+    .rail-line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 6px;
+      height: 3px;
+      background: linear-gradient(90deg, #7a4b32, #c97a3a);
+      border-radius: 999px;
+    }
+
+    .tram {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      width: 64px;
+      height: 32px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #e94b3c, #b22222);
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--texto-clair);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transform-origin: center;
+      transition: transform 0.3s ease-out;
+    }
+
+    .card--cable:hover .tram {
+      animation: tram-move 2.2s ease-in-out forwards;
+    }
+
+    .tram-lights {
+      position: absolute;
+      inset: 3px 4px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #ffe6bf, #ffcf87);
+      opacity: 0.9;
+    }
+
+    .tram-label {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ---------- NUIT ---------- */
+
+    .card--night {
+      background: radial-gradient(circle at top, #273554, #131824 60%, #090b10 100%);
+      color: var(--texto-clair);
+    }
+
+    .stars {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .star {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #ffe9a9;
+      opacity: 0.2;
+      animation: star-twinkle 4s ease-in-out infinite;
+    }
+
+    .star:nth-child(1) { top: 18%; left: 12%; animation-delay: 0.3s; }
+    .star:nth-child(2) { top: 26%; left: 62%; animation-delay: 1.2s; }
+    .star:nth-child(3) { top: 44%; left: 24%; animation-delay: 2s; }
+    .star:nth-child(4) { top: 34%; left: 80%; animation-delay: 2.7s; }
+    .star:nth-child(5) { top: 12%; left: 48%; animation-delay: 3.3s; }
+
+    /* ---------- CTA VOYAGE ---------- */
+
+    .card--cta {
+      background: linear-gradient(135deg, #f4e0cf, #f8c0a6);
+    }
+
+    .cta-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      position: relative;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      cursor: pointer;
+      background: #ffffff;
+      color: var(--vino-es);
+      overflow: hidden;
+      transition:
+        transform 0.22s ease-out,
+        box-shadow 0.22s ease-out,
+        background 0.4s ease-out,
+        color 0.4s ease-out;
+    }
+
+    .btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, #ffb347, #ff6a4d, #b22222);
+      transform: translateX(-100%);
+      transition: transform 0.45s ease-out;
+      z-index: -1;
+    }
+
+    .btn:hover::before {
+      transform: translateX(0);
+    }
+
+    .btn:hover {
+      color: var(--texto-clair);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.18);
+      animation: wiggle 0.5s ease-out;
+    }
+
+    /* ---------- SECTIONS CHEMINS (GRANDS ESPACES) ---------- */
+
+    .paths-wrapper {
+      margin-top: 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 60px;
+    }
+
+    .path-section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 22px 60px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(233, 75, 60, 0.06), rgba(246, 181, 0, 0.08));
+      box-shadow: 0 26px 80px rgba(0, 0, 0, 0.16);
+      position: relative;
+      overflow: hidden;
+      scroll-margin-top: 90px;
+    }
+
+    .path-section::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background-image: radial-gradient(circle at 0 0, rgba(233, 75, 60, 0.18) 0, transparent 55%),
+                        radial-gradient(circle at 100% 100%, rgba(246, 181, 0, 0.18) 0, transparent 55%);
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .path-title {
+      font-family: "Georgia", serif;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-size: 18px;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .path-intro {
+      max-width: 680px;
+      font-size: 15px;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 26px;
+    }
+
+    .path-steps {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (min-width: 780px) {
+      .path-steps {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    .step-card {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 18px;
+      padding: 14px 14px 12px;
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.12);
+      font-size: 13px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step-label {
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--rojo-es);
+      margin-bottom: 4px;
+    }
+
+    .step-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .step-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(233, 75, 60, 0.08), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s ease-out;
+      pointer-events: none;
+    }
+
+    .step-card:hover::after {
+      opacity: 1;
+    }
+
+    /* ---------- BOUTON RETOUR HAUT ---------- */
+
+    .back-to-top {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, #ffb347, #ff6a4d);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.25);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px);
+      transition:
+        opacity 0.3s ease-out,
+        transform 0.3s ease-out,
+        visibility 0.3s ease-out;
+      z-index: 60;
+      font-size: 18px;
+    }
+
+    .back-to-top.is-visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    /* ---------- ANIMATIONS ---------- */
+
+    @keyframes cable-sway {
+      0% { transform: rotate(-3deg); }
+      50% { transform: rotate(-1deg); }
+      100% { transform: rotate(-4deg); }
+    }
+
+    @keyframes sun-pulse {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      50% { transform: translateY(4px) scale(1.05); opacity: 0.95; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    @keyframes pillar-glow {
+      0% { box-shadow: 0 0 12px rgba(178, 34, 34, 0.4); }
+      100% { box-shadow: 0 0 26px rgba(178, 34, 34, 0.9); }
+    }
+
+    @keyframes tram-move {
+      0%   { transform: translateX(0) translateY(0) scale(1); }
+      40%  { transform: translateX(70%) translateY(-4px) scale(1.02); }
+      70%  { transform: translateX(140%) translateY(0) scale(0.96); }
+      100% { transform: translateX(0) translateY(0) scale(1); }
+    }
+
+    @keyframes star-twinkle {
+      0% { transform: scale(0.7); opacity: 0.1; }
+      50% { transform: scale(1.2); opacity: 0.7; }
+      100% { transform: scale(0.7); opacity: 0.15; }
+    }
+
+    @keyframes wiggle {
+      0%   { transform: translateY(-1px) rotate(0deg); }
+      25%  { transform: translateY(-1px) rotate(-2deg); }
+      50%  { transform: translateY(-1px) rotate(2deg); }
+      75%  { transform: translateY(-1px) rotate(-1deg); }
+      100% { transform: translateY(-1px) rotate(0deg); }
+    }
+  </style>
 </head>
 <body>
-<header>
-  <div class="bar">
-    <div class="title">San Francisco — Presentación interactiva (7 preguntas)</div>
-    <div class="grow"></div>
-    <div class="lang-toggle">
-      <span class="pill">Idioma</span>
-      <button class="btn" id="esBtn" aria-pressed="true">Español</button>
-      <button class="btn" id="frBtn" aria-pressed="false">Francés (ayuda)</button>
-    </div>
-    <div class="pill timer">
-      <div>Temporizador</div>
-      <div class="time" id="clock">00:00</div>
-    </div>
-    <button class="btn" id="resetBtn" title="Reiniciar navegación y quiz">Reiniciar</button>
-  </div>
-  <div class="progress"><div id="progressBar"></div></div>
-</header>
+  <!-- Ancre d'accueil -->
+  <div id="top"></div>
 
-<main>
-  <div class="grid">
-    <nav aria-label="Tabla de contenidos">
-      <h3>Preguntas</h3>
-      <ul class="toc" id="toc"></ul>
-      <div class="kbd" style="padding:.7rem .9rem;border-top:1px solid #0b1022">
-        <div>Atajos: ←/→ sección, F11 pantalla completa, F para alternar idioma</div>
-      </div>
-    </nav>
-
-    <div>
-      <section id="searchPanel" aria-label="Búsqueda y control">
-        <h2>Herramientas de presentación</h2>
-        <div class="flex">
-          <input type="search" id="search" placeholder="Buscar palabras clave (barrios, monumentos, historia...)">
-          <div class="hint">Resaltará coincidencias en las respuestas.</div>
-        </div>
-      </section>
-
-      <!-- 1 -->
-      <section id="q1">
-        <h2>1) ¿Dónde se encuentra San Francisco y qué la caracteriza geográficamente?</h2>
-        <div class="qa">
-          <div class="q">Resumen</div>
-          <div class="a">
-            San Francisco se ubica en la costa oeste de Estados Unidos, en el norte de California, sobre una península entre el Océano Pacífico y la Bahía de San Francisco. Su relieve es muy accidentado: más de 40 colinas, calles empinadas y vistas amplias que influyen en la movilidad y el paisaje urbano.
-          </div>
-          <div class="lang" data-lang="fr">
-            Située sur la côte ouest, au nord de la Californie, sur une péninsule entre l’océan Pacifique et la baie. Relief vallonné avec plus de 40 collines, rues pentues, vues panoramiques.
-          </div>
-        </div>
-        <div class="chips">
-          <span class="chip">Costa oeste</span><span class="chip">Bahía</span><span class="chip">Colinas</span><span class="chip">Península</span>
-        </div>
-      </section>
-
-      <!-- 2 -->
-      <section id="q2">
-        <h2>2) Breve historia y momentos clave</h2>
-        <div class="qa">
-          <div class="q">Hitos</div>
-          <div class="a">
-            La ciudad creció con la fiebre del oro (1849), se reconstruyó tras el gran terremoto y fuego de 1906, y se consolidó como centro cultural y tecnológico en el siglo XX, con movimientos como la contracultura de los años 60 y, más tarde, el auge de la tecnología vinculada al cercano Silicon Valley.
-          </div>
-          <div class="lang" data-lang="fr">
-            Essor avec la ruée vers l’or (1849), reconstruction après le séisme et incendie de 1906, puis centre culturel et technologique (contre-culture des années 60, essor tech lié à la Silicon Valley).
-          </div>
-        </div>
-        <div class="card">
-          <strong>Línea temporal interactiva:</strong>
-          <div class="chips">
-            <span class="chip" data-t="1849">1849 — Fiebre del oro</span>
-            <span class="chip" data-t="1906">1906 — Terremoto e incendio</span>
-            <span class="chip" data-t="1967">1967 — Summer of Love</span>
-            <span class="chip" data-t="2000s">2000s — Boom tecnológico</span>
-          </div>
-          <div id="timelineDesc" style="margin-top:.5rem;color:#cbd5e1"></div>
-        </div>
-      </section>
-
-      <!-- 3 -->
-      <section id="q3">
-        <h2>3) Monumentos y lugares emblemáticos</h2>
-        <div class="gallery">
-          <div class="g"><h4>Golden Gate Bridge</h4><p>Pieza icónica que conecta la ciudad con Marin; símbolo de ingeniería y paisaje.</p></div>
-          <div class="g"><h4>Alcatraz</h4><p>Isla histórica, famosa por la prisión; hoy sitio patrimonial y visitas guiadas.</p></div>
-          <div class="g"><h4>Cable Cars</h4><p>Tranvías históricos que vencen las pendientes; patrimonio del transporte.</p></div>
-          <div class="g"><h4>Painted Ladies</h4><p>Casas victorianas frente a Alamo Square con skyline al fondo.</p></div>
-          <div class="g"><h4>Ferry Building</h4><p>Mercado y terminal histórico junto al embarcadero.</p></div>
-          <div class="g"><h4>Chinatown</h4><p>Uno de los barrios chinos más antiguos de EE. UU., vibrante y denso.</p></div>
-        </div>
-        <div class="lang" data-lang="fr">
-          Monuments: Golden Gate, Alcatraz, Cable Cars, Painted Ladies, Ferry Building, Chinatown.
-        </div>
-      </section>
-
-      <!-- 4 -->
-      <section id="q4">
-        <h2>4) Barrios y diversidad urbana</h2>
-        <div class="qa">
-          <div class="q">Panorama</div>
-          <div class="a">
-            San Francisco reúne barrios con identidades fuertes: Mission (arte callejero y cultura latina), Castro (historia LGBTIQ+), North Beach (herencia italiana), Haight-Ashbury (contra‑cultura), SoMa (tecnología y museos), y Financial District (negocios y rascacielos). La mezcla se refleja en gastronomía, lenguas y estilos de vida.
-          </div>
-          <div class="lang" data-lang="fr">
-            Mission (art et culture latine), Castro (histoire LGBTIQ+), North Beach (héritage italien), Haight-Ashbury (contre‑culture), SoMa (tech et musées), Financial District (affaires).
-          </div>
-        </div>
-        <div class="chips">
-          <span class="chip">Diversidad</span><span class="chip">Gastronomía</span><span class="chip">Historia social</span>
-        </div>
-      </section>
-
-      <!-- 5 -->
-      <section id="q5">
-        <h2>5) Economía y tecnología</h2>
-        <div class="qa">
-          <div class="q">Clave</div>
-          <div class="a">
-            La economía local combina turismo, finanzas, innovación y startups tecnológicas. Aunque muchas sedes están en Silicon Valley, San Francisco concentra talento, coworkings y eventos, atrayendo inversión y empresas globales, con efectos tanto positivos (empleo, innovación) como retos (coste de vida, desigualdades).
-          </div>
-          <div class="lang" data-lang="fr">
-            Économie: tourisme, finance, innovation, startups. Effets: emplois, innovation mais coût de la vie élevé et inégalités.
-          </div>
-        </div>
-        <div class="card">
-          <strong>Indicadores visuales:</strong>
-          <div class="chips">
-            <span class="chip">Turismo</span><span class="chip">Finanzas</span><span class="chip">Startups</span><span class="chip">Inversión</span>
-          </div>
-          <div class="progress"><div id="ecoBar" style="width:65%"></div></div>
-          <div class="hint">Barra conceptual: peso relativo de innovación en la economía local (ilustrativo).</div>
-        </div>
-      </section>
-
-      <!-- 6 -->
-      <section id="q6">
-        <h2>6) Cultura y vida cotidiana</h2>
-        <div class="qa">
-          <div class="q">Aspectos</div>
-          <div class="a">
-            La ciudad valora la diversidad, la creatividad y el espacio público: festivales, cafés independientes, librerías, y una fuerte escena musical y tecnológica. El clima con niebla (la famosa “Karl the Fog”) afecta la experiencia urbana y las actividades al aire libre.
-          </div>
-          <div class="lang" data-lang="fr">
-            Diversité, créativité, espaces publics, festivals, cafés, librairies, musique/tech; climat brumeux (“Karl the Fog”) influence la vie quotidienne.
-          </div>
-        </div>
-        <div class="chips">
-          <span class="chip">Festivales</span><span class="chip">Espacio público</span><span class="chip">Niebla</span>
-        </div>
-      </section>
-
-      <!-- 7 -->
-      <section id="q7">
-        <h2>7) Retos urbanos y sostenibilidad</h2>
-        <div class="qa">
-          <div class="q">Desafíos</div>
-          <div class="a">
-            San Francisco enfrenta retos de vivienda asequible, desigualdad y movilidad en terreno complejo, además de riesgos sísmicos. La ciudad impulsa transporte público, ciclismo, energías limpias y planificación resiliente para equilibrar innovación y calidad de vida.
-          </div>
-          <div class="lang" data-lang="fr">
-            Défis: logement abordable, inégalités, mobilité, risques sismiques. Réponses: transports, vélo, énergies propres, résilience.
-          </div>
-        </div>
-        <div class="card">
-          <strong>Actividad rápida: prioriza políticas</strong>
-          <div class="chips" id="priorities">
-            <span class="chip" data-pr="vivienda">Vivienda asequible</span>
-            <span class="chip" data-pr="movilidad">Movilidad sostenible</span>
-            <span class="chip" data-pr="resiliencia">Resiliencia sísmica</span>
-            <span class="chip" data-pr="energía">Energía limpia</span>
-          </div>
-          <div id="priorOut" style="margin-top:.5rem;color:#cbd5e1"></div>
-        </div>
-      </section>
-
-      <!-- Quiz -->
-      <section id="quiz">
-        <h2>Quiz de repaso</h2>
-        <div class="quiz" aria-live="polite">
-          <div class="opt" data-q="geo" data-correct="true">Está en la costa oeste, entre océano y bahía, con muchas colinas.</div>
-          <div class="opt" data-q="geo">Está en la costa este y es completamente plana.</div>
-
-          <div class="opt" data-q="hist" data-correct="true">1906 marcó la ciudad con un gran terremoto e incendio.</div>
-          <div class="opt" data-q="hist">Su historia no incluye ningún evento sísmico importante.</div>
-
-          <div class="opt" data-q="mono" data-correct="true">El Golden Gate es un símbolo mundial de la ciudad.</div>
-          <div class="opt" data-q="mono">El puente símbolo está en Los Ángeles.</div>
-
-          <div class="opt" data-q="eco" data-correct="true">Innovación y startups forman parte clave de la economía local.</div>
-          <div class="opt" data-q="eco">La ciudad depende únicamente de la agricultura.</div>
-        </div>
-        <div style="margin-top:.6rem">
-          <span class="score" id="score">Puntuación: 0</span>
-          <span class="pill" id="quizState" style="margin-left:.6rem">Elige las opciones correctas</span>
-        </div>
-      </section>
-
-      <div class="foot">
-        Usa las flechas para navegar sección por sección. Alterna idioma para apoyo en francés. El temporizador te ayuda a controlar el tiempo.
+  <!-- Barre supérieure avec lien Accueil -->
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div class="top-bar-title">San Francisco Esencial</div>
+      <div class="top-bar-links">
+        <button class="top-link" data-target="#top">Accueil</button>
+        <button class="top-link" data-target="#route-aube">Aube sur la Baie</button>
+        <button class="top-link" data-target="#route-murales">Murales &amp; Tapas</button>
+        <button class="top-link" data-target="#route-tram">Tramway au Crépuscule</button>
       </div>
     </div>
   </div>
-</main>
 
-<div class="present">
-  <button class="btn" id="prevBtn">← Anterior</button>
-  <button class="btn" id="nextBtn">Siguiente →</button>
-  <div class="fullscreen">Consejo: F11 para pantalla completa</div>
-</div>
+  <main class="sf-page">
+    <header>
+      <div class="badge-es">Estilo Español • San Francisco</div>
+      <h1>San Francisco Esencial</h1>
+      <p class="subtitle">
+        Une promenade en sept scènes, entre lumière californienne et chaleur hispanique.
+      </p>
+    </header>
 
-<script>
-(function(){
-  // Estado
-  const sections = Array.from(document.querySelectorAll('section[id^="q"]'));
-  const ids = sections.map(s=>s.id);
-  const progressBar = document.getElementById('progressBar');
-  const ecoBar = document.getElementById('ecoBar');
-  const esBtn = document.getElementById('esBtn');
-  const frBtn = document.getElementById('frBtn');
-  const resetBtn = document.getElementById('resetBtn');
-  const search = document.getElementById('search');
-  const clock = document.getElementById('clock');
-  const toc = document.getElementById('toc');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const quizScore = document.getElementById('score');
-  const quizState = document.getElementById('quizState');
+    <!-- SECTIONS PRINCIPALES (7 POINTS) -->
+    <section class="sections-grid">
 
-  let current = 0;
-  let showFR = false;
-  let startTime = Date.now();
-  let score = 0;
-  let answered = new Set();
+      <!-- 1. HERO -->
+      <article class="card card--hero sf-section">
+        <div class="sun-orb"></div>
+        <div class="card-header" style="margin-bottom: 16px;">
+          <div>
+            <div class="headline">Bienvenido a San Francisco</div>
+            <p class="hero-sub">
+              Une carte postale vivante de la baie : pont rouge, collines dorées et accents espagnols.
+            </p>
+          </div>
+          <div class="card-tag">Point I</div>
+        </div>
+        <div class="bridge-lines">
+          <div class="bridge-line"></div>
+          <div class="bridge-line"></div>
+          <div class="bridge-line"></div>
+        </div>
+      </article>
 
-  // Construir TOC
-  ids.forEach((id, i)=>{
-    const li = document.createElement('li');
-    const a = document.createElement('a');
-    a.href = '#'+id;
-    a.textContent = document.querySelector('#'+id+' h2').textContent;
-    a.addEventListener('click', (e)=>{
-      e.preventDefault();
-      goTo(i);
-    });
-    li.appendChild(a);
-    toc.appendChild(li);
-  });
+      <!-- 2. HISTOIRE -->
+      <article class="card card--history sf-section">
+        <div class="card-header">
+          <h2 class="card-title">Origines de la Baie</h2>
+          <span class="card-tag">Point II</span>
+        </div>
+        <div class="card-body">
+          San Francisco s’étire sur des collines tournées vers l’océan, traversée par le vent du Pacifique.
+          La ville mêle héritage hispanique, ruée vers l’or et énergie technologique, comme un tableau aux couches successives.
+        </div>
+      </article>
 
-  function updateTOC(){
-    Array.from(toc.querySelectorAll('a')).forEach((a, i)=>{
-      a.classList.toggle('active', i===current);
-    });
-  }
+      <!-- 3. MISSION DISTRICT -->
+      <article class="card card--mission sf-section">
+        <div class="mission-ribbon"></div>
+        <div class="card-header">
+          <h2 class="card-title">Mission District</h2>
+          <span class="card-tag">Point III</span>
+        </div>
+        <div class="card-body">
+          Quartier de murs peints, de taquerías et de soleil brûlant sur les façades rouges.
+          Les fresques colorées rappellent les places d’Espagne, où chaque ruelle devient une galerie à ciel ouvert.
+        </div>
+      </article>
 
-  function goTo(i){
-    current = Math.max(0, Math.min(ids.length-1, i));
-    document.getElementById(ids[current]).scrollIntoView({behavior:'smooth', block:'start'});
-    updateProgress();
-    updateTOC();
-    localStorage.setItem('sf_current', String(current));
-  }
+      <!-- 4. GOLDEN GATE BRIDGE -->
+      <article class="card card--golden sf-section">
+        <div class="card-header">
+          <h2 class="card-title">Golden Gate Bridge</h2>
+          <span class="card-tag">Point IV</span>
+        </div>
+        <div class="card-body">
+          Le pont suspendu rouge-orange découpe la brume comme une arche monumentale.
+          Ses câbles vibrent doucement, comme des cordes de guitare flamenca tendues au-dessus du détroit.
+        </div>
 
-  function updateProgress(){
-    const pct = ((current+1)/ids.length)*100;
-    progressBar.style.width = pct+'%';
-  }
+        <div class="golden-pillars">
+          <div class="pillar"></div>
+          <div class="pillar"></div>
+          <div class="pillar"></div>
+        </div>
+        <div class="cable"></div>
+        <div class="cable"></div>
+        <div class="cable"></div>
+      </article>
 
-  // Navegación
-  prevBtn.addEventListener('click', ()=>goTo(current-1));
-  nextBtn.addEventListener('click', ()=>goTo(current+1));
-  window.addEventListener('keydown', (e)=>{
-    if(e.key==='ArrowRight') goTo(current+1);
-    if(e.key==='ArrowLeft') goTo(current-1);
-    if(e.key.toLowerCase()==='f'){ toggleLang(); }
-  });
+      <!-- 5. CABLE CARS -->
+      <article class="card card--cable sf-section">
+        <div class="card-header">
+          <h2 class="card-title">Cable Cars</h2>
+          <span class="card-tag">Point V</span>
+        </div>
+        <div class="card-body">
+          Les tramways historiques montent et descendent les pentes abruptes avec un rythme régulier.
+          Au sommet des rails, la ville se dévoile : baie scintillante, façades pastel et cris lointains des mouettes.
+        </div>
+        <div class="rail">
+          <div class="rail-line"></div>
+          <div class="tram">
+            <div class="tram-lights"></div>
+            <span class="tram-label">Linea SF</span>
+          </div>
+        </div>
+      </article>
 
-  // Idioma FR helper
-  function setLang(fr){
-    showFR = fr;
-    document.querySelectorAll('.lang').forEach(el=>{
-      el.classList.toggle('show', showFR);
-    });
-    esBtn.setAttribute('aria-pressed', String(!showFR));
-    frBtn.setAttribute('aria-pressed', String(showFR));
-    localStorage.setItem('sf_fr', String(showFR));
-  }
-  function toggleLang(){ setLang(!showFR); }
-  esBtn.addEventListener('click', ()=>setLang(false));
-  frBtn.addEventListener('click', ()=>setLang(true));
+      <!-- 6. NUIT SUR LA BAIE -->
+      <article class="card card--night sf-section">
+        <div class="stars">
+          <div class="star"></div>
+          <div class="star"></div>
+          <div class="star"></div>
+          <div class="star"></div>
+          <div class="star"></div>
+        </div>
+        <div class="card-header">
+          <h2 class="card-title">Nuit sur la Baie</h2>
+          <span class="card-tag">Point VI</span>
+        </div>
+        <div class="card-body">
+          Les lumières des ponts se reflètent en lignes brisées sur l’eau sombre.
+          La ville se tait peu à peu, laissant respirer le ciel profond et quelques étoiles timides au-dessus des collines.
+        </div>
+      </article>
 
-  // Búsqueda y resaltado
-  let lastMarks = [];
-  function clearMarks(){
-    lastMarks.forEach(m=>{
-      const parent = m.parentNode;
-      if(!parent) return;
-      parent.replaceChild(document.createTextNode(m.textContent), m);
-      parent.normalize();
-    });
-    lastMarks = [];
-  }
-  function markText(node, term){
-    const text = node.textContent;
-    const idx = text.toLowerCase().indexOf(term.toLowerCase());
-    if(idx===-1) return;
-    const span = document.createElement('mark');
-    span.style.background = '#3b82f6';
-    span.style.color = 'white';
-    span.textContent = text.substring(idx, idx+term.length);
-    const before = document.createTextNode(text.substring(0,idx));
-    const after = document.createTextNode(text.substring(idx+term.length));
-    const frag = document.createDocumentFragment();
-    frag.appendChild(before); frag.appendChild(span); frag.appendChild(after);
-    node.replaceWith(frag);
-    lastMarks.push(span);
-  }
-  search.addEventListener('input', ()=>{
-    clearMarks();
-    const term = search.value.trim();
-    if(!term) return;
-    document.querySelectorAll('.a, .g p, .g h4').forEach(el=>{
-      markText(el.firstChild, term);
-    });
-  });
+      <!-- 7. PLANIFIER SON VOYAGE -->
+      <article class="card card--cta sf-section">
+        <div class="card-header">
+          <h2 class="card-title">Planifier ton voyage</h2>
+          <span class="card-tag">Point VII</span>
+        </div>
+        <div class="card-body">
+          Choisis ton propre itinéraire : lever de soleil sur le pont, balade dans Mission, soirée sur les hauteurs.
+          Chaque bouton ouvre un grand “chemin” plus bas, pour explorer la ville comme un vaste territoire.
+          <div class="cta-buttons">
+            <button class="btn" data-target="#route-aube">Aube sur la Baie</button>
+            <button class="btn" data-target="#route-murales">Murales &amp; Tapas</button>
+            <button class="btn" data-target="#route-tram">Tramway au Crépuscule</button>
+          </div>
+        </div>
+      </article>
+    </section>
 
-  // Temporizador
-  setInterval(()=>{
-    const diff = Math.floor((Date.now()-startTime)/1000);
-    const m = String(Math.floor(diff/60)).padStart(2,'0');
-    const s = String(diff%60).padStart(2,'0');
-    clock.textContent = m+':'+s;
-  }, 1000);
+    <!-- CHEMINS DÉTAILLÉS (IMPRESSION D’IMMENSITÉ) -->
+    <section class="paths-wrapper">
+      <!-- Route 1 -->
+      <section id="route-aube" class="path-section">
+        <h2 class="path-title">Chemin I — Aube sur la Baie</h2>
+        <p class="path-intro">
+          Un itinéraire qui commence dans le silence, avant que la ville ne se réveille.
+          La lumière s’allume d’abord sur le pont, puis dans les rues encore vides.
+        </p>
+        <div class="path-steps">
+          <div class="step-card">
+            <div class="step-label">Étape 1</div>
+            <div class="step-title">Mirador au-dessus du Golden Gate</div>
+            <p>Le ciel passe du bleu nuit à l’orange pâle, tandis que le pont se détache peu à peu de la brume.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-label">Étape 2</div>
+            <div class="step-title">Café chaud &amp; calme</div>
+            <p>Un petit café sur la colline sert les premiers espressos, dans une ambiance douce presque méditerranéenne.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-label">Étape 3</div>
+            <div class="step-title">Retour vers la ville</div>
+            <p>La route redescend vers le centre, pendant que les façades pastel commencent à capter le soleil.</p>
+          </div>
+        </div>
+      </section>
 
-  // Línea temporal (tooltip simple)
-  const timeline = {
-    "1849":"Migración masiva y crecimiento acelerado por el oro.",
-    "1906":"Destrucción y reconstrucción tras el seísmo e incendios.",
-    "1967":"Cultura juvenil y música transforman Haight-Ashbury.",
-    "2000s":"Ecosistema de startups y expansión tecnológica."
-  };
-  document.querySelectorAll('[data-t]').forEach(ch=>{
-    ch.style.cursor='pointer';
-    ch.addEventListener('click', ()=>{
-      document.getElementById('timelineDesc').textContent = timeline[ch.dataset.t] || '';
-    });
-  });
+      <!-- Route 2 -->
+      <section id="route-murales" class="path-section">
+        <h2 class="path-title">Chemin II — Murales &amp; Tapas</h2>
+        <p class="path-intro">
+          Un chemin à travers Mission District, où l’on marche comme dans une galerie espagnole à ciel ouvert.
+          Les couleurs des murales dialoguent avec les saveurs des bars et des taquerías.
+        </p>
+        <div class="path-steps">
+          <div class="step-card">
+            <div class="step-label">Étape 1</div>
+            <div class="step-title">Balmy Alley</div>
+            <p>Une ruelle couverte de fresques colorées, entre messages politiques et scènes de vie latine.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-label">Étape 2</div>
+            <div class="step-title">Plaza improvisée</div>
+            <p>Une petite place se transforme en place espagnole, avec musique, rires et terrasses ensoleillées.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-label">Étape 3</div>
+            <div class="step-title">Tapas &amp; coucher de soleil</div>
+            <p>Assiettes à partager, lumière dorée sur les façades et conversations qui s’étirent jusque tard.</p>
+          </div>
+        </div>
+      </section>
 
-  // Prioridades (arrastrar mental — clic para ordenar)
-  const prior = document.getElementById('priorities');
-  const out = document.getElementById('priorOut');
-  let order = [];
-  prior.querySelectorAll('.chip').forEach(c=>{
-    c.addEventListener('click', ()=>{
-      const key = c.dataset.pr;
-      const idx = order.indexOf(key);
-      if(idx===-1){ order.push(key); c.style.borderColor = '#38bdf8'; }
-      else { order.splice(idx,1); c.style.borderColor = '#223'; }
-      out.textContent = order.length?('Tu orden: '+order.join(' > ')):'Selecciona prioridades (máx. 4).';
-    });
-  });
+      <!-- Route 3 -->
+      <section id="route-tram" class="path-section">
+        <h2 class="path-title">Chemin III — Tramway au Crépuscule</h2>
+        <p class="path-intro">
+          Un trajet qui suit les cable cars jusqu’aux hauteurs de la ville, au moment où les néons s’allument.
+          Le métal des rails renvoie les dernières lueurs du jour.
+        </p>
+        <div class="path-steps">
+          <div class="step-card">
+            <div class="step-label">Étape 1</div>
+            <div class="step-title">Embarquement à Downtown</div>
+            <p>On s’accroche au marchepied du tram, au milieu des bureaux qui se vident et des voix pressées.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-label">Étape 2</div>
+            <div class="step-title">Sommet des collines</div>
+            <p>Le tram grimpe lentement, révélant une vue panoramique sur la baie teintée de bleu violet.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-label">Étape 3</div>
+            <div class="step-title">Descente nocturne</div>
+            <p>La ville s’illumine, les façades se reflètent dans les vitres, et la nuit commence sur les rails brillants.</p>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
 
-  // Quiz
-  document.querySelectorAll('.opt').forEach(opt=>{
-    opt.addEventListener('click', ()=>{
-      const q = opt.dataset.q;
-      if(answered.has(q)) return;
-      const correct = opt.dataset.correct === 'true';
-      if(correct){
-        opt.classList.add('correct');
-        score += 1;
-        quizScore.textContent = 'Puntuación: '+score;
-        quizState.textContent = '¡Bien! Sigue con la siguiente.';
-      }else{
-        opt.classList.add('wrong');
-        quizState.textContent = 'Revisa la sección correspondiente y vuelve a intentarlo.';
+  <!-- Bouton retour en haut / accueil -->
+  <button class="back-to-top" id="backToTop" aria-label="Retour à l'accueil">
+    ↑
+  </button>
+
+  <script>
+    // Révélation au scroll
+    const sections = document.querySelectorAll(".sf-section");
+    const observerOptions = { threshold: 0.25 };
+
+    const onIntersection = (entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(onIntersection, observerOptions);
+    sections.forEach(section => observer.observe(section));
+
+    // Navigation boutons de chemins + barre haute
+    function handleNavClick(selector) {
+      const target = document.querySelector(selector);
+      if (!target) return;
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+
+      if (target.classList.contains("path-section")) {
+        target.style.transition = "box-shadow 0.6s ease-out, transform 0.6s ease-out";
+        target.style.transform = "translateY(-6px)";
+        target.style.boxShadow = "0 30px 90px rgba(0,0,0,0.35)";
+        setTimeout(() => {
+          target.style.transform = "translateY(0)";
+          target.style.boxShadow = "0 26px 80px rgba(0,0,0,0.16)";
+        }, 650);
       }
-      answered.add(q);
+    }
+
+    const pathButtons = document.querySelectorAll(".btn[data-target], .top-link[data-target]");
+    pathButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const selector = btn.getAttribute("data-target");
+        handleNavClick(selector);
+      });
     });
-  });
 
-  // Reiniciar
-  resetBtn.addEventListener('click', ()=>{
-    localStorage.removeItem('sf_current');
-    localStorage.removeItem('sf_fr');
-    score = 0; answered.clear();
-    quizScore.textContent = 'Puntuación: 0';
-    quizState.textContent = 'Elige las opciones correctas';
-    document.querySelectorAll('.opt').forEach(o=>o.classList.remove('correct','wrong'));
-    startTime = Date.now();
-    order = []; out.textContent = 'Selecciona prioridades (máx. 4).';
-    document.querySelectorAll('.lang').forEach(el=>el.classList.remove('show'));
-    setLang(false);
-    goTo(0);
-    clearMarks();
-    search.value='';
-  });
+    // Bouton retour en haut
+    const backToTop = document.getElementById("backToTop");
 
-  // Persistencia básica
-  const savedIdx = Number(localStorage.getItem('sf_current'));
-  const savedFR = localStorage.getItem('sf_fr')==='true';
-  if(!Number.isNaN(savedIdx)) current = Math.max(0, Math.min(ids.length-1, savedIdx));
-  setLang(savedFR);
-  updateTOC();
-  updateProgress();
-  // Scroll inicial suave
-  setTimeout(()=>goTo(current), 200);
-})();
-</script>
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 400) {
+        backToTop.classList.add("is-visible");
+      } else {
+        backToTop.classList.remove("is-visible");
+      }
+    });
+
+    backToTop.addEventListener("click", () => {
+      handleNavClick("#top");
+    });
+  </script>
 </body>
 </html>
