@@ -2,663 +2,1417 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Global - Physique · Mouvement</title>
-  <meta name="description" content="Cours interactif lycée : mouvements (repérage, référentiel, trajectoire, vitesse), QCM, exos, schéma canvas, LaTeX, fiche, lexique, sauvegarde notes.">
+  <title>Mouvement d'un système – Site complet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-      min-height:100vh;
-      background:
-        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.15), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(59,130,246,0.25), transparent 55%),
-        linear-gradient(135deg,#020617 0%,#0b1120 40%,#020420 100%);
-      color:#e5f1ff;
-      overflow-x:hidden;
-    }
-    body::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      opacity:0.08;
-      mix-blend-mode:soft-light;
-      background-image:
-        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
-      background-size:3px 3px,3px 3px;
-      z-index:-1;
+    :root {
+      --bg-main: #050508;
+      --bg-card: #111322;
+      --bg-card-soft: #181a2b;
+      --accent: #6c5ce7;
+      --accent-soft: rgba(108, 92, 231, 0.12);
+      --accent-strong: rgba(108, 92, 231, 0.25);
+      --text-main: #f5f5ff;
+      --text-soft: #b5b8df;
+      --danger: #ff7675;
+      --success: #00b894;
+      --border-soft: rgba(255,255,255,0.08);
+      --shadow-soft: 0 18px 45px rgba(0,0,0,0.55);
+      --radius-lg: 18px;
+      --radius-pill: 999px;
+      --transition-fast: 0.2s ease-out;
     }
 
-    /* LOADER */
-    #loader{
-      position:fixed;
-      inset:0;
-      background:radial-gradient(circle at 20% 20%,#020617 0,#020617 45%,#000 100%);
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      z-index:9999;
-      overflow:hidden;
-    }
-    .loader-hud{
-      position:relative;
-      width:min(560px,90vw);
-      padding:26px 26px 30px;
-      border-radius:20px;
-      background:
-        radial-gradient(circle at 0 0,rgba(59,130,246,0.35),transparent 60%),
-        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
-      border:1px solid rgba(59,130,246,0.9);
-      box-shadow:
-        0 22px 55px rgba(0,0,0,0.95),
-        0 0 35px rgba(59,130,246,0.7);
-      color:#e5f1ff;
-      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
-      overflow:hidden;
-    }
-    .loader-hud::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background-image:linear-gradient(
-        to bottom,
-        rgba(15,23,42,0.5) 1px,
-        rgba(15,23,42,0.95) 1px
-      );
-      background-size:100% 3px;
-      mix-blend-mode:soft-light;
-      opacity:0.7;
-    }
-    .loader-title{
-      font-size:0.9rem;
-      letter-spacing:0.35em;
-      text-transform:uppercase;
-      color:#dbeafe;
-      margin-bottom:16px;
-      position:relative;
-    }
-    .loader-title::after{
-      content:"";
-      position:absolute;
-      left:0;
-      bottom:-6px;
-      width:280px;
-      height:2px;
-      background:linear-gradient(90deg,#bfdbfe,transparent);
-      box-shadow:0 0 14px rgba(59,130,246,0.95);
-    }
-    .loader-status-row{
-      display:flex;
-      align-items:baseline;
-      gap:6px;
-      font-size:1rem;
-      margin-bottom:14px;
-    }
-    .status-label{
-      text-transform:uppercase;
-      letter-spacing:0.18em;
-      font-weight:600;
-    }
-    .status-dots{
-      display:inline-block;
-      min-width:18px;
-      animation:blinkDots 1s steps(2,start) infinite;
-      color:#bfdbfe;
-    }
-    @keyframes blinkDots{
-      0%,50%{opacity:1;}
-      50.01%,100%{opacity:0;}
-    }
-    .loader-bar{
-      position:relative;
-      width:100%;
-      height:12px;
-      border-radius:999px;
-      border:1px solid rgba(59,130,246,0.9);
-      background:rgba(15,23,42,0.9);
-      overflow:hidden;
-      box-shadow:
-        inset 0 0 8px rgba(15,23,42,1),
-        0 0 18px rgba(15,23,42,0.9);
-      margin-bottom:10px;
-    }
-    .loader-bar-fill{
-      position:absolute;
-      inset:0;
-      width:0%;
-      background:linear-gradient(90deg,#22c55e,#60a5fa,#a855f7);
-      box-shadow:0 0 18px rgba(59,130,246,0.9);
-      animation:barProgress 2.1s ease-in-out infinite;
-    }
-    @keyframes barProgress{
-      0%{width:0%;transform:translateX(-5%);}
-      40%{width:65%;transform:translateX(0);}
-      70%{width:100%;transform:translateX(0);}
-      100%{width:35%;transform:translateX(90%);}
-    }
-    .loader-subtext{
-      font-size:0.72rem;
-      margin-top:4px;
-      color:#e5e7eb;
-      opacity:0.95;
-    }
-    .loader-scan{
-      position:absolute;
-      inset:-40%;
-      background:
-        linear-gradient(
-          to bottom,
-          transparent 0%,
-          rgba(59,130,246,0.25) 45%,
-          rgba(59,130,246,0.6) 50%,
-          rgba(59,130,246,0.25) 55%,
-          transparent 100%
-        );
-      mix-blend-mode:screen;
-      animation:scanMove 2.6s linear infinite;
-    }
-    @keyframes scanMove{
-      0%{transform:translateY(-40%);opacity:0;}
-      10%,60%{opacity:0.9;}
-      100%{transform:translateY(40%);opacity:0;}
-    }
-    .loader-terminal{
-      margin-top:14px;
-      padding:10px;
-      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.92),rgba(15,23,42,1));
-      border-radius:10px;
-      border:1px solid rgba(15,23,42,1);
-      box-shadow:
-        inset 0 0 18px rgba(0,0,0,0.9),
-        0 0 14px rgba(15,23,42,0.9);
-      height:140px;
-      overflow:hidden;
-      font-size:0.7rem;
-      line-height:1.5;
-      color:#e0e7ff;
-      position:relative;
-    }
-    .terminal-line{
-      opacity:0;
-      transform:translateY(6px);
-      animation:lineIn 5s linear infinite;
-    }
-    .terminal-line:nth-child(1){animation-delay:0.1s;}
-    .terminal-line:nth-child(2){animation-delay:0.6s;}
-    .terminal-line:nth-child(3){animation-delay:1.2s;}
-    .terminal-line:nth-child(4){animation-delay:1.9s;}
-    .terminal-line:nth-child(5){animation-delay:2.5s;}
-    .terminal-line:nth-child(6){animation-delay:3.1s;}
-    .terminal-line:nth-child(7){animation-delay:3.7s;}
-    .terminal-line:nth-child(8){animation-delay:4.3s;}
-    .terminal-line:nth-child(9){animation-delay:4.9s;}
-    @keyframes lineIn{
-      0%{opacity:0;transform:translateY(6px);}
-      8%,70%{opacity:1;transform:translateY(0);}
-      100%{opacity:0;transform:translateY(-12px);}
-    }
-    .terminal-cursor{
-      display:inline-block;
-      width:8px;
-      animation:cursorBlink 0.6s steps(1,start) infinite;
-      color:#bfdbfe;
-    }
-    @keyframes cursorBlink{
-      0%,49%{opacity:1;}
-      50%,100%{opacity:0;}
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      background: radial-gradient(circle at top, #120c25 0, #050508 55%);
+      color: var(--text-main);
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      scroll-behavior: smooth;
     }
 
-    #main-content{display:none;}
+    a { color: inherit; text-decoration: none; }
 
-    .top-banner{
-      position:sticky;
-      top:0;
-      z-index:50;
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-      background:linear-gradient(135deg,rgba(24,119,242,0.95),rgba(34,197,94,0.95));
-      border-bottom:1px solid rgba(255,255,255,0.18);
-      box-shadow:
-        0 10px 30px rgba(0,0,0,0.55),
-        0 0 0 1px rgba(255,255,255,0.04);
-      color:#f9fafb;
-      padding:18px 7vw 4px 7vw;
-      font-size:1.9rem;
-      letter-spacing:0.08em;
-      font-weight:700;
-      text-transform:uppercase;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      text-align:left;
-    }
-    .top-banner::after{
-      content:"";
-      height:2px;
-      width:260px;
-      margin-top:4px;
-      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
-      opacity:0.9;
-    }
-    .nav-bar{
-      display:flex;
-      justify-content:flex-start;
-      gap:26px;
-      padding-bottom:10px;
-      margin-top:4px;
-    }
-    .nav-bar a{
-      position:relative;
-      color:#e0f2ff;
-      text-decoration:none;
-      font-size:0.98rem;
-      font-weight:500;
-      padding:7px 18px;
-      border-radius:999px;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
-      border:1px solid rgba(255,255,255,0.22);
-      box-shadow:
-        0 0 0 1px rgba(15,23,42,0.7),
-        0 6px 18px rgba(15,23,42,0.75);
-      backdrop-filter:blur(14px);
-      -webkit-backdrop-filter:blur(14px);
-      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
-    }
-    .nav-bar a::before{
-      content:"";
-      width:6px;
-      height:6px;
-      border-radius:999px;
-      background:#bfdbfe;
-      box-shadow:0 0 12px rgba(191,219,254,0.9);
-    }
-    .nav-bar a:hover{
-      transform:translateY(-1px) scale(1.02);
-      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
-      box-shadow:
-        0 0 0 1px rgba(148,163,184,0.25),
-        0 10px 25px rgba(15,23,42,0.9);
+    /* ---------- LOADER ---------- */
+
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top, #1b1138 0, #050508 55%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.7s ease-out, visibility 0.7s ease-out;
     }
 
-    .page-padding{padding:26px 7vw 90px 7vw;}
-
-    main.page{
-      max-width:960px;
-      margin:0 auto;
-      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
-              linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
-      border-radius:20px;
-      border:1px solid rgba(148,163,184,0.7);
-      box-shadow:
-        0 18px 40px rgba(15,23,42,1),
-        0 0 0 1px rgba(15,23,42,1);
-      padding:36px 60px 32px;
-      color:#e5f1ff;
+    #loader.hidden {
+      opacity: 0;
+      visibility: hidden;
     }
-    @media (max-width:1040px){main.page{padding:12px 10px;}}
 
-    header.inner{background:none;padding:0;margin:0 0 8px 0;text-align:left;box-shadow:none;color:inherit;}
-    h1{font-size:2.1rem;margin-bottom:8px;color:#e5f1ff;}
-    header.inner .intro{font-size:1.02rem;}
+    .loader-logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-main);
+      margin-bottom: 20px;
+    }
 
-    h2{color:#e5f1ff;margin-top:34px;}
-    h3{color:#f5a623;margin-top:27px;}
-    ul,ol{margin-left:2em;margin-bottom:0.8em;}
-    .box,.infos{padding:15px 23px;border-radius:9px;margin:1.3em 0;font-size:1.02rem;}
-    .infos{background:#e7f3fa;border-left:7px solid #1877f2;color:#0f172a;}
-    .box-exo{background:#e5ffe7;border-left:7px solid #167c2b;color:#052e16;}
-    .box-important{background:#fff7ec;border-left:8px solid #f5a623;color:#3b2710;}
-    .error{background:#ffeaea;border-left:8px solid #e06359;color:#7f1d1d;}
-    .lexique{background:#f7fafd;border-left:8px solid #243552;padding:13px;border-radius:8px;margin:1.2em 0;color:#0f172a;}
-    .anecdote{background:#e7ffe7;border-left:8px solid #167c2b;font-style:italic;margin:1em 0;padding:14px 20px;border-radius:8px;color:#064e3b;}
-    .source{font-size:0.88em;color:#9ca3af;text-align:right;margin-top:10px;}
+    .loader-sub {
+      font-size: 0.9rem;
+      color: var(--text-soft);
+      margin-bottom: 22px;
+    }
 
-    button{background:#1877f2;color:#fff;font-weight:bold;border:none;border-radius:7px;padding:9px 18px;cursor:pointer;margin-right:8px;margin-top:8px;transition:background 0.2s,transform 0.15s;font-size:1em;}
-    button:hover{background:#145ac3;transform:translateY(-1px);}
-    .reponse{margin-top:0.7em;color:#bfdbfe;font-weight:bold;text-align:center;}
-    .fiche{background:#eeffe5;border-left:8px solid #4caf50;margin:1.3em 0;padding:16px 26px;border-radius:10px;color:#064e3b;}
-    #schema-mouv{margin:1.2em auto;display:block;background:#e7f3f7;border-radius:10px;border:1px solid #d1d5db;box-shadow:0 3px 10px #020617;}
-    input[type='text'],textarea{border-radius:5px;border:1px solid #6b7280;padding:5px;margin-top:6px;background:#020617;color:#e5e7eb;}
-    .flex-exercices{display:flex;flex-wrap:wrap;}
-    .exo-block{flex:1 1 310px;margin-right:2%;min-width:330px;}
-    .exo-block:last-child{margin-right:0;}
-    .popup{display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:#020617;border-radius:20px;box-shadow:0 10px 34px rgba(24,119,242,0.4);padding:30px;width:340px;z-index:2000;border:1px solid #1d4ed8;color:#e5e7eb;}
-    .popup h3{color:#60a5fa;}
-    .overlay{display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(15,23,42,0.7);z-index:1800;}
-    .show{display:block;}
-    .scoreQCM{font-weight:bold;color:#bbf7d0;}
-    .btn-lex{color:#fff;background:#243552;padding:3px 13px;font-size:0.97em;border-radius:999px;cursor:pointer;}
-    .qcm-block{margin-bottom:2.3em;}
-    .note-area{width:100%;min-height:120px;}
+    .loader-spinner {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 4px solid rgba(255,255,255,0.1);
+      border-top-color: var(--accent);
+      animation: spin 0.9s linear infinite;
+      box-shadow: 0 0 20px rgba(108,92,231,0.45);
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ---------- NAV ---------- */
+
+    .page { min-height: 100vh; display: flex; flex-direction: column; }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      background: linear-gradient(to bottom, rgba(5,5,8,0.95), rgba(5,5,8,0.65), transparent);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .nav {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 14px 18px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .nav-left { display: flex; align-items: center; gap: 10px; }
+
+    .logo-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 14px;
+      background: radial-gradient(circle at 30% 0, #ffeaa7 0, #fd79a8 40%, #6c5ce7 100%);
+      box-shadow: 0 0 18px rgba(108,92,231,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .nav-title { font-weight: 600; font-size: 1rem; }
+
+    .nav-title span {
+      font-weight: 300;
+      color: var(--text-soft);
+      font-size: 0.85rem;
+      margin-left: 4px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 14px;
+      font-size: 0.88rem;
+      color: var(--text-soft);
+    }
+
+    .nav-links a {
+      padding: 6px 10px;
+      border-radius: 999px;
+      transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .nav-links a:hover {
+      background: rgba(255,255,255,0.04);
+      color: var(--text-main);
+      transform: translateY(-1px);
+    }
+
+    .btn-pill {
+      padding: 7px 14px;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(135deg, #6c5ce7, #a66bff);
+      box-shadow: 0 10px 26px rgba(108,92,231,0.45);
+      font-size: 0.85rem;
+      border: none;
+      color: white;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+    }
+
+    .btn-pill:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.07);
+      box-shadow: 0 16px 38px rgba(108,92,231,0.6);
+    }
+
+    .btn-pill span { font-size: 1.2rem; }
+
+    @media (max-width: 880px) {
+      .nav { flex-wrap: wrap; }
+      .nav-links { display: none; }
+    }
+
+    /* ---------- MAIN ---------- */
+
+    main {
+      flex: 1;
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 28px 18px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+    }
+
+    .hero-card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 22px;
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-soft);
+      padding: 22px 20px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-tagline {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-soft);
+      margin-bottom: 10px;
+    }
+
+    .hero-title {
+      font-size: 1.9rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, #ffeaa7, #ff7675, #6c5ce7);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-sub {
+      font-size: 0.95rem;
+      color: var(--text-soft);
+      margin-bottom: 18px;
+    }
+
+    .hero-highlights {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .pill {
+      font-size: 0.78rem;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(10,12,30,0.9);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-soft);
+    }
+
+    .pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00b894;
+      box-shadow: 0 0 8px rgba(0,184,148,0.8);
+    }
+
+    .hero-footer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: var(--text-soft);
+    }
+
+    .hero-footer strong { color: var(--text-main); }
+
+    .hero-orbit {
+      position: absolute;
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      border: 1px dashed rgba(255,255,255,0.08);
+      right: -80px;
+      top: -70px;
+      filter: blur(0.2px);
+    }
+
+    .hero-satellite {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 0, #ffeaa7 0, #fd79a8 50%, #6c5ce7 100%);
+      box-shadow: 0 0 18px rgba(108,92,231,0.9);
+      animation: orbit 9s linear infinite;
+      transform-origin: -40px 120px;
+    }
+
+    @keyframes orbit { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* ---------- GRID COURS+QUIZ ---------- */
+
+    .section-pair {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.95fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .section-pair { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-soft);
+      padding: 16px 16px 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.55);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .card-title { font-size: 1rem; font-weight: 600; }
+
+    .card-badge {
+      font-size: 0.75rem;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #c4b5ff;
+      border: 1px solid rgba(108,92,231,0.4);
+    }
+
+    .card p {
+      font-size: 0.86rem;
+      color: var(--text-soft);
+      line-height: 1.5;
+      margin-bottom: 6px;
+    }
+
+    ul { list-style: none; padding-left: 0; }
+
+    .dot-list li {
+      position: relative;
+      padding-left: 14px;
+      font-size: 0.84rem;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+    }
+
+    .dot-list li::before {
+      content: "";
+      position: absolute;
+      left: 2px;
+      top: 6px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+    }
+
+    .highlight-box {
+      margin-top: 8px;
+      border-radius: 14px;
+      padding: 8px 10px;
+      background: rgba(12,16,40,0.9);
+      border: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.78rem;
+      color: var(--text-soft);
+    }
+
+    .highlight-box strong { color: var(--text-main); }
+
+    /* ---------- QUIZ ---------- */
+
+    .quiz-question { font-size: 0.88rem; margin-bottom: 8px; }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .quiz-btn {
+      text-align: left;
+      padding: 7px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(8,9,22,0.9);
+      font-size: 0.82rem;
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .quiz-btn:hover {
+      background: rgba(255,255,255,0.03);
+      transform: translateY(-1px);
+    }
+
+    .quiz-btn.correct {
+      border-color: rgba(0,184,148,0.9);
+      background: rgba(0,184,148,0.12);
+      color: var(--text-main);
+    }
+
+    .quiz-btn.wrong {
+      border-color: rgba(255,118,117,0.9);
+      background: rgba(255,118,117,0.12);
+      color: var(--text-main);
+    }
+
+    .quiz-feedback { font-size: 0.8rem; min-height: 16px; }
+
+    .quiz-feedback.ok { color: var(--success); }
+
+    .quiz-feedback.ko { color: var(--danger); }
+
+    /* ---------- EXOS ---------- */
+
+    .exo-block {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(10,12,30,0.9);
+      border: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.84rem;
+      color: var(--text-soft);
+    }
+
+    .exo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .exo-title {
+      font-weight: 600;
+      color: var(--text-main);
+      font-size: 0.9rem;
+    }
+
+    .exo-diff {
+      font-size: 0.8rem;
+    }
+
+    .exo-correction {
+      margin-top: 6px;
+      font-size: 0.8rem;
+      display: none;
+      color: var(--text-soft);
+    }
+
+    .btn-correction {
+      margin-top: 4px;
+      font-size: 0.78rem;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
+      color: var(--text-soft);
+      cursor: pointer;
+    }
+
+    /* ---------- FOOTER ---------- */
+
+    footer {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 0 18px 26px;
+      font-size: 0.78rem;
+      color: var(--text-soft);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 14px;
+    }
   </style>
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+  <!-- MathJax pour le rendu LaTeX -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(','\\)']],
+        displayMath: [['\\[','\\]']]
+      }
+    };
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-  <!-- Loader -->
+  <!-- LOADER -->
   <div id="loader">
-    <div class="loader-hud">
-      <div class="loader-title">GLOBAL//phys-MOUVEMENT</div>
-
-      <div class="loader-status-row">
-        <span class="status-label">Initialisation</span>
-        <span class="status-dots">...</span>
-      </div>
-
-      <div class="loader-bar">
-        <div class="loader-bar-fill"></div>
-      </div>
-
-      <div class="loader-subtext">
-        Mouvement : repérage, référentiel, trajectoire, vitesses moyenne et instantanée.
-      </div>
-
-      <div class="loader-terminal">
-        <div class="terminal-line">[REF] Mise en place des référentiels et repérage (x,y,z,t).</div>
-        <div class="terminal-line">[TRAJ] Construction des trajectoires rectilignes, circulaires, paraboliques.</div>
-        <div class="terminal-line">[VEL] Formules de vitesse moyenne et instantanée prêtes à l’emploi.</div>
-        <div class="terminal-line terminal-cursor">_</div>
-      </div>
-
-      <div class="loader-scan"></div>
-    </div>
+    <div class="loader-logo">Physique • 1re</div>
+    <div class="loader-sub">Chargement “Mouvement d’un système – Site complet”...</div>
+    <div class="loader-spinner"></div>
   </div>
 
-  <!-- Contenu principal -->
-  <div id="main-content">
-    <div class="top-banner">
-      Global - Physique
-      <nav class="nav-bar">
-        <a href="../../../index.html">Accueil</a>
-        <a href="../../../apropos.html">À propos</a>
+  <div class="page">
+    <!-- NAV -->
+    <header>
+      <nav class="nav">
+        <div class="nav-left">
+          <div class="logo-badge">Mv</div>
+          <div class="nav-title">
+            Mouvement d’un système
+            <span>Cours + Quiz + 20 exos</span>
+          </div>
+        </div>
+        <div class="nav-links">
+          <a href="#sec-vitesse">Vecteur vitesse</a>
+          <a href="#sec-dv">Δv et forces</a>
+          <a href="#sec-newton">Newton</a>
+          <a href="#sec-chute">Chute libre</a>
+          <a href="#exos">20 exos</a>
+        </div>
+        <button class="btn-pill" id="scrollToQuiz">
+          <span>▶</span> Premier quiz
+        </button>
       </nav>
-    </div>
+    </header>
 
-    <div class="page-padding">
-      <main class="page">
-        <header class="inner">
-          <h1>Description du mouvement : repérage, référentiel, trajectoire, vitesse</h1>
-          <div class="intro">
-            Repérage, référentiels, trajectoires, vitesses, QCM, exercices, schéma interactif, LaTeX, fiche, lexique et sauvegarde de notes.
+    <main>
+      <!-- HERO -->
+      <section class="hero-card">
+        <div class="hero-orbit"></div>
+        <div class="hero-satellite"></div>
+
+        <div class="hero-tagline">Chap. 11 – Mouvement d’un système</div>
+        <h1 class="hero-title">
+          Ton chapitre “mouvement d’un système” en mode <span>playground complet</span>.
+        </h1>
+        <p class="hero-sub">
+          Chaque partie du cours est dans un bloc, avec toutes les formules + déclinaisons directement dedans,
+          et le quiz juste à côté. En bas, tu as 20 exercices classés de 🟢 1/3 à 🔴🔴🔴 3/3.
+        </p>
+
+        <div class="hero-highlights">
+          <div class="pill"><div class="pill-dot"></div> Vecteur vitesse & variation Δv⃗</div>
+          <div class="pill"><div class="pill-dot"></div> Résultante ∑F⃗ et inertie</div>
+          <div class="pill"><div class="pill-dot"></div> ∑F⃗ = m Δv⃗ / Δt, m a⃗</div>
+          <div class="pill"><div class="pill-dot"></div> Chute libre et g⃗</div>
+        </div>
+
+        <div class="hero-footer">
+          <div><strong>Strat :</strong> bloc de cours → quiz → quelques exos du bas → bloc de cours suivant.</div>
+          <div><strong>Objectif :</strong> être capable d’expliquer chaque bloc sans regarder le site.</div>
+        </div>
+      </section>
+
+      <!-- I. VECTEUR VITESSE -->
+      <section class="section-pair" id="sec-vitesse">
+        <!-- COURS -->
+        <article class="card">
+          <div class="card-header">
+            <h2 class="card-title">I – Vecteur vitesse (moyenne et instantanée)</h2>
+            <span class="card-badge">Cours + déclinaisons</span>
           </div>
-        </header>
 
-        <section class="box infos">
-          <h2>📚 Objectifs</h2>
-          <ul>
-            <li>Décrire les mouvements à l’aide d’un référentiel adapté.</li>
-            <li>Relier repérage (x, y, z, t), trajectoire et vitesse.</li>
-            <li>Maîtriser vocabulaire et unités pour les contrôles.</li>
-          </ul>
-          <button onclick="openPopup('popup-appli')">Applications concrètes</button>
-        </section>
-
-        <section>
-          <h2>📍 1. Repérage et référentiel</h2>
-          <ul>
-            <li>Position = coordonnées (x, y, z) à un instant t dans un référentiel donné.</li>
-            <li>Référentiel = “décor” + repère (origine, axes). Ex : terrestre, géocentrique, héliocentrique.</li>
-          </ul>
-          <button class="btn-lex" onclick="openPopup('popup-lexique-rep')">Lexique repérage</button>
-        </section>
-
-        <section>
-          <h2>🗺️ 2. Trajectoire</h2>
-          <ul>
-            <li>Trajectoire : ensemble des positions successives du mobile.</li>
-            <li>Peut être rectiligne, circulaire, parabolique, elliptique, selon le système et le référentiel.</li>
-          </ul>
-          <button onclick="openPopup('popup-sch-trajectoire')">Schéma trajectoire</button>
-          anvas id="schema-mouv" width="430" height="130"></canvas>
-          <div class="infos" style="text-align:center"><b>Exemples : trajectoires rectiligne, circulaire, parabolique.</b></div>
-        </section>
-
-        <section>
-          <h2>🏃‍♂️ 3. Vitesse</h2>
-          <ul>
-            <li>Vitesse moyenne : \(v_{moy} = \dfrac{\Delta x}{\Delta t}\).</li>
-            <li>Vitesse instantanée en 1D : \(v(t) = \dfrac{dx}{dt}\).</li>
-            <li>Mouvement uniforme : vitesse constante ; accéléré : vitesse varie, \(a = dv/dt\).</li>
-          </ul>
-          <button onclick="openPopup('popup-vitesse')">Astuce calcul vitesse</button>
-        </section>
-
-        <section>
-          <h2>📑 Exercices interactifs</h2>
-          <div class="flex-exercices">
-            <div class="box-exo exo-block">
-              <b>Ex 1 – Vitesse moyenne</b><br>
-              Train : de 2500 m à 5500 m entre t=0 s et t=100 s.
-              <input type="text" id="exo1" placeholder="... m/s">
-              <button onclick="checkExo(1)">Valider</button>
-              <div class="reponse" id="rep-exo1"></div>
-            </div>
-            <div class="box-exo exo-block">
-              <b>Ex 2 – Référentiels</b><br>
-              Deux référentiels possibles pour une balle lancée ?
-              <input type="text" id="exo2" placeholder="...">
-              <button onclick="checkExo(2)">Valider</button>
-              <div class="reponse" id="rep-exo2"></div>
-            </div>
-            <div class="box-exo exo-block">
-              <b>Ex 3 – Vitesse instantanée</b><br>
-              Pour \(x(t) = 4t + 7\), donne la vitesse.
-              <input type="text" id="exo3" placeholder="...">
-              <button onclick="checkExo(3)">Valider</button>
-              <div class="reponse" id="rep-exo3"></div>
-            </div>
+          <p><strong>1. Vecteur vitesse moyenne autour d’un instant t</strong></p>
+          <p>
+            La vitesse moyenne autour de t, à partir des positions M(t−Δt) et M(t+Δt), est :
+          </p>
+          <div class="highlight-box">
+            \(\vec{V}(t) = \dfrac{\overrightarrow{M(t-\Delta t)M(t+\Delta t)}}{2\,\Delta t}\)
           </div>
-          <button onclick="resetExos()">Effacer mes réponses</button>
-        </section>
-
-        <section class="qcm-block">
-          <h2>🎯 QCM interactif</h2>
-          <div id="qcm-interactif"></div>
-          <div class="scoreQCM" id="qcm-score" style="margin-top:10px"></div>
-          <button onclick="reloadQCM()">Recommencer le QCM</button>
-        </section>
-
-        <section class="box-important">
-          <h2>🔖 Fiche de révision rapide</h2>
-          <div class="fiche">
-            <ul>
-              <li>Repérage : (x, y, z, t) dans un référentiel.</li>
-              <li>Trajectoire : chemin suivi par le mobile.</li>
-              <li>Vitesse moyenne : \(\Delta x / \Delta t\).</li>
-              <li>Vitesse instantanée : dérivée de la position, dx/dt.</li>
-            </ul>
-          </div>
-        </section>
-
-        <section class="error">
-          <h2>❌ Erreurs fréquentes</h2>
-          <ul>
-            <li>Parler de mouvement sans préciser le référentiel.</li>
-            <li>Confondre trajectoire (forme) et distance parcourue.</li>
-            <li>Mélanger vitesse moyenne et instantanée.</li>
+          <p>
+            Interprétation : vecteur déplacement moyen autour de t, divisé par 2Δt.
+            Pour un mouvement rectiligne, on utilise en scalaire :
+          </p>
+          <ul class="dot-list">
+            <li>v = d / Δt</li>
+            <li>d = v × Δt</li>
+            <li>Δt = d / v</li>
           </ul>
-        </section>
 
-        <section class="lexique">
-          <h2>📚 Lexique express</h2>
-          Référentiel, position, trajectoire, vitesse, accélération, repère, origine.
-        </section>
+          <p><strong>2. Vecteur vitesse instantanée</strong></p>
+          <p>
+            La vitesse instantanée est définie (approchée) par :
+          </p>
+          <div class="highlight-box">
+            \(\vec{v}(t) = \dfrac{\overrightarrow{M(t)M(t+\Delta t)}}{\Delta t}\)
+          </div>
+          <ul class="dot-list">
+            <li>Direction : tangente à la trajectoire au point M(t).</li>
+            <li>Sens : celui du mouvement.</li>
+            <li>Norme : valeur de la vitesse instantanée (m·s⁻¹).</li>
+          </ul>
 
-        <section>
-          <h2>🗒️ Tes propres notes</h2>
-          <textarea class="note-area" id="notes" placeholder="Tes notes personnelles…"></textarea>
-          <button onclick="saveNotes()">Enregistrer</button>
-          <span id="savemsg" style="color:#4ade80;font-weight:bold;"></span>
-        </section>
+          <p><strong>3. Approche chronophotographie</strong></p>
+          <p>
+            Sur une chronophotographie (photos toutes les Δt), la vitesse au point Mi peut être estimée par :
+          </p>
+          <div class="highlight-box">
+            \(\vec{v}_i \approx \dfrac{\overrightarrow{M_i M_{i+1}}}{\Delta t}\)
+          </div>
+        </article>
 
-        <section class="source">Sources : cours lycée, manuels, BAC 2025, fiches PC.</section>
-      </main>
-    </div>
-  </div>
+        <!-- QUIZ -->
+        <article class="card">
+          <div class="card-header">
+            <h2 class="card-title">Quiz I – Vecteur vitesse</h2>
+            <span class="card-badge">4 questions</span>
+          </div>
 
-  <!-- Popups -->
-  <div class="overlay" id="overlay"></div>
-  <div class="popup" id="popup-appli">
-    <h3>Applications concrètes</h3>
-    Voiture dans un virage, satellites, drones, chutes libres, sports (ballon, sprinteur), transports (train, avion).
-    <br><br><button onclick="closePopup()">Fermer</button>
-  </div>
-  <div class="popup" id="popup-sch-trajectoire">
-    <h3>Schéma trajectoire</h3>
-    Ligne droite = rectiligne, cercle = circulaire, parabole = projectile. Le référentiel change la forme observée.
-    <br><br><button onclick="closePopup()">Fermer</button>
-  </div>
-  <div class="popup" id="popup-vitesse">
-    <h3>Astuce vitesse</h3>
-    Toujours penser “variation” : \(\Delta x / \Delta t\) ou dérivée. Vérifier systématiquement l’unité (m/s).
-    <br><br><button onclick="closePopup()">Fermer</button>
-  </div>
-  <div class="popup" id="popup-lexique-rep">
-    <h3>Lexique repérage</h3>
-    Référentiel = origine + axes. Repérage = où et quand. Coordonnées = valeurs x, y, z dans ce repère.
-    <br><br><button onclick="closePopup()">Fermer</button>
+          <div class="quiz-block" data-correct="1">
+            <div class="quiz-question">
+              1. La direction du vecteur vitesse instantanée \(\vec{v}(t)\) est :
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-btn">A. perpendiculaire à la trajectoire</button>
+              <button class="quiz-btn">B. tangente à la trajectoire</button>
+              <button class="quiz-btn">C. toujours verticale</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+          <div class="quiz-block" data-correct="2">
+            <div class="quiz-question">
+              2. Pour estimer une vitesse à partir d’une chronophotographie (positions toutes les Δt), on peut :
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-btn">A. mesurer un temps puis le diviser par la distance</button>
+              <button class="quiz-btn">B. diviser Δt par le nombre de points</button>
+              <button class="quiz-btn">C. mesurer la distance entre deux positions successives et la diviser par Δt</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+          <div class="quiz-block" data-correct="0">
+            <div class="quiz-question">
+              3. La formule v = d / Δt permet de :
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-btn">A. calculer une vitesse moyenne sur un trajet</button>
+              <button class="quiz-btn">B. calculer l’accélération moyenne</button>
+              <button class="quiz-btn">C. calculer la somme des forces</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+          <div class="quiz-block" data-correct="1">
+            <div class="quiz-question">
+              4. Le sens du vecteur vitesse instantanée est :
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-btn">A. vers le centre de la trajectoire</button>
+              <button class="quiz-btn">B. celui du mouvement</button>
+              <button class="quiz-btn">C. celui de la plus grande force</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </article>
+      </section>
+
+      <!-- II. DELTA V ET FORCES -->
+      <section class="section-pair" id="sec-dv">
+        <!-- COURS -->
+        <article class="card">
+          <div class="card-header">
+            <h2 class="card-title">II – Variation de vitesse \(\Delta \vec{v}\) et résultante des forces</h2>
+            <span class="card-badge">Cours + formules</span>
+          </div>
+
+          <p><strong>1. Vecteur variation de vitesse</strong></p>
+          <p>
+            Lors d’un mouvement, le vecteur vitesse instantané \(\vec{v}(t)\) peut varier en norme, direction et sens.
+          </p>
+          <div class="highlight-box">
+            \(\Delta \vec{v} = \vec{v}(t+\Delta t) - \vec{v}(t)\)
+          </div>
+          <ul class="dot-list">
+            <li>Si \(\Delta \vec{v} = \vec{0}\) : la vitesse ne change pas.</li>
+            <li>Si \(\Delta \vec{v} \ne \vec{0}\) : le mouvement est non uniforme.</li>
+          </ul>
+
+          <p><strong>2. Résultante des forces \(\sum \vec{F}\)</strong></p>
+          <p>
+            Quand plusieurs forces agissent, on définit la résultante :
+          </p>
+          <div class="highlight-box">
+            \(\sum \vec{F} = \vec{F}_1 + \vec{F}_2 + ... = \vec{F}_{\text{totale}}\)
+          </div>
+          <ul class="dot-list">
+            <li>Si \(\sum \vec{F} = \vec{0}\) : les forces se compensent.</li>
+            <li>Si \(\sum \vec{F} \ne \vec{0}\) : il reste une force résultante non nulle.</li>
+          </ul>
+        </article>
+
+        <!-- QUIZ -->
+        <article class="card">
+          <div class="card-header">
+            <h2 class="card-title">Quiz II – \(\Delta \vec{v}\) et forces</h2>
+            <span class="card-badge">4 questions</span>
+          </div>
+
+          <div class="quiz-block" data-correct="0">
+            <div class="quiz-question">
+              5. Si \(\Delta \vec{v} = \vec{0}\) entre t et t + Δt :
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-btn">A. la vitesse ne change pas</button>
+              <button class="quiz-btn">B. la vitesse augmente</button>
+              <button class="quiz-btn">C. la vitesse diminue</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+          <div class="quiz-block" data-correct="1">
+            <div class="quiz-question">
+              6. La résultante des forces \(\sum \vec{F}\) est :
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-btn">A. la plus grande force qui agit</button>
+              <button class="quiz-btn">B. la somme vectorielle de toutes les forces extérieures</button>
+              <button class="quiz-btn">C. toujours égale au poids</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+          <div class="quiz-block" data-correct="0">
+            <div class="quiz-question">
+              7. Si les forces se compensent sur un système :
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-btn">A. \(\sum \vec{F} = \vec{0}\)</button>
+              <button class="quiz-btn">B. \(\sum \vec{F} \ne \vec{0}\)</button>
+              <button class="quiz-btn">C. la vitesse change forcément</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+          <div class="quiz-block" data-correct="2">
+            <div class="quiz-question">
+              8. Si \(\Delta \vec{v} \ne \vec{0}\) sur un intervalle de temps :
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-btn">A. aucune force n’agit</button>
+              <button class="quiz-btn">B. les forces se compensent</button>
+              <button class="quiz-btn">C. la vitesse a changé</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </article>
+      </section>
+
+      <!-- III. NEWTON -->
+      <section class="section-pair" id="sec-newton">
+        <!-- COURS -->
+        <article class="card">
+          <div class="card-header">
+            <h2 class="card-title">III – 1ère et 2ème lois de Newton</h2>
+            <span class="card-badge">Lien \(\sum \vec{F}\) – \(\Delta \vec{v}\)</span>
+          </div>
+
+          <p><strong>1. 1ère loi : principe d’inertie</strong></p>
+          <p>
+            En l’absence de force ou si les forces se compensent, le système est immobile ou en mouvement rectiligne uniforme :
+          </p>
+          <div class="highlight-box">
+            Si \(\sum \vec{F} = \vec{0}\) alors \(\Delta \vec{v} = \vec{0}\).
+          </div>
+
+          <p><strong>2. 2ème loi</strong></p>
+          <p>
+            La somme des forces est proportionnelle à la masse m et au vecteur variation de vitesse entre t et t + Δt :
+          </p>
+          <div class="highlight-box">
+            \(\sum \vec{F} = m\,\dfrac{\Delta \vec{v}}{\Delta t}\)
+          </div>
+
+          <p><strong>3. Déclinaisons importantes</strong></p>
+          <ul class="dot-list">
+            <li>Forme standard : \(\sum \vec{F} = m\,\dfrac{\Delta \vec{v}}{\Delta t}\)</li>
+            <li>Variation de vitesse : \(\Delta \vec{v} = \dfrac{\Delta t}{m}\,\sum \vec{F}\)</li>
+            <li>Accélération : \(\vec{a} = \dfrac{\Delta \vec{v}}{\Delta t}\) et \(\sum \vec{F} = m \vec{a}\)</li>
+          </ul>
+
+          <div class="highlight-box">
+            \(\sum \vec{F}\) et \(\Delta \vec{v}\) ont même sens et même direction.
+            Plus m est grande, plus la variation de vitesse est faible pour une même force.
+          </div>
+        </article>
+
+        <!-- QUIZ -->
+        <article class="card">
+          <div class="card-header">
+            <h2 class="card-title">Quiz III – Newton et rôle de la masse</h2>
+            <span class="card-badge">4 questions</span>
+          </div>
+
+          <div class="quiz-block" data-correct="1">
+            <div class="quiz-question">
+              9. Si \(\sum \vec{F} = \vec{0}\) sur un système :
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-btn">A. sa vitesse change forcément</button>
+              <button class="quiz-btn">B. sa vitesse reste constante (repos ou MRU)</button>
+              <button class="quiz-btn">C. il ne peut pas être en mouvement</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+          <div class="quiz-block" data-correct="2">
+            <div class="quiz-question">
+              10. La relation \(\sum \vec{F} = m\,\dfrac{\Delta \vec{v}}{\Delta t}\) signifie que :
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-btn">A. plus la masse est grande, plus la variation de vitesse est grande</button>
+              <button class="quiz-btn">B. la masse n’intervient pas</button>
+              <button class="quiz-btn">C. plus la masse est grande, plus la variation de vitesse est petite pour une même force</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+          <div class="quiz-block" data-correct="0">
+            <div class="quiz-question">
+              11. L’expression de \(\Delta \vec{v}\) en fonction de \(\sum \vec{F}\), m et Δt est :
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-btn">A. \(\Delta \vec{v} = \dfrac{\Delta t}{m}\,\sum \vec{F}\)</button>
+              <button class="quiz-btn">B. \(\Delta \vec{v} = m \Delta t\,\sum \vec{F}\)</button>
+              <button class="quiz-btn">C. \(\Delta \vec{v} = \dfrac{m}{\Delta t}\,\sum \vec{F}\)</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+          <div class="quiz-block" data-correct="1">
+            <div class="quiz-question">
+              12. Dans \(\sum \vec{F} = m \vec{a}\), \(\vec{a}\) représente :
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-btn">A. la vitesse moyenne</button>
+              <button class="quiz-btn">B. le vecteur accélération</button>
+              <button class="quiz-btn">C. la masse volumique</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </article>
+      </section>
+
+      <!-- IV. CHUTE LIBRE -->
+      <section class="section-pair" id="sec-chute">
+        <!-- COURS -->
+        <article class="card">
+          <div class="card-header">
+            <h2 class="card-title">IV – Chute libre et vecteur \(\vec{g}\)</h2>
+            <span class="card-badge">Cas particulier</span>
+          </div>
+
+          <p><strong>1. Définition de la chute libre</strong></p>
+          <p>
+            Un objet est en chute libre s’il est soumis uniquement à son poids \(\vec{P}\).
+          </p>
+          <div class="highlight-box">
+            \(\dfrac{\Delta \vec{v}}{\Delta t} = \vec{g}\)
+          </div>
+          <ul class="dot-list">
+            <li>\(\vec{g}\) : vecteur accélération de la pesanteur, vertical vers le bas.</li>
+            <li>La valeur de g ne dépend pas de la masse de l’objet.</li>
+          </ul>
+
+          <p><strong>2. Déclinaisons utiles</strong></p>
+          <ul class="dot-list">
+            <li>\(\Delta \vec{v} = \vec{g}\,\Delta t\)</li>
+            <li>Si v₀ = 0 : \(\vec{v}(t) = \vec{g}\,t\)</li>
+            <li>En projection verticale : \(v(t) = v_0 + g t\), \(z(t) = z_0 + v_0 t + \frac{1}{2} g t^2\)</li>
+          </ul>
+
+          <div class="highlight-box">
+            En chute libre idéale, tous les objets ont la même accélération (si on néglige l’air),
+            même si leurs masses sont différentes.
+          </div>
+        </article>
+
+        <!-- QUIZ -->
+        <article class="card">
+          <div class="card-header">
+            <h2 class="card-title">Quiz IV – Chute libre</h2>
+            <span class="card-badge">4 questions</span>
+          </div>
+
+          <div class="quiz-block" data-correct="2">
+            <div class="quiz-question">
+              13. En chute libre idéale, un objet est soumis :
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-btn">A. uniquement à la poussée d’Archimède</button>
+              <button class="quiz-btn">B. uniquement aux frottements de l’air</button>
+              <button class="quiz-btn">C. uniquement à son poids</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+          <div class="quiz-block" data-correct="1">
+            <div class="quiz-question">
+              14. Dans le cas d’une chute libre, on a :
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-btn">A. \(\Delta \vec{v} / \Delta t = \vec{0}\)</button>
+              <button class="quiz-btn">B. \(\Delta \vec{v} / \Delta t = \vec{g}\)</button>
+              <button class="quiz-btn">C. \(\sum \vec{F} = \vec{0}\)</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+          <div class="quiz-block" data-correct="0">
+            <div class="quiz-question">
+              15. La direction de \(\vec{g}\) est :
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-btn">A. verticale vers le bas</button>
+              <button class="quiz-btn">B. horizontale</button>
+              <button class="quiz-btn">C. toujours vers la droite</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+          <div class="quiz-block" data-correct="1">
+            <div class="quiz-question">
+              16. La valeur de g dépend :
+            </div>
+            <div class="quiz-options">
+              <button class="quiz-btn">A. de la masse de l’objet</button>
+              <button class="quiz-btn">B. du lieu (Terre, Lune…) mais pas de la masse de l’objet</button>
+              <button class="quiz-btn">C. uniquement de la température</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+        </article>
+      </section>
+
+      <!-- 20 EXOS PROGRESSIFS -->
+      <section class="card" id="exos">
+        <div class="card-header">
+          <h2 class="card-title">20 exercices classés par difficulté</h2>
+          <span class="card-badge">🟢 1/3 → 🔴🔴🔴 3/3</span>
+        </div>
+
+        <!-- 1 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 1 – Vitesse moyenne basique</div>
+            <div class="exo-diff">Difficulté : 🟢 1/3</div>
+          </div>
+          <p>
+            Un élève parcourt 1,2 km pour aller au collège en 15 minutes.
+            1) Convertir en m et s.
+            2) Calculer v en m·s⁻¹.
+            3) Donner v en km·h⁻¹.
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            1) 1,2 km = 1 200 m ; 15 min = 900 s.
+            2) v = 1 200 / 900 ≈ 1,33 m·s⁻¹.
+            3) v ≈ 1,33 × 3,6 ≈ 4,8 km·h⁻¹.
+          </div>
+        </div>
+
+        <!-- 2 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 2 – Aller/retour à vélo</div>
+            <div class="exo-diff">Difficulté : 🟢 1/3</div>
+          </div>
+          <p>
+            Un élève va chez un ami en vélo. À l’aller, il parcourt 4,0 km en 20 min.
+            Au retour, il parcourt 4,0 km en 16 min.
+            1) Calculer la vitesse moyenne à l’aller.
+            2) Calculer la vitesse moyenne au retour (en km·h⁻¹).
+            3) Qui est le plus rapide, aller ou retour ?
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            Aller : d = 4 km ; Δt = 20/60 h ; v_A = 4 / (20/60) = 12 km·h⁻¹.
+            Retour : Δt = 16/60 h ; v_R = 4 / (16/60) = 15 km·h⁻¹.
+            Le retour est plus rapide.
+          </div>
+        </div>
+
+        <!-- 3 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 3 – Chronophotographie simple</div>
+            <div class="exo-diff">Difficulté : 🟢 1/3</div>
+          </div>
+          <p>
+            Sur une chronophotographie, les positions sont prises toutes les 0,05 s.
+            Entre M1 et M2, la distance réelle est 0,40 m.
+            1) Calculer la vitesse moyenne entre M1 et M2.
+            2) Donner la vitesse en km·h⁻¹.
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            v = 0,40 / 0,05 = 8,0 m·s⁻¹.
+            8,0 × 3,6 = 28,8 km·h⁻¹.
+          </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 4 – Comparer deux vitesses</div>
+            <div class="exo-diff">Difficulté : 🟢 1/3</div>
+          </div>
+          <p>
+            Un joggeur A parcourt 3,0 km en 18 min. Un joggeur B parcourt 2,5 km en 15 min.
+            1) Calculer la vitesse moyenne de chacun en km·h⁻¹.
+            2) Qui est le plus rapide ?
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            A : v_A = 3,0 / (18/60) = 10 km·h⁻¹.
+            B : v_B = 2,5 / (15/60) = 10 km·h⁻¹.
+            Les deux ont la même vitesse moyenne.
+          </div>
+        </div>
+
+        <!-- 5 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 5 – Interpréter les espacements</div>
+            <div class="exo-diff">Difficulté : 🟢 1/3</div>
+          </div>
+          <p>
+            Sur une chronophotographie, les points sont régulièrement espacés.
+            1) Que dire de la vitesse du mobile ?
+            Sur une autre photo, les points sont de plus en plus espacés.
+            2) Que dire de la vitesse dans ce cas ?
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            Espacements réguliers → vitesse constante.
+            Espacements qui augmentent → le mobile accélère.
+          </div>
+        </div>
+
+        <!-- 6 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 6 – Accélération simple</div>
+            <div class="exo-diff">Difficulté : 🟠🟠 2/3</div>
+          </div>
+          <p>
+            Une voiture démarre du repos et atteint 20 m·s⁻¹ en 5,0 s.
+            1) Calculer l’accélération moyenne.
+            2) Interpréter.
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            Δv = 20 m·s⁻¹ ; a = 20 / 5,0 = 4,0 m·s⁻².
+            La voiture gagne 4 m·s⁻¹ chaque seconde.
+          </div>
+        </div>
+
+        <!-- 7 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 7 – Ralentissement</div>
+            <div class="exo-diff">Difficulté : 🟠🟠 2/3</div>
+          </div>
+          <p>
+            Une voiture passe de 25 m·s⁻¹ à 15 m·s⁻¹ en 5,0 s.
+            1) Calculer l’accélération moyenne.
+            2) Comprendre le signe de l’accélération.
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            Δv = −10 m·s⁻¹ ; a = −10 / 5,0 = −2,0 m·s⁻².
+            Accélération négative → freinage.
+          </div>
+        </div>
+
+        <!-- 8 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 8 – MRU : position en fonction du temps</div>
+            <div class="exo-diff">Difficulté : 🟠🟠 2/3</div>
+          </div>
+          <p>
+            Un skateur avance à vitesse constante v = 3,0 m·s⁻¹ sur une ligne droite.
+            À t = 0 s, il se trouve en x0 = 2,0 m.
+            1) Écrire x(t).
+            2) Calculer x(4,0 s).
+            3) Au bout de combien de temps atteindra-t-il x = 20 m ?
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            x(t) = 2,0 + 3,0 t.
+            x(4) = 14 m.
+            20 = 2 + 3 t → t = 6,0 s.
+          </div>
+        </div>
+
+        <!-- 9 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 9 – Temps de trajet</div>
+            <div class="exo-diff">Difficulté : 🟠🟠 2/3</div>
+          </div>
+          <p>
+            Une voiture roule à 90 km·h⁻¹.
+            1) Convertir en m·s⁻¹.
+            2) Temps pour parcourir 45 km (en minutes) ?
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            90 / 3,6 = 25 m·s⁻¹.
+            Δt = 45 / 90 = 0,5 h = 30 min.
+          </div>
+        </div>
+
+        <!-- 10 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 10 – Forces et mouvement</div>
+            <div class="exo-diff">Difficulté : 🟠🟠 2/3</div>
+          </div>
+          <p>
+            Un chariot se déplace sans frottements sur une table horizontale.
+            On le pousse puis on arrête de pousser.
+            1) Pendant la poussée : que vaut la somme des forces ? Que devient la vitesse ?
+            2) Après : quelles forces ? Quel mouvement ?
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            Pendant la poussée : résultante non nulle → la vitesse augmente.
+            Après : poids + réaction se compensent → résultante nulle → MRU.
+          </div>
+        </div>
+
+        <!-- 11 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 11 – MRUV : v(t)</div>
+            <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+          </div>
+          <p>
+            Une moto démarre du repos (v0 = 0) avec a = 2,0 m·s⁻².
+            1) v(t) ?
+            2) v(6,0 s) ?
+            3) À partir de quel temps v > 20 m·s⁻¹ ?
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            v(t) = 2,0 t.
+            v(6) = 12 m·s⁻¹.
+            2,0 t > 20 → t > 10 s.
+          </div>
+        </div>
+
+        <!-- 12 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 12 – MRUV : x(t)</div>
+            <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+          </div>
+          <p>
+            Un mobile : x0 = 0, v0 = 2,0 m·s⁻¹, a = 1,0 m·s⁻².
+            1) v(t).
+            2) x(t).
+            3) v(4,0 s) et x(4,0 s).
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            v(t) = 2,0 + 1,0 t.
+            x(t) = 2,0 t + 0,5 t².
+            v(4) = 6 m·s⁻¹ ; x(4) = 16 m.
+          </div>
+        </div>
+
+        <!-- 13 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 13 – MRUV avec v²</div>
+            <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+          </div>
+          <p>
+            Une voiture passe de 10 à 22 m·s⁻¹ sous a = 3,0 m·s⁻².
+            1) Déterminer Δx avec v² = v0² + 2 a (x − x0).
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            v² − v0² = 384.
+            Δx = 384 / (2×3) = 64 m.
+          </div>
+        </div>
+
+        <!-- 14 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 14 – Chute libre (durée)</div>
+            <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+          </div>
+          <p>
+            Bille lâchée de 20 m (g = 10 m·s⁻²).
+            1) z(t) avec z0 = 20 m, z = 0 au sol.
+            2) Durée de la chute.
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            z(t) = 20 − 5 t².
+            0 = 20 − 5 t² → t = 2,0 s.
+          </div>
+        </div>
+
+        <!-- 15 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 15 – Chute libre (vitesse)</div>
+            <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+          </div>
+          <p>
+            Même bille, h = 20 m, g = 10 m·s⁻².
+            1) v à l’impact avec v² = 2 g h.
+            2) Comparer avec v = g t.
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            v² = 400 → v = 20 m·s⁻¹.
+            t = 2 s → v = 10×2 = 20 m·s⁻¹.
+          </div>
+        </div>
+
+        <!-- 16 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 16 – Deux mobiles en MRU</div>
+            <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+          </div>
+          <p>
+            Deux coureurs A et B : v_A = 4,0 m·s⁻¹, v_B = 5,0 m·s⁻¹.
+            1) x_A(t), x_B(t).
+            2) À t = 30 s, qui est le plus loin et de combien ?
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            x_A(t) = 4,0 t ; x_B(t) = 5,0 t.
+            x_A(30) = 120 m ; x_B(30) = 150 m.
+            B est 30 m devant.
+          </div>
+        </div>
+
+        <!-- 17 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 17 – Rattrapage MRU</div>
+            <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+          </div>
+          <p>
+            Un piéton marche à 1,5 m·s⁻¹. Un cycliste à 4,5 m·s⁻¹ passe au niveau du piéton à t = 0.
+            À t = 20 s le piéton se met à courir à 3,0 m·s⁻¹.
+            1) x_C(t).
+            2) x_P(t) avant/après 20 s.
+            3) Le piéton rattrape-t-il le cycliste ?
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            x_C(t) = 4,5 t.
+            0 ≤ t ≤ 20 : x_P(t) = 1,5 t.
+            t ≥ 20 : x_P(t) = 30 + 3,0 (t − 20).
+            Équation impossible pour t ≥ 20 → pas de rattrapage.
+          </div>
+        </div>
+
+        <!-- 18 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 18 – Effet des forces sur la trajectoire</div>
+            <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+          </div>
+          <p>
+            On lance une balle horizontalement depuis une table.
+            1) Quelles forces s’exercent en vol ?
+            2) Évolution de la vitesse horizontale et verticale ?
+            3) Forme de la trajectoire ?
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            Poids uniquement.
+            v_horiz constante ; v_vert augmente (g vers le bas).
+            Trajectoire parabolique.
+          </div>
+        </div>
+
+        <!-- 19 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 19 – Interpréter un graphe v(t)</div>
+            <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+          </div>
+          <p>
+            Graphe v(t) :
+            0–5 s : v augmente de 0 à 10 m·s⁻¹.
+            5–15 s : v = 10 m·s⁻¹.
+            15–20 s : v diminue de 10 à 0 m·s⁻¹.
+            1) Qualifier le mouvement sur chaque intervalle.
+            2) Sur quel intervalle la distance est-elle la plus grande ?
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            0–5 s : accéléré ; 5–15 s : uniforme ; 15–20 s : ralenti.
+            Distance max entre 5 et 15 s (10 s à 10 m·s⁻¹).
+          </div>
+        </div>
+
+        <!-- 20 -->
+        <div class="exo-block">
+          <div class="exo-header">
+            <div class="exo-title">Exercice 20 – MRUV et choix de formule</div>
+            <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+          </div>
+          <p>
+            Une voiture démarre (x0 = 0, v0 = 0) avec a = 2,5 m·s⁻² pendant 8,0 s.
+            1) v(8,0 s).
+            2) Distance parcourue avec x(t).
+            3) Retrouver la même distance avec v² = v0² + 2 a (x − x0).
+          </p>
+          <button class="btn-correction">Afficher la correction</button>
+          <div class="exo-correction">
+            v(8) = 2,5 × 8 = 20 m·s⁻¹.
+            x(8) = 0,5 × 2,5 × 64 = 80 m.
+            20² = 2 × 2,5 × x → x = 80 m.
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div>⚙️ Chap. 11 – Mouvement d’un système (cours + quiz + 20 exos).</div>
+      <div>Fais les blocs dans l’ordre, puis refais les quiz jusqu’à tout réussir sans hésiter.</div>
+    </footer>
   </div>
 
   <script>
-    // Masquer loader après délai et lancer MathJax[web:79][web:36][web:12][web:82][web:68]
-    setTimeout(()=>{
-      const loader=document.getElementById('loader');
-      const main=document.getElementById('main-content');
-      if(loader) loader.style.display='none';
-      if(main) main.style.display='block';
-      if(window.MathJax && MathJax.typesetPromise){MathJax.typesetPromise();}
-    },3000);
+    // Loader
+    window.addEventListener("load", () => {
+      const loader = document.getElementById("loader");
+      setTimeout(() => { loader.classList.add("hidden"); }, 600);
+    });
 
-    function reloadMathJax(){
-      if(window.MathJax && MathJax.typesetPromise){MathJax.typesetPromise();}
-    }
+    // Scroll vers premier quiz
+    document.getElementById("scrollToQuiz").addEventListener("click", () => {
+      document.getElementById("sec-vitesse").scrollIntoView({ behavior: "smooth" });
+    });
 
-    // Popups
-    function openPopup(id){
-      document.getElementById('overlay').classList.add("show");
-      document.getElementById(id).classList.add("show");
-      reloadMathJax();
-    }
-    function closePopup(){
-      document.getElementById('overlay').classList.remove("show");
-      document.querySelectorAll('.popup').forEach(p=>p.classList.remove('show'));
-    }
+    // Quiz interactif
+    const quizBlocks = document.querySelectorAll(".quiz-block");
 
-    // Notes
-    function saveNotes(){
-      localStorage.setItem("notesMouvement",document.getElementById("notes").value);
-      document.getElementById("savemsg").textContent="Enregistré";
-      setTimeout(()=>{document.getElementById("savemsg").textContent="";},1100);
-    }
-    if(localStorage.getItem("notesMouvement")){
-      document.getElementById("notes").value=localStorage.getItem("notesMouvement");
-    }
+    quizBlocks.forEach(block => {
+      const correctIndex = parseInt(block.dataset.correct, 10);
+      const options = block.querySelectorAll(".quiz-btn");
+      const feedback = block.querySelector(".quiz-feedback");
 
-    // Schéma mouvement
-    function drawMouv(){
-      var c=document.getElementById('schema-mouv');if(!c)return;
-      var x=c.getContext('2d');
-      x.clearRect(0,0,430,130);
-      x.strokeStyle="#1877f2";x.lineWidth=4;
-      x.beginPath();x.moveTo(30,115);x.lineTo(140,35);x.stroke();
-      x.font="15px Arial";x.fillStyle="#1877f2";x.fillText("Rectiligne",60,25);
-      x.strokeStyle="#f5a623";x.lineWidth=3;
-      x.beginPath();x.arc(240,75,35,0,2*Math.PI);x.stroke();
-      x.fillStyle="#f5a623";x.fillText("Circulaire",215,120);
-      x.strokeStyle="#243552";x.lineWidth=2.5;
-      x.beginPath();
-      for(let t=0;t<=50;t++){
-        let xPos=320+t*2;
-        let yPos=110-(t/2)-(t*t/47);
-        if(t===0)x.moveTo(xPos,yPos);else x.lineTo(xPos,yPos);
-      }
-      x.stroke();
-      x.fillStyle="#243552";x.fillText("Parabolique",355,80);
-      x.fillStyle="#e5e7eb";
-      x.beginPath();x.arc(28,117,5,0,2*Math.PI);x.fill();
-      x.fillText("Origine",7,127);
-      x.strokeStyle="#9ca3af";x.lineWidth=1.2;
-      x.beginPath();x.moveTo(28,117);x.lineTo(28,22);x.stroke();
-      x.beginPath();x.moveTo(28,117);x.lineTo(425,117);x.stroke();
-      x.fillText("x",420,127);x.fillText("y",17,25);
-    }
-    drawMouv();
+      options.forEach((btn, idx) => {
+        btn.addEventListener("click", () => {
+          options.forEach(o => o.classList.remove("correct", "wrong"));
+          if (idx === correctIndex) {
+            btn.classList.add("correct");
+            feedback.textContent = "✅ Correct.";
+            feedback.classList.remove("ko");
+            feedback.classList.add("ok");
+          } else {
+            btn.classList.add("wrong");
+            feedback.textContent = "❌ Revois le bloc de cours juste à côté 😉";
+            feedback.classList.remove("ok");
+            feedback.classList.add("ko");
+          }
+        });
+      });
+    });
 
-    // QCM
-    const qcmData=[
-      {question:"Le repérage d’un mouvement nécessite :",choices:["Un référentiel et le temps","Un compas","Juste une origine"],correct:0,explanation:"Référentiel + date pour chaque position."},
-      {question:"Formule de vitesse moyenne :",choices:["Δx/Δt","x·t","dx/dt"],correct:0,explanation:"Δx/Δt = moyenne ; dx/dt = instantanée."},
-      {question:"Si x(t)=3t+5, v(t) vaut :",choices:["3","5","t"],correct:0,explanation:"Dérivée de 3t+5 = 3 (m/s)."},
-      {question:"Trajectoire typique d’un satellite :",choices:["Rectiligne","Circulaire/elliptique","Parabolique"],correct:1,explanation:"Orbites elliptiques ou quasi circulaires."}
-    ];
-    let qcmScore=0,qcmDone=Array(qcmData.length).fill(false);
-    function displayQCM(){
-      let html="";
-      for(let i=0;i<qcmData.length;i++){
-        html += `<div style="margin-bottom:1em"><b>Q${i+1} :</b> ${qcmData[i].question}<br>`;
-        for(let j=0;j<qcmData[i].choices.length;j++){
-          html += `<button onclick="checkQCM(${i},${j})">${qcmData[i].choices[j]}</button>&nbsp;`;
+    // Corrections exos
+    const exoBlocks = document.querySelectorAll(".exo-block");
+
+    exoBlocks.forEach(block => {
+      const btn = block.querySelector(".btn-correction");
+      const corr = block.querySelector(".exo-correction");
+      if (!btn || !corr) return;
+      btn.addEventListener("click", () => {
+        if (corr.style.display === "block") {
+          corr.style.display = "none";
+          btn.textContent = "Afficher la correction";
+        } else {
+          corr.style.display = "block";
+          btn.textContent = "Masquer la correction";
         }
-        html+=`<div class="reponse" id="qcm-r${i}"></div></div>`;
-      }
-      document.getElementById("qcm-interactif").innerHTML=html;
-      document.getElementById("qcm-score").innerHTML="";
-      qcmScore=0;qcmDone=Array(qcmData.length).fill(false);
-      reloadMathJax();
-    }
-    displayQCM();
-    function checkQCM(qnum,num){
-      if(qcmDone[qnum])return;
-      if(num===qcmData[qnum].correct){
-        document.getElementById('qcm-r'+qnum).innerHTML =
-          `<span style="color:#16a34a;font-weight:bold">Bonne réponse !</span><br>${qcmData[qnum].explanation}`;
-        qcmScore++;
-      }else{
-        document.getElementById('qcm-r'+qnum).innerHTML =
-          `<span style="color:#e11d48;font-weight:bold">Faux.</span><br>${qcmData[qnum].explanation}`;
-      }
-      qcmDone[qnum]=true;
-      document.getElementById("qcm-score").innerHTML="Score : "+qcmScore+"/"+qcmData.length;
-      reloadMathJax();
-    }
-    function reloadQCM(){displayQCM();}
-
-    // Exercices
-    function checkExo(ex){
-      let rep=document.getElementById('exo'+ex).value.replace(",",".");
-      if(ex===1){
-        let v=(5500-2500)/100;
-        let ok=Math.abs(Number(rep)-v)<0.06;
-        document.getElementById('rep-exo1').innerHTML = ok
-          ? "Bravo : v = (5500−2500)/100 = 30 m/s."
-          : "Faux : v = 30 m/s.";
-      }
-      if(ex===2){
-        rep=rep.trim().toLowerCase();
-        let ok = rep.includes("terrestre")||rep.includes("sol")||rep.includes("géocentrique")||rep.includes("héliocentrique");
-        document.getElementById('rep-exo2').innerHTML = ok
-          ? "Correct : référentiel terrestre, géocentrique, héliocentrique..."
-          : "Idées : référentiel du sol, du centre de la Terre ou du Soleil.";
-      }
-      if(ex===3){
-        rep=rep.trim();
-        let ok = rep==="4"||rep==="4m/s"||rep==="4 m/s"||rep.toLowerCase()==="v=4";
-        document.getElementById('rep-exo3').innerHTML = ok
-          ? "Exact : v = dx/dt = 4 m/s (mouvement uniforme)."
-          : "Faux : la dérivée de 4t+7 vaut 4 m/s.";
-      }
-      reloadMathJax();
-    }
-    function resetExos(){
-      ["exo1","exo2","exo3"].forEach(id=>{let e=document.getElementById(id);if(e)e.value="";});
-      ["rep-exo1","rep-exo2","rep-exo3"].forEach(id=>{let e=document.getElementById(id);if(e)e.textContent="";});
-    }
-
-    setTimeout(reloadMathJax,200);
+      });
+    });
   </script>
 </body>
 </html>
