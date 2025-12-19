@@ -18,6 +18,7 @@
     • Champs : Nom, Classe, Matière, Chapitre, Catégorie, Lien ou fichier.
 • Formulaire :
     • Utilise un service externe (ex. Google Forms, Formspree, Netlify Forms) pour gérer les envois.
+    https://forms.fillout.com/t/7QwbDw4Hiyus
 • Affichage des fiches :
     • Crée une page qui liste les fiches par matière, niveau, chapitre.
     • Utilise un tableau ou des cartes (cards) avec filtres.
