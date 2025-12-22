@@ -1,0 +1,74 @@
+✅ Plan en étapes pour ton site
+1. Préparation du projet
+• Crée un dépôt GitHub pour ton site.
+• Configure GitHub Pages pour héberger ton site.
+• Organise ton projet avec une structure simple :
+• /index.html
+/css/style.css
+/js/script.js
+/images/
+/data/
+
+
+---
+
+2. Partie 1 : Fiches de révision
+• HTML :
+    • Page avec un formulaire pour que les élèves t’envoient leurs fiches.
+    • Champs : Nom, Classe, Matière, Chapitre, Catégorie, Lien ou fichier.
+• Formulaire :
+    • Utilise un service externe (ex. Google Forms, Formspree, Netlify Forms) pour gérer les envois.
+    https://forms.fillout.com/t/7QwbDw4Hiyus
+• Affichage des fiches :
+    • Crée une page qui liste les fiches par matière, niveau, chapitre.
+    • Utilise un tableau ou des cartes (cards) avec filtres.
+• Classement :
+    • Ajoute un compteur ou un système de votes (ex. via JavaScript) pour classer les fiches les plus utiles.
+
+---
+
+3. Partie 2 : Lycée / Collège
+• Page d’accueil :
+    • Affiche des icônes (images ou SVG) pour chaque établissement.
+    • Chaque icône mène à une page dédiée.
+• Page établissement :
+    • Map de la cour (image interactive ou SVG).
+    • Emploi du temps en tableau.
+• Formulaire HELPERS :
+    • Champs : Nom, Classe, Disponibilité (heure), Lieu sur la map.
+    • Utilise le même service externe pour gérer les envois.
+• Affichage des HELPERS :
+    • Ajoute les noms dans l’emploi du temps avec une couleur.
+    • Sur la map, affiche un marqueur coloré pour indiquer leur position.
+• Classement HELPERS :
+    • Système de points (ex. nombre d’aides données).
+
+---
+
+4. Design & UX
+• CSS :
+    • Style responsive (mobile + desktop).
+    • Couleurs simples et lisibles.
+• Images :
+    • Icônes pour établissements.
+    • Map claire (tu peux la faire en SVG pour interactivité).
+• JavaScript :
+    • Filtrage des fiches.
+    • Mise à jour dynamique des emplois du temps.
+    • Classement interactif.
+
+---
+
+5. Déploiement
+• Teste ton site en local.
+• Push sur GitHub.
+• Active GitHub Pages.
+• Vérifie les formulaires (test d’envoi).
+
+---
+
+🔑 Technologies conseillées
+• HTML/CSS/JS (simple et efficace).
+• Formspree ou Google Forms pour les formulaires.
+• GitHub Pages pour hébergement.
+• JSON pour stocker les données (fiches, helpers).
