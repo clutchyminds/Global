@@ -2,660 +2,1424 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Global - Maths · Dérivation</title>
-  <meta name="description" content="Tout sur la dérivation : définition, règles, interprétations, schéma interactif, quiz, exercices, applications et méthodologie pour la spé maths/physique.">
+  <title>Dérivation locale – Site complet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
   <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    :root{
-      --blue-light:#29d8ff;
-      --blue-main:#007BFF;
-    }
-    body{
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-      min-height:100vh;
-      background:
-        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
-        linear-gradient(135deg,#020617 0%,#031633 40%,#001a3b 100%);
-      color:#e5f1ff;
-      overflow-x:hidden;
-    }
-    body::before{
-      content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
-      opacity:0.08;
-      mix-blend-mode:soft-light;
-      background-image:
-        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
-        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
-      background-size:3px 3px,3px 3px;
-      z-index:-1;
+    :root {
+      --bg-main: #050508;
+      --bg-card: #111322;
+      --bg-card-soft: #181a2b;
+      --accent: #00cec9;
+      --accent-soft: rgba(0, 206, 201, 0.12);
+      --accent-strong: rgba(0, 206, 201, 0.25);
+      --text-main: #f5f5ff;
+      --text-soft: #b5b8df;
+      --danger: #ff7675;
+      --success: #00b894;
+      --border-soft: rgba(255,255,255,0.08);
+      --shadow-soft: 0 18px 45px rgba(0,0,0,0.55);
+      --radius-lg: 18px;
+      --radius-pill: 999px;
+      --transition-fast: 0.2s ease-out;
     }
 
-    /* LOADER */
-    #loader{
-      position:fixed;
-      inset:0;
-      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      z-index:9999;
-      overflow:hidden;
-    }
-    .loader-hud{
-      position:relative;
-      width:min(520px,90vw);
-      padding:26px 26px 30px 26px;
-      border-radius:18px;
-      background:
-        radial-gradient(circle at 0 0,rgba(56,189,248,0.26),transparent 60%),
-        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
-      border:1px solid rgba(56,189,248,0.8);
-      box-shadow:
-        0 22px 55px rgba(0,0,0,0.9),
-        0 0 35px rgba(56,189,248,0.7);
-      color:#e5f1ff;
-      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
-      overflow:hidden;
-    }
-    .loader-hud::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background-image:linear-gradient(
-        to bottom,
-        rgba(15,23,42,0.4) 1px,
-        rgba(15,23,42,0.9) 1px
-      );
-      background-size:100% 3px;
-      mix-blend-mode:soft-light;
-      opacity:0.7;
-    }
-    .loader-title{
-      font-size:0.9rem;
-      letter-spacing:0.35em;
-      text-transform:uppercase;
-      color:#7dd3fc;
-      margin-bottom:16px;
-      position:relative;
-    }
-    .loader-title::after{
-      content:"";
-      position:absolute;
-      left:0;
-      bottom:-6px;
-      width:260px;
-      height:2px;
-      background:linear-gradient(90deg,#7dd3fc,transparent);
-      box-shadow:0 0 12px rgba(56,189,248,0.9);
-    }
-    .loader-status-row{
-      display:flex;
-      align-items:baseline;
-      gap:6px;
-      font-size:1rem;
-      margin-bottom:14px;
-    }
-    .status-label{
-      text-transform:uppercase;
-      letter-spacing:0.18em;
-      font-weight:600;
-    }
-    .status-dots{
-      display:inline-block;
-      min-width:18px;
-      animation:blinkDots 1s steps(2,start) infinite;
-      color:#38bdf8;
-    }
-    @keyframes blinkDots{
-      0%,50%{opacity:1;}
-      50.01%,100%{opacity:0;}
-    }
-    .loader-bar{
-      position:relative;
-      width:100%;
-      height:12px;
-      border-radius:999px;
-      border:1px solid rgba(148,163,184,0.9);
-      background:rgba(15,23,42,0.9);
-      overflow:hidden;
-      box-shadow:
-        inset 0 0 8px rgba(15,23,42,1),
-        0 0 18px rgba(15,23,42,0.9);
-      margin-bottom:10px;
-    }
-    .loader-bar-fill{
-      position:absolute;
-      inset:0;
-      width:0%;
-      background:linear-gradient(90deg,#22c1c3,#29d8ff,#007bff);
-      box-shadow:0 0 18px rgba(56,189,248,0.9);
-      animation:barProgress 2.2s ease-in-out infinite;
-    }
-    @keyframes barProgress{
-      0%{width:0%;transform:translateX(-5%);}
-      40%{width:65%;transform:translateX(0);}
-      70%{width:100%;transform:translateX(0);}
-      100%{width:35%;transform:translateX(90%);}
-    }
-    .loader-subtext{
-      font-size:0.72rem;
-      margin-top:4px;
-      color:#a5b4fc;
-      opacity:0.9;
-    }
-    .loader-scan{
-      position:absolute;
-      inset:-40%;
-      background:
-        linear-gradient(
-          to bottom,
-          transparent 0%,
-          rgba(56,189,248,0.12) 45%,
-          rgba(56,189,248,0.35) 50%,
-          rgba(56,189,248,0.12) 55%,
-          transparent 100%
-        );
-      mix-blend-mode:screen;
-      animation:scanMove 2.6s linear infinite;
-    }
-    @keyframes scanMove{
-      0%{transform:translateY(-40%);opacity:0;}
-      10%,60%{opacity:0.9;}
-      100%{transform:translateY(40%);opacity:0;}
-    }
-    .loader-terminal{
-      margin-top:14px;
-      padding:10px;
-      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
-      border-radius:10px;
-      border:1px solid rgba(15,23,42,1);
-      box-shadow:
-        inset 0 0 18px rgba(0,0,0,0.9),
-        0 0 14px rgba(15,23,42,0.9);
-      height:140px;
-      overflow:hidden;
-      font-size:0.7rem;
-      line-height:1.5;
-      color:#c4f1ff;
-      position:relative;
-    }
-    .terminal-line{
-      opacity:0;
-      transform:translateY(6px);
-      animation:lineIn 5s linear infinite;
-    }
-    .terminal-line:nth-child(1){animation-delay:0.1s;}
-    .terminal-line:nth-child(2){animation-delay:0.6s;}
-    .terminal-line:nth-child(3){animation-delay:1.2s;}
-    .terminal-line:nth-child(4){animation-delay:1.9s;}
-    .terminal-line:nth-child(5){animation-delay:2.5s;}
-    .terminal-line:nth-child(6){animation-delay:3.1s;}
-    .terminal-line:nth-child(7){animation-delay:3.7s;}
-    .terminal-line:nth-child(8){animation-delay:4.3s;}
-    .terminal-line:nth-child(9){animation-delay:4.9s;}
-    @keyframes lineIn{
-      0%{opacity:0;transform:translateY(6px);}
-      8%,70%{opacity:1;transform:translateY(0);}
-      100%{opacity:0;transform:translateY(-12px);}
-    }
-    .terminal-cursor{
-      display:inline-block;
-      width:8px;
-      animation:cursorBlink 0.6s steps(1,start) infinite;
-      color:#38bdf8;
-    }
-    @keyframes cursorBlink{
-      0%,49%{opacity:1;}
-      50%,100%{opacity:0;}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    #main-content{display:none;}
-
-    .top-banner{
-      position:sticky;
-      top:0;
-      z-index:50;
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
-      background:linear-gradient(135deg,rgba(0,123,255,0.82),rgba(3,105,161,0.82));
-      border-bottom:1px solid rgba(255,255,255,0.18);
-      box-shadow:
-        0 10px 30px rgba(0,0,0,0.55),
-        0 0 0 1px rgba(255,255,255,0.04);
-      color:#fff;
-      padding:18px 7vw 4px 7vw;
-      font-size:1.9rem;
-      letter-spacing:0.08em;
-      font-weight:700;
-      text-transform:uppercase;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-      text-align:left;
-    }
-    .top-banner::after{
-      content:"";
-      height:2px;
-      width:230px;
-      margin-top:4px;
-      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
-      opacity:0.9;
-    }
-    .nav-bar{
-      display:flex;
-      justify-content:flex-start;
-      gap:26px;
-      padding-bottom:10px;
-      margin-top:4px;
-    }
-    .nav-bar a{
-      position:relative;
-      color:#e0f2ff;
-      text-decoration:none;
-      font-size:0.98rem;
-      font-weight:500;
-      padding:7px 18px;
-      border-radius:999px;
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
-      border:1px solid rgba(255,255,255,0.22);
-      box-shadow:
-        0 0 0 1px rgba(15,23,42,0.7),
-        0 6px 18px rgba(15,23,42,0.75);
-      backdrop-filter:blur(14px);
-      -webkit-backdrop-filter:blur(14px);
-      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
-    }
-    .nav-bar a::before{
-      content:"";
-      width:6px;
-      height:6px;
-      border-radius:999px;
-      background:var(--blue-light);
-      box-shadow:0 0 12px rgba(41,216,255,0.9);
-    }
-    .nav-bar a:hover{
-      transform:translateY(-1px) scale(1.02);
-      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
-      box-shadow:
-        0 0 0 1px rgba(148,163,184,0.25),
-        0 10px 25px rgba(15,23,42,0.9);
+    html, body {
+      height: 100%;
+      background: radial-gradient(circle at top, #0c1625 0, #050508 55%);
+      color: var(--text-main);
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      scroll-behavior: smooth;
     }
 
-    .page-padding{padding:26px 7vw 90px 7vw;}
-
-    .content-card{
-      max-width:900px;
-      margin:0 auto;
-      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.12),transparent 60%),
-                 linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.92));
-      border-radius:22px;
-      border:1px solid rgba(148,163,184,0.7);
-      box-shadow:
-        0 18px 40px rgba(15,23,42,1),
-        0 0 0 1px rgba(15,23,42,1);
-      padding:26px 26px 30px;
-      color:#e5f1ff;
+    a {
+      color: inherit;
+      text-decoration: none;
     }
 
-    h1,h2,h3{
-      color:#7dd3fc;
-      margin-bottom:10px;
-    }
-    h2{margin-top:26px;font-size:1.4rem;}
-    h3{margin-top:18px;font-size:1.15rem;color:#facc6b;}
-    p,li{font-size:0.98rem;line-height:1.6;}
-    ul,ol{margin-left:1.3em;margin-top:0.3em;margin-bottom:0.8em;}
-
-    .infos,
-    .box-exo,
-    .box-important,
-    .error,
-    .lexique,
-    .anecdote{
-      padding:12px 18px;
-      border-radius:10px;
-      margin:1em 0;
-      font-size:0.96rem;
-    }
-    .infos{
-      background:rgba(37,99,235,0.16);
-      border-left:4px solid #60a5fa;
-    }
-    .box-exo{
-      background:rgba(22,163,74,0.14);
-      border-left:4px solid #22c55e;
-    }
-    .box-important{
-      background:rgba(245,158,11,0.14);
-      border-left:4px solid #facc15;
-    }
-    .error{
-      background:rgba(248,113,113,0.14);
-      border-left:4px solid #f87171;
-    }
-    .lexique{
-      background:rgba(59,130,246,0.12);
-      border-left:4px solid #7dd3fc;
-    }
-    .anecdote{
-      background:rgba(244,114,182,0.18);
-      border-left:4px solid #a855f7;
+    /* ---------- LOADER ---------- */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top, #0b2435 0, #050508 55%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.7s ease-out, visibility 0.7s ease-out;
     }
 
-    #schema{
-      margin:1em auto;
-      display:block;
-      background:#0b1725;
-      border-radius:8px;
-      border:1px solid #1f2937;
-    }
-    .reponse{
-      margin-top:0.7em;
-      color:#7dd3fc;
-      font-weight:bold;
-      text-align:center;
-      font-size:0.95rem;
-    }
-    label{
-      margin-right:14px;
-      font-size:0.9rem;
+    #loader.hidden {
+      opacity: 0;
+      visibility: hidden;
     }
 
-    .bottom-footer{
-      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
-      color:#cbd5f5;
-      padding:14px 7vw 12px 7vw;
-      text-align:center;
-      font-size:0.9rem;
-      position:fixed;
-      left:0;right:0;bottom:0;
-      border-top:1px solid rgba(148,163,184,0.5);
-      box-shadow:
-        0 -12px 30px rgba(0,0,0,0.8),
-        0 0 0 1px rgba(15,23,42,1);
-      backdrop-filter:blur(18px);
-      -webkit-backdrop-filter:blur(18px);
+    .loader-logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-main);
+      margin-bottom: 20px;
+    }
+
+    .loader-sub {
+      font-size: 0.9rem;
+      color: var(--text-soft);
+      margin-bottom: 22px;
+    }
+
+    .loader-spinner {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 4px solid rgba(255,255,255,0.1);
+      border-top-color: var(--accent);
+      animation: spin 0.9s linear infinite;
+      box-shadow: 0 0 20px rgba(0,206,201,0.45);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* ---------- NAV ---------- */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      background: linear-gradient(to bottom, rgba(5,5,8,0.95), rgba(5,5,8,0.65), transparent);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .nav {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 14px 18px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 14px;
+      background: radial-gradient(circle at 30% 0, #ffeaa7 0, #00cec9 40%, #0984e3 100%);
+      box-shadow: 0 0 18px rgba(0,206,201,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .nav-title {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .nav-title span {
+      font-weight: 300;
+      color: var(--text-soft);
+      font-size: 0.85rem;
+      margin-left: 4px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 14px;
+      font-size: 0.88rem;
+      color: var(--text-soft);
+    }
+
+    .nav-links a {
+      padding: 6px 10px;
+      border-radius: 999px;
+      transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .nav-links a:hover {
+      background: rgba(255,255,255,0.04);
+      color: var(--text-main);
+      transform: translateY(-1px);
+    }
+
+    .btn-pill {
+      padding: 7px 14px;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(135deg, #00cec9, #0984e3);
+      box-shadow: 0 10px 26px rgba(0,206,201,0.45);
+      font-size: 0.85rem;
+      border: none;
+      color: white;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+    }
+
+    .btn-pill:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.07);
+      box-shadow: 0 16px 38px rgba(0,206,201,0.6);
+    }
+
+    .btn-pill span {
+      font-size: 1.2rem;
+    }
+
+    @media (max-width: 880px) {
+      .nav { flex-wrap: wrap; }
+      .nav-links { display: none; }
+    }
+
+    /* ---------- MAIN ---------- */
+    main {
+      flex: 1;
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 28px 18px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+    }
+
+    .hero-card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius: 22px;
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--shadow-soft);
+      padding: 22px 20px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-tagline {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-soft);
+      margin-bottom: 10px;
+    }
+
+    .hero-title {
+      font-size: 1.9rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, #ffeaa7, #00cec9, #0984e3);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-sub {
+      font-size: 0.95rem;
+      color: var(--text-soft);
+      margin-bottom: 18px;
+    }
+
+    .hero-highlights {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .pill {
+      font-size: 0.78rem;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(10,12,30,0.9);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-soft);
+    }
+
+    .pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00b894;
+      box-shadow: 0 0 8px rgba(0,184,148,0.8);
+    }
+
+    .hero-footer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: var(--text-soft);
+    }
+
+    .hero-footer strong {
+      color: var(--text-main);
+    }
+
+    .hero-orbit {
+      position: absolute;
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      border: 1px dashed rgba(255,255,255,0.08);
+      right: -80px;
+      top: -70px;
+      filter: blur(0.2px);
+    }
+
+    .hero-satellite {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 0, #ffeaa7 0, #00cec9 50%, #0984e3 100%);
+      box-shadow: 0 0 18px rgba(0,206,201,0.9);
+      animation: orbit 9s linear infinite;
+      transform-origin: -40px 120px;
+    }
+
+    @keyframes orbit {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* ---------- GRID COURS+QUIZ ---------- */
+    .section-pair {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.95fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .section-pair {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-soft);
+      padding: 16px 16px 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.55);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .card-badge {
+      font-size: 0.75rem;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #c4fafd;
+      border: 1px solid rgba(0,206,201,0.4);
+    }
+
+    .card p {
+      font-size: 0.86rem;
+      color: var(--text-soft);
+      line-height: 1.5;
+      margin-bottom: 6px;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .dot-list li {
+      position: relative;
+      padding-left: 14px;
+      font-size: 0.84rem;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+    }
+
+    .dot-list li::before {
+      content: "";
+      position: absolute;
+      left: 2px;
+      top: 6px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.5);
+    }
+
+    .highlight-box {
+      margin-top: 8px;
+      border-radius: 14px;
+      padding: 8px 10px;
+      background: rgba(12,16,40,0.9);
+      border: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.78rem;
+      color: var(--text-soft);
+    }
+
+    .highlight-box strong {
+      color: var(--text-main);
+    }
+
+    /* ---------- QUIZ ---------- */
+    .quiz-question {
+      font-size: 0.88rem;
+      margin-bottom: 8px;
+    }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .quiz-btn {
+      text-align: left;
+      padding: 7px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.09);
+      background: rgba(8,9,22,0.9);
+      font-size: 0.82rem;
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .quiz-btn:hover {
+      background: rgba(255,255,255,0.03);
+      transform: translateY(-1px);
+    }
+
+    .quiz-btn.correct {
+      border-color: rgba(0,184,148,0.9);
+      background: rgba(0,184,148,0.12);
+      color: var(--text-main);
+    }
+
+    .quiz-btn.wrong {
+      border-color: rgba(255,118,117,0.9);
+      background: rgba(255,118,117,0.12);
+      color: var(--text-main);
+    }
+
+    .quiz-feedback {
+      font-size: 0.8rem;
+      min-height: 16px;
+    }
+
+    .quiz-feedback.ok {
+      color: var(--success);
+    }
+
+    .quiz-feedback.ko {
+      color: var(--danger);
+    }
+
+    /* ---------- EXOS ---------- */
+    .exo-block {
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(10,12,30,0.9);
+      border: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.84rem;
+      color: var(--text-soft);
+    }
+
+    .exo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .exo-title {
+      font-weight: 600;
+      color: var(--text-main);
+      font-size: 0.9rem;
+    }
+
+    .exo-diff {
+      font-size: 0.8rem;
+    }
+
+    .exo-correction {
+      margin-top: 6px;
+      font-size: 0.8rem;
+      display: none;
+      color: var(--text-soft);
+    }
+
+    .btn-correction {
+      margin-top: 4px;
+      font-size: 0.78rem;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.02);
+      color: var(--text-soft);
+      cursor: pointer;
+    }
+
+    /* ---------- FOOTER ---------- */
+    footer {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 0 18px 26px;
+      font-size: 0.78rem;
+      color: var(--text-soft);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 14px;
     }
   </style>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script id="MathJax-script" async
-          src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <!-- MathJax pour le rendu LaTeX -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(','\\)']],
+        displayMath: [['\\[','\\]']]
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
+
 <body>
-  <!-- Loader -->
-  <div id="loader">
-    <div class="loader-hud">
-      <div class="loader-title">GLOBAL//math-DERIVATION</div>
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo">Maths • 1re</div>
+  <div class="loader-sub">Chargement “Dérivation locale – Site complet”...</div>
+  <div class="loader-spinner"></div>
+</div>
 
-      <div class="loader-status-row">
-        <span class="status-label">Initialisation</span>
-        <span class="status-dots">...</span>
+<div class="page">
+  <!-- NAV -->
+  <header>
+    <nav class="nav">
+      <div class="nav-left">
+        <div class="logo-badge">Dl</div>
+        <div class="nav-title">
+          Dérivation locale
+          <span>Cours + Quiz + 20 exos</span>
+        </div>
       </div>
 
-      <div class="loader-bar">
-        <div class="loader-bar-fill"></div>
+      <div class="nav-links">
+        <a href="#sec-taux">Taux de variation</a>
+        <a href="#sec-nbderive">Nombre dérivé</a>
+        <a href="#sec-tangente">Tangente</a>
+        <a href="#sec-variations">Variations</a>
+        <a href="#exos">20 exos</a>
       </div>
 
-      <div class="loader-subtext">
-        Maths · Dérivation · taux de variation, tangente, règles et applications
+      <button class="btn-pill" id="scrollToQuiz">
+        <span>▶</span>
+        Premier quiz
+      </button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero-card">
+      <div class="hero-orbit"></div>
+      <div class="hero-satellite"></div>
+
+      <div class="hero-tagline">Chap. – Dérivation locale</div>
+      <h1 class="hero-title">
+        Ton chapitre “dérivation locale” en mode <span>playground complet</span>.
+      </h1>
+
+      <p class="hero-sub">
+        Chaque partie du cours est dans un bloc, avec les définitions clés + formules importantes directement dedans,
+        et le quiz juste à côté. En bas, tu as 20 exercices classés de 🟢 1/3 à 🔴🔴🔴 3/3.
+      </p>
+
+      <div class="hero-highlights">
+        <div class="pill"><div class="pill-dot"></div> Taux de variation</div>
+        <div class="pill"><div class="pill-dot"></div> Nombre dérivé</div>
+        <div class="pill"><div class="pill-dot"></div> Tangente à la courbe</div>
+        <div class="pill"><div class="pill-dot"></div> Lien dérivée / variations</div>
       </div>
 
-      <div class="loader-terminal">
-        <div class="terminal-line">[INIT] Chargement du module Dérivation (spé maths/physique)...</div>
-        <div class="terminal-line">[ANALYSE] Activation des formules de dérivée et des règles somme/produit/quotient.</div>
-        <div class="terminal-line">[GRAPH] Mise en place de la courbe et de la tangente dynamique.</div>
-        <div class="terminal-line">[OK]  Prêt à dériver : pense à la pente et au taux de variation.</div>
-        <div class="terminal-line terminal-cursor">_</div>
+      <div class="hero-footer">
+        <div><strong>Strat :</strong> bloc de cours → quiz → quelques exos du bas → bloc de cours suivant.</div>
+        <div><strong>Objectif :</strong> être capable d’expliquer chaque bloc sans regarder le site.</div>
       </div>
+    </section>
 
-      <div class="loader-scan"></div>
-    </div>
-  </div>
+    <!-- I. TAUX DE VARIATION -->
+    <section class="section-pair" id="sec-taux">
+      <!-- COURS -->
+      <article class="card">
+        <div class="card-header">
+          <h2 class="card-title">I – Taux de variation d’une fonction</h2>
+          <span class="card-badge">Cours + interprétation</span>
+        </div>
 
-  <!-- Contenu principal -->
-  <div id="main-content">
-    <div class="top-banner">
-      Global - Maths
-      <nav class="nav-bar">
-        <a href="../../../index.html">Accueil</a>
-        <a href="../../../apropos.html">À propos</a>
-      </nav>
-    </div>
-
-    <div class="page-padding">
-      <div class="content-card">
-        <h1>Masterclass — Dérivation</h1>
-        <p style="margin-bottom:1.2em;font-size:0.98rem;color:#cbd5f5;">
-          La clé pour comprendre la notion de variation instantanée et les outils d’analyse modernes :
-          définitions, schéma interactif, exercices, quiz, astuces, erreurs et applications !
+        <p><strong>1. Définition du taux de variation</strong></p>
+        <p>
+          Soit une fonction \(f\) définie sur un intervalle, et deux réels \(a\) et \(b\) avec \(a \ne b\).
+          Le taux de variation de \(f\) entre \(a\) et \(b\) est :
         </p>
 
-        <section>
-          <h2>📝 Définitions et interprétations</h2>
-          <div class="infos">
-            La <b>dérivée</b> d’une fonction \(f\) en un point \(a\) donne le taux de variation instantané de \(f\) :
-            <b>\( f'(a) = \lim_{h\to0}\frac{f(a+h) - f(a)}{h} \)</b>.[web:67][web:70]
-            <br>
-            Interprétation : c’est le coefficient directeur (la “pente”) de la tangente à la courbe de \(f\) au point d’abscisse \(a\).[web:63][web:64]
+        <div class="highlight-box">
+          \(\dfrac{f(b)-f(a)}{b-a}\)
+        </div>
+
+        <p>
+          C’est le coefficient directeur de la droite sécante passant par les points \((a;f(a))\) et \((b;f(b))\).
+        </p>
+
+        <ul class="dot-list">
+          <li>Si le taux de variation est positif, \(f\) augmente en moyenne entre \(a\) et \(b\).</li>
+          <li>Si le taux de variation est négatif, \(f\) diminue en moyenne entre \(a\) et \(b\).</li>
+          <li>Plus la valeur absolue est grande, plus la pente est “raide”.</li>
+        </ul>
+
+        <p><strong>2. Approche locale autour d’un point</strong></p>
+        <p>
+          On s’intéresse souvent au taux de variation entre \(a\) et \(a+h\) (où \(h\) est petit, non nul) :
+        </p>
+
+        <div class="highlight-box">
+          \(\dfrac{f(a+h)-f(a)}{h}\)
+        </div>
+
+        <p>
+          Quand \(h\) se rapproche de 0, ce taux de variation se rapproche du nombre dérivé \(f'(a)\) si la limite existe.
+        </p>
+      </article>
+
+      <!-- QUIZ -->
+      <article class="card">
+        <div class="card-header">
+          <h2 class="card-title">Quiz I – Taux de variation</h2>
+          <span class="card-badge">4 questions</span>
+        </div>
+
+        <div class="quiz-block" data-correct="1">
+          <div class="quiz-question">
+            1. Le taux de variation de \(f\) entre \(a\) et \(b\) est :
           </div>
-          <ul>
-            <li>Si \( f'(a) > 0 \) : la courbe monte près de \(a\) ; si \( f'(a) < 0 \) elle descend.[web:63][web:64]</li>
-            <li>Géométriquement : tangente horizontale quand \(f'(a) = 0\) → extremum possible.[web:63][web:64]</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2>📗 Principales formules de dérivation</h2>
-          <ul>
-            <li>\((u + v)' = u' + v'\).</li>
-            <li>\((ku)' = k \times u'\).</li>
-            <li>\((uv)' = u'v + uv'\) (produit).[web:62][web:66]</li>
-            <li>\(\left(\dfrac{u}{v}\right)' = \dfrac{u'v - uv'}{v^2}\) (quotient, avec \(v \neq 0\)).[web:62][web:68]</li>
-            <li>Tableau à connaître :
-              <ul>
-                <li>\((x^n)' = n x^{n-1}\).</li>
-                <li>\((e^{ax})' = a e^{ax}\).</li>
-                <li>\((\ln x)' = 1/x\) pour \(x>0\).</li>
-                <li>\((\sin x)' = \cos x\), \((\cos x)' = -\sin x\).[web:68][web:71]</li>
-              </ul>
-            </li>
-          </ul>
-          <div class="box-important">
-            Astuce : La dérivée traduit l’évolution, la vitesse de changement — utile partout en sciences ![web:64][web:70]
+          <div class="quiz-options">
+            <button class="quiz-btn">A. \(f(a)+f(b)\)</button>
+            <button class="quiz-btn">B. \(\dfrac{f(b)-f(a)}{b-a}\)</button>
+            <button class="quiz-btn">C. \(\dfrac{b-a}{f(b)-f(a)}\)</button>
           </div>
-        </section>
+          <div class="quiz-feedback"></div>
+        </div>
 
-        <section>
-          <h2>🟦 Schéma interactif : courbe & tangente</h2>
-          <label>a (abscisse) : <input type="number" id="a" value="1" step="0.1" min="-3" max="3"></label>
-          <select id="select">
-            <option value="x*x">f(x)=x²</option>
-            <option value="x*x*x">f(x)=x³</option>
-            <option value="Math.sin(x)">f(x)=sin(x)</option>
-            <option value="Math.exp(x)">f(x)=eˣ</option>
-          </select>
-          <canvas id="schema" width="410" height="270"></canvas>
-          <div id="desc-deriv"></div>
-        </section>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
 
-        <section class="box box-exo">
-          <h2>💡 Exercice interactif</h2>
-          <p>Donne la dérivée de \(f(x) = 3x^2 - 5x + 2\), et calcule \(f'(1)\).</p>
-          <button onclick="afficheReponseDeriv()">Voir la correction</button>
-          <div class="reponse" id="exo-reponse-deriv" style="display:none;">
-            \(f'(x) = 6x - 5\), donc \(f'(1) = 6\times 1 - 5 = 1\).
+        <div class="quiz-block" data-correct="2">
+          <div class="quiz-question">
+            2. Le taux de variation de \(f\) entre \(a\) et \(b\) représente :
           </div>
-        </section>
-
-        <section class="box-exo">
-          <h2>🔥 Exercice “expert”</h2>
-          <p>Détermine la tangente à la courbe de \(f(x) = e^x\) en \(x_0 = 0\).</p>
-          <button onclick="document.getElementById('exo2-reponse-deriv').style.display='block';">Voir la correction</button>
-          <div class="reponse" id="exo2-reponse-deriv" style="display:none;">
-            \(f'(0)=e^0=1\) donc tangente : \(y = x + 1\).
+          <div class="quiz-options">
+            <button class="quiz-btn">A. L’aire sous la courbe de \(f\)</button>
+            <button class="quiz-btn">B. La valeur moyenne de \(f\) sur \([a;b]\)</button>
+            <button class="quiz-btn">C. Le coefficient directeur de la sécante entre \((a;f(a))\) et \((b;f(b))\)</button>
           </div>
-        </section>
+          <div class="quiz-feedback"></div>
+        </div>
 
-        <section class="quiz">
-          <h2>🎯 Quiz express</h2>
-          <p>La dérivée de \( x^3 \) est :</p>
-          <button onclick="quizDeriv(0)">3x²</button>
-          <button onclick="quizDeriv(1)">2x</button>
-          <button onclick="quizDeriv(2)">x²</button>
-          <div class="reponse" id="rep-quiz-deriv"></div>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
 
-          <p>La dérivée de \( \cos x \) est :</p>
-          <button onclick="quizDeriv2(0)">\(\sin x\)</button>
-          <button onclick="quizDeriv2(1)">\(-\sin x\)</button>
-          <div class="reponse" id="rep-quiz-deriv2"></div>
-        </section>
+        <div class="quiz-block" data-correct="0">
+          <div class="quiz-question">
+            3. Si \(\dfrac{f(b)-f(a)}{b-a} > 0\), on peut dire que :
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-btn">A. \(f\) augmente en moyenne entre \(a\) et \(b\)</button>
+            <button class="quiz-btn">B. \(f\) diminue en moyenne entre \(a\) et \(b\)</button>
+            <button class="quiz-btn">C. \(f\) est constante sur \([a;b]\)</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
 
-        <section class="box-important">
-          <h2>🌐 Applications concrètes</h2>
-          <ul>
-            <li><b>Physique</b> : vitesse instantanée (dérivée position/temps), accélération (dérivée de la vitesse).[web:70]</li>
-            <li><b>Maths</b> : étude de variations, extrema, optimisation.[web:63][web:64]</li>
-            <li><b>Info/IA</b> : ajustement/régression (descente de gradient), machine learning.[web:64]</li>
-            <li><b>Technologie</b> : traitements du signal, courbes d’apprentissage.[web:64]</li>
-          </ul>
-        </section>
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
 
-        <section class="error">
-          <h2>❌ Erreurs fréquentes à éviter</h2>
-          <ul>
-            <li>Oublier la dérivée de base de \(x^n\) (pouvoirs/coefficients).[web:68]</li>
-            <li>Mal appliquer les règles (produit, quotient, chaîne...).[web:62][web:66]</li>
-            <li>Confondre la valeur d’une fonction et celle de sa dérivée.</li>
-            <li>Oublier que la tangente a une équation \(y = f'(a)(x-a) + f(a)\).[web:63][web:69]</li>
-          </ul>
-        </section>
+        <div class="quiz-block" data-correct="1">
+          <div class="quiz-question">
+            4. Le taux de variation entre \(a\) et \(a+h\) est donné par :
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-btn">A. \(\dfrac{f(a)-f(h)}{a-h}\)</button>
+            <button class="quiz-btn">B. \(\dfrac{f(a+h)-f(a)}{h}\)</button>
+            <button class="quiz-btn">C. \(\dfrac{f(a+h)+f(a)}{h}\)</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+      </article>
+    </section>
 
-        <section class="lexique">
-          <h2>📚 Lexique express</h2>
-          <b>Dérivée :</b> taux de variation instantané d’une fonction en un point.[web:67][web:70]<br>
-          <b>Tangente :</b> droite “collée” à la courbe en un point, de pente \(f'(a)\).[web:63][web:69]<br>
-          <b>Extremum :</b> point où la dérivée peut s’annuler (minimum ou maximum local).[web:64]<br>
-          <b>Règle de dérivation :</b> formule pour calculer la dérivée d’une combinaison de fonctions.[web:62][web:68]
-        </section>
+    <!-- II. NOMBRE DÉRIVÉ -->
+    <section class="section-pair" id="sec-nbderive">
+      <!-- COURS -->
+      <article class="card">
+        <div class="card-header">
+          <h2 class="card-title">II – Nombre dérivé en un point</h2>
+          <span class="card-badge">Définition locale</span>
+        </div>
 
-        <section class="rubrique">
-          <h3>📖 Petite histoire</h3>
-          <ul>
-            <li>Le calcul différentiel a été développé au XVIIe siècle par Newton et Leibniz.[web:64]</li>
-            <li>C’est une base de la physique moderne (mouvement, électricité, etc.).[web:64][web:70]</li>
-            <li>Il est utilisé partout, des sciences à l’économie et aux IA modernes.[web:64]</li>
-          </ul>
-          <div class="source">Sources : cours de dérivation niveau première et ressources de vulgarisation sur l’histoire du calcul différentiel.[web:63][web:64]</div>
-        </section>
+        <p><strong>1. Nombre dérivé en \(a\)</strong></p>
+        <p>
+          Soit \(f\) une fonction définie sur un intervalle et \(a\) un réel de cet intervalle.
+          On dit que \(f\) est dérivable en \(a\) si la limite suivante existe et est finie :
+        </p>
 
-        <section class="anecdote">
-          <b>Astuce-mémoire</b> : Pour \( x^n \), la dérivée “fait descendre le n devant, puis il baisse d’un cran” !
-        </section>
+        <div class="highlight-box">
+          \(f'(a) = \lim_{h \to 0} \dfrac{f(a+h)-f(a)}{h}\)
+        </div>
 
-        <section>
-          <h2>💡 Méthodologie pour progresser</h2>
-          <ul>
-            <li>Démarre toujours par la fonction de base.</li>
-            <li>Liste les règles, et essaye de reconstruire les dérivées compliquées.</li>
-            <li>Utilise le graphique interactif pour visualiser tangente et variations.</li>
-            <li>Fais des quiz chronométrés pour mémoriser les fondamentaux.</li>
-          </ul>
-        </section>
+        <p>
+          Ce nombre réel \(f'(a)\) est le <strong>nombre dérivé</strong> de \(f\) en \(a\).
+        </p>
+
+        <p><strong>2. Interprétation</strong></p>
+        <ul class="dot-list">
+          <li>\(f'(a)\) est la pente de la tangente à la courbe de \(f\) au point d’abscisse \(a\).</li>
+          <li>Si \(f'(a) > 0\), la courbe monte au voisinage de \(a\).</li>
+          <li>Si \(f'(a) &lt; 0\), la courbe descend au voisinage de \(a\).</li>
+        </ul>
+
+        <p><strong>3. Exemple de non dérivabilité</strong></p>
+        <p>
+          Pour la fonction \(f(x)=|x|\), le taux de variation à gauche de 0 et à droite de 0
+          ne tend pas vers la même limite : la fonction n’est pas dérivable en 0.
+        </p>
+      </article>
+
+      <!-- QUIZ -->
+      <article class="card">
+        <div class="card-header">
+          <h2 class="card-title">Quiz II – Nombre dérivé</h2>
+          <span class="card-badge">4 questions</span>
+        </div>
+
+        <div class="quiz-block" data-correct="2">
+          <div class="quiz-question">
+            5. Le nombre dérivé \(f'(a)\) est défini comme :
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-btn">A. \(\dfrac{f(a)}{a}\)</button>
+            <button class="quiz-btn">B. \(\lim_{x \to a} f(x)\)</button>
+            <button class="quiz-btn">C. \(\lim_{h \to 0} \dfrac{f(a+h)-f(a)}{h}\)</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+        <div class="quiz-block" data-correct="0">
+          <div class="quiz-question">
+            6. Si \(f\) est dérivable en \(a\), alors :
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-btn">A. \(\dfrac{f(a+h)-f(a)}{h}\) a une limite finie quand \(h\to 0\)</button>
+            <button class="quiz-btn">B. \(f(a)=0\)</button>
+            <button class="quiz-btn">C. \(f\) est constante</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+        <div class="quiz-block" data-correct="1">
+          <div class="quiz-question">
+            7. Pour la fonction \(f(x)=|x|\), en \(x=0\) :
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-btn">A. \(f\) est dérivable et \(f'(0)=0\)</button>
+            <button class="quiz-btn">B. \(f\) n’est pas dérivable en 0</button>
+            <button class="quiz-btn">C. \(f\) est dérivable et \(f'(0)=1\)</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+        <div class="quiz-block" data-correct="2">
+          <div class="quiz-question">
+            8. Le signe de \(f'(a)\) donne une information sur :
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-btn">A. La valeur moyenne de \(f\) sur tout l’intervalle</button>
+            <button class="quiz-btn">B. L’aire sous la courbe</button>
+            <button class="quiz-btn">C. Le sens de variation de \(f\) au voisinage de \(a\)</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+      </article>
+    </section>
+
+    <!-- III. TANGENTE -->
+    <section class="section-pair" id="sec-tangente">
+      <!-- COURS -->
+      <article class="card">
+        <div class="card-header">
+          <h2 class="card-title">III – Tangente à la courbe</h2>
+          <span class="card-badge">Équation de la tangente</span>
+        </div>
+
+        <p><strong>1. Tangente en un point</strong></p>
+        <p>
+          Si \(f\) est dérivable en \(a\), la tangente à la courbe représentative de \(f\) au point
+          d’abscisse \(a\) est la droite qui :
+        </p>
+
+        <ul class="dot-list">
+          <li>Passe par le point \(A(a;f(a))\).</li>
+          <li>A pour coefficient directeur le nombre dérivé \(f'(a)\).</li>
+        </ul>
+
+        <p><strong>2. Équation de la tangente en \(a\)</strong></p>
+        <p>
+          L’équation de la tangente en \(a\) peut s’écrire :
+        </p>
+
+        <div class="highlight-box">
+          \(y = f'(a)\,(x-a) + f(a)\)
+        </div>
+
+        <p>
+          On la voit souvent aussi sous la forme \(y = f'(a)x + p\), avec \(p = f(a)-a\,f'(a)\).
+        </p>
+
+        <p><strong>3. Cas particulier</strong></p>
+        <p>
+          Si \(f'(a)=0\), la tangente est horizontale ( parallèle à l’axe des abscisses ).
+        </p>
+      </article>
+
+      <!-- QUIZ -->
+      <article class="card">
+        <div class="card-header">
+          <h2 class="card-title">Quiz III – Tangente</h2>
+          <span class="card-badge">4 questions</span>
+        </div>
+
+        <div class="quiz-block" data-correct="1">
+          <div class="quiz-question">
+            9. Le coefficient directeur de la tangente à la courbe de \(f\) en \(a\) est :
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-btn">A. \(f(a)\)</button>
+            <button class="quiz-btn">B. \(f'(a)\)</button>
+            <button class="quiz-btn">C. \(\dfrac{f(a)}{a}\)</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+        <div class="quiz-block" data-correct="0">
+          <div class="quiz-question">
+            10. Une équation correcte de la tangente en \(a\) est :
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-btn">A. \(y = f'(a)(x-a) + f(a)\)</button>
+            <button class="quiz-btn">B. \(y = f(a)(x-a) + f'(a)\)</button>
+            <button class="quiz-btn">C. \(y = f(a)x + f'(a)\)</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+        <div class="quiz-block" data-correct="1">
+          <div class="quiz-question">
+            11. Si \(f'(a)=0\), alors la tangente en \(a\) est :
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-btn">A. Verticale</button>
+            <button class="quiz-btn">B. Horizontale</button>
+            <button class="quiz-btn">C. Oblique nécessairement croissante</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+        <div class="quiz-block" data-correct="2">
+          <div class="quiz-question">
+            12. La tangente touche la courbe :
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-btn">A. En deux points distincts</button>
+            <button class="quiz-btn">B. Uniquement en un point, mais avec pente nulle</button>
+            <button class="quiz-btn">C. En un point avec la même pente locale que la courbe</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+      </article>
+    </section>
+
+    <!-- IV. DÉRIVÉE ET VARIATIONS -->
+    <section class="section-pair" id="sec-variations">
+      <!-- COURS -->
+      <article class="card">
+        <div class="card-header">
+          <h2 class="card-title">IV – Signe de \(f'(x)\) et variations</h2>
+          <span class="card-badge">Lien dérivée / sens de variation</span>
+        </div>
+
+        <p><strong>1. Lien local dérivée / variations</strong></p>
+        <p>
+          Sur un intervalle où \(f\) est dérivable, le signe de \(f'(x)\) donne le sens de variation de \(f\) :
+        </p>
+
+        <ul class="dot-list">
+          <li>Si \(f'(x) \ge 0\) sur un intervalle, \(f\) est croissante sur cet intervalle.</li>
+          <li>Si \(f'(x) \le 0\) sur un intervalle, \(f\) est décroissante sur cet intervalle.</li>
+        </ul>
+
+        <p><strong>2. Extremums locaux (idée)</strong></p>
+        <p>
+          Quand \(f'(a)=0\), le point \(a\) peut être un extremum local (maximum ou minimum)
+          si le signe de \(f'(x)\) change de part et d’autre de \(a\).
+        </p>
+
+        <p><strong>3. Lecture de tableau de variations</strong></p>
+        <p>
+          On utilise souvent le tableau de signe de \(f'(x)\) pour construire le tableau de variations de \(f\).
+        </p>
+      </article>
+
+      <!-- QUIZ -->
+      <article class="card">
+        <div class="card-header">
+          <h2 class="card-title">Quiz IV – Dérivée et variations</h2>
+          <span class="card-badge">4 questions</span>
+        </div>
+
+        <div class="quiz-block" data-correct="2">
+          <div class="quiz-question">
+            13. Si \(f'(x) &gt; 0\) sur un intervalle, alors sur cet intervalle :
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-btn">A. \(f\) est décroissante</button>
+            <button class="quiz-btn">B. \(f\) est constante</button>
+            <button class="quiz-btn">C. \(f\) est croissante</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+        <div class="quiz-block" data-correct="0">
+          <div class="quiz-question">
+            14. Si \(f'(x) &lt; 0\) sur un intervalle, alors :
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-btn">A. \(f\) est décroissante</button>
+            <button class="quiz-btn">B. \(f\) est croissante</button>
+            <button class="quiz-btn">C. \(f\) est constante</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+        <div class="quiz-block" data-correct="1">
+          <div class="quiz-question">
+            15. Si \(f'(a)=0\) et que \(f'(x)\) est positive à gauche de \(a\) puis négative à droite de \(a\), alors :
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-btn">A. \(f\) n’a pas d’extremum en \(a\)</button>
+            <button class="quiz-btn">B. \(f\) admet un maximum local en \(a\)</button>
+            <button class="quiz-btn">C. \(f\) admet un minimum local en \(a\)</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:8px 0;">
+
+        <div class="quiz-block" data-correct="0">
+          <div class="quiz-question">
+            16. Pour construire un tableau de variations de \(f\), on commence souvent par :
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-btn">A. Étudier le signe de \(f'(x)\)</button>
+            <button class="quiz-btn">B. Calculer l’aire sous la courbe de \(f\)</button>
+            <button class="quiz-btn">C. Résoudre \(f(x)=0\)</button>
+          </div>
+          <div class="quiz-feedback"></div>
+        </div>
+      </article>
+    </section>
+
+    <!-- 20 EXOS PROGRESSIFS -->
+    <section class="card" id="exos">
+      <div class="card-header">
+        <h2 class="card-title">20 exercices classés par difficulté</h2>
+        <span class="card-badge">🟢 1/3 → 🔴🔴🔴 3/3</span>
       </div>
-    </div>
 
-    <div class="bottom-footer">
-      © Global — Créé par Thomas Lewis | Code : Thomas Lewis ; Contenu : Perplexity (IA)
-    </div>
-  </div>
+      <!-- 1 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 1 – Taux de variation simple</div>
+          <div class="exo-diff">Difficulté : 🟢 1/3</div>
+        </div>
+        <p>
+          Soit \(f(x)=2x+1\). 1) Calculer le taux de variation de \(f\) entre 1 et 4.
+          2) Interpréter ce résultat.
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          1) \(\dfrac{f(4)-f(1)}{4-1} = \dfrac{9-3}{3} = 2\). 2) La fonction augmente de 2 unités en moyenne quand x augmente de 1 : la pente est 2.
+        </div>
+      </div>
 
-  <script>
-    setTimeout(()=>{
-      const loader=document.getElementById('loader');
-      const main=document.getElementById('main-content');
-      if(loader) loader.style.display='none';
-      if(main) main.style.display='block';
-    },3000);
+      <!-- 2 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 2 – Taux de variation constant</div>
+          <div class="exo-diff">Difficulté : 🟢 1/3</div>
+        </div>
+        <p>
+          Pour la même fonction \(f(x)=2x+1\), calculer le taux de variation entre 0 et 3 puis entre 2 et 5.
+          Que remarques-tu ?
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          Entre 0 et 3 : \(\dfrac{7-1}{3-0}=2\). Entre 2 et 5 : \(\dfrac{11-5}{5-2}=2\).
+          Le taux de variation est toujours égal à 2 : la fonction est affine, de pente constante.
+        </div>
+      </div>
 
-    function quizDeriv(rep) {
-      let repElem = document.getElementById("rep-quiz-deriv");
-      repElem.textContent = (rep === 0)
-        ? "Bonne réponse ! La dérivée de x³, c’est 3x²."
-        : "Faux, revois la formule pour xⁿ.";
-    }
-    function quizDeriv2(rep) {
-      let repElem = document.getElementById("rep-quiz-deriv2");
-      repElem.textContent = (rep === 1)
-        ? "Bravo : (cos x)' = -sin x"
-        : "Faux, c’est -sin x car la pente descend.";
-    }
-    function afficheReponseDeriv() {
-      document.getElementById("exo-reponse-deriv").style.display = "block";
-    }
+      <!-- 3 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 3 – Taux de variation quadratique</div>
+          <div class="exo-diff">Difficulté : 🟢 1/3</div>
+        </div>
+        <p>
+          Soit \(f(x)=x^2\). 1) Calculer le taux de variation entre 1 et 3.
+          2) Calculer le taux de variation entre 2 et 3.
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          Entre 1 et 3 : \(\dfrac{9-1}{3-1}=4\). Entre 2 et 3 : \(\dfrac{9-4}{3-2}=5\).
+          Le taux de variation n’est pas constant : la pente augmente.
+        </div>
+      </div>
 
-    // Schéma interactif : tracer fonction + tangente numérique
-    function evalFunc(expr, x) {
-      if(expr === "x*x") return x*x;
-      if(expr === "x*x*x") return x*x*x;
-      if(expr === "Math.sin(x)") return Math.sin(x);
-      if(expr === "Math.exp(x)") return Math.exp(x);
-      return 0;
-    }
-    function derivFunc(expr, x, h=1e-5) {
-      return (evalFunc(expr, x+h)-evalFunc(expr, x-h))/(2*h);
-    }
-    function drawDeriv() {
-      let a = parseFloat(document.getElementById("a").value);
-      let expr = document.getElementById("select").value;
-      let canvas = document.getElementById("schema");
-      let ctx = canvas.getContext("2d");
-      ctx.clearRect(0, 0, 410, 270);
+      <!-- 4 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 4 – Taux de variation local</div>
+          <div class="exo-diff">Difficulté : 🟢 1/3</div>
+        </div>
+        <p>
+          Toujours pour \(f(x)=x^2\), calculer le taux de variation entre 2 et 2,1 puis entre 2 et 2,01.
+          Que semblent devenir ces taux de variation ?
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          Entre 2 et 2,1 : \(\dfrac{(2{,}1)^2-4}{0{,}1} \approx \dfrac{4{,}41-4}{0{,}1}=4{,}1\).
+          Entre 2 et 2,01 : \(\dfrac{(2{,}01)^2-4}{0{,}01}\approx\dfrac{4{,}0401-4}{0{,}01}=4{,}01\).
+          Ils se rapprochent de 4, qui sera \(f'(2)\).
+        </div>
+      </div>
 
-      // Axes
-      ctx.strokeStyle="#6b7280"; ctx.lineWidth=1;
-      ctx.beginPath(); ctx.moveTo(20,135); ctx.lineTo(400,135); ctx.moveTo(210,20); ctx.lineTo(210,250); ctx.stroke();
+      <!-- 5 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 5 – Nombre dérivé par limite</div>
+          <div class="exo-diff">Difficulté : 🟢 1/3</div>
+        </div>
+        <p>
+          Soit \(f(x)=x^2\). On considère \(A(h)=\dfrac{f(1+h)-f(1)}{h}\) pour \(h\ne 0\).
+          1) Simplifier \(A(h)\). 2) En déduire \(f'(1)\).
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          \(A(h)=\dfrac{(1+h)^2-1}{h}=\dfrac{1+2h+h^2-1}{h}=\dfrac{2h+h^2}{h}=2+h\).
+          Quand \(h\to 0\), \(A(h)\to 2\). Donc \(f'(1)=2\).
+        </div>
+      </div>
 
-      // Courbe
-      ctx.beginPath();
-      for(let xPx=0;xPx<=410;xPx++){
-        let x=(xPx-210)/48;
-        let y=evalFunc(expr, x);
-        let yPx=135-y*32;
-        if(xPx===0) ctx.moveTo(xPx,yPx); else ctx.lineTo(xPx,yPx);
+      <!-- 6 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 6 – Nombre dérivé d’une affine</div>
+          <div class="exo-diff">Difficulté : 🟢 1/3</div>
+        </div>
+        <p>
+          Soit \(f(x)=3x-5\). Calculer \(f'(a)\) à partir de la définition du nombre dérivé :
+          \(f'(a)=\lim_{h\to 0}\dfrac{f(a+h)-f(a)}{h}\).
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          \(f(a+h)=3(a+h)-5=3a+3h-5\). Donc \(\dfrac{f(a+h)-f(a)}{h}=\dfrac{3a+3h-5-(3a-5)}{h}=\dfrac{3h}{h}=3\).
+          Donc \(f'(a)=3\) pour tout \(a\).
+        </div>
+      </div>
+
+      <!-- 7 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 7 – Nombre dérivé d’une racine</div>
+          <div class="exo-diff">Difficulté : 🟠🟠 2/3</div>
+        </div>
+        <p>
+          Soit \(f(x)=\sqrt{x}\), définie sur \([0;+\infty[\). On admet que pour \(a&gt;0\),
+          \(f'(a)=\dfrac{1}{2\sqrt{a}}\). Calculer \(f'(4)\) et interpréter ce nombre dérivé graphiquement.
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          \(f'(4)=\dfrac{1}{2\sqrt{4}}=\dfrac{1}{4}\).
+          C’est la pente de la tangente à la courbe en \(x=4\).
+        </div>
+      </div>
+
+      <!-- 8 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 8 – Tangente à une parabole</div>
+          <div class="exo-diff">Difficulté : 🟠🟠 2/3</div>
+        </div>
+        <p>
+          Soit \(f(x)=x^2\). 1) Calculer \(f'(2)\). 2) En déduire une équation de la tangente à la courbe
+          au point d’abscisse 2.
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          1) \(f'(x)=2x\), donc \(f'(2)=4\). 2) \(f(2)=4\).
+          Tangente : \(y=f'(2)(x-2)+f(2)=4(x-2)+4=4x-4\).
+        </div>
+      </div>
+
+      <!-- 9 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 9 – Tangente horizontale</div>
+          <div class="exo-diff">Difficulté : 🟠🟠 2/3</div>
+        </div>
+        <p>
+          Soit \(f(x)=-x^2+4\). 1) Calculer \(f'(x)\). 2) Déterminer l’abscisse du point où la tangente est horizontale.
+          3) Donner l’équation de cette tangente.
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          1) \(f'(x)=-2x\). 2) Tangente horizontale si \(f'(x)=0\) → \(-2x=0\) → \(x=0\).
+          3) \(f(0)=4\), tangente : \(y=4\).
+        </div>
+      </div>
+
+      <!-- 10 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 10 – Tangente via forme y = mx + p</div>
+          <div class="exo-diff">Difficulté : 🟠🟠 2/3</div>
+        </div>
+        <p>
+          Soit \(f(x)=x^2-3x+2\). On cherche la tangente en \(x=1\) sous la forme \(y=mx+p\).
+          1) Calculer \(f'(1)\). 2) En déduire \(m\) puis \(p\).
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          \(f'(x)=2x-3\), donc \(f'(1)=-1\), donc \(m=-1\).
+          On a \(f(1)=0\). L’équation est \(y=-1\cdot x + p\) et le point (1;0) est dessus : \(0=-1+p\) → \(p=1\).
+          Tangente : \(y=-x+1\).
+        </div>
+      </div>
+
+      <!-- 11 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 11 – Signe de la dérivée</div>
+          <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+        </div>
+        <p>
+          Soit \(f(x)=x^3-3x\). 1) Calculer \(f'(x)\). 2) Étudier le signe de \(f'(x)\).
+          3) En déduire les intervalles de croissance et décroissance de \(f\).
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          1) \(f'(x)=3x^2-3=3(x^2-1)=3(x-1)(x+1)\).
+          2) Zéros en -1 et 1. Tableau de signe : \(f'(x)&gt;0\) sur ]-∞;-1[ et ]1;+∞[, \(f'(x)&lt;0\) sur ]-1;1[.
+          3) \(f\) croît sur ces intervalles où \(f'(x)&gt;0\), et décroît là où \(f'(x)&lt;0\).
+        </div>
+      </div>
+
+      <!-- 12 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 12 – Extremum local</div>
+          <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+        </div>
+        <p>
+          Avec la même fonction \(f(x)=x^3-3x\). 1) Déterminer les points où \(f'(x)=0\).
+          2) Utiliser le signe de \(f'(x)\) pour dire si \(f\) a un maximum ou un minimum local en ces points.
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          1) \(f'(x)=0 \Rightarrow x=-1\) ou \(x=1\).
+          2) À -1 : \(f'\) passe de + à - → maximum local. À 1 : \(f'\) passe de - à + → minimum local.
+        </div>
+      </div>
+
+      <!-- 13 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 13 – Dérivation locale d’une fonction rationnelle</div>
+          <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+        </div>
+        <p>
+          Soit \(f(x)=\dfrac{1}{x}\), définie sur \(\mathbb{R}^*\). On admet que \(f'(x)=-\dfrac{1}{x^2}\).
+          1) Calculer \(f'(2)\) et \(f'(-2)\). 2) Interpréter le signe de ces dérivées.
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          \(f'(2)=-\dfrac{1}{4}&lt;0\), \(f'(-2)=-\dfrac{1}{4}&lt;0\).
+          La fonction est décroissante au voisinage de 2 et de -2.
+        </div>
+      </div>
+
+      <!-- 14 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 14 – Tableau de variations à partir de \(f'(x)\)</div>
+          <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+        </div>
+        <p>
+          On donne \(f'(x)=(x-2)(x+1)\). 1) Faire un tableau de signe de \(f'(x)\).
+          2) En déduire un tableau de variations possible pour \(f\) sur \(\mathbb{R}\).
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          Zéros : -1 et 2. Signe : \(f'(x)&gt;0\) sur ]-∞;-1[ et ]2;+∞[, négatif sur ]-1;2[.
+          Donc \(f\) croît sur ces intervalles positifs et décroît sur ]-1;2[.
+        </div>
+      </div>
+
+      <!-- 15 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 15 – Tangente et signe de la dérivée</div>
+          <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+        </div>
+        <p>
+          On sait que pour une fonction \(f\), la tangente en \(a\) a une pente positive.
+          1) Que peut-on dire de \(f'(a)\) ? 2) Que peut-on dire du sens de variation de \(f\) au voisinage de \(a\) ?
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          1) La pente de la tangente est \(f'(a)\) donc \(f'(a)&gt;0\).
+          2) \(f\) est croissante au voisinage de \(a\).
+        </div>
+      </div>
+
+      <!-- 16 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 16 – Taux de variation non symétrique</div>
+          <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+        </div>
+        <p>
+          Soit \(f(x)=|x|\). On considère les taux de variation entre 0 et \(h\) pour \(h&gt;0\),
+          puis entre 0 et \(h\) pour \(h&lt;0\). 1) Calculer ces taux de variation.
+          2) Que peut-on conclure sur la dérivabilité de \(f\) en 0 ?
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          Pour \(h&gt;0\) : \(\dfrac{f(h)-f(0)}{h}=\dfrac{h-0}{h}=1\).
+          Pour \(h&lt;0\) : \(\dfrac{|h|-0}{h}=\dfrac{-h}{h}=-1\).
+          Les limites à gauche et à droite ne coïncident pas, donc \(f\) n’est pas dérivable en 0.
+        </div>
+      </div>
+
+      <!-- 17 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 17 – Lecture graphique d’un nombre dérivé</div>
+          <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+        </div>
+        <p>
+          Sur un graphique (à imaginer ou dessiner), on trace une courbe et la tangente en un point A.
+          1) Comment peut-on estimer graphiquement \(f'(a)\) ?
+          2) Comment reconnaître si \(f'(a)\) est positif, négatif ou nul ?
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          1) En lisant ou en estimant le coefficient directeur de la tangente (variation de y sur variation de x).
+          2) Tangente croissante → \(f'(a)&gt;0\); décroissante → \(f'(a)&lt;0\); horizontale → \(f'(a)=0\).
+        </div>
+      </div>
+
+      <!-- 18 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 18 – Dérivée locale et vitesse instantanée</div>
+          <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+        </div>
+        <p>
+          On modélise la position d’un mobile par une fonction \(s(t)\) (en mètres) du temps \(t\) (en secondes).
+          1) Que représente le taux de variation de \(s\) entre \(t\) et \(t+h\) ?
+          2) Que représente \(s'(t)\) si elle existe ?
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          1) C’est la vitesse moyenne entre \(t\) et \(t+h\).
+          2) \(s'(t)\) est la vitesse instantanée au temps \(t\).
+        </div>
+      </div>
+
+      <!-- 19 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 19 – Combiner taux de variation et tangente</div>
+          <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+        </div>
+        <p>
+          Soit une fonction \(f\) telle que le taux de variation entre \(a\) et \(a+h\) vaut \(3+2h\).
+          1) Calculer la limite de ce taux de variation quand \(h\to 0\).
+          2) En déduire \(f'(a)\) puis une équation de la tangente en \(a\) sous la forme \(y=3(x-a)+f(a)\).
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          1) \(\lim_{h\to 0}(3+2h)=3\). Donc \(f'(a)=3\).
+          2) Tangente : \(y=3(x-a)+f(a)\).
+        </div>
+      </div>
+
+      <!-- 20 -->
+      <div class="exo-block">
+        <div class="exo-header">
+          <div class="exo-title">Exercice 20 – Choix de la bonne approche</div>
+          <div class="exo-diff">Difficulté : 🔴🔴🔴 3/3</div>
+        </div>
+        <p>
+          Pour chaque question, dire si tu utiliserais plutôt :
+          A) la définition du nombre dérivé,
+          B) la dérivée déjà connue de la fonction,
+          C) un tableau de signe de \(f'(x)\).
+          1) Calculer \(f'(2)\) pour \(f(x)=x^2\).
+          2) Étudier les variations de \(f(x)=x^3-3x\) sur \(\mathbb{R}\).
+          3) Vérifier que \(g\) n’est pas dérivable en 0 si on te donne le graphe de \(g\) avec un “coin”.
+        </p>
+        <button class="btn-correction">Afficher la correction</button>
+        <div class="exo-correction">
+          1) B (dérivée connue : \(f'(x)=2x\)). 2) C (signe de \(f'(x)\) pour les variations).
+          3) A ou lecture graphique (taux de variation à gauche/droite différents).
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer>
+    <div>⚙️ Dérivation locale – Cours + quiz + 20 exos.</div>
+    <div>Fais les blocs dans l’ordre, puis refais les quiz jusqu’à tout réussir sans hésiter.</div>
+  </footer>
+</div>
+
+<script>
+  // Loader
+  window.addEventListener("load", () => {
+    const loader = document.getElementById("loader");
+    setTimeout(() => {
+      loader.classList.add("hidden");
+    }, 600);
+  });
+
+  // Scroll vers premier quiz
+  document.getElementById("scrollToQuiz").addEventListener("click", () => {
+    document.getElementById("sec-taux").scrollIntoView({ behavior: "smooth" });
+  });
+
+  // Quiz interactif
+  const quizBlocks = document.querySelectorAll(".quiz-block");
+  quizBlocks.forEach(block => {
+    const correctIndex = parseInt(block.dataset.correct, 10);
+    const options = block.querySelectorAll(".quiz-btn");
+    const feedback = block.querySelector(".quiz-feedback");
+
+    options.forEach((btn, idx) => {
+      btn.addEventListener("click", () => {
+        options.forEach(o => o.classList.remove("correct", "wrong"));
+        if (idx === correctIndex) {
+          btn.classList.add("correct");
+          feedback.textContent = "✅ Correct.";
+          feedback.classList.remove("ko");
+          feedback.classList.add("ok");
+        } else {
+          btn.classList.add("wrong");
+          feedback.textContent = "❌ Revois le bloc de cours juste à côté 😉";
+          feedback.classList.remove("ok");
+          feedback.classList.add("ko");
+        }
+      });
+    });
+  });
+
+  // Corrections exos
+  const exoBlocks = document.querySelectorAll(".exo-block");
+  exoBlocks.forEach(block => {
+    const btn = block.querySelector(".btn-correction");
+    const corr = block.querySelector(".exo-correction");
+    if (!btn || !corr) return;
+
+    btn.addEventListener("click", () => {
+      if (corr.style.display === "block") {
+        corr.style.display = "none";
+        btn.textContent = "Afficher la correction";
+      } else {
+        corr.style.display = "block";
+        btn.textContent = "Masquer la correction";
       }
-      ctx.strokeStyle="#38bdf8"; ctx.lineWidth=3; ctx.stroke();
-
-      // Point A
-      let Ax=210+48*a, Ay=135-evalFunc(expr,a)*32;
-      ctx.beginPath(); ctx.arc(Ax,Ay,5,0,2*Math.PI); ctx.fillStyle="#facc15"; ctx.fill();
-      ctx.font="12px Arial"; ctx.fillStyle="#facc15";
-      ctx.fillText("A("+a.toFixed(2)+" ; "+evalFunc(expr,a).toFixed(2)+")",Ax+8,Ay-8);
-
-      // Tangente
-      let fpa=derivFunc(expr, a);
-      ctx.beginPath();
-      for(let dx=-100;dx<=100;dx++){
-        let x=a+dx/48;
-        let y=evalFunc(expr,a)+fpa*(x-a);
-        let xPx=210+48*x, yPx=135-y*32;
-        if(dx===-100) ctx.moveTo(xPx,yPx); else ctx.lineTo(xPx,yPx);
-      }
-      ctx.strokeStyle="#a855f7"; ctx.setLineDash([5,4]); ctx.lineWidth=2; ctx.stroke(); ctx.setLineDash([]);
-
-      document.getElementById("desc-deriv").innerHTML =
-        "f'("+a.toFixed(2)+") ≈ "+fpa.toFixed(2)+"<br>(Pente de la tangente au point A)";
-    }
-    drawDeriv();
-    document.getElementById("a").addEventListener("input", drawDeriv);
-    document.getElementById("select").addEventListener("input", drawDeriv);
-  </script>
+    });
+  });
+</script>
 </body>
 </html>
