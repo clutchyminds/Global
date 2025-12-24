@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Jeux Navigateur Multi - Global</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-light:#29d8ff;
+      --blue-main:#007BFF;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
+        linear-gradient(135deg,#020617 0%,#031633 40%,#001a3b 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;
+      inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(520px,90vw);
+      padding:26px 26px 30px 26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(56,189,248,0.26),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(56,189,248,0.8);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(56,189,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Consolas,monospace;
+      overflow:hidden;
+    }
+    .loader-hud::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size:100% 3px;
+      mix-blend-mode:soft-light;
+      opacity:0.7;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#7dd3fc;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:260px;
+      height:2px;
+      background:linear-gradient(90deg,#7dd3fc,transparent);
+      box-shadow:0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row{
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+      font-size:1rem;
+      margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;
+      min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;
+      width:100%;
+      height:12px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;
+      inset:0;
+      width:0%;
+      background:linear-gradient(90deg,#22c1c3,#29d8ff,#007bff);
+      box-shadow:0 0 18px rgba(56,189,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{
+      font-size:0.72rem;
+      margin-top:4px;
+      color:#a5b4fc;
+      opacity:0.9;
+    }
+    .loader-scan{
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(56,189,248,0.12) 45%,
+          rgba(56,189,248,0.35) 50%,
+          rgba(56,189,248,0.12) 55%,
+          transparent 100%
+        );
+      mix-blend-mode:screen;
+      animation:scanMove 2.6s linear infinite;
+    }
+    @keyframes scanMove{
+      0%{transform:translateY(-40%);opacity:0;}
+      10%,60%{opacity:0.9;}
+      100%{transform:translateY(40%);opacity:0;}
+    }
+    .loader-terminal{
+      margin-top:14px;
+      padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;
+      border:1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height:140px;
+      overflow:hidden;
+      font-size:0.7rem;
+      line-height:1.5;
+      color:#c4f1ff;
+      position:relative;
+    }
+    .terminal-line{
+      opacity:0;
+      transform:translateY(6px);
+      animation:lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-line:nth-child(6){animation-delay:3.1s;}
+    .terminal-line:nth-child(7){animation-delay:3.7s;}
+    .terminal-line:nth-child(8){animation-delay:4.3s;}
+    .terminal-line:nth-child(9){animation-delay:4.9s;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%,70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    .terminal-cursor{
+      display:inline-block;
+      width:8px;
+      animation:cursorBlink 0.6s steps(1,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    #main-content{display:none;}
+
+    .top-banner{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(0,123,255,0.82),rgba(3,105,161,0.82));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,0.55),
+        0 0 0 1px rgba(255,255,255,0.04);
+      color:#fff;
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;
+      letter-spacing:0.08em;
+      font-weight:700;
+      text-transform:uppercase;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      text-align:left;
+    }
+    .top-banner::after{
+      content:"";
+      height:2px;
+      width:380px;
+      margin-top:4px;
+      background:linear-gradient(90deg,#fff,rgba(255,255,255,0));
+      opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;
+      justify-content:flex-start;
+      gap:26px;
+      padding-bottom:10px;
+      margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;
+      color:#e0f2ff;
+      text-decoration:none;
+      font-size:0.98rem;
+      font-weight:500;
+      padding:7px 18px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:999px;
+      background:var(--blue-light);
+      box-shadow:0 0 12px rgba(41,216,255,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148,163,184,0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+
+    .icon-container {
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+      gap:16px;
+      justify-items:center;
+      padding-top:10px;
+    }
+    .icon {
+      text-decoration:none;
+      color:#e5f1ff;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:14px 10px 12px;
+      border-radius:22px;
+      background:
+        radial-gradient(circle at 0 0,rgba(255,255,255,0.16),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.96),rgba(15,23,42,0.9));
+      box-shadow:
+        0 14px 32px rgba(15,23,42,0.95),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      border:1px solid rgba(148,163,184,0.7);
+      transition:transform 0.18s,box-shadow 0.18s,border-color 0.2s;
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .icon::before{
+      content:attr(data-game);
+      position:absolute;
+      bottom:0;left:0;right:0;
+      background:linear-gradient(transparent,rgba(0,0,0,0.9));
+      padding:20px 10px 12px;
+      font-size:0.82rem;
+      font-weight:500;
+      line-height:1.3;
+      opacity:0;
+      transform:translateY(10px);
+      transition:opacity 0.2s,transform 0.2s;
+    }
+    .icon:hover{
+      transform:translateY(-3px) scale(1.02);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,1),
+        0 0 0 1px rgba(56,189,248,0.8);
+      border-color:#38bdf8;
+    }
+    .icon:hover::before{
+      opacity:1;
+      transform:translateY(0);
+    }
+    .icon img {
+      width:150px;
+      height:150px;
+      object-fit:cover;
+      border-radius:18px;
+      border:2.5px solid rgba(148,163,184,0.9);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,1),
+        0 6px 16px rgba(15,23,42,0.9);
+      transition:transform 0.2s;
+    }
+    .icon:hover img{
+      transform:scale(1.05);
+    }
+    .icon span {
+      margin-top:10px;
+      font-weight:bold;
+      font-size:0.98rem;
+      display:block;
+    }
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;
+      padding:14px 7vw 12px 7vw;
+      text-align:center;
+      font-size:0.9rem;
+      position:fixed;
+      left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+  </style>
+</head>
+<body>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//GAMES-MULTI</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Connexion</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        100+ Jeux Navigateur · Multi avec potes · Instantané
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du portail jeux multijoueurs...</div>
+        <div class="terminal-line">[LINK] Connexion .io, CrazyGames, Poki servers...</div>
+        <div class="terminal-line">[GAMES] 100+ titres browser-ready loaded.</div>
+        <div class="terminal-line">[OK] Rooms privées prêtes pour Discord.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
+    </div>
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Jeux Navigateur Multi
+      <nav class="nav-bar">
+        <a href="index.html">Accueil</a>
+        <a href="apropos.html">À propos</a>
+      </nav>
+    </div>
+          <div class="search-wrapper" style="margin-bottom:18px;">
+        <input
+          type="text"
+          id="game-search"
+          placeholder="Rechercher un jeu..."
+          style="
+            width:100%;
+            max-width:420px;
+            padding:10px 14px;
+            border-radius:999px;
+            border:1px solid rgba(148,163,184,0.8);
+            background:rgba(15,23,42,0.96);
+            color:#e5f1ff;
+            outline:none;
+            font-size:0.95rem;
+            box-shadow:0 6px 18px rgba(15,23,42,0.9);
+          "
+        />
+    </div>
+    <div class="icon-container">
+        <a href="https://starblast.io" class="icon" target="_blank" data-game="Collecte ressources et combats spatiaux en équipage">
+          <img src="img/starblast.io.png" alt="Starblast.io" />
+          <span>Starblast.io</span>
+        </a>
+        <a href="https://shellshock.io" class="icon" target="_blank" data-game="FPS œufs : élimine adversaires en arène">
+          <img src="img/shellshock.io.webp" alt="Shell Shockers" />
+          <span>Shell Shockers</span>
+        </a>
+        <a href="https://smashkarts.io" class="icon" target="_blank" data-game="Courses karts avec power-ups explosifs">
+          <img src="img/smashkarts.io.png" alt="Smash Karts" />
+          <span>Smash Karts</span>
+        </a>
+        <a href="https://holeio.com" class="icon" target="_blank" data-game="Trou noir : absorbe tout pour grossir en ville">
+          <img src="img/holeio.com.jpg" alt="Hole.io" />
+          <span>Hole.io</span>
+        </a>
+        <a href="https://bloxd.io" class="icon" target="_blank" data-game="Minecraft-like : survie, PvP et minijeux créatifs">
+          <img src="img/bloxd.io.jpg" alt="Bloxd.io" />
+          <span>Bloxd.io</span>
+        </a>
+        <a href="https://veck.io" class="icon" target="_blank" data-game="Battle royale vecto : dernier survivant gagne">
+          <img src="img/veck.io.webp" alt="Veck.io" />
+          <span>Veck.io</span>
+        </a>
+        <a href="https://buildnow.gg" class="icon" target="_blank" data-game="Construis et tire en Fortnite-style">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=BuildNow.gg" alt="BuildNow GG" />
+          <span>BuildNow GG</span>
+        </a>
+        <a href="https://growden.io" class="icon" target="_blank" data-game="Jardinage coop : cultive et défends jardin">
+          <img src="img/growden.io.webp" alt="Growden.io" />
+          <span>Growden.io</span>
+        </a>
+        <a href="https://skillwarz.com" class="icon" target="_blank" data-game="FPS compétences : combats précis multijoueurs">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=SkillWarz" alt="SkillWarz" />
+          <span>SkillWarz</span>
+        </a>
+        <a href="https://meeland.io" class="icon" target="_blank" data-game="Survie méchante : construis base contre zombies">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Meeland.io" alt="Meeland.io" />
+          <span>Meeland.io</span>
+        </a>
+
+        <a href="https://fortzone.io" class="icon" target="_blank" data-game="Battle royale fortifié : construis et survis">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Fortzone.io" alt="Fortzone.io" />
+          <span>Fortzone.io</span>
+        </a>
+        <a href="https://miniblox.io" class="icon" target="_blank" data-game="Cube survie : mine, craft et PvP rapide">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Miniblox" alt="Miniblox" />
+          <span>Miniblox</span>
+        </a>
+        <a href="https://skribbl.io" class="icon" target="_blank" data-game="Dessine et devine mots en équipe">
+          <img src="img/skribbl.io.png" alt="Skribbl.io" />
+          <span>Skribbl.io</span>
+        </a>
+        <a href="https://garticphone.com" class="icon" target="_blank" data-game="Téléphone arabe en dessins rigolos">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Gartic+Phone" alt="Gartic Phone" />
+          <span>Gartic Phone</span>
+        </a>
+        <a href="https://bombparty.o-omedia.fr" class="icon" target="_blank" data-game="Écris mots avant explosion en party">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Bombparty" alt="Bombparty" />
+          <span>Bombparty</span>
+        </a>
+        <a href="https://krunker.io" class="icon" target="_blank" data-game="FPS pixel art : frags rapides en maps variées">
+          <img src="img/krunker.io.png" alt="Krunker.io" />
+          <span>Krunker.io</span>
+        </a>
+        <a href="https://surviv.io" class="icon" target="_blank" data-game="Battle royale 2D : loot et dernier debout">
+          <img src="img/surviv.io.png" alt="Surviv.io" />
+          <span>Surviv.io</span>
+        </a>
+        <a href="https://zombsroyale.io" class="icon" target="_blank" data-game="PUBG 2D : parachute et combats">
+          <img src="img/zombsroyale.io.png" alt="ZombsRoyale" />
+          <span>ZombsRoyale</span>
+        </a>
+        <a href="https://moomoo.io" class="icon" target="_blank" data-game="Survie âge pierre : farms et attaques tribales">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Moomoo.io" alt="Moomoo.io" />
+          <span>Moomoo.io</span>
+        </a>
+        <a href="https://wormate.io" class="icon" target="_blank" data-game="Serpent gourmand : mange pour grandir sans collision">
+          <img src="img/wormate.io.png" alt="Wormate.io" />
+          <span>Wormate.io</span>
+        </a>
+
+        <a href="https://slither.io" class="icon" target="_blank" data-game="Serpent : mange points, piège autres">
+          <img src="img/slither.io.jpg" alt="Slither.io" />
+          <span>Slither.io</span>
+        </a>
+        <a href="https://agar.io" class="icon" target="_blank" data-game="Cellule : absorbe petites pour dominer">
+          <img src="img/agar.io.png" alt="Agar.io" />
+          <span>Agar.io</span>
+        </a>
+        <a href="https://deeeep.io" class="icon" target="_blank" data-game="Océan prédateur : évolue en mangeant d'autres créatures">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Deeeep.io" alt="Deeeep.io" />
+          <span>Deeeep.io</span>
+        </a>
+        <a href="https://splix.io" class="icon" target="_blank" data-game="Territoire : encercle des zones sans te faire couper">
+          <img src="img/splix.io.png" alt="Splix.io" />
+          <span>Splix.io</span>
+        </a>
+        <a href="https://paper-io.com" class="icon" target="_blank" data-game="Peins le sol et capture le plus de terrain possible">
+          <img src="img/paper_io.com.png" alt="Paper.io" />
+          <span>Paper.io</span>
+        </a>
+        <a href="https://lordz.io" class="icon" target="_blank" data-game="Construis une armée et conquiers les autres seigneurs">
+          <img src="img/lordz.io.png" alt="Lordz.io" />
+          <span>Lordz.io</span>
+        </a>
+        <a href="https://brutal.io" class="icon" target="_blank" data-game="Balance ta boule d'énergie pour détruire les ennemis">
+          <img src="img/brutal.io.png" alt="Brutal.io" />
+          <span>Brutal.io</span>
+        </a>
+        <a href="https://aquapark.io" class="icon" target="_blank" data-game="Glisse sur un toboggan géant et termine premier">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Aquapark.io" alt="Aquapark.io" />
+          <span>Aquapark.io</span>
+        </a>
+        <a href="https://crowd.city" class="icon" target="_blank" data-game="Récupère des PNJ dans la ville et forme la plus grosse foule">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Crowd+City" alt="Crowd City" />
+          <span>Crowd City</span>
+        </a>
+        <a href="https://evowars.io" class="icon" target="_blank" data-game="Évolue en guerrier plus puissant en tranchant les autres">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Evowars.io" alt="Evowars.io" />
+          <span>Evowars.io</span>
+        </a>
+
+        <a href="https://littlebigsnake.io" class="icon" target="_blank" data-game="Serpent évolutif avec missions et power-ups">
+          <img src="img/littlebigsnake.io.png" alt="Littlebigsnake.io" />
+          <span>Littlebigsnake.io</span>
+        </a>
+        <a href="https://bruh.io" class="icon" target="_blank" data-game="Battle royale délire avec ragdolls et armes aléatoires">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Bruh.io" alt="Bruh.io" />
+          <span>Bruh.io</span>
+        </a>
+        <a href="https://tetr.io" class="icon" target="_blank" data-game="Tetris compétitif en ligne contre plusieurs joueurs">
+          <img src="img/tetr.io.png" alt="Tetrio" />
+          <span>Tetrio</span>
+        </a>
+        <a href="https://cardgames.io/uno" class="icon" target="_blank" data-game="Uno en ligne : vide ta main avant les autres">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Uno+Online" alt="Uno Online" />
+          <span>Uno Online</span>
+        </a>
+        <a href="https://www.chess.com/play" class="icon" target="_blank" data-game="Parties d’échecs rapides ou longues contre amis">
+          <img src="img/www.chess.com.png" alt="Chess.com" />
+          <span>Chess.com</span>
+        </a>
+        <a href="https://boardgamearena.com" class="icon" target="_blank" data-game="Plateforme avec 7 Wonders, Saboteur, etc. en multi">
+          <img src="img/boardgamearena.com.png" alt="BoardGameArena" />
+          <span>BoardGameArena</span>
+        </a>
+        <a href="https://www.loups-garous-en-ligne.com" class="icon" target="_blank" data-game="Débat et bluff pour trouver les loups-garous">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Loups-Garous" alt="Loups-Garous" />
+          <span>Loups-Garous</span>
+        </a>
+        <a href="https://belote-en-ligne.fr" class="icon" target="_blank" data-game="Parties de belote classique ou coinchée en ligne">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Belote" alt="Belote Online" />
+          <span>Belote Online</span>
+        </a>
+        <a href="https://gartic.io" class="icon" target="_blank" data-game="Dessine des mots choisis et fais deviner">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Gartic.io" alt="Gartic.io" />
+          <span>Gartic.io</span>
+        </a>
+        <a href="https://drawbattle.io" class="icon" target="_blank" data-game="Battle de dessins avec votes pour le meilleur dessin">
+          <img src="img/drawbattle.io.png" alt="DrawBattle" />
+          <span>DrawBattle</span>
+        </a>
+
+        <a href="https://codenames.game" class="icon" target="_blank" data-game="Jeu de mots en équipe : fais deviner sans toucher l’assassin">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Codenames" alt="Codenames Online" />
+          <span>Codenames Online</span>
+        </a>
+        <a href="https://impostor.io" class="icon" target="_blank" data-game="Clone Among Us : tâches, sabotages et imposteurs">
+          <img src="img/impostor.io.png" alt="Impostor.io" />
+          <span>Impostor.io</span>
+        </a>
+        <a href="https://stabfish.io" class="icon" target="_blank" data-game="Poisson armé : embroche tes adversaires">
+          <img src="img/stabfish.io.png" alt="Stabfish.io" />
+          <span>Stabfish.io</span>
+        </a>
+        <a href="https://taming.io" class="icon" target="_blank" data-game="Tame des animaux et construis une base de survie">
+          <img src="img/taming.io.png" alt="Taming.io" />
+          <span>Taming.io</span>
+        </a>
+        <a href="https://warbrokers.io" class="icon" target="_blank" data-game="FPS voxel : véhicules, hélicos et objectifs en équipe">
+          <img src="img/warbrokers.io.jpg" alt="War Brokers" />
+          <span>War Brokers</span>
+        </a>
+        <a href="https://miniroyale.io" class="icon" target="_blank" data-game="Battle royale nerveux en vue FPS">
+          <img src="img/miniroyale.io.jpg" alt="Mini Royale" />
+          <span>Mini Royale</span>
+        </a>
+        <a href="https://combatreloaded.com" class="icon" target="_blank" data-game="FPS multi classique avec plusieurs maps">
+          <img src="img/combatreloaded.com.png" alt="Combat Reloaded" />
+          <span>Combat Reloaded</span>
+        </a>
+        <a href="https://gats.io" class="icon" target="_blank" data-game="Top-down shooter avec couvertures et classes d’armes">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Gats.io" alt="Gats.io" />
+          <span>Gats.io</span>
+        </a>
+        <a href="https://devast.io" class="icon" target="_blank" data-game="Survie post-apo : craft, base et énergie">
+          <img src="img/devast.io.png" alt="Devast.io" />
+          <span>Devast.io</span>
+        </a>
+        <a href="https://1v1.lol" class="icon" target="_blank" data-game="Duels de build et shoot façon Fortnite">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=1v1.lol" alt="1v1.lol" />
+          <span>1v1.lol</span>
+        </a>
+
+        <a href="https://wormax.io" class="icon" target="_blank" data-game="Serpent avec compétences et power-ups">
+          <img src="img/wormax.io.png" alt="Wormax.io" />
+          <span>Wormax.io</span>
+        </a>
+        <a href="https://merc.zone" class="icon" target="_blank" data-game="FPS cartoon avec différentes classes de mercenaires">
+          <img src="img/merc.zone.png" alt="Merc Zone" />
+          <span>Merc Zone</span>
+        </a>
+        <a href="https://yohoho.io" class="icon" target="_blank" data-game="Battle royale pirate : ramasse or et élargis ton cercle">
+          <img src="img/yohoho.io.jpg" alt="Yohoho.io" />
+          <span>Yohoho.io</span>
+        </a>
+        <a href="https://houseofhazards.io" class="icon" target="_blank" data-game="Party game : évite les pièges d’une maison folle">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=House+of+Hazards" alt="House of Hazards" />
+          <span>House of Hazards</span>
+        </a>
+        <a href="https://getawayshootout.com" class="icon" target="_blank" data-game="Course/duel avec persos ragdoll et armes">
+          <img src="img/getawayshootout.com.webp" alt="Getaway Shootout" />
+          <span>Getaway Shootout</span>
+        </a>
+        <a href="https://www.crazygames.com/game/pixel-warfare" class="icon" target="_blank" data-game="FPS pixelisé avec nombreuses armes et maps">
+          <img src="img/www.crazygames.com.jpg" alt="Pixel Warfare" />
+          <span>Pixel Warfare</span>
+        </a>
+        <a href="https://www.crazygames.com/game/forward-assault-remix" class="icon" target="_blank" data-game="FPS tactique type CS avec pose de bombe">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Forward+Assault" alt="Forward Assault" />
+          <span>Forward Assault</span>
+        </a>
+        <a href="https://www.platoapp.com/ludo" class="icon" target="_blank" data-game="Ludo multijoueur classique pour 2 à 4 joueurs">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Ludo" alt="Ludo Online" />
+          <span>Ludo Online</span>
+        </a>
+        <a href="https://www.platoapp.com/dominoes" class="icon" target="_blank" data-game="Aligner les dominos avec le bon nombre">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Dominoes" alt="Dominoes" />
+          <span>Dominoes</span>
+        </a>
+        <a href="https://cardgames.io/hearts" class="icon" target="_blank" data-game="Jeu de levées : éviter les cœurs et dame de pique">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Hearts" alt="Hearts" />
+          <span>Hearts</span>
+        </a>
+
+        <a href="https://cardgames.io/spades" class="icon" target="_blank" data-game="Annoncer et réaliser des levées avec atout pique">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Spades" alt="Spades" />
+          <span>Spades</span>
+        </a>
+        <a href="https://battleship-online.com" class="icon" target="_blank" data-game="Place ta flotte et coule celle de l’adversaire">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Bataille+Navale" alt="Bataille Navale" />
+          <span>Bataille Navale</span>
+        </a>
+        <a href="https://playok.com/en/checkers" class="icon" target="_blank" data-game="Jeu de dames classique en 1v1">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Dames" alt="Dames Online" />
+          <span>Dames Online</span>
+        </a>
+        <a href="https://www.crazygames.com/game/crazy-roll-3d" class="icon" target="_blank" data-game="Fais rouler la boule et évite les obstacles">
+          <img src="img/www.crazygames.com.png" alt="Crazy Roll 3D" />
+          <span>Crazy Roll 3D</span>
+        </a>
+        <a href="https://poki.com/en/g/moto-x3m" class="icon" target="_blank" data-game="Moto trial avec obstacles et chronos">
+          <img src="img/poki.com.jpg" alt="Moto X3M" />
+          <span>Moto X3M</span>
+        </a>
+        <a href="https://poki.com/en/g/basketball-stars" class="icon" target="_blank" data-game="Matchs de basket 1v1 ou 2v2">
+          <img src="img/poki.com.png" alt="Basketball Stars" />
+          <span>Basketball Stars</span>
+        </a>
+        <a href="https://poki.com/en/g/soccer-skills-world-cup" class="icon" target="_blank" data-game="Matches de foot rapides en 1v1">
+          <img src="img/poki.com.png" alt="Soccer Skills" />
+          <span>Soccer Skills</span>
+        </a>
+        <a href="https://golfbattle.io" class="icon" target="_blank" data-game="Mini-golf multijoueur : termine le parcours en premier">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Golf+Battle" alt="Golf Battle" />
+          <span>Golf Battle</span>
+        </a>
+        <a href="https://twobuttonbounce.com" class="icon" target="_blank" data-game="Jeu à 2 boutons avec rebonds précis">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Two+Button+Bounce" alt="Two Button Bounce" />
+          <span>Two Button Bounce</span>
+        </a>
+        <a href="https://www.crazygames.com/game/pong-2" class="icon" target="_blank" data-game="Pong modernisé avec effets et bonus">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Pong+2" alt="Pong 2" />
+          <span>Pong 2</span>
+        </a>
+
+        <a href="https://poki.com/en/g/gully-baseball" class="icon" target="_blank" data-game="Version street de cricket/baseball">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Gully+Baseball" alt="Gully Baseball" />
+          <span>Gully Baseball</span>
+        </a>
+        <a href="https://poki.com/en/g/penalty-shooters-2" class="icon" target="_blank" data-game="Séries de tirs au but en ligne">
+          <img src="img/poki.com.png" alt="Penalty Shooters" />
+          <span>Penalty Shooters</span>
+        </a>
+        <a href="https://minigolfclub.io" class="icon" target="_blank" data-game="Parcours de mini-golf à plusieurs">
+          <img src="img/minigolfclub.io.jpg" alt="Mini Golf Club" />
+          <span>Mini Golf Club</span>
+        </a>
+        <a href="https://poki.com/en/g/archery-world-tour" class="icon" target="_blank" data-game="Tir à l’arc sur des cibles de plus en plus dures">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Archery+World+Tour" alt="Archery World Tour" />
+          <span>Archery World Tour</span>
+        </a>
+        <a href="https://www.jigsawexplorer.com/online-jigsaw-puzzles-multiplayer/" class="icon" target="_blank" data-game="Puzzles coop : assemblez ensemble l’image">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Jigsaw+Explorer" alt="Jigsaw Explorer" />
+          <span>Jigsaw Explorer</span>
+        </a>
+        <a href="https://tankionline.com" class="icon" target="_blank" data-game="Tanks personnalisables en arènes PvP">
+          <img src="img/tankionline.com.png" alt="Tanki Online" />
+          <span>Tanki Online</span>
+        </a>
+        <a href="https://catanuniverse.com" class="icon" target="_blank" data-game="Catan en ligne : commerce, développement et points de victoire">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Catan+Universe" alt="Catan Universe" />
+          <span>Catan Universe</span>
+        </a>
+        <a href="https://teks.co/wordle-multiplayer" class="icon" target="_blank" data-game="Wordle en duel : trouve le mot avant l’autre">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Wordle+Multi" alt="Wordle Multi" />
+          <span>Wordle Multi</span>
+        </a>
+        <a href="https://state.io" class="icon" target="_blank" data-game="Conquête de territoires en temps réel">
+          <img src="img/state.io.png" alt="State.io" />
+          <span>State.io</span>
+        </a>
+        <a href="https://superhex.io" class="icon" target="_blank" data-game="Capture des hexagones sans te faire couper">
+          <img src="img/superhex.io.png" alt="Superhex.io" />
+          <span>Superhex.io</span>
+        </a>
+
+        <a href="https://mope.io" class="icon" target="_blank" data-game="Évolue d’un petit animal à un prédateur ultime">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Mope.io" alt="Mope.io" />
+          <span>Mope.io</span>
+        </a>
+        <a href="https://www.crazygames.com/game/fish-eat-getting-big" class="icon" target="_blank" data-game="Mange les poissons plus petits pour grossir">
+          <img src="img/www.crazygames.com.jpg" alt="Fish Eat Getting Big" />
+          <span>Fish Eat Getting Big</span>
+        </a>
+        <a href="https://stabfish2.io" class="icon" target="_blank" data-game="Version évoluée de Stabfish avec plus de capacités">
+          <img src="img/stabfish2.io.png" alt="Stabfish 2" />
+          <span>Stabfish 2</span>
+        </a>
+        <a href="https://worms.zone" class="icon" target="_blank" data-game="Vers géants : mange nourriture et évite les collisions">
+          <img src="img/worms.zone.png" alt="Worms Zone" />
+          <span>Worms Zone</span>
+        </a>
+        <a href="https://craftnite.io" class="icon" target="_blank" data-game="Battle royale style Minecraft avec construction">
+          <img src="img/craftnite.io.jpg" alt="Craftnite.io" />
+          <span>Craftnite.io</span>
+        </a>
+        <a href="https://arras.io" class="icon" target="_blank" data-game="Variante de Diep.io avec beaucoup de tanks custom">
+          <img src="img/arras.io.png" alt="Arras.io" />
+          <span>Arras.io</span>
+        </a>
+        <a href="https://drawaria.online" class="icon" target="_blank" data-game="Jeu de dessin multijoueur avec rooms publiques et privées">
+          <img src="img/drawaria.online.jpg" alt="Drawaria" />
+          <span>Drawaria</span>
+        </a>
+        <a href="https://ev.io" class="icon" target="_blank" data-game="FPS futuriste rapide en arènes multi">
+          <img src="img/ev.io.png" alt="ev.io" />
+          <span>ev.io</span>
+        </a>
+        <a href="https://generals.io" class="icon" target="_blank" data-game="Stratégie tour par tour sur grille avec brouillard de guerre">
+          <img src="img/generals.io.png" alt="Generals.io" />
+          <span>Generals.io</span>
+        </a>
+        <a href="https://geoguessr.com/maps" class="icon" target="_blank" data-game="Jeu de géographie : devine où tu es sur Street View">
+          <img src="img/geoguessr.com.webp" alt="GeoGuessr" />
+          <span>GeoGuessr</span>
+        </a>
+        <a href="https://hole-io.com" class="icon" target="_blank" data-game="Version alternative de Hole.io accessible depuis d’autres pays">
+          <img src="img/hole-io.com.jpg" alt="Hole-io.com" />
+          <span>Hole-io.com</span>
+        </a>
+        <a href="https://jklm.fun" class="icon" target="_blank" data-game="Site de mini-jeux de mots (BombParty, PopSauce, etc.)">
+          <img src="img/jklm.fun.png" alt="JKLM.fun" />
+          <span>JKLM.fun</span>
+        </a>
+        <a href="https://kour.io" class="icon" target="_blank" data-game="FPS voxel avec construction et battle royale">
+          <img src="img/kour.io.webp" alt="Kour.io" />
+          <span>Kour.io</span>
+        </a>
+        <a href="https://littlealchemy2.com" class="icon" target="_blank" data-game="Combine des éléments pour en découvrir des centaines d’autres">
+          <img src="img/littlealchemy2.com.jpg" alt="Little Alchemy 2" />
+          <span>Little Alchemy 2</span>
+        </a>
+        <a href="https://lolbeans.io" class="icon" target="_blank" data-game="Battle royale de parcours type Fall Guys en navigateur">
+          <img src="img/lolbeans.io.png" alt="LOLBeans" />
+          <span>LOLBeans</span>
+        </a>
+
+        <a href="https://powerline.io" class="icon" target="_blank" data-game="Snake façon Tron : évite les autres lignes électriques">
+          <img src="img/powerline.io.png" alt="Powerline.io" />
+          <span>Powerline.io</span>
+        </a>
+        <a href="https://quickdraw.withgoogle.com" class="icon" target="_blank" data-game="L’IA essaie de deviner ce que tu dessines en 20s">
+          <img src="img/quickdraw.withgoogle.com.png" alt="Quick Draw" />
+          <span>Quick Draw</span>
+        </a>
+        <a href="https://repuls.io" class="icon" target="_blank" data-game="FPS futuriste nerveux avec classes et armes variées">
+          <img src="img/repuls.io.jpg" alt="Repuls.io" />
+          <span>Repuls.io</span>
+        </a>
+        <a href="https://shellshockers.io" class="icon" target="_blank" data-game="Variante de Shell Shockers hébergée ailleurs">
+          <img src="img/shellshockers.io.webp" alt="Shellshockers.io" />
+          <span>Shell Shockers Alt</span>
+        </a>
+        <a href="https://sketchful.io" class="icon" target="_blank" data-game="Jeu de dessin en ligne avec mots en anglais">
+          <img src="img/sketchful.io.png" alt="Sketchful.io" />
+          <span>Sketchful.io</span>
+        </a>
+        <a href="https://skribbl.lol" class="icon" target="_blank" data-game="Alternative de Skribbl pour dessiner et deviner">
+          <img src="img/skribbl.lol.jpg" alt="Skribbl.lol" />
+          <span>Skribbl.lol</span>
+        </a>
+        <a href="https://sploop.io" class="icon" target="_blank" data-game="Moomoo-like : ferme ressources, construis et combats">
+          <img src="img/sploop.io.png" alt="Sploop.io" />
+          <span>Sploop.io</span>
+        </a>
+        <a href="https://starve.io" class="icon" target="_blank" data-game="Survie rude : faim, froid, craft et PvP">
+          <img src="img/starve.io.png" alt="Starve.io" />
+          <span>Starve.io</span>
+        </a>
+        <a href="https://swordz.io" class="icon" target="_blank" data-game="Combat à l’épée, XP et amélioration de ton arme">
+          <img src="img/swordz.io.png" alt="Swordz.io" />
+          <span>Swordz.io</span>
+        </a>
+        <a href="https://tetr.io" class="icon" target="_blank" data-game="Tetris multi compétitif avec classement et rooms custom">
+          <img src="img/tetr.io.png" alt="TETR.IO" />
+          <span>TETR.IO</span>
+        </a>
+
+        <a href="https://venge.io" class="icon" target="_blank" data-game="FPS avec capacités spéciales et cartes compactes">
+          <img src="img/venge.io.jpg" alt="Venge.io" />
+          <span>Venge.io</span>
+        </a>
+        <a href="https://warlight.net" class="icon" target="_blank" data-game="Conquête de territoires type Risk en ligne">
+          <img src="img/warlight.net.png" alt="WarLight" />
+          <span>WarLight</span>
+        </a>
+        <a href="https://wings.io" class="icon" target="_blank" data-game="Dogfight d’avions, ramasse power-ups et survie">
+          <img src="img/wings.io.png" alt="Wings.io" />
+          <span>Wings.io</span>
+        </a>
+        <a href="https://wormszone.io" class="icon" target="_blank" data-game="Vers géants : mange nourriture et évite les collisions">
+          <img src="img/wormszone.io.png" alt="WormsZone" />
+          <span>WormsZone</span>
+        </a>
+        <a href="https://zombs.io" class="icon" target="_blank" data-game="Construis une base et défends-la contre des vagues de zombies">
+          <img src="img/zombs.io.png" alt="Zombs.io" />
+          <span>Zombs.io</span>
+        </a>
+
+        <a href="https://voxiom.io" class="icon" target="_blank" data-game="FPS voxel avec construction et modes variés">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Voxiom.io" alt="Voxiom.io" />
+          <span>Voxiom.io</span>
+        </a>
+        <a href="https://polyblicy.com" class="icon" target="_blank" data-game="FPS low-poly multi avec armes modernes">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Polyblicy" alt="Polyblicy" />
+          <span>Polyblicy</span>
+        </a>
+        <a href="https://repit.io" class="icon" target="_blank" data-game="FPS minimaliste en ligne, parties rapides">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Repit.io" alt="Repit.io" />
+          <span>Repit.io</span>
+        </a>
+        <a href="https://rushteam.space" class="icon" target="_blank" data-game="Rush Team, FPS multi classique jouable sur le web">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Rush+Team" alt="Rush Team" />
+          <span>Rush Team</span>
+        </a>
+        <a href="https://sploop.io" class="icon" target="_blank" data-game="Moomoo-like : ferme ressources, construis et combats">
+          <img src="img/sploop.io.png" alt="Sploop.io" />
+          <span>Sploop.io</span>
+        </a>
+        <a href="https://zombs.io/beta" class="icon" target="_blank" data-game="Version beta alternative du tower defense Zombs.io">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Zombs+Beta" alt="Zombs.io Beta" />
+          <span>Zombs.io Beta</span>
+        </a>
+        <a href="https://hordes.io" class="icon" target="_blank" data-game="MMO voxel : grind, compétences et combats de groupe">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Hordes.io" alt="Hordes.io" />
+          <span>Hordes.io</span>
+        </a>
+        <a href="https://mope2.io" class="icon" target="_blank" data-game="Suite non officielle de Mope.io avec nouvelles créatures">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Mope2.io" alt="Mope2.io" />
+          <span>Mope2.io</span>
+        </a>
+        <a href="https://curvefever.pro" class="icon" target="_blank" data-game="Serpents lumineux en arène fermée avec power-ups">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Curve+Fever" alt="Curve Fever Pro" />
+          <span>Curve Fever Pro</span>
+        </a>
+        <a href="https://ninja.io" class="icon" target="_blank" data-game="Shooter 2D physic-based avec ninjas armés">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Ninja.io" alt="Ninja.io" />
+          <span>Ninja.io</span>
+        </a>
+
+        <a href="https://skribbl.net" class="icon" target="_blank" data-game="Version non officielle de Skribbl.io pour parties rapides">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Skribbl.net" alt="Skribbl.net" />
+          <span>Skribbl.net</span>
+        </a>
+        <a href="https://mangakakalot.games/sketchful" class="icon" target="_blank" data-game="Clone de Sketchful pour dessiner avec tes potes">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Sketchful" alt="Sketchful Clone" />
+          <span>Sketchful (clone)</span>
+        </a>
+        <a href="https://gartic.io/rooms" class="icon" target="_blank" data-game="Rooms publiques Gartic pour trouver des parties rapides">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Gartic+Rooms" alt="Gartic Rooms" />
+          <span>Gartic Rooms</span>
+        </a>
+        <a href="https://spyfall.adrianocola.com" class="icon" target="_blank" data-game="Jeu de bluff : un espion doit deviner le lieu">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Spyfall" alt="Spyfall" />
+          <span>Spyfall</span>
+        </a>
+        <a href="https://codenames.game/online" class="icon" target="_blank" data-game="Interface officielle Codenames pour jouer à distance">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Codenames+Online" alt="Codenames Online" />
+          <span>Codenames Online (off.)</span>
+        </a>
+        <a href="https://diep.io" class="icon" target="_blank" data-game="Tank shooter : XP, classes et body blocking en 2D">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Diep.io" alt="Diep.io" />
+          <span>Diep.io</span>
+        </a>
+        <a href="https://osm.io" class="icon" target="_blank" data-game="Shooter minimaliste inspiré de Diep.io en temps réel">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Osm.io" alt="Osm.io" />
+          <span>Osm.io</span>
+        </a>
+        <a href="https://warin.space" class="icon" target="_blank" data-game="Combat spatial : vaisseaux, bonus et projectiles">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=warin.space" alt="warin.space" />
+          <span>warin.space</span>
+        </a>
+        <a href="https://wings.io" class="icon" target="_blank" data-game="Dogfight d’avions, ramasse power-ups et survie">
+          <img src="img/wings.io.png" alt="Wings.io" />
+          <span>Wings.io</span>
+        </a>
+        <a href="https://territorial.io" class="icon" target="_blank" data-game="Jeu de conquête de carte avec expansion et combats">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Territorial.io" alt="Territorial.io" />
+          <span>Territorial.io</span>
+        </a>
+
+        <a href="https://krafted.games/hexagor" class="icon" target="_blank" data-game="Stratégie hexagonale en ligne, conquiers la carte">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Hexagor" alt="Hexagor" />
+          <span>Hexagor</span>
+        </a>
+        <a href="https://wilds.io" class="icon" target="_blank" data-game="Hack’n slash isométrique rempli de combats de mêlée">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Wilds.io" alt="Wilds.io" />
+          <span>Wilds.io</span>
+        </a>
+        <a href="https://pokemonshowdown.com" class="icon" target="_blank" data-game="Simulateur de combats Pokémon compétitifs en ligne">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Showdown" alt="Pokémon Showdown" />
+          <span>Pokémon Showdown</span>
+        </a>
+        <a href="https://jstris.jezevec10.com" class="icon" target="_blank" data-game="Tetris minimaliste avec modes multi et solo">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Jstris" alt="Jstris" />
+          <span>Jstris</span>
+        </a>
+        <a href="https://osu-web.com" class="icon" target="_blank" data-game="Version navigateur d’osu! pour jouer des maps rythme">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=osu!+web" alt="osu! web" />
+          <span>osu! web</span>
+        </a>
+        <a href="https://browserquest.io" class="icon" target="_blank" data-game="Petit MMO 2D d’exploration et combat en coop">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=BrowserQuest" alt="BrowserQuest" />
+          <span>BrowserQuest</span>
+        </a>
+        <a href="https://realmofmadgod.com" class="icon" target="_blank" data-game="Rogue-lite bullet hell multi avec permadeath">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=RotMG" alt="Realm of the Mad God" />
+          <span>Realm of the Mad God</span>
+        </a>
+        <a href="https://opengeoguessr.org" class="icon" target="_blank" data-game="Clone libre de GeoGuessr jouable sans compte">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=OpenGuessr" alt="OpenGuessr" />
+          <span>OpenGuessr</span>
+        </a>
+        <a href="https://gifs.lol/wordle-multiplayer" class="icon" target="_blank" data-game="Wordle multi : trouve le mot avant les autres joueurs">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Wordle+Multi" alt="Wordle Multiplayer" />
+          <span>Wordle Multiplayer</span>
+        </a>
+        <a href="https://fallboys.io" class="icon" target="_blank" data-game="Clone de Fall Guys jouable en navigateur">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Fallboys" alt="Fallboys" />
+          <span>Fallboys</span>
+        </a>
+
+        <a href="https://justfall.lol" class="icon" target="_blank" data-game="Pinguins qui se poussent hors des plateformes hexagonales">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=JustFall" alt="JustFall.lol" />
+          <span>JustFall.lol</span>
+        </a>
+        <a href="https://paperio.pro" class="icon" target="_blank" data-game="Clone de Paper.io pour capturer des territoires colorés">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Paperio.pro" alt="Paperio.pro" />
+          <span>Paperio.pro</span>
+        </a>
+        <a href="https://braains.io" class="icon" target="_blank" data-game="Infection : zombies contre humains dans des petites maps">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Braains.io" alt="Braains.io" />
+          <span>Braains.io</span>
+        </a>
+        <a href="https://foes.io" class="icon" target="_blank" data-game="Battle royale top-down avec zone qui rétrécit">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Foes.io" alt="Foes.io" />
+          <span>Foes.io</span>
+        </a>
+        <a href="https://wilds.io/football" class="icon" target="_blank" data-game="Mode football dans l’univers de Wilds.io">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Wilds+Football" alt="Wilds Football" />
+          <span>Wilds Football</span>
+        </a>
+        <a href="https://munio.io" class="icon" target="_blank" data-game="Affrontements de gladiateurs avec armes et boucliers">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Munio.io" alt="Munio.io" />
+          <span>Munio.io</span>
+        </a>
+                <a href="https://classic.minecraft.net" class="icon" target="_blank" data-game="Version classique officielle de Minecraft jouable dans le navigateur">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Minecraft+Classic" alt="Minecraft Classic" />
+          <span>Minecraft Classic</span>
+        </a>
+        <a href="https://mine-craft.io" class="icon" target="_blank" data-game="Survie et construction en vue FPS façon Minecraft.io">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Mine-craft.io" alt="Mine-craft.io" />
+          <span>Mine-craft.io</span>
+        </a>
+        <a href="https://mineenergy.fun" class="icon" target="_blank" data-game="Gestion d’énergie et de ressources avec blocs voxelisés">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=MineEnergy" alt="MineEnergy.fun" />
+          <span>MineEnergy.fun</span>
+        </a>
+        <a href="https://www.gamepix.com/play/paper-minecraft" class="icon" target="_blank" data-game="Minecraft 2D en vue de côté avec survie et craft">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Paper+Minecraft" alt="Paper Minecraft" />
+          <span>Paper Minecraft</span>
+        </a>
+        <a href="https://mineblocks.com" class="icon" target="_blank" data-game="Fan game 2D avec survie, créatif et gros contenu">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Mine+Blocks" alt="Mine Blocks" />
+          <span>Mine Blocks</span>
+        </a>
+        <a href="https://gamaverse.com/craftmine-game/" class="icon" target="_blank" data-game="Aventure 2D avec minage, craft et monstres">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=CraftMine" alt="CraftMine" />
+          <span>CraftMine</span>
+        </a>
+        <a href="https://golddigger.frvr.com" class="icon" target="_blank" data-game="Creuse dans des galeries infinies et récolte de l’or en pixel art">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Gold+Digger" alt="Gold Digger FRVR" />
+          <span>Gold Digger FRVR</span>
+        </a>
+        <a href="https://mineblocks.com/1/site/miner" class="icon" target="_blank" data-game="Variation minage/clicker dans l’univers de Mine Blocks">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Miner" alt="Miner (Mine Blocks)" />
+          <span>Miner (Mine Blocks)</span>
+        </a>
+        <a href="https://roblox.com" class="icon" target="_blank" data-game="Plateforme de jeux et mondes blocs, jouable dans le navigateur via client">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Roblox" alt="Roblox" />
+          <span>Roblox</span>
+        </a>
+        <a href="https://studio.miniworldgame.com/web" class="icon" target="_blank" data-game="Mini World sandbox : création de maps voxel colorées">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Mini+World" alt="Mini World Web" />
+          <span>Mini World Web</span>
+        </a>
+
+        <a href="https://messcraft.us" class="icon" target="_blank" data-game="MessCraft, vrai Minecraft 1.5.2 jouable dans le navigateur">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=MessCraft" alt="MessCraft" />
+          <span>MessCraft</span>
+        </a>
+        <a href="https://eaglercraft.com/mc/1.8.8" class="icon" target="_blank" data-game="Eaglercraft 1.8.8 jouable directement dans ton navigateur">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Eaglercraft+1.8.8" alt="Eaglercraft 1.8.8" />
+          <span>Eaglercraft 1.8.8</span>
+        </a>
+        <a href="https://eaglercraft.com/mc/1.5.2" class="icon" target="_blank" data-game="Ancienne version d’Eaglercraft, plus légère pour vieux PC">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Eaglercraft+1.5.2" alt="Eaglercraft 1.5.2" />
+          <span>Eaglercraft 1.5.2</span>
+        </a>
+        <a href="https://messgame.net/minecraft-1-8" class="icon" target="_blank" data-game="Port navigateur de Minecraft 1.8 via MessGame">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Minecraft+1.8+Web" alt="Minecraft 1.8 Web" />
+          <span>Minecraft 1.8 Web</span>
+        </a>
+        <a href="https://interstellar.one/apps/eaglercraft" class="icon" target="_blank" data-game="Eaglercraft hébergé sur Interstellar, jouable en ligne">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Eaglercraft+Interstellar" alt="Eaglercraft Interstellar" />
+          <span>Eaglercraft Interstellar</span>
+        </a>
+        <a href="https://schoolsmp.org/play" class="icon" target="_blank" data-game="Serveur SMP jouable depuis navigateur via client custom">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=School+SMP" alt="School SMP Web" />
+          <span>School SMP Web</span>
+        </a>
+        <a href="https://mine-strike.fun" class="icon" target="_blank" data-game="Contre-Terroristes vs T dans maps voxel façon Minecraft">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=MineStrike" alt="MineStrike.fun" />
+          <span>MineStrike.fun</span>
+        </a>
+        <a href="https://buildandcrush.com" class="icon" target="_blank" data-game="Construis des maps blocs puis détruis-les avec explosives et armes">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Build+Crush" alt="Build & Crush" />
+          <span>Build & Crush</span>
+        </a>
+        <a href="https://blockcraftbuild.com" class="icon" target="_blank" data-game="Créatif ouvert : place des blocs et construis librement en 3D">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=BlockCraft" alt="BlockCraft" />
+          <span>BlockCraft</span>
+        </a>
+        <a href="https://voxelands.com/web" class="icon" target="_blank" data-game="Version web d’un sandbox voxel inspiré de Minetest/Minecraft">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Voxelands" alt="Voxelands Web" />
+          <span>Voxelands Web</span>
+        </a>
+
+        <a href="https://cyberworlds.online" class="icon" target="_blank" data-game="Monde futuriste voxel avec construction et combats">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Cyber+Worlds" alt="Cyber Worlds" />
+          <span>Cyber Worlds</span>
+        </a>
+        <a href="https://kirkagame.com" class="icon" target="_blank" data-game="FPS pixel/voxel façon Krunker dans des maps blocs">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Kirka" alt="Kirka" />
+          <span>Kirka</span>
+        </a>
+        <a href="https://pixel-warfare.online" class="icon" target="_blank" data-game="Pixel Warfare standalone, FPS bloc très proche de Minecraft">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Pixel+Warfare" alt="Pixel Warfare Standalone" />
+          <span>Pixel Warfare Standalone</span>
+        </a>
+        <a href="https://blockpost.io" class="icon" target="_blank" data-game="FPS blocs avec progression, armes et skins">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Blockpost" alt="Blockpost" />
+          <span>Blockpost</span>
+        </a>
+        <a href="https://pixel-gun-3d.io" class="icon" target="_blank" data-game="Clone navigateur de Pixel Gun 3D, FPS voxel">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Pixel+Gun" alt="Pixel Gun 3D Web" />
+          <span>Pixel Gun 3D Web</span>
+        </a>
+        <a href="https://mineparkour.com" class="icon" target="_blank" data-game="Parcours parkour dans des maps blocs façon Minecraft">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Mine+Parkour" alt="Mine Parkour" />
+          <span>Mine Parkour</span>
+        </a>
+        <a href="https://parkourcraft.io" class="icon" target="_blank" data-game="ParkourCraft, course de sauts dans univers cubique">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=ParkourCraft" alt="ParkourCraft" />
+          <span>ParkourCraft</span>
+        </a>
+        <a href="https://blockyparkour.com" class="icon" target="_blank" data-game="Parkour en blocs avec niveaux difficiles et chronos">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Blocky+Parkour" alt="Blocky Parkour" />
+          <span>Blocky Parkour</span>
+        </a>
+        <a href="https://mineclimb.io" class="icon" target="_blank" data-game="Escalade de tours composées de blocs à la Minecraft">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=MineClimb" alt="MineClimb.io" />
+          <span>MineClimb.io</span>
+        </a>
+        <a href="https://kogama.com/games/tag/minecraft" class="icon" target="_blank" data-game="Collection de maps Kogama inspirées de Minecraft en multi">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Kogama+MC" alt="Kogama Minecraft" />
+          <span>Kogama Minecraft</span>
+        </a>
+
+        <a href="https://blockworld.online" class="icon" target="_blank" data-game="Sandbox libre : construis ton propre monde bloc par bloc">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=BlockWorld" alt="BlockWorld" />
+          <span>BlockWorld</span>
+        </a>
+        <a href="https://mega-craft.online" class="icon" target="_blank" data-game="MegaCraft, grande map créative avec blocs et redstone basique">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=MegaCraft" alt="MegaCraft" />
+          <span>MegaCraft</span>
+        </a>
+        <a href="https://mineworlds.io" class="icon" target="_blank" data-game="Serveur multi en voxel avec mini-jeux et survie">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=MineWorlds" alt="MineWorlds.io" />
+          <span>MineWorlds.io</span>
+        </a>
+        <a href="https://craftworlds.net" class="icon" target="_blank" data-game="Construction libre et aventure dans un monde de blocs">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=CraftWorlds" alt="CraftWorlds" />
+          <span>CraftWorlds</span>
+        </a>
+        <a href="https://blockcitywars.io" class="icon" target="_blank" data-game="Ville cubique avec véhicules, armes et missions">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Block+City" alt="Block City Wars Web" />
+          <span>Block City Wars Web</span>
+        </a>
+        <a href="https://blockycar.com" class="icon" target="_blank" data-game="Pilotage de voitures cubiques dans des environnements destructibles">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Blocky+Car" alt="Blocky Car" />
+          <span>Blocky Car</span>
+        </a>
+        <a href="https://blockyfarm.io" class="icon" target="_blank" data-game="Gère une ferme en blocs : champs, animaux et commerce">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Blocky+Farm" alt="Blocky Farm" />
+          <span>Blocky Farm</span>
+        </a>
+        <a href="https://blockcraftzoo.com" class="icon" target="_blank" data-game="Crée un zoo en voxel avec enclos personnalisés">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Zoo+Craft" alt="Zoo Craft" />
+          <span>Zoo Craft</span>
+        </a>
+        <a href="https://minecolony.io" class="icon" target="_blank" data-game="Gère une colonie de PNJ dans un monde cubique">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Mine+Colony" alt="MineColony.io" />
+          <span>MineColony.io</span>
+        </a>
+        <a href="https://blockdefense.io" class="icon" target="_blank" data-game="Tower defense avec blocs placés pour arrêter les ennemis">
+          <img src="https://placehold.co/150x150/111827/38bdf8?text=Block+Defense" alt="BlockDefense.io" />
+          <span>BlockDefense.io</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global Games Multi — Créé par Thomas Lewis | Liste : Perplexity AI | 100+ jeux browser gratuits
+    </div>
+  </div>
+
+  <script>
+    setTimeout(()=>{
+      const loader=document.getElementById('loader');
+      const main=document.getElementById('main-content');
+      if(loader) loader.style.display='none';
+      if(main) main.style.display='block';
+  
+    },1200);
+
+    // Loader existant
+    setTimeout(() => {
+      const loader = document.getElementById('loader');
+      const main = document.getElementById('main-content');
+      if (loader) loader.style.display = 'none';
+      if (main) main.style.display = 'block';
+    }, 1200);
+
+    // Barre de recherche jeux
+    document.addEventListener('DOMContentLoaded', () => {
+      const input = document.getElementById('game-search');
+      const icons = document.querySelectorAll('.icon-container .icon');
+
+      if (!input) return;
+
+      input.addEventListener('input', () => {
+        const query = input.value.trim().toLowerCase();
+
+        icons.forEach(icon => {
+          const name = icon.querySelector('span')?.textContent.toLowerCase() || '';
+          const desc = icon.getAttribute('data-game')?.toLowerCase() || '';
+
+          if (name.includes(query) || desc.includes(query)) {
+            icon.style.display = '';
+          } else {
+            icon.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
