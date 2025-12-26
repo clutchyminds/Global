@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Global - Thermomètre météo</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-light:#29d8ff;
+      --blue-main:#007BFF;
+      --blue-dark:#004a9f;
+      --white:#ffffff;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%,rgba(255,255,255,0.12),transparent 55%),
+        radial-gradient(circle at 100% 100%,rgba(41,216,255,0.18),transparent 55%),
+        linear-gradient(135deg,#020617 0%,#031633 40%,#001a3b 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";position:fixed;inset:0;pointer-events:none;
+      opacity:0.08;mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;z-index:-1;
+    }
+
+    #loader{
+      position:fixed;inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;justify-content:center;align-items:center;
+      z-index:9999;overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;width:min(520px,90vw);padding:26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(56,189,248,0.26),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(56,189,248,0.8);
+      box-shadow:0 22px 55px rgba(0,0,0,0.9),0 0 35px rgba(56,189,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+      overflow:hidden;
+    }
+    .loader-title{
+      font-size:0.9rem;letter-spacing:0.35em;text-transform:uppercase;
+      color:#7dd3fc;margin-bottom:16px;position:relative;
+    }
+    .loader-title::after{
+      content:"";position:absolute;left:0;bottom:-6px;
+      width:260px;height:2px;
+      background:linear-gradient(90deg,#7dd3fc,transparent);
+      box-shadow:0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row{display:flex;align-items:baseline;gap:6px;font-size:1rem;margin-bottom:14px;}
+    .status-label{text-transform:uppercase;letter-spacing:0.18em;font-weight:600;}
+    .status-dots{display:inline-block;min-width:18px;animation:blinkDots 1s steps(2,start) infinite;color:#38bdf8;}
+    @keyframes blinkDots{0%,50%{opacity:1;}50.01%,100%{opacity:0;}}
+    .loader-bar{
+      position:relative;width:100%;height:12px;border-radius:999px;
+      border:1px solid rgba(148,163,184,0.9);
+      background:rgba(15,23,42,0.9);overflow:hidden;
+      box-shadow:inset 0 0 8px rgba(15,23,42,1),0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;inset:0;width:0%;
+      background:linear-gradient(90deg,#22c1c3,#29d8ff,#007bff);
+      box-shadow:0 0 18px rgba(56,189,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{font-size:0.72rem;margin-top:4px;color:#a5b4fc;opacity:0.9;}
+    .loader-terminal{
+      margin-top:14px;padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;border:1px solid rgba(15,23,42,1);
+      box-shadow:inset 0 0 18px rgba(0,0,0,0.9),0 0 14px rgba(15,23,42,0.9);
+      height:130px;overflow:hidden;font-size:0.7rem;line-height:1.5;color:#c4f1ff;
+    }
+    .terminal-line{opacity:0;transform:translateY(6px);animation:lineIn 5s linear infinite;}
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-cursor{display:inline-block;width:8px;animation:cursorBlink 0.6s steps(1,start) infinite;color:#38bdf8;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%{opacity:1;transform:translateY(0);}
+      70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    @keyframes cursorBlink{0%,49%{opacity:1;}50%,100%{opacity:0;}}
+
+    #main-content{
+      opacity:0;transform:translateY(10px);
+      animation:fadeIn 0.7s ease forwards;
+      animation-delay:0.2s;display:none;
+    }
+    @keyframes fadeIn{to{opacity:1;transform:translateY(0);}}
+
+    .top-banner{
+      position:sticky;top:0;z-index:50;
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(0,123,255,0.82),rgba(3,105,161,0.82));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:0 10px 30px rgba(0,0,0,0.55),0 0 0 1px rgba(255,255,255,0.04);
+      color:var(--white);padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;letter-spacing:0.08em;font-weight:700;
+      text-transform:uppercase;display:flex;flex-direction:column;gap:12px;
+    }
+    .top-banner::after{
+      content:"";height:2px;width:260px;margin-top:4px;
+      background:linear-gradient(90deg,var(--white),rgba(255,255,255,0));opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;gap:26px;padding-bottom:10px;margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;color:#e0f2ff;text-decoration:none;
+      font-size:0.98rem;font-weight:500;
+      padding:7px 18px;border-radius:999px;
+      display:inline-flex;align-items:center;gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:0 0 0 1px rgba(15,23,42,0.7),0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";width:6px;height:6px;border-radius:999px;
+      background:var(--blue-light);box-shadow:0 0 12px rgba(41,216,255,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:0 0 0 1px rgba(148,163,184,0.25),0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+    .tool-wrapper{max-width:900px;margin:18px auto 0;display:flex;flex-direction:column;gap:18px;}
+    .tool-card{
+      position:relative;padding:18px 18px 20px;
+      border-radius:24px;
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+      background:
+        radial-gradient(circle at 0 0,rgba(255,255,255,0.16),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.95),rgba(15,23,42,0.8));
+      border:1px solid rgba(148,163,184,0.5);
+      box-shadow:0 18px 40px rgba(15,23,42,0.9),0 0 0 1px rgba(15,23,42,0.9);
+    }
+    .tool-header{
+      display:flex;justify-content:space-between;align-items:baseline;
+      gap:12px;margin-bottom:12px;flex-wrap:wrap;
+    }
+    .tool-title{font-size:1.4rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;}
+    .tool-subtitle{font-size:0.88rem;color:#cbd5f5;max-width:380px;}
+
+    .btn-ghost{
+      border-radius:999px;border:1px solid rgba(148,163,184,0.8);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.08),transparent 65%);
+      padding:6px 14px;font-size:0.78rem;
+      text-transform:uppercase;letter-spacing:0.14em;
+      color:#e5f1ff;cursor:pointer;
+      display:inline-flex;align-items:center;gap:6px;
+      transition:transform 0.16s,box-shadow 0.16s,background 0.16s,border-color 0.16s;
+    }
+    .btn-ghost:hover{
+      transform:translateY(-1px);
+      border-color:rgba(56,189,248,0.9);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.20),transparent 75%);
+      box-shadow:0 8px 20px rgba(15,23,42,1),0 0 22px rgba(56,189,248,0.7);
+    }
+
+    .layout-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px;}
+    @media(max-width:850px){.layout-grid{grid-template-columns:1fr;}}
+
+    .field{margin-bottom:10px;}
+    .field label{display:block;font-size:0.8rem;margin-bottom:4px;color:#cbd5f5;}
+    .field input[type="text"]{
+      width:100%;border-radius:14px;
+      border:1px solid rgba(148,163,184,0.8);
+      background:rgba(15,23,42,0.9);color:#e5f1ff;
+      padding:7px 9px;font-size:0.88rem;
+      outline:none;
+      box-shadow:inset 0 0 8px rgba(0,0,0,0.9),0 4px 12px rgba(15,23,42,0.9);
+    }
+    .tiny-info{font-size:0.72rem;color:#94a3b8;margin-top:4px;}
+
+    .thermo-wrapper{
+      margin-top:10px;
+      display:flex;align-items:center;gap:18px;
+    }
+    .thermo{
+      width:50px;height:180px;
+      border-radius:999px;
+      border:2px solid rgba(148,163,184,0.9);
+      background:radial-gradient(circle at 50% 100%,rgba(239,68,68,0.5),transparent 55%) ,
+                  rgba(15,23,42,0.95);
+      position:relative;
+      box-shadow:inset 0 0 10px rgba(0,0,0,0.95),0 8px 20px rgba(15,23,42,1);
+      overflow:hidden;
+    }
+    .thermo-fill{
+      position:absolute;left:3px;right:3px;bottom:3px;
+      border-radius:999px;
+      background:linear-gradient(180deg,#22c1c3,#29d8ff,#f97316,#ef4444);
+      height:0%;
+      transition:height 0.5s ease-out;
+    }
+    .thermo-markers{
+      position:absolute;left:50%;top:8px;bottom:8px;
+      transform:translateX(-50%);
+      display:flex;flex-direction:column;justify-content:space-between;
+      font-size:0.7rem;color:#9ca3af;
+    }
+
+    .temp-info{
+      flex:1;
+      display:flex;flex-direction:column;
+      gap:6px;font-size:0.9rem;
+    }
+    .temp-main{
+      font-size:2.2rem;font-weight:700;
+    }
+    .temp-status{
+      font-size:0.9rem;color:#cbd5f5;
+    }
+
+    .info-panel{
+      border-radius:18px;
+      border:1px solid rgba(148,163,184,0.8);
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.96),rgba(15,23,42,0.98));
+      padding:10px 12px 12px;
+      box-shadow:inset 0 0 12px rgba(0,0,0,0.95),0 6px 18px rgba(15,23,42,1);
+      font-size:0.8rem;color:#cbd5f5;
+    }
+    .info-panel ul{margin-top:6px;padding-left:16px;}
+    .info-panel li{margin-bottom:4px;}
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;padding:14px 7vw 12px;
+      text-align:center;font-size:0.9rem;
+      position:fixed;left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:0 -12px 30px rgba(0,0,0,0.8),0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    }
+  </style>
+</head>
+<body>
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//WEATHER-THERMO</div>
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+      <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+      <div class="loader-subtext">
+        Récupération de la température actuelle via Open‑Meteo (sans clé API).
+      </div>
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Préparation du thermomètre météo...</div>
+        <div class="terminal-line">[OK]  Lecture géolocalisation (si autorisée) pour ta position.</div>
+        <div class="terminal-line">[OK]  Connexion à l’API Open‑Meteo pour la température.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Thermomètre météo
+      <nav class="nav-bar">
+        <a href="index.html">Accueil</a>
+        <a href="cours.html">Cours</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="tool-wrapper">
+        <div class="tool-card">
+          <div class="tool-header">
+            <div class="tool-title">Météo du jour</div>
+            <div class="tool-subtitle">
+              Affiche la température actuelle (°C) pour ta position ou une ville, avec un thermomètre animé.
+            </div>
+          </div>
+
+          <div class="layout-grid">
+            <div>
+              <div class="field">
+                <label for="cityInput">Ville (optionnel)</label>
+                <input type="text" id="cityInput" placeholder="Ex : Paris, Bordeaux, Lyon..." />
+                <div class="tiny-info">
+                  Si aucune ville n’est fournie, tu peux utiliser ta position GPS (si tu acceptes la demande du navigateur). [web:150][web:153]
+                </div>
+              </div>
+
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">
+                <button class="btn-ghost" id="btn-use-location">
+                  Utiliser ma position
+                </button>
+                <button class="btn-ghost" id="btn-fetch-city">
+                  Chercher par ville (Open‑Meteo geocoding)
+                </button>
+              </div>
+              <div class="tiny-info" id="statusText">
+                En attente de sélection (position ou ville).
+              </div>
+
+              <div class="thermo-wrapper" style="margin-top:14px;">
+                <div class="thermo">
+                  <div class="thermo-fill" id="thermoFill"></div>
+                  <div class="thermo-markers">
+                    <span>40°</span>
+                    <span>25°</span>
+                    <span>10°</span>
+                    <span>0°</span>
+                  </div>
+                </div>
+                <div class="temp-info">
+                  <div class="temp-main" id="tempMain">-- °C</div>
+                  <div class="temp-status" id="tempStatus">Aucune donnée pour l’instant.</div>
+                  <div class="tiny-info" id="locationInfo"></div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="info-panel">
+                <strong>Comment ça marche ?</strong>
+                <ul>
+                  <li>Récupération des coordonnées via la géolocalisation du navigateur ou recherche de ville. [web:150][web:153]</li>
+                  <li>Requête à Open‑Meteo pour obtenir la température actuelle en °C. [web:145][web:146][web:151]</li>
+                  <li>La hauteur du thermomètre dépend de la température (approx. de −10 °C à 40 °C).</li>
+                </ul>
+                <div class="tiny-info">
+                  Open‑Meteo est une API météo gratuite sans clé, pratique pour des projets front comme le tien. [web:145][web:146][web:151]
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Thermomètre météo | Créé par Thomas Lewis
+    </div>
+  </div>
+
+  <script>
+    // Loader
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      const main = document.getElementById('main-content');
+      main.style.display = 'block';
+    }, 1000);
+
+    const btnUseLocation = document.getElementById('btn-use-location');
+    const btnFetchCity = document.getElementById('btn-fetch-city');
+    const cityInput = document.getElementById('cityInput');
+    const statusText = document.getElementById('statusText');
+    const thermoFill = document.getElementById('thermoFill');
+    const tempMain = document.getElementById('tempMain');
+    const tempStatus = document.getElementById('tempStatus');
+    const locationInfo = document.getElementById('locationInfo');
+
+    function mapTempToPercent(t){
+      // approx plage -10 -> 40 °C
+      const min = -10, max = 40;
+      let p = (t - min) / (max - min);
+      if(p < 0) p = 0;
+      if(p > 1) p = 1;
+      return p * 100;
+    }
+
+    function describeTemp(t){
+      if(t <= 0) return "Très froid, prévois un bon manteau.";
+      if(t <= 10) return "Frais, une veste est utile.";
+      if(t <= 20) return "Doux, température confortable.";
+      if(t <= 28) return "Plutôt chaud, temps agréable.";
+      return "Très chaud, pense à t’hydrater.";
+    }
+
+    async function fetchWeather(lat, lon, label){
+      statusText.textContent = "Récupération des données météo...";
+      try{
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&timezone=auto`;
+        const res = await fetch(url); // Open‑Meteo : pas de clé API nécessaire [web:145][web:146]
+        if(!res.ok) throw new Error("Erreur API météo.");
+        const data = await res.json();
+        const temp = data.current && typeof data.current.temperature_2m === "number"
+          ? data.current.temperature_2m
+          : null;
+
+        if(temp === null){
+          statusText.textContent = "Impossible de lire la température dans la réponse.";
+          return;
+        }
+
+        const tRounded = Math.round(temp * 10) / 10;
+        tempMain.textContent = tRounded + " °C";
+        tempStatus.textContent = describeTemp(tRounded);
+        locationInfo.textContent = label || `Lat ${lat.toFixed(2)}, Lon ${lon.toFixed(2)}`;
+
+        const percent = mapTempToPercent(tRounded);
+        thermoFill.style.height = percent + "%";
+
+        statusText.textContent = "Données météo mises à jour.";
+      }catch(e){
+        statusText.textContent = "Erreur : " + e.message;
+      }
+    }
+
+    function useLocation(){
+      if(!navigator.geolocation){
+        statusText.textContent = "La géolocalisation n’est pas supportée par ce navigateur.";
+        return;
+      }
+      statusText.textContent = "Demande de ta position au navigateur...";
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          fetchWeather(lat, lon, "Ta position actuelle");
+        },
+        err => {
+          statusText.textContent = "Géolocalisation refusée ou impossible.";
+        }
+      );
+    }
+
+    async function fetchByCity(){
+      const city = cityInput.value.trim();
+      if(!city){
+        alert("Merci d’entrer une ville.");
+        return;
+      }
+      statusText.textContent = "Recherche de la ville via Open‑Meteo geocoding...";
+      try{
+        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=fr&format=json`;
+        const res = await fetch(geoUrl); // API de géocodage Open‑Meteo [web:146][web:151]
+        if(!res.ok) throw new Error("Erreur API de géocodage.");
+        const data = await res.json();
+        if(!data.results || data.results.length === 0){
+          statusText.textContent = "Ville introuvable.";
+          return;
+        }
+        const loc = data.results[0];
+        const label = loc.name + (loc.country ? ", " + loc.country : "");
+        fetchWeather(loc.latitude, loc.longitude, label);
+      }catch(e){
+        statusText.textContent = "Erreur : " + e.message;
+      }
+    }
+
+    btnUseLocation.addEventListener('click', useLocation);
+    btnFetchCity.addEventListener('click', fetchByCity);
+  </script>
+</body>
+</html>

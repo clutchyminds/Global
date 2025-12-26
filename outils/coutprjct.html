@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Global - Coût d’un projet</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-light:#29d8ff;
+      --blue-main:#007BFF;
+      --blue-dark:#004a9f;
+      --white:#ffffff;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%,rgba(255,255,255,0.12),transparent 55%),
+        radial-gradient(circle at 100% 100%,rgba(41,216,255,0.18),transparent 55%),
+        linear-gradient(135deg,#020617 0%,#031633 40%,#001a3b 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";position:fixed;inset:0;pointer-events:none;
+      opacity:0.08;mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;z-index:-1;
+    }
+
+    #loader{
+      position:fixed;inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;justify-content:center;align-items:center;
+      z-index:9999;overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;width:min(520px,90vw);padding:26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(56,189,248,0.26),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(56,189,248,0.8);
+      box-shadow:0 22px 55px rgba(0,0,0,0.9),0 0 35px rgba(56,189,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+      overflow:hidden;
+    }
+    .loader-title{
+      font-size:0.9rem;letter-spacing:0.35em;text-transform:uppercase;
+      color:#7dd3fc;margin-bottom:16px;position:relative;
+    }
+    .loader-title::after{
+      content:"";position:absolute;left:0;bottom:-6px;
+      width:260px;height:2px;
+      background:linear-gradient(90deg,#7dd3fc,transparent);
+      box-shadow:0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row{
+      display:flex;align-items:baseline;gap:6px;
+      font-size:1rem;margin-bottom:14px;
+    }
+    .status-label{text-transform:uppercase;letter-spacing:0.18em;font-weight:600;}
+    .status-dots{
+      display:inline-block;min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes blinkDots{0%,50%{opacity:1;}50.01%,100%{opacity:0;}}
+    .loader-bar{
+      position:relative;width:100%;height:12px;border-radius:999px;
+      border:1px solid rgba(148,163,184,0.9);
+      background:rgba(15,23,42,0.9);overflow:hidden;
+      box-shadow:inset 0 0 8px rgba(15,23,42,1),0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;inset:0;width:0%;
+      background:linear-gradient(90deg,#22c1c3,#29d8ff,#007bff);
+      box-shadow:0 0 18px rgba(56,189,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{font-size:0.72rem;margin-top:4px;color:#a5b4fc;opacity:0.9;}
+    .loader-terminal{
+      margin-top:14px;padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;border:1px solid rgba(15,23,42,1);
+      box-shadow:inset 0 0 18px rgba(0,0,0,0.9),0 0 14px rgba(15,23,42,0.9);
+      height:130px;overflow:hidden;font-size:0.7rem;line-height:1.5;color:#c4f1ff;
+    }
+    .terminal-line{opacity:0;transform:translateY(6px);animation:lineIn 5s linear infinite;}
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-cursor{display:inline-block;width:8px;animation:cursorBlink 0.6s steps(1,start) infinite;color:#38bdf8;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%{opacity:1;transform:translateY(0);}
+      70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    @keyframes cursorBlink{0%,49%{opacity:1;}50%,100%{opacity:0;}}
+    #main-content{
+      opacity:0;transform:translateY(10px);
+      animation:fadeIn 0.7s ease forwards;
+      animation-delay:0.2s;display:none;
+    }
+    @keyframes fadeIn{to{opacity:1;transform:translateY(0);}}
+
+    .top-banner{
+      position:sticky;top:0;z-index:50;
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(0,123,255,0.82),rgba(3,105,161,0.82));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:0 10px 30px rgba(0,0,0,0.55),0 0 0 1px rgba(255,255,255,0.04);
+      color:var(--white);
+      padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;letter-spacing:0.08em;font-weight:700;
+      text-transform:uppercase;display:flex;flex-direction:column;gap:12px;
+    }
+    .top-banner::after{
+      content:"";height:2px;width:260px;margin-top:4px;
+      background:linear-gradient(90deg,var(--white),rgba(255,255,255,0));opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;gap:26px;padding-bottom:10px;margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;color:#e0f2ff;text-decoration:none;
+      font-size:0.98rem;font-weight:500;
+      padding:7px 18px;border-radius:999px;
+      display:inline-flex;align-items:center;gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:0 0 0 1px rgba(15,23,42,0.7),0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";width:6px;height:6px;border-radius:999px;
+      background:var(--blue-light);box-shadow:0 0 12px rgba(41,216,255,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:0 0 0 1px rgba(148,163,184,0.25),0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+    .tool-wrapper{max-width:900px;margin:18px auto 0;display:flex;flex-direction:column;gap:18px;}
+    .tool-card{
+      position:relative;padding:18px 18px 20px;
+      border-radius:24px;
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+      background:
+        radial-gradient(circle at 0 0,rgba(255,255,255,0.16),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.95),rgba(15,23,42,0.8));
+      border:1px solid rgba(148,163,184,0.5);
+      box-shadow:0 18px 40px rgba(15,23,42,0.9),0 0 0 1px rgba(15,23,42,0.9);
+    }
+    .tool-header{
+      display:flex;justify-content:space-between;align-items:baseline;
+      gap:12px;margin-bottom:12px;flex-wrap:wrap;
+    }
+    .tool-title{font-size:1.4rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;}
+    .tool-subtitle{font-size:0.88rem;color:#cbd5f5;max-width:380px;}
+
+    .btn-ghost{
+      border-radius:999px;border:1px solid rgba(148,163,184,0.8);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.08),transparent 65%);
+      padding:6px 14px;font-size:0.78rem;
+      text-transform:uppercase;letter-spacing:0.14em;
+      color:#e5f1ff;cursor:pointer;
+      display:inline-flex;align-items:center;gap:6px;
+      transition:transform 0.16s,box-shadow 0.16s,background 0.16s,border-color 0.16s;
+    }
+    .btn-ghost:hover{
+      transform:translateY(-1px);
+      border-color:rgba(56,189,248,0.9);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.20),transparent 75%);
+      box-shadow:0 8px 20px rgba(15,23,42,1),0 0 22px rgba(56,189,248,0.7);
+    }
+
+    .layout-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;}
+    @media(max-width:850px){.layout-grid{grid-template-columns:1fr;}}
+
+    .field{margin-bottom:10px;}
+    .field label{display:block;font-size:0.8rem;margin-bottom:4px;color:#cbd5f5;}
+    .field input[type="text"],
+    .field input[type="number"]{
+      width:100%;border-radius:14px;
+      border:1px solid rgba(148,163,184,0.8);
+      background:rgba(15,23,42,0.9);color:#e5f1ff;
+      padding:7px 9px;font-size:0.88rem;
+      outline:none;
+      box-shadow:inset 0 0 8px rgba(0,0,0,0.9),0 4px 12px rgba(15,23,42,0.9);
+    }
+    .tiny-info{font-size:0.72rem;color:#94a3b8;margin-top:4px;}
+
+    .cost-card{
+      margin-top:10px;border-radius:18px;
+      border:1px solid rgba(148,163,184,0.8);
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.96),rgba(15,23,42,0.98));
+      padding:10px 12px;
+      box-shadow:inset 0 0 12px rgba(0,0,0,0.95),0 6px 18px rgba(15,23,42,1);
+      font-size:0.84rem;
+    }
+    table{width:100%;border-collapse:collapse;font-size:0.82rem;}
+    thead{color:#cbd5f5;}
+    th,td{padding:6px 4px;text-align:left;}
+    thead tr{border-bottom:1px solid rgba(30,64,175,0.5);}
+    tbody tr{border-bottom:1px solid rgba(15,23,42,0.9);}
+    tbody tr:last-child{border-bottom:none;}
+    .col-number{text-align:right;}
+    .row-actions{text-align:right;}
+
+    .summary-row{
+      margin-top:8px;display:flex;justify-content:space-between;
+      align-items:center;gap:10px;font-size:0.9rem;color:#e5f1ff;
+    }
+    .summary-total{
+      font-size:1.1rem;font-weight:700;
+    }
+
+    .info-panel{
+      border-radius:18px;
+      border:1px solid rgba(148,163,184,0.8);
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.96),rgba(15,23,42,0.98));
+      padding:10px 12px 12px;
+      box-shadow:inset 0 0 12px rgba(0,0,0,0.95),0 6px 18px rgba(15,23,42,1);
+      font-size:0.8rem;color:#cbd5f5;
+    }
+    .info-panel ul{margin-top:6px;padding-left:16px;}
+    .info-panel li{margin-bottom:4px;}
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;padding:14px 7vw 12px;
+      text-align:center;font-size:0.9rem;
+      position:fixed;left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:0 -12px 30px rgba(0,0,0,0.8),0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    }
+  </style>
+</head>
+<body>
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//PROJECT-COST-ENGINE</div>
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+      <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+      <div class="loader-subtext">
+        Estimation du coût d’un projet à partir de tâches, d’heures et de taux horaires.
+      </div>
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du calculateur de coût de projet...</div>
+        <div class="terminal-line">[OK]  Saisie des tâches, heures et taux en euros.</div>
+        <div class="terminal-line">[OK]  Calcul automatique de la somme totale du projet.</div>
+        <div class="terminal-line">[TIP] Utilise‑le pour estimer un site web, une app, un serveur, etc.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Coût d’un projet
+      <nav class="nav-bar">
+        <a href="index.html">Accueil</a>
+        <a href="cours.html">Cours</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="tool-wrapper">
+        <div class="tool-card">
+          <div class="tool-header">
+            <div class="tool-title">Calcul du coût d’un projet</div>
+            <div class="tool-subtitle">
+              Ajoute des tâches avec leur durée et leur taux horaire, et obtiens une estimation rapide du budget total.
+            </div>
+          </div>
+
+          <div class="layout-grid">
+            <div>
+              <div class="field">
+                <label for="taskName">Tâche</label>
+                <input type="text" id="taskName" placeholder="Ex : Intégration front, API, configuration serveur..." />
+              </div>
+              <div class="field">
+                <label for="taskHours">Nombre d’heures</label>
+                <input type="number" id="taskHours" min="0" step="0.5" value="2" />
+              </div>
+              <div class="field">
+                <label for="taskRate">Taux horaire (€/h)</label>
+                <input type="number" id="taskRate" min="0" step="5" value="40" />
+              </div>
+              <button class="btn-ghost" id="btn-add-row" style="margin-top:4px;">
+                Ajouter la tâche
+              </button>
+              <div class="tiny-info">
+                Exemple : 10 h de dev backend à 40 €/h = 400 €. Le total du projet est la somme de toutes les lignes. [web:138][web:142]
+              </div>
+
+              <div class="cost-card">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Tâche</th>
+                      <th class="col-number">Heures</th>
+                      <th class="col-number">Taux (€/h)</th>
+                      <th class="col-number">Total (€)</th>
+                      <th class="row-actions">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="costTableBody"></tbody>
+                </table>
+                <div class="summary-row">
+                  <div>
+                    <span id="rowCount">0</span> ligne(s) de coût
+                  </div>
+                  <div class="summary-total">
+                    Total projet : <span id="projectTotal">0</span> €
+                  </div>
+                </div>
+                <div class="tiny-info">
+                  Les lignes sont enregistrées dans <code>localStorage</code> pour ce navigateur, tu peux revenir plus tard. [web:131][web:144]
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="info-panel">
+                <strong>Utilisation typique</strong>
+                <ul>
+                  <li>Estimer un site vitrine (maquette, intégration, tests, déploiement).</li>
+                  <li>Chiffrer un projet client : heures de dev, design, maintenance.</li>
+                  <li>Comprendre comment un budget se construit à partir de postes de coût.</li>
+                </ul>
+                <div class="tiny-info">
+                  Cet outil est une approximation simple : les vrais devis pro ajoutent souvent marge, risques, et charges fixes. [web:138][web:141]
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Calcul du coût d’un projet | Créé par Thomas Lewis
+    </div>
+  </div>
+
+  <script>
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      const main = document.getElementById('main-content');
+      main.style.display = 'block';
+    }, 1000);
+
+    const taskName = document.getElementById('taskName');
+    const taskHours = document.getElementById('taskHours');
+    const taskRate = document.getElementById('taskRate');
+    const btnAddRow = document.getElementById('btn-add-row');
+
+    const tableBody = document.getElementById('costTableBody');
+    const rowCountEl = document.getElementById('rowCount');
+    const projectTotalEl = document.getElementById('projectTotal');
+
+    const STORAGE_KEY = 'global_project_cost_v1';
+    let rows = [];
+
+    function saveRows(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
+    }
+
+    function loadRows(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+      try{
+        rows = JSON.parse(raw) || [];
+      }catch(e){
+        rows = [];
+      }
+    }
+
+    function formatMoney(value){
+      return value.toFixed(2).replace('.', ',');
+    }
+
+    function renderRows(){
+      tableBody.innerHTML = '';
+      if(rows.length === 0){
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 5;
+        td.style.fontSize = '0.8rem';
+        td.style.color = '#94a3b8';
+        td.textContent = 'Aucune tâche pour le moment.';
+        tr.appendChild(td);
+        tableBody.appendChild(tr);
+        rowCountEl.textContent = '0';
+        projectTotalEl.textContent = '0';
+        return;
+      }
+
+      let total = 0;
+      rows.forEach(row => {
+        const tr = document.createElement('tr');
+
+        const tdName = document.createElement('td');
+        tdName.textContent = row.name;
+
+        const tdHours = document.createElement('td');
+        tdHours.className = 'col-number';
+        tdHours.textContent = row.hours;
+
+        const tdRate = document.createElement('td');
+        tdRate.className = 'col-number';
+        tdRate.textContent = formatMoney(row.rate);
+
+        const rowTotal = row.hours * row.rate;
+        total += rowTotal;
+
+        const tdTotal = document.createElement('td');
+        tdTotal.className = 'col-number';
+        tdTotal.textContent = formatMoney(rowTotal);
+
+        const tdActions = document.createElement('td');
+        tdActions.className = 'row-actions';
+        const btnDel = document.createElement('button');
+        btnDel.className = 'btn-ghost';
+        btnDel.style.fontSize = '0.7rem';
+        btnDel.style.padding = '4px 10px';
+        btnDel.textContent = 'Supprimer';
+        btnDel.addEventListener('click', () => {
+          rows = rows.filter(r => r.id !== row.id);
+          saveRows();
+          renderRows();
+        });
+        tdActions.appendChild(btnDel);
+
+        tr.appendChild(tdName);
+        tr.appendChild(tdHours);
+        tr.appendChild(tdRate);
+        tr.appendChild(tdTotal);
+        tr.appendChild(tdActions);
+
+        tableBody.appendChild(tr);
+      });
+
+      rowCountEl.textContent = rows.length.toString();
+      projectTotalEl.textContent = formatMoney(total);
+    }
+
+    function addRow(){
+      const name = taskName.value.trim();
+      let hours = parseFloat(taskHours.value);
+      let rate = parseFloat(taskRate.value);
+
+      if(!name){
+        alert('Merci de donner un nom à la tâche.');
+        return;
+      }
+      if(isNaN(hours) || hours <= 0){
+        alert('Merci de saisir un nombre d’heures valide.');
+        return;
+      }
+      if(isNaN(rate) || rate < 0){
+        alert('Merci de saisir un taux horaire valide.');
+        return;
+      }
+
+      hours = Math.round(hours * 2) / 2; // arrondi 0.5
+      rate = Math.round(rate * 100) / 100;
+
+      rows.push({
+        id: Date.now(),
+        name,
+        hours,
+        rate
+      });
+
+      taskName.value = '';
+      taskHours.value = '2';
+      taskRate.value = '40';
+
+      saveRows();
+      renderRows();
+    }
+
+    btnAddRow.addEventListener('click', addRow);
+    taskName.addEventListener('keydown', e => { if(e.key === 'Enter') addRow(); });
+    taskRate.addEventListener('keydown', e => { if(e.key === 'Enter') addRow(); });
+    taskHours.addEventListener('keydown', e => { if(e.key === 'Enter') addRow(); });
+
+    loadRows();
+    renderRows();
+  </script>
+</body>
+</html>

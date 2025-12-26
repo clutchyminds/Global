@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Global - Gestionnaire de listes</title>
+  <style>
+    /* RESET + VARIABLES */
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-light:#29d8ff;
+      --blue-main:#007BFF;
+      --blue-dark:#004a9f;
+      --white:#ffffff;
+    }
+
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%,rgba(255,255,255,0.12),transparent 55%),
+        radial-gradient(circle at 100% 100%,rgba(41,216,255,0.18),transparent 55%),
+        linear-gradient(135deg,#020617 0%,#031633 40%,#001a3b 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:0.08;
+      mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;
+      z-index:-1;
+    }
+
+    /* LOADER */
+    #loader{
+      position:fixed;inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;justify-content:center;align-items:center;
+      z-index:9999;overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;
+      width:min(520px,90vw);
+      padding:26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(56,189,248,0.26),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(56,189,248,0.8);
+      box-shadow:0 22px 55px rgba(0,0,0,0.9),0 0 35px rgba(56,189,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+      overflow:hidden;
+    }
+    .loader-title{
+      font-size:0.9rem;
+      letter-spacing:0.35em;
+      text-transform:uppercase;
+      color:#7dd3fc;
+      margin-bottom:16px;
+      position:relative;
+    }
+    .loader-title::after{
+      content:"";
+      position:absolute;left:0;bottom:-6px;
+      width:260px;height:2px;
+      background:linear-gradient(90deg,#7dd3fc,transparent);
+      box-shadow:0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row{
+      display:flex;align-items:baseline;gap:6px;
+      font-size:1rem;margin-bottom:14px;
+    }
+    .status-label{
+      text-transform:uppercase;
+      letter-spacing:0.18em;font-weight:600;
+    }
+    .status-dots{
+      display:inline-block;min-width:18px;
+      animation:blinkDots 1s steps(2,start) infinite;
+      color:#38bdf8;
+    }
+    @keyframes blinkDots{
+      0%,50%{opacity:1;}
+      50.01%,100%{opacity:0;}
+    }
+    .loader-bar{
+      position:relative;width:100%;height:12px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.9);
+      background:rgba(15,23,42,0.9);
+      overflow:hidden;
+      box-shadow:inset 0 0 8px rgba(15,23,42,1),0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;inset:0;width:0%;
+      background:linear-gradient(90deg,#22c1c3,#29d8ff,#007bff);
+      box-shadow:0 0 18px rgba(56,189,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{font-size:0.72rem;margin-top:4px;color:#a5b4fc;opacity:0.9;}
+    .loader-terminal{
+      margin-top:14px;padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;border:1px solid rgba(15,23,42,1);
+      box-shadow:inset 0 0 18px rgba(0,0,0,0.9),0 0 14px rgba(15,23,42,0.9);
+      height:130px;overflow:hidden;
+      font-size:0.7rem;line-height:1.5;color:#c4f1ff;
+    }
+    .terminal-line{opacity:0;transform:translateY(6px);animation:lineIn 5s linear infinite;}
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-cursor{display:inline-block;width:8px;animation:cursorBlink 0.6s steps(1,start) infinite;color:#38bdf8;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%{opacity:1;transform:translateY(0);}
+      70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    @keyframes cursorBlink{
+      0%,49%{opacity:1;}
+      50%,100%{opacity:0;}
+    }
+
+    /* CONTENU */
+    #main-content{
+      opacity:0;transform:translateY(10px);
+      animation:fadeIn 0.7s ease forwards;
+      animation-delay:0.2s;display:none;
+    }
+    @keyframes fadeIn{to{opacity:1;transform:translateY(0);}}
+
+    .top-banner{
+      position:sticky;top:0;z-index:50;
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(0,123,255,0.82),rgba(3,105,161,0.82));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:0 10px 30px rgba(0,0,0,0.55),0 0 0 1px rgba(255,255,255,0.04);
+      color:var(--white);padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;letter-spacing:0.08em;font-weight:700;
+      text-transform:uppercase;display:flex;flex-direction:column;gap:12px;
+    }
+    .top-banner::after{
+      content:"";height:2px;width:260px;margin-top:4px;
+      background:linear-gradient(90deg,var(--white),rgba(255,255,255,0));opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;gap:26px;padding-bottom:10px;margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;color:#e0f2ff;text-decoration:none;
+      font-size:0.98rem;font-weight:500;
+      padding:7px 18px;border-radius:999px;
+      display:inline-flex;align-items:center;gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:0 0 0 1px rgba(15,23,42,0.7),0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";width:6px;height:6px;border-radius:999px;
+      background:var(--blue-light);box-shadow:0 0 12px rgba(41,216,255,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:0 0 0 1px rgba(148,163,184,0.25),0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+    .tool-wrapper{max-width:900px;margin:18px auto 0;display:flex;flex-direction:column;gap:18px;}
+    .tool-card{
+      position:relative;padding:18px 18px 20px;
+      border-radius:24px;
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+      background:
+        radial-gradient(circle at 0 0,rgba(255,255,255,0.16),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.95),rgba(15,23,42,0.8));
+      border:1px solid rgba(148,163,184,0.5);
+      box-shadow:0 18px 40px rgba(15,23,42,0.9),0 0 0 1px rgba(15,23,42,0.9);
+    }
+    .tool-header{
+      display:flex;justify-content:space-between;align-items:baseline;
+      gap:12px;margin-bottom:12px;flex-wrap:wrap;
+    }
+    .tool-title{font-size:1.4rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;}
+    .tool-subtitle{font-size:0.88rem;color:#cbd5f5;max-width:380px;}
+
+    .btn-ghost{
+      border-radius:999px;border:1px solid rgba(148,163,184,0.8);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.08),transparent 65%);
+      padding:6px 14px;font-size:0.78rem;
+      text-transform:uppercase;letter-spacing:0.14em;
+      color:#e5f1ff;cursor:pointer;
+      display:inline-flex;align-items:center;gap:6px;
+      transition:transform 0.16s,box-shadow 0.16s,background 0.16s,border-color 0.16s;
+    }
+    .btn-ghost:hover{
+      transform:translateY(-1px);
+      border-color:rgba(56,189,248,0.9);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.20),transparent 75%);
+      box-shadow:0 8px 20px rgba(15,23,42,1),0 0 22px rgba(56,189,248,0.7);
+    }
+
+    .layout-grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+      gap:18px;
+    }
+    @media(max-width:850px){.layout-grid{grid-template-columns:1fr;}}
+
+    .field{margin-bottom:10px;}
+    .field label{display:block;font-size:0.8rem;margin-bottom:4px;color:#cbd5f5;}
+    .field input[type="text"]{
+      width:100%;border-radius:14px;
+      border:1px solid rgba(148,163,184,0.8);
+      background:rgba(15,23,42,0.9);color:#e5f1ff;
+      padding:7px 9px;font-size:0.88rem;
+      outline:none;
+      box-shadow:inset 0 0 8px rgba(0,0,0,0.9),0 4px 12px rgba(15,23,42,0.9);
+    }
+
+    .tiny-info{font-size:0.72rem;color:#94a3b8;margin-top:4px;}
+
+    .list-card{
+      margin-top:10px;
+      border-radius:18px;
+      border:1px solid rgba(148,163,184,0.8);
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.96),rgba(15,23,42,0.98));
+      padding:10px 12px;
+      box-shadow:inset 0 0 12px rgba(0,0,0,0.95),0 6px 18px rgba(15,23,42,1);
+      font-size:0.84rem;
+    }
+
+    .todo-header-row{
+      display:flex;justify-content:space-between;align-items:center;
+      gap:10px;margin-bottom:8px;
+    }
+    .filter-chip{
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.8);
+      padding:4px 9px;
+      font-size:0.75rem;
+      display:inline-flex;align-items:center;gap:6px;
+      cursor:pointer;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.08),transparent 65%);
+    }
+    .filter-chip.active{
+      border-color:rgba(56,189,248,0.9);
+      box-shadow:0 0 0 1px rgba(56,189,248,0.8),0 0 18px rgba(56,189,248,0.7);
+    }
+
+    ul.todo-list{
+      list-style:none;margin-top:6px;
+    }
+    .todo-item{
+      display:flex;justify-content:space-between;align-items:center;
+      gap:10px;padding:6px 0;border-bottom:1px solid rgba(30,64,175,0.5);
+    }
+    .todo-left{
+      display:flex;align-items:flex-start;gap:8px;flex:1;
+    }
+    .todo-title{
+      font-size:0.86rem;color:#e5f1ff;
+      word-break:break-word;
+    }
+    .todo-title.done{
+      text-decoration:line-through;
+      color:#9ca3af;
+    }
+    .todo-meta{
+      font-size:0.7rem;color:#94a3b8;margin-top:2px;
+    }
+    .todo-tag{
+      border-radius:999px;
+      border:1px solid rgba(56,189,248,0.6);
+      padding:1px 6px;font-size:0.7rem;
+      color:#7dd3fc;
+    }
+
+    .todo-actions{
+      display:flex;gap:6px;
+    }
+    .badge-counter{
+      font-size:0.75rem;color:#cbd5f5;
+    }
+
+    .info-panel{
+      border-radius:18px;
+      border:1px solid rgba(148,163,184,0.8);
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.96),rgba(15,23,42,0.98));
+      padding:10px 12px 12px;
+      box-shadow:inset 0 0 12px rgba(0,0,0,0.95),0 6px 18px rgba(15,23,42,1);
+      font-size:0.8rem;color:#cbd5f5;
+    }
+    .info-panel ul{margin-top:6px;padding-left:16px;}
+    .info-panel li{margin-bottom:4px;}
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;padding:14px 7vw 12px;
+      text-align:center;font-size:0.9rem;
+      position:fixed;left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:0 -12px 30px rgba(0,0,0,0.8),0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    }
+  </style>
+</head>
+<body>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//TODO-ENGINE</div>
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+      <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+      <div class="loader-subtext">
+        Listes de tâches avec sauvegarde locale · Organisation simple et rapide.
+      </div>
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du gestionnaire de listes Global...</div>
+        <div class="terminal-line">[OK]  Activation du stockage local pour garder tes tâches.</div>
+        <div class="terminal-line">[TIP] Ajoute une tâche, marque‑la comme terminée ou supprime‑la.</div>
+        <div class="terminal-line">[OK]  GLOBAL//TODO-ENGINE opérationnel.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Listes / To‑do
+      <nav class="nav-bar">
+        <a href="index.html">Accueil</a>
+        <a href="cours.html">Cours</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="tool-wrapper">
+        <div class="tool-card">
+          <div class="tool-header">
+            <div class="tool-title">Gestionnaire de listes</div>
+            <div class="tool-subtitle">
+              Crée des to‑do, coche ce qui est fait, supprime le reste. Les tâches sont sauvegardées dans ton navigateur.
+            </div>
+          </div>
+
+          <div class="layout-grid">
+            <!-- Colonne gauche : app -->
+            <div>
+              <div class="field">
+                <label for="taskTitle">Nouvelle tâche</label>
+                <input type="text" id="taskTitle" placeholder="Ex : Réviser le chapitre sur les suites" />
+              </div>
+              <div class="field">
+                <label for="taskTag">Catégorie (optionnel)</label>
+                <input type="text" id="taskTag" placeholder="Ex : Maths, NSI, Perso..." />
+              </div>
+              <button class="btn-ghost" id="btn-add" style="margin-top:4px;">
+                Ajouter à la liste
+              </button>
+              <div class="tiny-info">
+                Les tâches sont stockées dans <code>localStorage</code>, donc restent même si tu rafraîchis la page (sauf si tu effaces les données du navigateur). [web:128][web:132]
+              </div>
+
+              <div class="list-card">
+                <div class="todo-header-row">
+                  <span class="badge-counter">
+                    <span id="countTodo">0</span> tâche(s) en cours · <span id="countDone">0</span> terminée(s)
+                  </span>
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <button class="filter-chip active" data-filter="all" id="filter-all">Tout</button>
+                    <button class="filter-chip" data-filter="active" id="filter-active">En cours</button>
+                    <button class="filter-chip" data-filter="done" id="filter-done">Terminées</button>
+                    <button class="filter-chip" id="btn-clear-done">Nettoyer terminées</button>
+                  </div>
+                </div>
+
+                <ul class="todo-list" id="todoList"></ul>
+              </div>
+            </div>
+
+            <!-- Colonne droite : explication -->
+            <div>
+              <div class="info-panel">
+                <strong>À quoi ça sert ?</strong>
+                <ul>
+                  <li>Suivre tes tâches de cours (DM, révisions, projets NSI...).</li>
+                  <li>Gérer des listes perso : idées de projets, choses à faire pour le serveur, etc.</li>
+                  <li>Comprendre comment on combine DOM + événements + localStorage en JS. [web:53][web:128]</li>
+                </ul>
+                <div class="pill-info" style="margin-top:10px;">
+                  Le stockage est local au navigateur : ce n’est pas un backend, mais parfait pour s’organiser rapidement. [web:52][web:134]
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Gestionnaire de listes | Créé par Thomas Lewis
+    </div>
+  </div>
+
+  <script>
+    // Loader
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      const main = document.getElementById('main-content');
+      main.style.display = 'block';
+    }, 1000);
+
+    // Elements
+    const taskTitle = document.getElementById('taskTitle');
+    const taskTag = document.getElementById('taskTag');
+    const btnAdd = document.getElementById('btn-add');
+    const todoListEl = document.getElementById('todoList');
+    const countTodoEl = document.getElementById('countTodo');
+    const countDoneEl = document.getElementById('countDone');
+
+    const filterAll = document.getElementById('filter-all');
+    const filterActive = document.getElementById('filter-active');
+    const filterDone = document.getElementById('filter-done');
+    const btnClearDone = document.getElementById('btn-clear-done');
+
+    let tasks = [];
+    let currentFilter = 'all';
+
+    const STORAGE_KEY = 'global_todo_tasks_v1';
+
+    function saveTasks(){
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); // persistance simple [web:52][web:134]
+    }
+
+    function loadTasks(){
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+      try{
+        tasks = JSON.parse(raw) || [];
+      }catch(e){
+        tasks = [];
+      }
+    }
+
+    function updateCounters(){
+      const active = tasks.filter(t => !t.done).length;
+      const done = tasks.filter(t => t.done).length;
+      countTodoEl.textContent = active;
+      countDoneEl.textContent = done;
+    }
+
+    function renderTasks(){
+      todoListEl.innerHTML = '';
+      let visible = tasks;
+      if(currentFilter === 'active') visible = tasks.filter(t => !t.done);
+      if(currentFilter === 'done') visible = tasks.filter(t => t.done);
+
+      if(visible.length === 0){
+        const li = document.createElement('li');
+        li.style.fontSize = '0.8rem';
+        li.style.color = '#94a3b8';
+        li.textContent = 'Aucune tâche pour le moment.';
+        todoListEl.appendChild(li);
+        updateCounters();
+        return;
+      }
+
+      visible.forEach(task => {
+        const li = document.createElement('li');
+        li.className = 'todo-item';
+
+        const left = document.createElement('div');
+        left.className = 'todo-left';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = task.done;
+        checkbox.addEventListener('change', () => {
+          task.done = !task.done;
+          saveTasks();
+          updateCounters();
+          renderTasks();
+        });
+
+        const textWrap = document.createElement('div');
+        const titleEl = document.createElement('div');
+        titleEl.className = 'todo-title' + (task.done ? ' done' : '');
+        titleEl.textContent = task.title;
+
+        const metaEl = document.createElement('div');
+        metaEl.className = 'todo-meta';
+        const date = new Date(task.createdAt);
+        metaEl.textContent = 'Ajoutée le ' +
+          date.toLocaleDateString('fr-FR', {day:'2-digit',month:'2-digit',year:'numeric'}) +
+          ' à ' +
+          date.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+
+        textWrap.appendChild(titleEl);
+        textWrap.appendChild(metaEl);
+
+        if(task.tag){
+          const tagEl = document.createElement('span');
+          tagEl.className = 'todo-tag';
+          tagEl.textContent = task.tag;
+          metaEl.appendChild(document.createTextNode(' · '));
+          metaEl.appendChild(tagEl);
+        }
+
+        left.appendChild(checkbox);
+        left.appendChild(textWrap);
+
+        const actions = document.createElement('div');
+        actions.className = 'todo-actions';
+
+        const btnDelete = document.createElement('button');
+        btnDelete.className = 'btn-ghost';
+        btnDelete.style.fontSize = '0.7rem';
+        btnDelete.style.padding = '4px 10px';
+        btnDelete.textContent = 'Supprimer';
+        btnDelete.addEventListener('click', () => {
+          tasks = tasks.filter(t => t.id !== task.id);
+          saveTasks();
+          updateCounters();
+          renderTasks();
+        });
+
+        actions.appendChild(btnDelete);
+
+        li.appendChild(left);
+        li.appendChild(actions);
+        todoListEl.appendChild(li);
+      });
+
+      updateCounters();
+    }
+
+    function addTask(){
+      const title = taskTitle.value.trim();
+      const tag = taskTag.value.trim();
+
+      if(!title){
+        alert('Merci d’entrer un titre de tâche.');
+        return;
+      }
+
+      const task = {
+        id: Date.now(),
+        title,
+        tag: tag || '',
+        done: false,
+        createdAt: new Date().toISOString()
+      };
+
+      tasks.unshift(task);
+      taskTitle.value = '';
+      taskTag.value = '';
+      saveTasks();
+      renderTasks();
+    }
+
+    function setFilter(f){
+      currentFilter = f;
+      [filterAll,filterActive,filterDone].forEach(btn => btn.classList.remove('active'));
+      if(f === 'all') filterAll.classList.add('active');
+      if(f === 'active') filterActive.classList.add('active');
+      if(f === 'done') filterDone.classList.add('active');
+      renderTasks();
+    }
+
+    function clearDone(){
+      tasks = tasks.filter(t => !t.done);
+      saveTasks();
+      renderTasks();
+    }
+
+    btnAdd.addEventListener('click', addTask);
+    taskTitle.addEventListener('keydown', e => {
+      if(e.key === 'Enter') addTask();
+    });
+
+    filterAll.addEventListener('click', () => setFilter('all'));
+    filterActive.addEventListener('click', () => setFilter('active'));
+    filterDone.addEventListener('click', () => setFilter('done'));
+    btnClearDone.addEventListener('click', clearDone);
+
+    // Init
+    loadTasks(); // récupère depuis localStorage [web:52][web:128]
+    renderTasks();
+  </script>
+</body>
+</html>

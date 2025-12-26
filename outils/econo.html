@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Global - Simulateur d’économies</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --blue-light:#29d8ff;
+      --blue-main:#007BFF;
+      --blue-dark:#004a9f;
+      --white:#ffffff;
+    }
+    body{
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0% 0%,rgba(255,255,255,0.12),transparent 55%),
+        radial-gradient(circle at 100% 100%,rgba(41,216,255,0.18),transparent 55%),
+        linear-gradient(135deg,#020617 0%,#031633 40%,#001a3b 100%);
+      color:#e5f1ff;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";position:fixed;inset:0;pointer-events:none;
+      opacity:0.08;mix-blend-mode:soft-light;
+      background-image:
+        linear-gradient(0deg,rgba(255,255,255,0.08) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:3px 3px,3px 3px;z-index:-1;
+    }
+
+    #loader{
+      position:fixed;inset:0;
+      background:radial-gradient(circle at 20% 20%,#0b1220 0,#020617 45%,#000 100%);
+      display:flex;justify-content:center;align-items:center;
+      z-index:9999;overflow:hidden;
+    }
+    .loader-hud{
+      position:relative;width:min(520px,90vw);padding:26px;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 0 0,rgba(56,189,248,0.26),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.98),rgba(15,23,42,0.9));
+      border:1px solid rgba(56,189,248,0.8);
+      box-shadow:0 22px 55px rgba(0,0,0,0.9),0 0 35px rgba(56,189,248,0.7);
+      color:#e5f1ff;
+      font-family:"JetBrains Mono",SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+      overflow:hidden;
+    }
+    .loader-title{
+      font-size:0.9rem;letter-spacing:0.35em;text-transform:uppercase;
+      color:#7dd3fc;margin-bottom:16px;position:relative;
+    }
+    .loader-title::after{
+      content:"";position:absolute;left:0;bottom:-6px;
+      width:260px;height:2px;
+      background:linear-gradient(90deg,#7dd3fc,transparent);
+      box-shadow:0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row{display:flex;align-items:baseline;gap:6px;font-size:1rem;margin-bottom:14px;}
+    .status-label{text-transform:uppercase;letter-spacing:0.18em;font-weight:600;}
+    .status-dots{display:inline-block;min-width:18px;animation:blinkDots 1s steps(2,start) infinite;color:#38bdf8;}
+    @keyframes blinkDots{0%,50%{opacity:1;}50.01%,100%{opacity:0;}}
+    .loader-bar{
+      position:relative;width:100%;height:12px;border-radius:999px;
+      border:1px solid rgba(148,163,184,0.9);
+      background:rgba(15,23,42,0.9);overflow:hidden;
+      box-shadow:inset 0 0 8px rgba(15,23,42,1),0 0 18px rgba(15,23,42,0.9);
+      margin-bottom:10px;
+    }
+    .loader-bar-fill{
+      position:absolute;inset:0;width:0%;
+      background:linear-gradient(90deg,#22c1c3,#29d8ff,#007bff);
+      box-shadow:0 0 18px rgba(56,189,248,0.9);
+      animation:barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress{
+      0%{width:0%;transform:translateX(-5%);}
+      40%{width:65%;transform:translateX(0);}
+      70%{width:100%;transform:translateX(0);}
+      100%{width:35%;transform:translateX(90%);}
+    }
+    .loader-subtext{font-size:0.72rem;margin-top:4px;color:#a5b4fc;opacity:0.9;}
+    .loader-terminal{
+      margin-top:14px;padding:10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.9),rgba(15,23,42,0.98));
+      border-radius:10px;border:1px solid rgba(15,23,42,1);
+      box-shadow:inset 0 0 18px rgba(0,0,0,0.9),0 0 14px rgba(15,23,42,0.9);
+      height:130px;overflow:hidden;font-size:0.7rem;line-height:1.5;color:#c4f1ff;
+    }
+    .terminal-line{opacity:0;transform:translateY(6px);animation:lineIn 5s linear infinite;}
+    .terminal-line:nth-child(1){animation-delay:0.1s;}
+    .terminal-line:nth-child(2){animation-delay:0.6s;}
+    .terminal-line:nth-child(3){animation-delay:1.2s;}
+    .terminal-line:nth-child(4){animation-delay:1.9s;}
+    .terminal-line:nth-child(5){animation-delay:2.5s;}
+    .terminal-cursor{display:inline-block;width:8px;animation:cursorBlink 0.6s steps(1,start) infinite;color:#38bdf8;}
+    @keyframes lineIn{
+      0%{opacity:0;transform:translateY(6px);}
+      8%{opacity:1;transform:translateY(0);}
+      70%{opacity:1;transform:translateY(0);}
+      100%{opacity:0;transform:translateY(-12px);}
+    }
+    @keyframes cursorBlink{0%,49%{opacity:1;}50%,100%{opacity:0;}}
+
+    #main-content{
+      opacity:0;transform:translateY(10px);
+      animation:fadeIn 0.7s ease forwards;
+      animation-delay:0.2s;display:none;
+    }
+    @keyframes fadeIn{to{opacity:1;transform:translateY(0);}}
+
+    .top-banner{
+      position:sticky;top:0;z-index:50;
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+      background:linear-gradient(135deg,rgba(0,123,255,0.82),rgba(3,105,161,0.82));
+      border-bottom:1px solid rgba(255,255,255,0.18);
+      box-shadow:0 10px 30px rgba(0,0,0,0.55),0 0 0 1px rgba(255,255,255,0.04);
+      color:var(--white);padding:18px 7vw 4px 7vw;
+      font-size:1.9rem;letter-spacing:0.08em;font-weight:700;
+      text-transform:uppercase;display:flex;flex-direction:column;gap:12px;
+    }
+    .top-banner::after{
+      content:"";height:2px;width:260px;margin-top:4px;
+      background:linear-gradient(90deg,var(--white),rgba(255,255,255,0));opacity:0.9;
+    }
+    .nav-bar{
+      display:flex;gap:26px;padding-bottom:10px;margin-top:4px;
+    }
+    .nav-bar a{
+      position:relative;color:#e0f2ff;text-decoration:none;
+      font-size:0.98rem;font-weight:500;
+      padding:7px 18px;border-radius:999px;
+      display:inline-flex;align-items:center;gap:8px;
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.24),transparent 60%);
+      border:1px solid rgba(255,255,255,0.22);
+      box-shadow:0 0 0 1px rgba(15,23,42,0.7),0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+      transition:transform 0.18s,box-shadow 0.18s,background 0.18s;
+    }
+    .nav-bar a::before{
+      content:"";width:6px;height:6px;border-radius:999px;
+      background:var(--blue-light);box-shadow:0 0 12px rgba(41,216,255,0.9);
+    }
+    .nav-bar a:hover{
+      transform:translateY(-1px) scale(1.02);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.5),transparent 70%);
+      box-shadow:0 0 0 1px rgba(148,163,184,0.25),0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding{padding:26px 7vw 90px 7vw;}
+    .tool-wrapper{max-width:900px;margin:18px auto 0;display:flex;flex-direction:column;gap:18px;}
+    .tool-card{
+      position:relative;padding:18px 18px 20px;
+      border-radius:24px;
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+      background:
+        radial-gradient(circle at 0 0,rgba(255,255,255,0.16),transparent 60%),
+        linear-gradient(145deg,rgba(15,23,42,0.95),rgba(15,23,42,0.8));
+      border:1px solid rgba(148,163,184,0.5);
+      box-shadow:0 18px 40px rgba(15,23,42,0.9),0 0 0 1px rgba(15,23,42,0.9);
+    }
+    .tool-header{
+      display:flex;justify-content:space-between;align-items:baseline;
+      gap:12px;margin-bottom:12px;flex-wrap:wrap;
+    }
+    .tool-title{font-size:1.4rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;}
+    .tool-subtitle{font-size:0.88rem;color:#cbd5f5;max-width:380px;}
+
+    .btn-ghost{
+      border-radius:999px;border:1px solid rgba(148,163,184,0.8);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.08),transparent 65%);
+      padding:6px 14px;font-size:0.78rem;
+      text-transform:uppercase;letter-spacing:0.14em;
+      color:#e5f1ff;cursor:pointer;
+      display:inline-flex;align-items:center;gap:6px;
+      transition:transform 0.16s,box-shadow 0.16s,background 0.16s,border-color 0.16s;
+    }
+    .btn-ghost:hover{
+      transform:translateY(-1px);
+      border-color:rgba(56,189,248,0.9);
+      background:radial-gradient(circle at 0 0,rgba(255,255,255,0.20),transparent 75%);
+      box-shadow:0 8px 20px rgba(15,23,42,1),0 0 22px rgba(56,189,248,0.7);
+    }
+
+    .layout-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px;}
+    @media(max-width:850px){.layout-grid{grid-template-columns:1fr;}}
+
+    .field{margin-bottom:10px;}
+    .field label{display:block;font-size:0.8rem;margin-bottom:4px;color:#cbd5f5;}
+    .field input[type="number"]{
+      width:100%;border-radius:14px;
+      border:1px solid rgba(148,163,184,0.8);
+      background:rgba(15,23,42,0.9);color:#e5f1ff;
+      padding:7px 9px;font-size:0.88rem;
+      outline:none;
+      box-shadow:inset 0 0 8px rgba(0,0,0,0.9),0 4px 12px rgba(15,23,42,0.9);
+    }
+    .tiny-info{font-size:0.72rem;color:#94a3b8;margin-top:4px;}
+
+    .result-card{
+      margin-top:10px;border-radius:18px;
+      border:1px solid rgba(148,163,184,0.8);
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.96),rgba(15,23,42,0.98));
+      padding:10px 12px;
+      box-shadow:inset 0 0 12px rgba(0,0,0,0.95),0 6px 18px rgba(15,23,42,1);
+      font-size:0.84rem;
+    }
+    .result-row{
+      display:flex;justify-content:space-between;align-items:center;
+      margin-bottom:6px;
+    }
+    .result-label{color:#cbd5f5;}
+    .result-value{font-weight:600;}
+
+    .bar-wrapper{
+      margin-top:10px;
+      border-radius:14px;
+      border:1px solid rgba(148,163,184,0.8);
+      padding:8px 10px;
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.96),rgba(15,23,42,0.98));
+      font-size:0.8rem;
+    }
+    .bar{
+      height:12px;border-radius:999px;
+      background:rgba(15,23,42,0.9);
+      border:1px solid rgba(148,163,184,0.9);
+      overflow:hidden;margin-bottom:6px;
+      display:flex;
+    }
+    .bar-part-savings{
+      background:linear-gradient(90deg,#22c55e,#4ade80);
+      height:100%;width:0%;transition:width 0.4s ease-out;
+    }
+    .bar-part-interests{
+      background:linear-gradient(90deg,#0ea5e9,#6366f1);
+      height:100%;width:0%;transition:width 0.4s ease-out;
+    }
+
+    .info-panel{
+      border-radius:18px;
+      border:1px solid rgba(148,163,184,0.8);
+      background:radial-gradient(circle at 0 0,rgba(15,23,42,0.96),rgba(15,23,42,0.98));
+      padding:10px 12px 12px;
+      box-shadow:inset 0 0 12px rgba(0,0,0,0.95),0 6px 18px rgba(15,23,42,1);
+      font-size:0.8rem;color:#cbd5f5;
+    }
+    .info-panel ul{margin-top:6px;padding-left:16px;}
+    .info-panel li{margin-bottom:4px;}
+
+    .bottom-footer{
+      background:linear-gradient(135deg,rgba(15,23,42,0.98),rgba(15,23,42,0.98));
+      color:#cbd5f5;padding:14px 7vw 12px;
+      text-align:center;font-size:0.9rem;
+      position:fixed;left:0;right:0;bottom:0;
+      border-top:1px solid rgba(148,163,184,0.5);
+      box-shadow:0 -12px 30px rgba(0,0,0,0.8),0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    }
+  </style>
+</head>
+<body>
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//SAVINGS-SIMULATOR</div>
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+      <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+      <div class="loader-subtext">
+        Simulation d’épargne avec versements réguliers et intérêts composés mensuels.
+      </div>
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du simulateur d’économies...</div>
+        <div class="terminal-line">[OK]  Paramètres : capital de départ, versement mensuel, durée, taux annuel.</div>
+        <div class="terminal-line">[OK]  Calcul des intérêts composés sur la durée.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Simulateur d’économies
+      <nav class="nav-bar">
+        <a href="index.html">Accueil</a>
+        <a href="cours.html">Cours</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="tool-wrapper">
+        <div class="tool-card">
+          <div class="tool-header">
+            <div class="tool-title">Économies / budget</div>
+            <div class="tool-subtitle">
+              Vois combien tu peux avoir de côté en fonction de ce que tu épargnes chaque mois, avec ou sans intérêts.
+            </div>
+          </div>
+
+          <div class="layout-grid">
+            <div>
+              <div class="field">
+                <label for="startAmount">Montant de départ (€)</label>
+                <input type="number" id="startAmount" min="0" step="50" value="0" />
+              </div>
+              <div class="field">
+                <label for="monthlyAmount">Versement mensuel (€)</label>
+                <input type="number" id="monthlyAmount" min="0" step="10" value="100" />
+              </div>
+              <div class="field">
+                <label for="years">Durée (années)</label>
+                <input type="number" id="years" min="0.5" step="0.5" value="3" />
+              </div>
+              <div class="field">
+                <label for="rate">Taux d’intérêt annuel (%)</label>
+                <input type="number" id="rate" min="0" step="0.1" value="2" />
+                <div class="tiny-info">
+                  Le taux est appliqué en **intérêts composés mensuels** (taux annuel / 12). [web:160][web:163]
+                </div>
+              </div>
+
+              <button class="btn-ghost" id="btn-simulate" style="margin-top:4px;">
+                Lancer la simulation
+              </button>
+
+              <div class="result-card" id="resultCard" style="margin-top:10px;display:none;">
+                <div class="result-row">
+                  <span class="result-label">Total versé (sans intérêts)</span>
+                  <span class="result-value" id="outSavings">0 €</span>
+                </div>
+                <div class="result-row">
+                  <span class="result-label">Montant final avec intérêts</span>
+                  <span class="result-value" id="outFinal">0 €</span>
+                </div>
+                <div class="result-row">
+                  <span class="result-label">Dont intérêts gagnés</span>
+                  <span class="result-value" id="outInterests">0 €</span>
+                </div>
+
+                <div class="bar-wrapper">
+                  <div class="bar">
+                    <div class="bar-part-savings" id="barSavings"></div>
+                    <div class="bar-part-interests" id="barInterests"></div>
+                  </div>
+                  <div class="tiny-info">
+                    Barre verte = ton épargne versée, barre bleue = intérêts générés pendant la durée. [web:155][web:160]
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="info-panel">
+                <strong>Formule utilisée</strong>
+                <ul>
+                  <li>Capital initial : croissance par intérêts composés mensuels.</li>
+                  <li>Versements mensuels : suite de paiements avec intérêts (comme un plan d’épargne). [web:160][web:163]</li>
+                  <li>Cette simulation ne tient pas compte des impôts ni des frais bancaires.</li>
+                </ul>
+                <div class="tiny-info">
+                  C’est un outil pédagogique pour voir l’effet des intérêts composés, pas un conseil financier officiel. [web:155][web:160]
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Simulateur d’économies | Créé par Thomas Lewis
+    </div>
+  </div>
+
+  <script>
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      const main = document.getElementById('main-content');
+      main.style.display = 'block';
+    }, 1000);
+
+    const startAmount = document.getElementById('startAmount');
+    const monthlyAmount = document.getElementById('monthlyAmount');
+    const years = document.getElementById('years');
+    const rate = document.getElementById('rate');
+    const btnSimulate = document.getElementById('btn-simulate');
+
+    const resultCard = document.getElementById('resultCard');
+    const outSavings = document.getElementById('outSavings');
+    const outFinal = document.getElementById('outFinal');
+    const outInterests = document.getElementById('outInterests');
+    const barSavings = document.getElementById('barSavings');
+    const barInterests = document.getElementById('barInterests');
+
+    function formatMoney(v){
+      return v.toFixed(2).replace('.', ',') + ' €';
+    }
+
+    function simulate(){
+      const P0 = parseFloat(startAmount.value) || 0;
+      const Pm = parseFloat(monthlyAmount.value) || 0;
+      let T = parseFloat(years.value) || 0;
+      const R = parseFloat(rate.value) || 0;
+
+      if(T <= 0){
+        alert("Merci d’entrer une durée > 0.");
+        return;
+      }
+
+      const n = 12; // mensualisé
+      const months = T * 12;
+      const monthlyRate = R > 0 ? (R / 100) / n : 0;
+
+      // Total versé = capital + versements
+      const totalDeposits = P0 + Pm * months;
+
+      let finalAmount = 0;
+
+      if(monthlyRate === 0){
+        finalAmount = totalDeposits;
+      } else {
+        // Croissance du capital initial
+        const principalFuture = P0 * Math.pow(1 + monthlyRate, months);
+
+        // Valeur future d’une rente (versements mensuels) :
+        // FV = Pm * [ ( (1+r)^n - 1 ) / r ]  [web:160][web:163]
+        const paymentsFuture = Pm * ( (Math.pow(1 + monthlyRate, months) - 1) / monthlyRate );
+
+        finalAmount = principalFuture + paymentsFuture;
+      }
+
+      const interests = finalAmount - totalDeposits;
+
+      outSavings.textContent = formatMoney(totalDeposits);
+      outFinal.textContent = formatMoney(finalAmount);
+      outInterests.textContent = formatMoney(interests);
+
+      resultCard.style.display = 'block';
+
+      const base = finalAmount > 0 ? finalAmount : 1;
+      const percSavings = (totalDeposits / base) * 100;
+      const percInterests = (interests > 0 ? interests : 0) / base * 100;
+
+      barSavings.style.width = percSavings + '%';
+      barInterests.style.width = percInterests + '%';
+    }
+
+    btnSimulate.addEventListener('click', simulate);
+  </script>
+</body>
+</html>

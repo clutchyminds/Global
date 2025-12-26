@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Global - Générateur de mot de passe</title>
+  <style>
+    /* RESET + VARIABLES */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    :root {
+      --blue-light: #29d8ff;
+      --blue-main: #007BFF;
+      --blue-dark: #004a9f;
+      --white: #ffffff;
+    }
+
+    /* FOND GLOBAL */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
+        linear-gradient(135deg, #020617 0%, #031633 40%, #001a3b 100%);
+      color: #e5f1ff;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.08;
+      mix-blend-mode: soft-light;
+      background-image:
+        linear-gradient(0deg, rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 3px 3px, 3px 3px;
+      z-index: -1;
+    }
+
+    /* ===== LOADER ===== */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, #0b1220 0, #020617 45%, #000 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      overflow: hidden;
+    }
+    .loader-hud {
+      position: relative;
+      width: min(520px, 90vw);
+      padding: 26px 26px 30px 26px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 0 0, rgba(56,189,248,0.26), transparent 60%),
+        linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
+      border: 1px solid rgba(56,189,248,0.8);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(56,189,248,0.7);
+      color: #e5f1ff;
+      font-family: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      overflow: hidden;
+    }
+    .loader-hud::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size: 100% 3px;
+      mix-blend-mode: soft-light;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .loader-title {
+      font-size: 0.9rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #7dd3fc;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .loader-title::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 260px;
+      height: 2px;
+      background: linear-gradient(90deg, #7dd3fc, transparent);
+      box-shadow: 0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 1rem;
+      margin-bottom: 14px;
+    }
+    .status-label {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 600;
+    }
+    .status-dots {
+      display: inline-block;
+      min-width: 18px;
+      animation: blinkDots 1s steps(2, start) infinite;
+      color: #38bdf8;
+    }
+    @keyframes blinkDots {
+      0%, 50% { opacity: 1; }
+      50.01%, 100% { opacity: 0; }
+    }
+    .loader-bar {
+      position: relative;
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.9);
+      background: rgba(15,23,42,0.9);
+      overflow: hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom: 10px;
+    }
+    .loader-bar-fill {
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      background: linear-gradient(90deg, #22c1c3, #29d8ff, #007bff);
+      box-shadow: 0 0 18px rgba(56,189,248,0.9);
+      animation: barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress {
+      0%   { width: 0%;   transform: translateX(-5%); }
+      40%  { width: 65%;  transform: translateX(0); }
+      70%  { width: 100%; transform: translateX(0); }
+      100% { width: 35%;  transform: translateX(90%); }
+    }
+    .loader-subtext {
+      font-size: 0.72rem;
+      margin-top: 4px;
+      color: #a5b4fc;
+      opacity: 0.9;
+    }
+    .loader-scan {
+      position: absolute;
+      inset: -40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(56,189,248,0.12) 45%,
+          rgba(56,189,248,0.35) 50%,
+          rgba(56,189,248,0.12) 55%,
+          transparent 100%
+        );
+      mix-blend-mode: screen;
+      animation: scanMove 2.6s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes scanMove {
+      0%   { transform: translateY(-40%); opacity: 0; }
+      10%  { opacity: 0.9; }
+      60%  { opacity: 0.9; }
+      100% { transform: translateY(40%); opacity: 0; }
+    }
+    .loader-terminal {
+      margin-top: 14px;
+      padding: 10px 10px 8px 10px;
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.9), rgba(15,23,42,0.98));
+      border-radius: 10px;
+      border: 1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height: 140px;
+      overflow: hidden;
+      font-size: 0.7rem;
+      line-height: 1.5;
+      color: #c4f1ff;
+      position: relative;
+    }
+    .terminal-line {
+      opacity: 0;
+      transform: translateY(6px);
+      animation: lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1) { animation-delay: 0.1s; }
+    .terminal-line:nth-child(2) { animation-delay: 0.6s; }
+    .terminal-line:nth-child(3) { animation-delay: 1.2s; }
+    .terminal-line:nth-child(4) { animation-delay: 1.9s; }
+    .terminal-line:nth-child(5) { animation-delay: 2.5s; }
+    .terminal-line:nth-child(6) { animation-delay: 3.1s; }
+    .terminal-line:nth-child(7) { animation-delay: 3.7s; }
+    .terminal-line:nth-child(8) { animation-delay: 4.3s; }
+    @keyframes lineIn {
+      0%   { opacity: 0; transform: translateY(6px); }
+      8%   { opacity: 1; transform: translateY(0); }
+      70%  { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-12px); }
+    }
+    .terminal-cursor {
+      display: inline-block;
+      width: 8px;
+      animation: cursorBlink 0.6s steps(1, start) infinite;
+      color: #38bdf8;
+    }
+    @keyframes cursorBlink {
+      0%, 49%  { opacity: 1; }
+      50%,100% { opacity: 0; }
+    }
+
+    /* CONTENU PRINCIPAL (fade-in) */
+    #main-content {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.7s ease forwards;
+      animation-delay: 0.2s;
+      display: none;
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* HEADER + NAV GLASS */
+    .top-banner {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background: linear-gradient(
+        135deg,
+        rgba(0, 123, 255, 0.82),
+        rgba(3, 105, 161, 0.82)
+      );
+      border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      color: var(--white);
+      padding: 18px 7vw 4px 7vw;
+      font-size: 1.9rem;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .top-banner::after {
+      content: "";
+      height: 2px;
+      width: 260px;
+      margin-top: 4px;
+      background: linear-gradient(90deg, var(--white), rgba(255,255,255,0));
+      opacity: 0.9;
+    }
+    .nav-bar {
+      display: flex;
+      justify-content: flex-start;
+      gap: 26px;
+      padding-bottom: 10px;
+      margin-top: 4px;
+    }
+    .nav-bar a {
+      position: relative;
+      color: #e0f2ff;
+      text-decoration: none;
+      font-size: 0.98rem;
+      font-weight: 500;
+      padding: 7px 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.24), transparent 60%);
+      border: 1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition:
+        transform 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        background 0.18s ease-out;
+    }
+    .nav-bar a::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--blue-light);
+      box-shadow: 0 0 12px rgba(41,216,255,0.9);
+    }
+    .nav-bar a:hover {
+      transform: translateY(-1px) scale(1.02);
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.5), transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148, 163, 184, 0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding {
+      padding: 26px 7vw 90px 7vw;
+    }
+
+    .tool-wrapper {
+      max-width: 900px;
+      margin: 18px auto 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .tool-card {
+      position: relative;
+      padding: 18px 18px 20px 18px;
+      border-radius: 24px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background:
+        radial-gradient(circle at 0 0, rgba(255,255,255,0.16), transparent 60%),
+        linear-gradient(145deg, rgba(15,23,42,0.95), rgba(15,23,42,0.8));
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(15,23,42,0.9);
+    }
+
+    .tool-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .tool-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .tool-subtitle {
+      font-size: 0.88rem;
+      color: #cbd5f5;
+      max-width: 360px;
+    }
+
+    .btn-ghost {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.08), transparent 65%);
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #e5f1ff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition:
+        transform 0.16s ease-out,
+        box-shadow 0.16s ease-out,
+        background 0.16s ease-out,
+        border-color 0.16s ease-out;
+    }
+    .btn-ghost:hover {
+      transform: translateY(-1px);
+      border-color: rgba(56,189,248,0.9);
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.20), transparent 75%);
+      box-shadow:
+        0 8px 20px rgba(15,23,42,1),
+        0 0 22px rgba(56,189,248,0.7);
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 18px;
+    }
+    @media (max-width: 850px) {
+      .layout-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .password-display {
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.9);
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,1), rgba(15,23,42,0.95));
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      box-shadow:
+        inset 0 0 12px rgba(0,0,0,0.95),
+        0 6px 18px rgba(15,23,42,1);
+    }
+    .password-output {
+      font-family: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.9rem;
+      color: #e5f1ff;
+      word-break: break-all;
+      flex: 1;
+    }
+
+    .options-group {
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.7);
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.96), rgba(15,23,42,0.98));
+      padding: 10px 12px 12px 12px;
+      margin-bottom: 12px;
+      box-shadow:
+        inset 0 0 12px rgba(0,0,0,0.95),
+        0 6px 18px rgba(15,23,42,1);
+      font-size: 0.82rem;
+    }
+
+    .field {
+      margin-bottom: 8px;
+    }
+    .field label {
+      display: block;
+      font-size: 0.8rem;
+      margin-bottom: 3px;
+      color: #cbd5f5;
+    }
+    .field input[type="number"] {
+      width: 80px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.8);
+      background: rgba(15,23,42,0.9);
+      color: #e5f1ff;
+      padding: 5px 8px;
+      font-size: 0.82rem;
+      outline: none;
+      box-shadow:
+        inset 0 0 8px rgba(0,0,0,0.9),
+        0 4px 12px rgba(15,23,42,0.9);
+    }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+      font-size: 0.8rem;
+    }
+    .check-row input[type="checkbox"] {
+      accent-color: #29d8ff;
+    }
+
+    .tiny-info {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    /* STRENGTH METER */
+    .strength-wrapper {
+      margin-top: 6px;
+    }
+    .strength-bar {
+      position: relative;
+      height: 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.9);
+      background: rgba(15,23,42,0.9);
+      overflow: hidden;
+      box-shadow:
+        inset 0 0 8px rgba(0,0,0,0.95),
+        0 4px 12px rgba(15,23,42,1);
+    }
+    .strength-fill {
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      background: linear-gradient(90deg, #ef4444, #f97316, #22c55e, #4ade80);
+      transition: width 0.2s ease-out;
+    }
+    .strength-label {
+      margin-top: 4px;
+      font-size: 0.8rem;
+      color: #e5f1ff;
+    }
+
+    .pill-info {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.8);
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      color: #cbd5f5;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.08), transparent 65%);
+      margin-top: 6px;
+    }
+
+    .criteria-list {
+      margin-top: 8px;
+      font-size: 0.78rem;
+      color: #cbd5f5;
+      list-style: none;
+    }
+    .criteria-list li {
+      margin-bottom: 2px;
+    }
+
+    /* FOOTER */
+    .bottom-footer {
+      background: linear-gradient(
+        135deg,
+        rgba(15,23,42,0.98),
+        rgba(15,23,42,0.98)
+      );
+      color: #cbd5f5;
+      padding: 14px 7vw 12px 7vw;
+      text-align: center;
+      font-size: 0.9rem;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-top: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+  </style>
+</head>
+<body>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//PASSWORD-ENGINE</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Génération aléatoire · Analyse de force · Prêt pour sécuriser tes comptes.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Chargement du moteur de génération de mots de passe...</div>
+        <div class="terminal-line">[OK]  Jeux de caractères : minuscules, majuscules, chiffres, symboles.</div>
+        <div class="terminal-line">[OK]  Analyse de longueur et de complexité activée.</div>
+        <div class="terminal-line">[TIP] Génère, copie, et colle ton mot de passe dans tes services.</div>
+        <div class="terminal-line">[OK]  GLOBAL//PASSWORD-ENGINE opérationnel.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
+    </div>
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Mot de passe
+      <nav class="nav-bar">
+        <a href="index.html">Accueil</a>
+        <a href="cours.html">Cours</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="tool-wrapper">
+        <div class="tool-card">
+          <div class="tool-header">
+            <div class="tool-title">Générateur de mot de passe</div>
+            <div class="tool-subtitle">
+              Crée des mots de passe forts, vérifie leur niveau de sécurité et copie‑les en un clic.
+            </div>
+          </div>
+
+          <div class="layout-grid">
+            <!-- Colonne gauche : Générateur -->
+            <div>
+              <div class="password-display">
+                <div id="passwordOutput" class="password-output">
+                  Appuie sur « Générer » pour créer un mot de passe.
+                </div>
+                <button class="btn-ghost" id="btn-copy">
+                  Copier
+                </button>
+              </div>
+
+              <div class="options-group">
+                <div class="field">
+                  <label for="lengthInput">Longueur du mot de passe</label>
+                  <input type="number" id="lengthInput" min="6" max="64" value="16" />
+                </div>
+
+                <div class="field">
+                  <label>Caractères inclus</label>
+                  <div class="check-row">
+                    <input type="checkbox" id="opt-lower" checked />
+                    <span>Minuscules (a-z)</span>
+                  </div>
+                  <div class="check-row">
+                    <input type="checkbox" id="opt-upper" checked />
+                    <span>Majuscules (A-Z)</span>
+                  </div>
+                  <div class="check-row">
+                    <input type="checkbox" id="opt-numbers" checked />
+                    <span>Chiffres (0-9)</span>
+                  </div>
+                  <div class="check-row">
+                    <input type="checkbox" id="opt-symbols" checked />
+                    <span>Symboles (!@#$...)</span>
+                  </div>
+                </div>
+
+                <button class="btn-ghost" id="btn-generate" style="margin-top:4px;">
+                  Générer un mot de passe
+                </button>
+
+                <div class="tiny-info">
+                  Astuce : vise au moins 12–16 caractères avec plusieurs types de caractères pour un mot de passe solide. [web:96][web:103]
+                </div>
+              </div>
+            </div>
+
+            <!-- Colonne droite : Analyse de force -->
+            <div>
+              <div class="options-group">
+                <div class="field">
+                  <label for="testInput">Tester la force d’un mot de passe</label>
+                  <input type="text" id="testInput" placeholder="Tape ou colle ici un mot de passe" style="
+                    width: 100%;
+                    border-radius: 14px;
+                    border: 1px solid rgba(148,163,184,0.8);
+                    background: rgba(15,23,42,0.9);
+                    color: #e5f1ff;
+                    padding: 7px 9px;
+                    font-size: 0.88rem;
+                    outline: none;
+                    box-shadow:
+                      inset 0 0 8px rgba(0,0,0,0.9),
+                      0 4px 12px rgba(15,23,42,0.9);
+                  ">
+                </div>
+
+                <div class="strength-wrapper">
+                  <div class="strength-bar">
+                    <div id="strengthFill" class="strength-fill"></div>
+                  </div>
+                  <div id="strengthLabel" class="strength-label">
+                    Force : (en attente)
+                  </div>
+                </div>
+
+                <ul class="criteria-list">
+                  <li id="crit-length">• Longueur ≥ 12 caractères</li>
+                  <li id="crit-lower">• Contient des minuscules</li>
+                  <li id="crit-upper">• Contient des majuscules</li>
+                  <li id="crit-number">• Contient des chiffres</li>
+                  <li id="crit-symbol">• Contient des symboles</li>
+                </ul>
+
+                <div class="pill-info" style="margin-top:10px;">
+                  Ce test donne un indicateur de force basique (pas un audit complet de sécurité). [web:98][web:106]
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Générateur de mot de passe | Créé par Thomas Lewis
+    </div>
+  </div>
+
+  <script>
+    // Masquer le loader après 1 s
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      const main = document.getElementById('main-content');
+      main.style.display = 'block';
+    }, 1000);
+
+    const passwordOutput = document.getElementById('passwordOutput');
+    const btnGenerate = document.getElementById('btn-generate');
+    const btnCopy = document.getElementById('btn-copy');
+
+    const lengthInput = document.getElementById('lengthInput');
+    const optLower = document.getElementById('opt-lower');
+    const optUpper = document.getElementById('opt-upper');
+    const optNumbers = document.getElementById('opt-numbers');
+    const optSymbols = document.getElementById('opt-symbols');
+
+    const testInput = document.getElementById('testInput');
+    const strengthFill = document.getElementById('strengthFill');
+    const strengthLabel = document.getElementById('strengthLabel');
+
+    const critLength = document.getElementById('crit-length');
+    const critLower = document.getElementById('crit-lower');
+    const critUpper = document.getElementById('crit-upper');
+    const critNumber = document.getElementById('crit-number');
+    const critSymbol = document.getElementById('crit-symbol');
+
+    function generatePassword() {
+      let length = parseInt(lengthInput.value, 10);
+      if (isNaN(length) || length < 6) length = 6;
+      if (length > 64) length = 64;
+      lengthInput.value = length;
+
+      let charset = "";
+      const lowerChars = "abcdefghijklmnopqrstuvwxyz";
+      const upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const numberChars = "0123456789";
+      const symbolChars = "!@#$%^&*()-_=+[]{};:,.<>?/";
+
+      if (optLower.checked) charset += lowerChars;
+      if (optUpper.checked) charset += upperChars;
+      if (optNumbers.checked) charset += numberChars;
+      if (optSymbols.checked) charset += symbolChars;
+
+      if (!charset) {
+        charset = lowerChars;
+        optLower.checked = true;
+      }
+
+      let password = "";
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        password += charset[randomIndex];
+      }
+
+      passwordOutput.textContent = password;
+      updateStrength(password);
+      testInput.value = password;
+    }
+
+    function copyPassword() {
+      const pwd = passwordOutput.textContent.trim();
+      if (!pwd || pwd.startsWith("Appuie sur")) return;
+
+      const textarea = document.createElement('textarea');
+      textarea.value = pwd;
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy'); // compatible large navigateurs [web:104][web:107]
+      document.body.removeChild(textarea);
+
+      btnCopy.textContent = "Copié ✔";
+      setTimeout(() => {
+        btnCopy.textContent = "Copier";
+      }, 1500);
+    }
+
+    function updateCriteria(el, ok) {
+      el.style.color = ok ? "#22c55e" : "#cbd5f5";
+    }
+
+    function updateStrength(pwd) {
+      if (!pwd) {
+        strengthFill.style.width = "0%";
+        strengthLabel.textContent = "Force : (en attente)";
+        updateCriteria(critLength, false);
+        updateCriteria(critLower, false);
+        updateCriteria(critUpper, false);
+        updateCriteria(critNumber, false);
+        updateCriteria(critSymbol, false);
+        return;
+      }
+
+      const lengthOK = pwd.length >= 12;
+      const lowerOK = /[a-z]/.test(pwd);
+      const upperOK = /[A-Z]/.test(pwd);
+      const numberOK = /[0-9]/.test(pwd);
+      const symbolOK = /[^A-Za-z0-9]/.test(pwd); // symbole [web:106]
+
+      updateCriteria(critLength, lengthOK);
+      updateCriteria(critLower, lowerOK);
+      updateCriteria(critUpper, upperOK);
+      updateCriteria(critNumber, numberOK);
+      updateCriteria(critSymbol, symbolOK);
+
+      let score = 0;
+      if (lengthOK) score++;
+      if (lowerOK) score++;
+      if (upperOK) score++;
+      if (numberOK) score++;
+      if (symbolOK) score++;
+
+      // Bonus pour très longue longueur
+      if (pwd.length >= 20) score++;
+
+      let width = (score / 6) * 100;
+      strengthFill.style.width = width + "%";
+
+      let label = "";
+      if (score <= 1) {
+        label = "Force : Très faible";
+        strengthFill.style.background = "linear-gradient(90deg,#ef4444,#f97316)";
+      } else if (score <= 3) {
+        label = "Force : Moyenne";
+        strengthFill.style.background = "linear-gradient(90deg,#f97316,#eab308)";
+      } else if (score <= 4) {
+        label = "Force : Bonne";
+        strengthFill.style.background = "linear-gradient(90deg,#22c55e,#4ade80)";
+      } else {
+        label = "Force : Excellente";
+        strengthFill.style.background = "linear-gradient(90deg,#22c55e,#16a34a)";
+      }
+
+      strengthLabel.textContent = label;
+    }
+
+    btnGenerate.addEventListener('click', generatePassword);
+    btnCopy.addEventListener('click', copyPassword);
+    testInput.addEventListener('input', (e) => {
+      updateStrength(e.target.value);
+    });
+
+    // Génère un mot de passe par défaut au chargement
+    window.addEventListener('load', generatePassword);
+  </script>
+</body>
+</html>

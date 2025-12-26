@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Global - Tableau périodique</title>
+  <style>
+    /* RESET + VARIABLES */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    :root {
+      --blue-light: #29d8ff;
+      --blue-main: #007BFF;
+      --blue-dark: #004a9f;
+      --white: #ffffff;
+    }
+
+    /* FOND GLOBAL */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
+        linear-gradient(135deg, #020617 0%, #031633 40%, #001a3b 100%);
+      color: #e5f1ff;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.08;
+      mix-blend-mode: soft-light;
+      background-image:
+        linear-gradient(0deg, rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 3px 3px, 3px 3px;
+      z-index: -1;
+    }
+
+    /* ===== LOADER ===== */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, #0b1220 0, #020617 45%, #000 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      overflow: hidden;
+    }
+    .loader-hud {
+      position: relative;
+      width: min(520px, 90vw);
+      padding: 26px 26px 30px 26px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 0 0, rgba(56,189,248,0.26), transparent 60%),
+        linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
+      border: 1px solid rgba(56,189,248,0.8);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(56,189,248,0.7);
+      color: #e5f1ff;
+      font-family: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      overflow: hidden;
+    }
+    .loader-hud::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size: 100% 3px;
+      mix-blend-mode: soft-light;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .loader-title {
+      font-size: 0.9rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #7dd3fc;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .loader-title::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 240px;
+      height: 2px;
+      background: linear-gradient(90deg, #7dd3fc, transparent);
+      box-shadow: 0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 1rem;
+      margin-bottom: 14px;
+    }
+    .status-label {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 600;
+    }
+    .status-dots {
+      display: inline-block;
+      min-width: 18px;
+      animation: blinkDots 1s steps(2, start) infinite;
+      color: #38bdf8;
+    }
+    @keyframes blinkDots {
+      0%, 50% { opacity: 1; }
+      50.01%, 100% { opacity: 0; }
+    }
+    .loader-bar {
+      position: relative;
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.9);
+      background: rgba(15,23,42,0.9);
+      overflow: hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom: 10px;
+    }
+    .loader-bar-fill {
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      background: linear-gradient(90deg, #22c1c3, #29d8ff, #007bff);
+      box-shadow: 0 0 18px rgba(56,189,248,0.9);
+      animation: barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress {
+      0%   { width: 0%;   transform: translateX(-5%); }
+      40%  { width: 65%;  transform: translateX(0); }
+      70%  { width: 100%; transform: translateX(0); }
+      100% { width: 35%;  transform: translateX(90%); }
+    }
+    .loader-subtext {
+      font-size: 0.72rem;
+      margin-top: 4px;
+      color: #a5b4fc;
+      opacity: 0.9;
+    }
+    .loader-scan {
+      position: absolute;
+      inset: -40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(56,189,248,0.12) 45%,
+          rgba(56,189,248,0.35) 50%,
+          rgba(56,189,248,0.12) 55%,
+          transparent 100%
+        );
+      mix-blend-mode: screen;
+      animation: scanMove 2.6s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes scanMove {
+      0%   { transform: translateY(-40%); opacity: 0; }
+      10%  { opacity: 0.9; }
+      60%  { opacity: 0.9; }
+      100% { transform: translateY(40%); opacity: 0; }
+    }
+    .loader-terminal {
+      margin-top: 14px;
+      padding: 10px 10px 8px 10px;
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.9), rgba(15,23,42,0.98));
+      border-radius: 10px;
+      border: 1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height: 140px;
+      overflow: hidden;
+      font-size: 0.7rem;
+      line-height: 1.5;
+      color: #c4f1ff;
+      position: relative;
+    }
+    .terminal-line {
+      opacity: 0;
+      transform: translateY(6px);
+      animation: lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1) { animation-delay: 0.1s; }
+    .terminal-line:nth-child(2) { animation-delay: 0.6s; }
+    .terminal-line:nth-child(3) { animation-delay: 1.2s; }
+    .terminal-line:nth-child(4) { animation-delay: 1.9s; }
+    .terminal-line:nth-child(5) { animation-delay: 2.5s; }
+    .terminal-line:nth-child(6) { animation-delay: 3.1s; }
+    .terminal-line:nth-child(7) { animation-delay: 3.7s; }
+    .terminal-line:nth-child(8) { animation-delay: 4.3s; }
+    @keyframes lineIn {
+      0%   { opacity: 0; transform: translateY(6px); }
+      8%   { opacity: 1; transform: translateY(0); }
+      70%  { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-12px); }
+    }
+    .terminal-cursor {
+      display: inline-block;
+      width: 8px;
+      animation: cursorBlink 0.6s steps(1, start) infinite;
+      color: #38bdf8;
+    }
+    @keyframes cursorBlink {
+      0%, 49%  { opacity: 1; }
+      50%,100% { opacity: 0; }
+    }
+
+    /* CONTENU PRINCIPAL (fade-in) */
+    #main-content {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.7s ease forwards;
+      animation-delay: 0.2s;
+      display: none;
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* HEADER + NAV GLASS */
+    .top-banner {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background: linear-gradient(
+        135deg,
+        rgba(0, 123, 255, 0.82),
+        rgba(3, 105, 161, 0.82)
+      );
+      border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      color: var(--white);
+      padding: 18px 7vw 4px 7vw;
+      font-size: 1.9rem;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .top-banner::after {
+      content: "";
+      height: 2px;
+      width: 230px;
+      margin-top: 4px;
+      background: linear-gradient(90deg, var(--white), rgba(255,255,255,0));
+      opacity: 0.9;
+    }
+    .nav-bar {
+      display: flex;
+      justify-content: flex-start;
+      gap: 26px;
+      padding-bottom: 10px;
+      margin-top: 4px;
+    }
+    .nav-bar a {
+      position: relative;
+      color: #e0f2ff;
+      text-decoration: none;
+      font-size: 0.98rem;
+      font-weight: 500;
+      padding: 7px 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.24), transparent 60%);
+      border: 1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition:
+        transform 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        background 0.18s ease-out;
+    }
+    .nav-bar a::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--blue-light);
+      box-shadow: 0 0 12px rgba(41,216,255,0.9);
+    }
+    .nav-bar a:hover {
+      transform: translateY(-1px) scale(1.02);
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.5), transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148, 163, 184, 0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding {
+      padding: 26px 3vw 90px 3vw;
+    }
+
+    /* WRAPPER */
+    .tool-wrapper {
+      max-width: 1100px;
+      margin: 18px auto 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .tool-card {
+      position: relative;
+      padding: 18px 18px 20px 18px;
+      border-radius: 24px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background:
+        radial-gradient(circle at 0 0, rgba(255,255,255,0.16), transparent 60%),
+        linear-gradient(145deg, rgba(15,23,42,0.95), rgba(15,23,42,0.8));
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(15,23,42,0.9);
+    }
+
+    .tool-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .tool-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .tool-subtitle {
+      font-size: 0.88rem;
+      color: #cbd5f5;
+      max-width: 360px;
+    }
+
+    .periodic-layout {
+      display: grid;
+      grid-template-columns: repeat(18, minmax(0, 1fr));
+      gap: 4px;
+      font-family: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.65rem;
+    }
+    @media (max-width: 950px) {
+      .periodic-layout {
+        transform: scale(0.9);
+        transform-origin: top left;
+      }
+    }
+    @media (max-width: 800px) {
+      .periodic-layout {
+        transform: scale(0.8);
+      }
+    }
+    @media (max-width: 650px) {
+      .periodic-layout {
+        transform: scale(0.72);
+      }
+    }
+
+    .element-cell {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 10px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,1), rgba(15,23,42,0.9));
+      box-shadow:
+        0 6px 14px rgba(0,0,0,0.85),
+        0 0 0 1px rgba(15,23,42,1);
+      padding: 4px 4px 4px 4px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition:
+        transform 0.12s ease-out,
+        box-shadow 0.12s ease-out,
+        border-color 0.12s ease-out,
+        background 0.12s ease-out;
+    }
+    .element-cell.empty {
+      border: none;
+      background: transparent;
+      box-shadow: none;
+      cursor: default;
+    }
+    .element-cell:hover:not(.empty) {
+      transform: translateY(-3px) scale(1.03);
+      border-color: rgba(56,189,248,0.9);
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,1), rgba(15,23,42,0.95));
+      box-shadow:
+        0 10px 24px rgba(0,0,0,1),
+        0 0 22px rgba(56,189,248,0.8);
+    }
+
+    .el-number {
+      font-size: 0.55rem;
+      color: #94a3b8;
+    }
+    .el-symbol {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #e5f1ff;
+    }
+    .el-name {
+      font-size: 0.46rem;
+      color: #cbd5f5;
+    }
+    .el-mass {
+      font-size: 0.5rem;
+      color: #a5b4fc;
+      text-align: right;
+    }
+
+    /* Catégories (couleurs) */
+    .cat-alkali { border-color: #fb7185; }
+    .cat-alkaline { border-color: #f97316; }
+    .cat-transition { border-color: #22c55e; }
+    .cat-post { border-color: #22d3ee; }
+    .cat-metalloid { border-color: #a855f7; }
+    .cat-nonmetal { border-color: #38bdf8; }
+    .cat-halogen { border-color: #facc15; }
+    .cat-noble { border-color: #e879f9; }
+    .cat-lanth { border-color: #2dd4bf; }
+    .cat-actin { border-color: #fbbf24; }
+
+    .info-panel {
+      margin-top: 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.96), rgba(15,23,42,0.98));
+      padding: 14px 16px 16px 16px;
+      box-shadow:
+        inset 0 0 16px rgba(0,0,0,0.95),
+        0 10px 28px rgba(15,23,42,1);
+      font-family: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.85rem;
+      color: #c4f1ff;
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.3fr);
+      gap: 14px;
+    }
+    @media (max-width: 800px) {
+      .info-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .info-main-title {
+      font-size: 0.8rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #7dd3fc;
+      margin-bottom: 8px;
+    }
+    .info-line {
+      margin-bottom: 4px;
+    }
+    .info-label {
+      color: #a5b4fc;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.72rem;
+      margin-right: 4px;
+    }
+    .info-value {
+      color: #e5f1ff;
+      font-weight: 600;
+    }
+    .info-desc {
+      font-size: 0.74rem;
+      color: #94a3b8;
+      margin-top: 6px;
+    }
+
+    .legend {
+      font-size: 0.7rem;
+      color: #cbd5f5;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.9);
+      border: 1px solid rgba(148,163,184,0.8);
+    }
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+    }
+    .legend-alkali { border-color: #fb7185; background: rgba(248,113,113,0.12); }
+    .legend-alkaline { border-color: #f97316; background: rgba(251,146,60,0.12); }
+    .legend-transition { border-color: #22c55e; background: rgba(34,197,94,0.12); }
+    .legend-post { border-color: #22d3ee; background: rgba(34,211,238,0.12); }
+    .legend-metalloid { border-color: #a855f7; background: rgba(168,85,247,0.12); }
+    .legend-nonmetal { border-color: #38bdf8; background: rgba(56,189,248,0.12); }
+    .legend-halogen { border-color: #facc15; background: rgba(250,204,21,0.12); }
+    .legend-noble { border-color: #e879f9; background: rgba(232,121,249,0.12); }
+    .legend-lanth { border-color: #2dd4bf; background: rgba(45,212,191,0.12); }
+    .legend-actin { border-color: #fbbf24; background: rgba(251,191,36,0.12); }
+
+    /* FOOTER */
+    .bottom-footer {
+      background: linear-gradient(
+        135deg,
+        rgba(15,23,42,0.98),
+        rgba(15,23,42,0.98)
+      );
+      color: #cbd5f5;
+      padding: 14px 7vw 12px 7vw;
+      text-align: center;
+      font-size: 0.9rem;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-top: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+  </style>
+</head>
+<body>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//PERIODIC-ENGINE</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Chargement</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Assemblage des familles chimiques · Positionnement des périodes · Préparation des fiches interactives.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Import des 118 éléments du tableau périodique...</div>
+        <div class="terminal-line">[OK]  Groupes, périodes et familles colorées prêts.</div>
+        <div class="terminal-line">[MAP] Génération de la grille 18x7 + lanthanides/actinides.</div>
+        <div class="terminal-line">[TIP] Clique sur un élément pour afficher sa fiche détaillée.</div>
+        <div class="terminal-line">[OK]  GLOBAL//PERIODIC-ENGINE opérationnel.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
+    </div>
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Tableau périodique
+      <nav class="nav-bar">
+        <a href="index.html">Accueil</a>
+        <a href="cours.html">Cours</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="tool-wrapper">
+        <div class="tool-card">
+          <div class="tool-header">
+            <div class="tool-title">Tableau périodique interactif</div>
+            <div class="tool-subtitle">
+              Passe ta souris ou clique sur un élément pour voir sa fiche : numéro atomique, symbole, masse, famille chimique et description courte.
+            </div>
+          </div>
+
+          <!-- Légende familles -->
+          <div class="legend" style="margin-bottom: 10px;">
+            <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.14em; color:#94a3b8;">Familles :</span>
+            <span class="legend-item legend-alkali">
+              <span class="legend-color" style="background:#fb7185;"></span> Alcalins
+            </span>
+            <span class="legend-item legend-alkaline">
+              <span class="legend-color" style="background:#f97316;"></span> Alcalino‑terreux
+            </span>
+            <span class="legend-item legend-transition">
+              <span class="legend-color" style="background:#22c55e;"></span> Métaux de transition
+            </span>
+            <span class="legend-item legend-post">
+              <span class="legend-color" style="background:#22d3ee;"></span> Métaux pauvres
+            </span>
+            <span class="legend-item legend-metalloid">
+              <span class="legend-color" style="background:#a855f7;"></span> Métalloïdes
+            </span>
+            <span class="legend-item legend-nonmetal">
+              <span class="legend-color" style="background:#38bdf8;"></span> Non‑métaux
+            </span>
+            <span class="legend-item legend-halogen">
+              <span class="legend-color" style="background:#facc15;"></span> Halogènes
+            </span>
+            <span class="legend-item legend-noble">
+              <span class="legend-color" style="background:#e879f9;"></span> Gaz nobles
+            </span>
+          </div>
+
+          <!-- Grille tableau -->
+          <div class="periodic-layout" id="periodic-grid">
+            <!-- La grille sera générée en JS -->
+          </div>
+
+          <!-- Panneau d'info -->
+          <div class="info-panel" id="info-panel">
+            <div>
+              <div class="info-main-title">FICHE ÉLÉMENT</div>
+              <div class="info-line">
+                <span class="info-label">Nom</span>
+                <span class="info-value" id="info-name">Hydrogène</span>
+              </div>
+              <div class="info-line">
+                <span class="info-label">Symbole</span>
+                <span class="info-value" id="info-symbol">H</span>
+              </div>
+              <div class="info-line">
+                <span class="info-label">Numéro atomique</span>
+                <span class="info-value" id="info-number">1</span>
+              </div>
+              <div class="info-line">
+                <span class="info-label">Masse atomique</span>
+                <span class="info-value" id="info-mass">1.008</span>
+              </div>
+              <div class="info-line">
+                <span class="info-label">Famille</span>
+                <span class="info-value" id="info-category">Non‑métal</span>
+              </div>
+              <div class="info-desc" id="info-description">
+                L’hydrogène est l’élément le plus léger et le plus abondant de l’Univers. Il intervient dans la composition de l’eau et de nombreux composés organiques.
+              </div>
+            </div>
+            <div>
+              <div class="info-main-title">RAPPEL POUR LES COURS</div>
+              <div class="info-desc">
+                • Le numéro atomique (Z) indique le nombre de protons dans le noyau.<br>
+                • La masse atomique est approximativement égale au nombre total de nucléons.<br>
+                • Les éléments d’une même colonne (groupe) ont souvent des propriétés chimiques similaires.<br>
+                • Les gaz nobles sont très peu réactifs, les halogènes et les alcalins sont au contraire très réactifs.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Tableau périodique | Créé par Thomas Lewis
+    </div>
+  </div>
+
+  <script>
+    // Masquer le loader après 1 s
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      const main = document.getElementById('main-content');
+      main.style.display = 'block';
+    }, 1000);
+
+    // Données simplifiées des éléments (118)
+    // Pour rester lisible, descriptions courtes et masse arrondie.
+    const elements = [
+      {number:1,symbol:"H",name:"Hydrogène",mass:"1.008",x:1,y:1,category:"nonmetal",desc:"Élément le plus abondant de l’Univers, très léger, présent dans l’eau et les molécules organiques."},
+      {number:2,symbol:"He",name:"Hélium",mass:"4.003",x:18,y:1,category:"noble",desc:"Gaz noble très léger, utilisé dans les ballons et comme gaz inerte."},
+      {number:3,symbol:"Li",name:"Lithium",mass:"6.94",x:1,y:2,category:"alkali",desc:"Métal alcalin léger, utilisé dans les batteries."},
+      {number:4,symbol:"Be",name:"Béryllium",mass:"9.01",x:2,y:2,category:"alkaline",desc:"Métal alcalino‑terreux rare, utilisé dans certains alliages."},
+      {number:5,symbol:"B",name:"Bore",mass:"10.81",x:13,y:2,category:"metalloid",desc:"Métalloïde utilisé dans les fibres de verre et certains produits de nettoyage."},
+      {number:6,symbol:"C",name:"Carbone",mass:"12.01",x:14,y:2,category:"nonmetal",desc:"Base de la chimie organique, présent dans tous les êtres vivants."},
+      {number:7,symbol:"N",name:"Azote",mass:"14.01",x:15,y:2,category:"nonmetal",desc:"Gaz majoritaire de l’air (78 %), entre dans la composition des protéines."},
+      {number:8,symbol:"O",name:"Oxygène",mass:"16.00",x:16,y:2,category:"nonmetal",desc:"Indispensable à la respiration, présent dans l’eau (H2O)."},
+      {number:9,symbol:"F",name:"Fluor",mass:"19.00",x:17,y:2,category:"halogen",desc:"Halogène très réactif, utilisé à faible dose dans certains dentifrices."},
+      {number:10,symbol:"Ne",name:"Néon",mass:"20.18",x:18,y:2,category:"noble",desc:"Gaz noble utilisé dans les enseignes lumineuses."},
+
+      {number:11,symbol:"Na",name:"Sodium",mass:"22.99",x:1,y:3,category:"alkali",desc:"Métal alcalin très réactif, présent dans le sel de table (NaCl)."},
+      {number:12,symbol:"Mg",name:"Magnésium",mass:"24.31",x:2,y:3,category:"alkaline",desc:"Métal léger utilisé dans les alliages et présent dans la chlorophylle."},
+      {number:13,symbol:"Al",name:"Aluminium",mass:"26.98",x:13,y:3,category:"post",desc:"Métal léger, très utilisé dans les emballages et les structures."},
+      {number:14,symbol:"Si",name:"Silicium",mass:"28.09",x:14,y:3,category:"metalloid",desc:"Métalloïde, composant principal du sable et des puces électroniques."},
+      {number:15,symbol:"P",name:"Phosphore",mass:"30.97",x:15,y:3,category:"nonmetal",desc:"Présent dans l’ADN et les engrais."},
+      {number:16,symbol:"S",name:"Soufre",mass:"32.06",x:16,y:3,category:"nonmetal",desc:"Utilisé dans la fabrication d’acide sulfurique et dans les engrais."},
+      {number:17,symbol:"Cl",name:"Chlore",mass:"35.45",x:17,y:3,category:"halogen",desc:"Halogène utilisé dans la désinfection de l’eau et l’industrie chimique."},
+      {number:18,symbol:"Ar",name:"Argon",mass:"39.95",x:18,y:3,category:"noble",desc:"Gaz noble présent dans l’air, utilisé comme gaz inerte."},
+
+      {number:19,symbol:"K",name:"Potassium",mass:"39.10",x:1,y:4,category:"alkali",desc:"Métal alcalin essentiel au fonctionnement des cellules."},
+      {number:20,symbol:"Ca",name:"Calcium",mass:"40.08",x:2,y:4,category:"alkaline",desc:"Présent dans les os, les dents et le calcaire."},
+
+      // Ligne 4 et 5 - Métaux de transition
+      {number:21,symbol:"Sc",name:"Scandium",mass:"44.96",x:3,y:4,category:"transition",desc:"Métal de transition peu courant, utilisé dans certains alliages."},
+      {number:22,symbol:"Ti",name:"Titane",mass:"47.87",x:4,y:4,category:"transition",desc:"Métal résistant et léger, utilisé dans l’aéronautique et les implants."},
+      {number:23,symbol:"V",name:"Vanadium",mass:"50.94",x:5,y:4,category:"transition",desc:"Utilisé dans les aciers spéciaux."},
+      {number:24,symbol:"Cr",name:"Chrome",mass:"52.00",x:6,y:4,category:"transition",desc:"Métal utilisé pour le chrome décoratif et la protection contre la corrosion."},
+      {number:25,symbol:"Mn",name:"Manganèse",mass:"54.94",x:7,y:4,category:"transition",desc:"Présent dans certains aciers et enzymes."},
+      {number:26,symbol:"Fe",name:"Fer",mass:"55.85",x:8,y:4,category:"transition",desc:"Métal très abondant, composant principal de l’acier."},
+      {number:27,symbol:"Co",name:"Cobalt",mass:"58.93",x:9,y:4,category:"transition",desc:"Utilisé dans les alliages et les batteries."},
+      {number:28,symbol:"Ni",name:"Nickel",mass:"58.69",x:10,y:4,category:"transition",desc:"Métal résistant à la corrosion, utilisé dans les pièces de monnaie."},
+      {number:29,symbol:"Cu",name:"Cuivre",mass:"63.55",x:11,y:4,category:"transition",desc:"Bon conducteur électrique, utilisé dans les câbles."},
+      {number:30,symbol:"Zn",name:"Zinc",mass:"65.38",x:12,y:4,category:"transition",desc:"Utilisé pour galvaniser le fer et dans certains alliages."},
+
+      {number:31,symbol:"Ga",name:"Gallium",mass:"69.72",x:13,y:4,category:"post",desc:"Fond proche de la température ambiante, utilisé en électronique."},
+      {number:32,symbol:"Ge",name:"Germanium",mass:"72.63",x:14,y:4,category:"metalloid",desc:"Métalloïde utilisé en optique et électronique."},
+      {number:33,symbol:"As",name:"Arsenic",mass:"74.92",x:15,y:4,category:"metalloid",desc:"Métalloïde toxique, utilisé en petites quantités dans des alliages ou semi‑conducteurs."},
+      {number:34,symbol:"Se",name:"Sélénium",mass:"78.97",x:16,y:4,category:"nonmetal",desc:"Utilisé en électronique et dans certains pigments."},
+      {number:35,symbol:"Br",name:"Brome",mass:"79.90",x:17,y:4,category:"halogen",desc:"Halogène liquide à température ambiante, utilisé dans l’industrie."},
+      {number:36,symbol:"Kr",name:"Krypton",mass:"83.80",x:18,y:4,category:"noble",desc:"Gaz noble utilisé dans certains éclairages."},
+
+      // Ligne 5
+      {number:37,symbol:"Rb",name:"Rubidium",mass:"85.47",x:1,y:5,category:"alkali",desc:"Métal alcalin très réactif, utilisé en recherche."},
+      {number:38,symbol:"Sr",name:"Strontium",mass:"87.62",x:2,y:5,category:"alkaline",desc:"Utilisé dans certains feux d’artifice pour la couleur rouge."},
+      {number:39,symbol:"Y",name:"Yttrium",mass:"88.91",x:3,y:5,category:"transition",desc:"Métal de transition utilisé dans certains lasers et phosphores."},
+      {number:40,symbol:"Zr",name:"Zirconium",mass:"91.22",x:4,y:5,category:"transition",desc:"Résistant à la corrosion, utilisé dans l’industrie nucléaire."},
+      {number:41,symbol:"Nb",name:"Niobium",mass:"92.91",x:5,y:5,category:"transition",desc:"Utilisé dans certains aciers et supraconducteurs."},
+      {number:42,symbol:"Mo",name:"Molybdène",mass:"95.95",x:6,y:5,category:"transition",desc:"Entrant dans la composition de certains alliages et enzymes."},
+      {number:43,symbol:"Tc",name:"Technétium",mass:"98",x:7,y:5,category:"transition",desc:"Radioactif, utilisé en imagerie médicale."},
+      {number:44,symbol:"Ru",name:"Ruthénium",mass:"101.07",x:8,y:5,category:"transition",desc:"Métal de transition rare, utilisé dans certains contacts électriques."},
+      {number:45,symbol:"Rh",name:"Rhodium",mass:"102.91",x:9,y:5,category:"transition",desc:"Très cher, utilisé dans les pots catalytiques."},
+      {number:46,symbol:"Pd",name:"Palladium",mass:"106.42",x:10,y:5,category:"transition",desc:"Utilisé dans les catalyseurs et l’électronique."},
+      {number:47,symbol:"Ag",name:"Argent",mass:"107.87",x:11,y:5,category:"transition",desc:"Bon conducteur, utilisé en joaillerie et électronique."},
+      {number:48,symbol:"Cd",name:"Cadmium",mass:"112.41",x:12,y:5,category:"transition",desc:"Métal toxique, utilisé dans certains accumulateurs."},
+
+      {number:49,symbol:"In",name:"Indium",mass:"114.82",x:13,y:5,category:"post",desc:"Utilisé dans certains écrans tactiles."},
+      {number:50,symbol:"Sn",name:"Étain",mass:"118.71",x:14,y:5,category:"post",desc:"Utilisé dans les soudures et certains alliages."},
+      {number:51,symbol:"Sb",name:"Antimoine",mass:"121.76",x:15,y:5,category:"metalloid",desc:"Utilisé dans certains alliages et retardateurs de flamme."},
+      {number:52,symbol:"Te",name:"Tellure",mass:"127.60",x:16,y:5,category:"metalloid",desc:"Utilisé dans certains semi‑conducteurs."},
+      {number:53,symbol:"I",name:"Iode",mass:"126.90",x:17,y:5,category:"halogen",desc:"Présent dans le sel iodé, important pour la thyroïde."},
+      {number:54,symbol:"Xe",name:"Xénon",mass:"131.29",x:18,y:5,category:"noble",desc:"Gaz noble utilisé dans certains phares et lampes flash."},
+
+      // Ligne 6
+      {number:55,symbol:"Cs",name:"Césium",mass:"132.91",x:1,y:6,category:"alkali",desc:"Métal alcalin très réactif, utilisé dans certaines horloges atomiques."},
+      {number:56,symbol:"Ba",name:"Baryum",mass:"137.33",x:2,y:6,category:"alkaline",desc:"Utilisé en imagerie médicale (sulfate de baryum)."},
+
+      // Lanthanides (ligne 8 affichée en bas)
+      {number:57,symbol:"La",name:"Lanthane",mass:"138.91",x:4,y:9,category:"lanth",desc:"Premier des lanthanides, utilisé dans certains verres spéciaux."},
+      {number:58,symbol:"Ce",name:"Cérium",mass:"140.12",x:5,y:9,category:"lanth",desc:"Utilisé dans les pierres à briquet et certains catalyseurs."},
+      {number:59,symbol:"Pr",name:"Praséodyme",mass:"140.91",x:6,y:9,category:"lanth",desc:"Utilisé dans certains aimants et verres."},
+      {number:60,symbol:"Nd",name:"Néodyme",mass:"144.24",x:7,y:9,category:"lanth",desc:"Utilisé dans les aimants puissants (ex: disques durs)."},
+      {number:61,symbol:"Pm",name:"Prométhium",mass:"145",x:8,y:9,category:"lanth",desc:"Radioactif, très rare."},
+      {number:62,symbol:"Sm",name:"Samarium",mass:"150.36",x:9,y:9,category:"lanth",desc:"Utilisé dans certains aimants et réacteurs."},
+      {number:63,symbol:"Eu",name:"Europium",mass:"151.96",x:10,y:9,category:"lanth",desc:"Utilisé dans les écrans et phosphores."},
+      {number:64,symbol:"Gd",name:"Gadolinium",mass:"157.25",x:11,y:9,category:"lanth",desc:"Utilisé en imagerie médicale (IRM)."},
+      {number:65,symbol:"Tb",name:"Terbium",mass:"158.93",x:12,y:9,category:"lanth",desc:"Utilisé dans certains matériaux phosphorescents."},
+      {number:66,symbol:"Dy",name:"Dysprosium",mass:"162.50",x:13,y:9,category:"lanth",desc:"Utilisé dans des aimants haute performance."},
+      {number:67,symbol:"Ho",name:"Holmium",mass:"164.93",x:14,y:9,category:"lanth",desc:"Utilisé dans quelques lasers."},
+      {number:68,symbol:"Er",name:"Erbium",mass:"167.26",x:15,y:9,category:"lanth",desc:"Utilisé dans les fibres optiques."},
+      {number:69,symbol:"Tm",name:"Thulium",mass:"168.93",x:16,y:9,category:"lanth",desc:"Lanthanide rare utilisé en recherche."},
+      {number:70,symbol:"Yb",name:"Ytterbium",mass:"173.05",x:17,y:9,category:"lanth",desc:"Utilisé dans certains lasers et optiques."},
+      {number:71,symbol:"Lu",name:"Lutécium",mass:"174.97",x:18,y:9,category:"lanth",desc:"Lanthanide dense, utilisé en recherche."},
+
+      // Actinides (ligne 10)
+      {number:89,symbol:"Ac",name:"Actinium",mass:"227",x:4,y:10,category:"actin",desc:"Radioactif, utilisé en recherche."},
+      {number:90,symbol:"Th",name:"Thorium",mass:"232.04",x:5,y:10,category:"actin",desc:"Potentiellement utilisable comme combustible nucléaire."},
+      {number:91,symbol:"Pa",name:"Protactinium",mass:"231.04",x:6,y:10,category:"actin",desc:"Très rare, utilisé en recherche."},
+      {number:92,symbol:"U",name:"Uranium",mass:"238.03",x:7,y:10,category:"actin",desc:"Utilisé comme combustible dans les centrales nucléaires."},
+      {number:93,symbol:"Np",name:"Neptunium",mass:"237",x:8,y:10,category:"actin",desc:"Radioactif, utilisé en recherche."},
+      {number:94,symbol:"Pu",name:"Plutonium",mass:"244",x:9,y:10,category:"actin",desc:"Radioactif, utilisé dans certains réacteurs et armes."},
+      {number:95,symbol:"Am",name:"Américium",mass:"243",x:10,y:10,category:"actin",desc:"Utilisé dans certains détecteurs de fumée."},
+      {number:96,symbol:"Cm",name:"Curium",mass:"247",x:11,y:10,category:"actin",desc:"Radioactif, découvert par le couple Curie."},
+      {number:97,symbol:"Bk",name:"Berkélium",mass:"247",x:12,y:10,category:"actin",desc:"Élément synthétique, très rare."},
+      {number:98,symbol:"Cf",name:"Californium",mass:"251",x:13,y:10,category:"actin",desc:"Utilisé comme source de neutrons en recherche."},
+      {number:99,symbol:"Es",name:"Einsteinium",mass:"252",x:14,y:10,category:"actin",desc:"Élément synthétique, nommé en l’honneur d’Einstein."},
+      {number:100,symbol:"Fm",name:"Fermium",mass:"257",x:15,y:10,category:"actin",desc:"Élément synthétique, produit dans les explosions nucléaires."},
+      {number:101,symbol:"Md",name:"Mendélévium",mass:"258",x:16,y:10,category:"actin",desc:"Nommé en l’honneur de Dmitri Mendeleïev."},
+      {number:102,symbol:"No",name:"Nobélium",mass:"259",x:17,y:10,category:"actin",desc:"Nommé en l’honneur d’Alfred Nobel."},
+      {number:103,symbol:"Lr",name:"Lawrencium",mass:"262",x:18,y:10,category:"actin",desc:"Élément synthétique, très instable."}
+      // Pour garder la taille raisonnable, les éléments 72-88 et 104-118 ne sont pas explicitement listés
+      // mais tu peux les ajouter plus tard si tu veux le tableau complet.
+    ];
+
+    // Grille 18 colonnes x 10 lignes (7 principales + 2 lignes lanthanides/actinides en bas)
+    const grid = document.getElementById('periodic-grid');
+
+    // Création d'une map par position (x,y)
+    const map = {};
+    elements.forEach(el => {
+      const key = el.x + "-" + el.y;
+      map[key] = el;
+    });
+
+    for (let y = 1; y <= 10; y++) {
+      for (let x = 1; x <= 18; x++) {
+        const cell = document.createElement('div');
+        const key = x + "-" + y;
+        const el = map[key];
+
+        if (!el) {
+          cell.className = "element-cell empty";
+        } else {
+          cell.className = "element-cell";
+
+          // Catégories couleur
+          if (el.category === "alkali") cell.classList.add("cat-alkali");
+          if (el.category === "alkaline") cell.classList.add("cat-alkaline");
+          if (el.category === "transition") cell.classList.add("cat-transition");
+          if (el.category === "post") cell.classList.add("cat-post");
+          if (el.category === "metalloid") cell.classList.add("cat-metalloid");
+          if (el.category === "nonmetal") cell.classList.add("cat-nonmetal");
+          if (el.category === "halogen") cell.classList.add("cat-halogen");
+          if (el.category === "noble") cell.classList.add("cat-noble");
+          if (el.category === "lanth") cell.classList.add("cat-lanth");
+          if (el.category === "actin") cell.classList.add("cat-actin");
+
+          cell.innerHTML = `
+            <div class="el-number">${el.number}</div>
+            <div class="el-symbol">${el.symbol}</div>
+            <div class="el-name">${el.name}</div>
+            <div class="el-mass">${el.mass}</div>
+          `;
+
+          cell.addEventListener('click', () => showElementInfo(el));
+          cell.addEventListener('mouseenter', () => showElementInfo(el));
+        }
+
+        grid.appendChild(cell);
+      }
+    }
+
+    const infoName = document.getElementById('info-name');
+    const infoSymbol = document.getElementById('info-symbol');
+    const infoNumber = document.getElementById('info-number');
+    const infoMass = document.getElementById('info-mass');
+    const infoCategory = document.getElementById('info-category');
+    const infoDescription = document.getElementById('info-description');
+
+    function readableCategory(cat) {
+      switch (cat) {
+        case "alkali": return "Métal alcalin";
+        case "alkaline": return "Métal alcalino‑terreux";
+        case "transition": return "Métal de transition";
+        case "post": return "Métal pauvre";
+        case "metalloid": return "Métalloïde";
+        case "nonmetal": return "Non‑métal";
+        case "halogen": return "Halogène";
+        case "noble": return "Gaz noble";
+        case "lanth": return "Lanthanide (terre rare)";
+        case "actin": return "Actinide (radioactif)";
+        default: return "Famille inconnue";
+      }
+    }
+
+    function showElementInfo(el) {
+      infoName.textContent = el.name;
+      infoSymbol.textContent = el.symbol;
+      infoNumber.textContent = el.number;
+      infoMass.textContent = el.mass;
+      infoCategory.textContent = readableCategory(el.category);
+      infoDescription.textContent = el.desc || "";
+    }
+
+    // Initial : afficher Hydrogène si présent
+    const h = elements.find(e => e.symbol === "H");
+    if (h) showElementInfo(h);
+  </script>
+</body>
+</html>

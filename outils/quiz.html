@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Global - Quiz partageable</title>
+  <style>
+    /* RESET + VARIABLES */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    :root {
+      --blue-light: #29d8ff;
+      --blue-main: #007BFF;
+      --blue-dark: #004a9f;
+      --white: #ffffff;
+    }
+
+    /* FOND GLOBAL */
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.12), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(41,216,255,0.18), transparent 55%),
+        linear-gradient(135deg, #020617 0%, #031633 40%, #001a3b 100%);
+      color: #e5f1ff;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.08;
+      mix-blend-mode: soft-light;
+      background-image:
+        linear-gradient(0deg, rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 3px 3px, 3px 3px;
+      z-index: -1;
+    }
+
+    /* ===== LOADER ===== */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, #0b1220 0, #020617 45%, #000 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      overflow: hidden;
+    }
+    .loader-hud {
+      position: relative;
+      width: min(520px, 90vw);
+      padding: 26px 26px 30px 26px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 0 0, rgba(56,189,248,0.26), transparent 60%),
+        linear-gradient(145deg, rgba(15,23,42,0.98), rgba(15,23,42,0.9));
+      border: 1px solid rgba(56,189,248,0.8);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,0.9),
+        0 0 35px rgba(56,189,248,0.7);
+      color: #e5f1ff;
+      font-family: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      overflow: hidden;
+    }
+    .loader-hud::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(
+        to bottom,
+        rgba(15,23,42,0.4) 1px,
+        rgba(15,23,42,0.9) 1px
+      );
+      background-size: 100% 3px;
+      mix-blend-mode: soft-light;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .loader-title {
+      font-size: 0.9rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: #7dd3fc;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .loader-title::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -6px;
+      width: 260px;
+      height: 2px;
+      background: linear-gradient(90deg, #7dd3fc, transparent);
+      box-shadow: 0 0 12px rgba(56,189,248,0.9);
+    }
+    .loader-status-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 1rem;
+      margin-bottom: 14px;
+    }
+    .status-label {
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 600;
+    }
+    .status-dots {
+      display: inline-block;
+      min-width: 18px;
+      animation: blinkDots 1s steps(2, start) infinite;
+      color: #38bdf8;
+    }
+    @keyframes blinkDots {
+      0%, 50% { opacity: 1; }
+      50.01%, 100% { opacity: 0; }
+    }
+    .loader-bar {
+      position: relative;
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.9);
+      background: rgba(15,23,42,0.9);
+      overflow: hidden;
+      box-shadow:
+        inset 0 0 8px rgba(15,23,42,1),
+        0 0 18px rgba(15,23,42,0.9);
+      margin-bottom: 10px;
+    }
+    .loader-bar-fill {
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      background: linear-gradient(90deg, #22c1c3, #29d8ff, #007bff);
+      box-shadow: 0 0 18px rgba(56,189,248,0.9);
+      animation: barProgress 2.2s ease-in-out infinite;
+    }
+    @keyframes barProgress {
+      0%   { width: 0%;   transform: translateX(-5%); }
+      40%  { width: 65%;  transform: translateX(0); }
+      70%  { width: 100%; transform: translateX(0); }
+      100% { width: 35%;  transform: translateX(90%); }
+    }
+    .loader-subtext {
+      font-size: 0.72rem;
+      margin-top: 4px;
+      color: #a5b4fc;
+      opacity: 0.9;
+    }
+    .loader-scan {
+      position: absolute;
+      inset: -40%;
+      background:
+        linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(56,189,248,0.12) 45%,
+          rgba(56,189,248,0.35) 50%,
+          rgba(56,189,248,0.12) 55%,
+          transparent 100%
+        );
+      mix-blend-mode: screen;
+      animation: scanMove 2.6s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes scanMove {
+      0%   { transform: translateY(-40%); opacity: 0; }
+      10%  { opacity: 0.9; }
+      60%  { opacity: 0.9; }
+      100% { transform: translateY(40%); opacity: 0; }
+    }
+    .loader-terminal {
+      margin-top: 14px;
+      padding: 10px 10px 8px 10px;
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.9), rgba(15,23,42,0.98));
+      border-radius: 10px;
+      border: 1px solid rgba(15,23,42,1);
+      box-shadow:
+        inset 0 0 18px rgba(0,0,0,0.9),
+        0 0 14px rgba(15,23,42,0.9);
+      height: 140px;
+      overflow: hidden;
+      font-size: 0.7rem;
+      line-height: 1.5;
+      color: #c4f1ff;
+      position: relative;
+    }
+    .terminal-line {
+      opacity: 0;
+      transform: translateY(6px);
+      animation: lineIn 5s linear infinite;
+    }
+    .terminal-line:nth-child(1) { animation-delay: 0.1s; }
+    .terminal-line:nth-child(2) { animation-delay: 0.6s; }
+    .terminal-line:nth-child(3) { animation-delay: 1.2s; }
+    .terminal-line:nth-child(4) { animation-delay: 1.9s; }
+    .terminal-line:nth-child(5) { animation-delay: 2.5s; }
+    .terminal-line:nth-child(6) { animation-delay: 3.1s; }
+    .terminal-line:nth-child(7) { animation-delay: 3.7s; }
+    .terminal-line:nth-child(8) { animation-delay: 4.3s; }
+    @keyframes lineIn {
+      0%   { opacity: 0; transform: translateY(6px); }
+      8%   { opacity: 1; transform: translateY(0); }
+      70%  { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-12px); }
+    }
+    .terminal-cursor {
+      display: inline-block;
+      width: 8px;
+      animation: cursorBlink 0.6s steps(1, start) infinite;
+      color: #38bdf8;
+    }
+    @keyframes cursorBlink {
+      0%, 49%  { opacity: 1; }
+      50%,100% { opacity: 0; }
+    }
+
+    /* CONTENU PRINCIPAL (fade-in) */
+    #main-content {
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeIn 0.7s ease forwards;
+      animation-delay: 0.2s;
+      display: none;
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* HEADER + NAV GLASS */
+    .top-banner {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background: linear-gradient(
+        135deg,
+        rgba(0, 123, 255, 0.82),
+        rgba(3, 105, 161, 0.82)
+      );
+      border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+      color: var(--white);
+      padding: 18px 7vw 4px 7vw;
+      font-size: 1.9rem;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      text-transform: uppercase;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .top-banner::after {
+      content: "";
+      height: 2px;
+      width: 260px;
+      margin-top: 4px;
+      background: linear-gradient(90deg, var(--white), rgba(255,255,255,0));
+      opacity: 0.9;
+    }
+    .nav-bar {
+      display: flex;
+      justify-content: flex-start;
+      gap: 26px;
+      padding-bottom: 10px;
+      margin-top: 4px;
+    }
+    .nav-bar a {
+      position: relative;
+      color: #e0f2ff;
+      text-decoration: none;
+      font-size: 0.98rem;
+      font-weight: 500;
+      padding: 7px 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.24), transparent 60%);
+      border: 1px solid rgba(255,255,255,0.22);
+      box-shadow:
+        0 0 0 1px rgba(15,23,42,0.7),
+        0 6px 18px rgba(15,23,42,0.75);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      transition:
+        transform 0.18s ease-out,
+        box-shadow 0.18s ease-out,
+        background 0.18s ease-out;
+    }
+    .nav-bar a::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--blue-light);
+      box-shadow: 0 0 12px rgba(41,216,255,0.9);
+    }
+    .nav-bar a:hover {
+      transform: translateY(-1px) scale(1.02);
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.5), transparent 70%);
+      box-shadow:
+        0 0 0 1px rgba(148, 163, 184, 0.25),
+        0 10px 25px rgba(15,23,42,0.9);
+    }
+
+    .page-padding {
+      padding: 26px 7vw 90px 7vw;
+    }
+
+    /* TABS */
+    .tabs {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 4px;
+      border: 1px solid rgba(148,163,184,0.8);
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.1), transparent 60%);
+      margin-bottom: 16px;
+      box-shadow:
+        0 8px 20px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(15,23,42,0.8);
+    }
+    .tab-btn {
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      color: #cbd5f5;
+      padding: 6px 16px;
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition:
+        background 0.16s ease-out,
+        color 0.16s ease-out,
+        box-shadow 0.16s ease-out,
+        transform 0.16s ease-out;
+    }
+    .tab-btn.active {
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.22), transparent 65%);
+      color: #0f172a;
+      box-shadow:
+        0 6px 18px rgba(15,23,42,1),
+        0 0 22px rgba(56,189,248,0.7);
+      transform: translateY(-1px);
+    }
+
+    .tool-wrapper {
+      max-width: 900px;
+      margin: 18px auto 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .tool-card {
+      position: relative;
+      padding: 18px 18px 20px 18px;
+      border-radius: 24px;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      background:
+        radial-gradient(circle at 0 0, rgba(255,255,255,0.16), transparent 60%),
+        linear-gradient(145deg, rgba(15,23,42,0.95), rgba(15,23,42,0.8));
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow:
+        0 18px 40px rgba(15,23,42,0.9),
+        0 0 0 1px rgba(15,23,42,0.9);
+    }
+
+    .tool-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .tool-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .tool-subtitle {
+      font-size: 0.88rem;
+      color: #cbd5f5;
+      max-width: 360px;
+    }
+
+    .btn-ghost {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.08), transparent 65%);
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #e5f1ff;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition:
+        transform 0.16s ease-out,
+        box-shadow 0.16s ease-out,
+        background 0.16s ease-out,
+        border-color 0.16s ease-out;
+    }
+    .btn-ghost:hover {
+      transform: translateY(-1px);
+      border-color: rgba(56,189,248,0.9);
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.20), transparent 75%);
+      box-shadow:
+        0 8px 20px rgba(15,23,42,1),
+        0 0 22px rgba(56,189,248,0.7);
+    }
+
+    /* FORMULAIRE CREATION */
+    .creator-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 18px;
+    }
+    @media (max-width: 850px) {
+      .creator-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .field {
+      margin-bottom: 10px;
+    }
+    .field label {
+      display: block;
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+      color: #cbd5f5;
+    }
+    .field input[type="text"],
+    .field textarea {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid rgba(148,163,184,0.8);
+      background: rgba(15,23,42,0.9);
+      color: #e5f1ff;
+      padding: 8px 10px;
+      font-size: 0.88rem;
+      outline: none;
+      resize: vertical;
+      box-shadow:
+        inset 0 0 10px rgba(0,0,0,0.9),
+        0 6px 16px rgba(15,23,42,0.9);
+      transition:
+        border-color 0.16s ease-out,
+        box-shadow 0.16s ease-out,
+        background 0.16s ease-out;
+    }
+    .field input[type="text"]:focus,
+    .field textarea:focus {
+      border-color: rgba(56,189,248,0.9);
+      box-shadow:
+        inset 0 0 10px rgba(15,23,42,1),
+        0 8px 22px rgba(15,23,42,1),
+        0 0 22px rgba(56,189,248,0.7);
+    }
+
+    .question-card {
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.8);
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.96), rgba(15,23,42,0.98));
+      padding: 10px 12px 12px 12px;
+      margin-bottom: 10px;
+      box-shadow:
+        inset 0 0 15px rgba(0,0,0,0.95),
+        0 8px 22px rgba(15,23,42,1);
+      font-size: 0.8rem;
+    }
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+    .question-title {
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #e5f1ff;
+    }
+    .question-body {
+      display: grid;
+      grid-template-columns: 1.2fr 1.2fr;
+      gap: 8px;
+    }
+    @media (max-width: 650px) {
+      .question-body {
+        grid-template-columns: 1fr;
+      }
+    }
+    .answer-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .answer-row input[type="radio"] {
+      accent-color: #29d8ff;
+    }
+
+    .mini-label {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      margin-bottom: 2px;
+    }
+
+    .tiny-info {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    .output-card {
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.8);
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.96), rgba(15,23,42,0.98));
+      padding: 10px 12px 12px 12px;
+      box-shadow:
+        inset 0 0 15px rgba(0,0,0,0.95),
+        0 8px 22px rgba(15,23,42,1);
+      font-size: 0.8rem;
+      color: #c4f1ff;
+    }
+    .output-link {
+      width: 100%;
+      margin-top: 6px;
+      border-radius: 14px;
+      border: 1px solid rgba(148,163,184,0.8);
+      background: rgba(15,23,42,0.9);
+      color: #e5f1ff;
+      padding: 7px 9px;
+      font-size: 0.78rem;
+      outline: none;
+      resize: none;
+    }
+
+    .output-flex {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      margin-top: 6px;
+    }
+    @media (max-width: 650px) {
+      .output-flex {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .qr-box {
+      border-radius: 18px;
+      border: 1px solid rgba(148,163,184,0.8);
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.96), rgba(15,23,42,0.98));
+      padding: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow:
+        inset 0 0 12px rgba(0,0,0,0.95),
+        0 6px 18px rgba(15,23,42,1);
+    }
+
+    .pill-info {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.8);
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      color: #cbd5f5;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.08), transparent 65%);
+    }
+
+    /* ZONE JEU */
+    .quiz-card {
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.96), rgba(15,23,42,0.98));
+      padding: 14px 16px 16px 16px;
+      box-shadow:
+        inset 0 0 16px rgba(0,0,0,0.95),
+        0 10px 28px rgba(15,23,42,1);
+      font-family: "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.86rem;
+      color: #c4f1ff;
+      margin-top: 12px;
+    }
+
+    .quiz-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      font-size: 0.78rem;
+      color: #cbd5f5;
+    }
+
+    .quiz-question {
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+      color: #e5f1ff;
+    }
+    .quiz-counter {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+    .quiz-choices {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .quiz-choice {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.9);
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,1), rgba(15,23,42,0.95));
+      padding: 7px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition:
+        transform 0.1s ease-out,
+        box-shadow 0.1s ease-out,
+        border-color 0.1s ease-out,
+        background 0.1s ease-out;
+    }
+    .quiz-choice span.letter {
+      font-weight: 700;
+      color: #7dd3fc;
+      font-size: 0.8rem;
+    }
+    .quiz-choice:hover {
+      transform: translateY(-1px);
+      border-color: rgba(56,189,248,0.9);
+      box-shadow:
+        0 6px 18px rgba(0,0,0,0.95),
+        0 0 18px rgba(56,189,248,0.8);
+    }
+    .quiz-choice.correct {
+      border-color: #22c55e;
+      background: radial-gradient(circle at 0 0, rgba(22,163,74,0.4), rgba(15,23,42,0.98));
+      box-shadow:
+        0 0 0 1px rgba(22,163,74,0.8),
+        0 0 18px rgba(22,163,74,0.8);
+    }
+    .quiz-choice.wrong {
+      border-color: #ef4444;
+      background: radial-gradient(circle at 0 0, rgba(239,68,68,0.4), rgba(15,23,42,0.98));
+      box-shadow:
+        0 0 0 1px rgba(239,68,68,0.8),
+        0 0 18px rgba(239,68,68,0.8);
+    }
+
+    .quiz-feedback {
+      font-size: 0.8rem;
+      min-height: 18px;
+      color: #e5f1ff;
+    }
+
+    .quiz-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .score-pill {
+      border-radius: 999px;
+      padding: 5px 12px;
+      border: 1px solid rgba(148,163,184,0.9);
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,1), rgba(15,23,42,0.95));
+      font-size: 0.8rem;
+      color: #cbd5f5;
+    }
+
+    .result-panel {
+      margin-top: 10px;
+      border-radius: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      background: radial-gradient(circle at 0 0, rgba(15,23,42,0.96), rgba(15,23,42,0.98));
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      color: #c4f1ff;
+    }
+
+    /* FOOTER */
+    .bottom-footer {
+      background: linear-gradient(
+        135deg,
+        rgba(15,23,42,0.98),
+        rgba(15,23,42,0.98)
+      );
+      color: #cbd5f5;
+      padding: 14px 7vw 12px 7vw;
+      text-align: center;
+      font-size: 0.9rem;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-top: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow:
+        0 -12px 30px rgba(0,0,0,0.8),
+        0 0 0 1px rgba(15,23,42,1);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+  </style>
+</head>
+<body>
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-hud">
+      <div class="loader-title">GLOBAL//QUIZ-SHARE-ENGINE</div>
+
+      <div class="loader-status-row">
+        <span class="status-label">Initialisation</span>
+        <span class="status-dots">...</span>
+      </div>
+
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+
+      <div class="loader-subtext">
+        Mode création & mode joueur · Encodage URL · Génération de QR code.
+      </div>
+
+      <div class="loader-terminal">
+        <div class="terminal-line">[INIT] Préparation de l’éditeur de quiz personnalisés...</div>
+        <div class="terminal-line">[OK]  Encodage base64 des données pour lien partageable.</div>
+        <div class="terminal-line">[OK]  Générateur de QR code prêt pour le partage mobile.</div>
+        <div class="terminal-line">[SCAN] Recherche d’un paramètre ?data= dans l’URL.</div>
+        <div class="terminal-line">[OK]  GLOBAL//QUIZ-SHARE-ENGINE opérationnel.</div>
+        <div class="terminal-line terminal-cursor">_</div>
+      </div>
+
+      <div class="loader-scan"></div>
+    </div>
+  </div>
+
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <div class="top-banner">
+      Global - Quiz partageable
+      <nav class="nav-bar">
+        <a href="index.html">Accueil</a>
+        <a href="cours.html">Cours</a>
+      </nav>
+    </div>
+
+    <div class="page-padding">
+      <div class="tool-wrapper">
+        <div class="tool-card">
+          <div class="tool-header">
+            <div class="tool-title">Quiz partageable</div>
+            <div class="tool-subtitle">
+              Crée ton propre quiz, génère un lien + un QR code et partage‑le. Les gens peuvent jouer sur PC ou smartphone.
+            </div>
+          </div>
+
+          <div class="tabs">
+            <button class="tab-btn active" id="tab-create">Créer un quiz</button>
+            <button class="tab-btn" id="tab-play">Jouer un quiz</button>
+          </div>
+
+          <!-- SECTION CREATION -->
+          <div id="section-create">
+            <div class="creator-grid">
+              <div>
+                <div class="field">
+                  <label for="quiz-title">Titre du quiz</label>
+                  <input type="text" id="quiz-title" placeholder="Ex : Quiz spécial 1ère NSI" />
+                </div>
+                <div class="field">
+                  <label for="quiz-author">Auteur (optionnel)</label>
+                  <input type="text" id="quiz-author" placeholder="Ton pseudo" />
+                </div>
+                <div class="tiny-info">
+                  Limite recommandée : 5 à 10 questions pour garder l’URL raisonnable.
+                </div>
+
+                <div id="questions-container" style="margin-top:10px;"></div>
+
+                <button class="btn-ghost" id="btn-add-question" style="margin-top:6px;">
+                  + Ajouter une question
+                </button>
+              </div>
+
+              <div>
+                <div class="output-card">
+                  <div class="mini-label">Lien généré</div>
+                  <div class="output-flex">
+                    <textarea id="output-link" class="output-link" rows="5" readonly></textarea>
+                    <div class="qr-box">
+                      <div id="qrcode"></div>
+                    </div>
+                  </div>
+                  <div class="tiny-info">
+                    Le QR code représente exactement le lien ci‑dessus. Scanne‑le avec un smartphone pour ouvrir directement le quiz.
+                  </div>
+                  <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="btn-ghost" id="btn-generate">Générer le lien</button>
+                    <button class="btn-ghost" id="btn-copy-link">Copier le lien</button>
+                  </div>
+                  <div style="margin-top:8px;">
+                    <span class="pill-info" id="pill-status">
+                      En attente de génération...
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION JEU -->
+          <div id="section-play" style="display:none;">
+            <div class="pill-info" id="play-info">
+              Aucun quiz détecté dans l’URL. Colle un lien généré ou ajoute ?data=... à l’adresse.
+            </div>
+
+            <div class="quiz-card" id="play-card" style="display:none;">
+              <div class="quiz-meta">
+                <div>
+                  <span id="play-title"></span><br />
+                  <span id="play-author" style="font-size:0.75rem; color:#94a3b8;"></span>
+                </div>
+                <div class="score-pill">
+                  Question <span id="play-current">1</span>/<span id="play-total">0</span> · Score : <span id="play-score">0</span>/20
+                </div>
+              </div>
+
+              <div class="quiz-counter" id="play-counter">Question 1</div>
+              <div class="quiz-question" id="play-question">...</div>
+              <div class="quiz-choices" id="play-choices"></div>
+              <div class="quiz-feedback" id="play-feedback"></div>
+
+              <div class="quiz-actions">
+                <button class="btn-ghost" id="btn-play-next">
+                  Suivante ⮞
+                </button>
+                <button class="btn-ghost" id="btn-play-restart">
+                  ⟳ Rejouer ce quiz
+                </button>
+              </div>
+
+              <div class="result-panel" id="play-result" style="display:none;">
+                Résultat final : <span id="play-result-score">0</span>/20 ·
+                <span id="play-result-message"></span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-footer">
+      © Global — Quiz partageable | Créé par Thomas Lewis
+    </div>
+  </div>
+
+  <!-- Lib QRCode.js (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <script>
+    // Masquer le loader après 1 s
+    setTimeout(() => {
+      document.getElementById('loader').style.display = 'none';
+      const main = document.getElementById('main-content');
+      main.style.display = 'block';
+    }, 1000);
+
+    // Tabs
+    const tabCreate = document.getElementById('tab-create');
+    const tabPlay = document.getElementById('tab-play');
+    const sectionCreate = document.getElementById('section-create');
+    const sectionPlay = document.getElementById('section-play');
+
+    function setTab(mode) {
+      if (mode === 'create') {
+        tabCreate.classList.add('active');
+        tabPlay.classList.remove('active');
+        sectionCreate.style.display = 'block';
+        sectionPlay.style.display = 'none';
+      } else {
+        tabCreate.classList.remove('active');
+        tabPlay.classList.add('active');
+        sectionCreate.style.display = 'none';
+        sectionPlay.style.display = 'block';
+      }
+    }
+
+    tabCreate.addEventListener('click', () => setTab('create'));
+    tabPlay.addEventListener('click', () => setTab('play'));
+
+    // Création de quiz
+    const questionsContainer = document.getElementById('questions-container');
+    const btnAddQuestion = document.getElementById('btn-add-question');
+    const btnGenerate = document.getElementById('btn-generate');
+    const btnCopyLink = document.getElementById('btn-copy-link');
+    const outputLink = document.getElementById('output-link');
+    const pillStatus = document.getElementById('pill-status');
+
+    let questionCount = 0;
+    const MAX_QUESTIONS = 10;
+
+    function createQuestionCard() {
+      if (questionCount >= MAX_QUESTIONS) return;
+      questionCount++;
+
+      const card = document.createElement('div');
+      card.className = 'question-card';
+      card.dataset.index = questionCount;
+
+      card.innerHTML = `
+        <div class="question-header">
+          <div class="question-title">Question #${questionCount}</div>
+          <button class="btn-ghost btn-remove" type="button" style="font-size:0.7rem; padding:4px 10px;">
+            ✖ Supprimer
+          </button>
+        </div>
+        <div class="field" style="margin-bottom:6px;">
+          <label>Énoncé de la question</label>
+          <input type="text" class="q-text" placeholder="Ex : Quelle est la capitale de la France ?" />
+        </div>
+        <div class="mini-label">Réponses possibles (coche la bonne)</div>
+        <div class="question-body">
+          <div>
+            <div class="answer-row">
+              <input type="radio" name="correct-${questionCount}" value="0" checked />
+              <input type="text" class="q-answer" placeholder="Réponse A" />
+            </div>
+            <div class="answer-row">
+              <input type="radio" name="correct-${questionCount}" value="1" />
+              <input type="text" class="q-answer" placeholder="Réponse B" />
+            </div>
+          </div>
+          <div>
+            <div class="answer-row">
+              <input type="radio" name="correct-${questionCount}" value="2" />
+              <input type="text" class="q-answer" placeholder="Réponse C (optionnel)" />
+            </div>
+            <div class="answer-row">
+              <input type="radio" name="correct-${questionCount}" value="3" />
+              <input type="text" class="q-answer" placeholder="Réponse D (optionnel)" />
+            </div>
+          </div>
+        </div>
+      `;
+
+      const btnRemove = card.querySelector('.btn-remove');
+      btnRemove.addEventListener('click', () => {
+        card.remove();
+      });
+
+      questionsContainer.appendChild(card);
+    }
+
+    btnAddQuestion.addEventListener('click', createQuestionCard);
+    createQuestionCard(); // au moins une question
+
+    // Encodage base64 safe URL
+    function encodeBase64Url(str) {
+      const b64 = btoa(unescape(encodeURIComponent(str)));
+      return encodeURIComponent(b64);
+    }
+
+    // QRCode instance
+    let qr = null;
+    function initQr() {
+      const el = document.getElementById('qrcode');
+      qr = new QRCode(el, {
+        text: "",
+        width: 120,
+        height: 120,
+        colorDark: "#e5f1ff",
+        colorLight: "#020617",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+    initQr();
+
+    function generateQuizLink() {
+      const title = document.getElementById('quiz-title').value.trim() || "Quiz sans titre";
+      const author = document.getElementById('quiz-author').value.trim();
+
+      const cards = Array.from(questionsContainer.querySelectorAll('.question-card'));
+      const quizQuestions = [];
+
+      for (const card of cards) {
+        const qTextInput = card.querySelector('.q-text');
+        const answersInputs = card.querySelectorAll('.q-answer');
+        const radios = card.querySelectorAll('input[type="radio"]');
+
+        const questionText = qTextInput.value.trim();
+        if (!questionText) continue;
+
+        const choices = [];
+        answersInputs.forEach(input => {
+          const val = input.value.trim();
+          if (val) choices.push(val);
+        });
+
+        if (choices.length < 2) continue;
+
+        let correctIndex = 0;
+        radios.forEach(r => {
+          if (r.checked) {
+            correctIndex = parseInt(r.value, 10);
+          }
+        });
+
+        if (correctIndex >= choices.length) {
+          correctIndex = 0;
+        }
+
+        quizQuestions.push({
+          question: questionText,
+          choices,
+          correctIndex
+        });
+      }
+
+      if (quizQuestions.length === 0) {
+        pillStatus.textContent = "Aucune question valide. Ajoute au moins 1 question avec 2 réponses.";
+        pillStatus.style.borderColor = "#ef4444";
+        return;
+      }
+
+      const quizData = {
+        title,
+        author,
+        createdAt: new Date().toISOString(),
+        questions: quizQuestions
+      };
+
+      const json = JSON.stringify(quizData);
+      const encoded = encodeBase64Url(json);
+
+      const baseUrl = window.location.origin + window.location.pathname;
+      const url = baseUrl + "?data=" + encoded;
+
+      outputLink.value = url;
+      pillStatus.textContent = "Lien généré ✅ QR code mis à jour.";
+      pillStatus.style.borderColor = "rgba(56,189,248,0.9)";
+
+      // Update QR
+      if (qr) {
+        qr.clear();
+        qr.makeCode(url);
+      }
+    }
+
+    btnGenerate.addEventListener('click', generateQuizLink);
+
+    btnCopyLink.addEventListener('click', () => {
+      if (!outputLink.value.trim()) return;
+      outputLink.select();
+      document.execCommand('copy');
+      pillStatus.textContent = "Lien copié dans le presse‑papiers.";
+      pillStatus.style.borderColor = "rgba(34,197,94,0.9)";
+    });
+
+    // Lecture paramètre ?data= pour jouer
+    function getParam(name) {
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
+
+    const playInfo = document.getElementById('play-info');
+    const playCard = document.getElementById('play-card');
+    const playTitle = document.getElementById('play-title');
+    const playAuthor = document.getElementById('play-author');
+    const playCurrentSpan = document.getElementById('play-current');
+    const playTotalSpan = document.getElementById('play-total');
+    const playScoreSpan = document.getElementById('play-score');
+    const playCounter = document.getElementById('play-counter');
+    const playQuestion = document.getElementById('play-question');
+    const playChoices = document.getElementById('play-choices');
+    const playFeedback = document.getElementById('play-feedback');
+    const btnPlayNext = document.getElementById('btn-play-next');
+    const btnPlayRestart = document.getElementById('btn-play-restart');
+    const playResult = document.getElementById('play-result');
+    const playResultScore = document.getElementById('play-result-score');
+    const playResultMessage = document.getElementById('play-result-message');
+
+    let playQuiz = null;
+    let playIndex = 0;
+    let playCorrect = 0;
+    let playAnswered = false;
+
+    function decodeBase64Url(encoded) {
+      try {
+        const b64 = decodeURIComponent(encoded);
+        const str = decodeURIComponent(escape(atob(b64)));
+        return str;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function loadFromUrl() {
+      const dataParam = getParam('data');
+      if (!dataParam) {
+        return;
+      }
+      const decoded = decodeBase64Url(dataParam);
+      if (!decoded) {
+        playInfo.textContent = "Erreur de décodage du quiz (paramètre data invalide).";
+        playInfo.style.borderColor = "#ef4444";
+        return;
+      }
+
+      try {
+        const obj = JSON.parse(decoded);
+        if (!obj.questions || !Array.isArray(obj.questions) || obj.questions.length === 0) {
+          playInfo.textContent = "Aucune question valide dans ce quiz.";
+          playInfo.style.borderColor = "#ef4444";
+          return;
+        }
+        playQuiz = obj;
+        setTab('play');
+        startPlay();
+      } catch (e) {
+        playInfo.textContent = "Erreur : données du quiz non valides.";
+        playInfo.style.borderColor = "#ef4444";
+      }
+    }
+
+    function startPlay() {
+      playIndex = 0;
+      playCorrect = 0;
+      playAnswered = false;
+      playScoreSpan.textContent = "0";
+      playResult.style.display = "none";
+
+      playTitle.textContent = playQuiz.title || "Quiz sans titre";
+      if (playQuiz.author) {
+        playAuthor.textContent = "Auteur : " + playQuiz.author;
+      } else {
+        playAuthor.textContent = "";
+      }
+
+      const total = playQuiz.questions.length;
+      playTotalSpan.textContent = total.toString();
+
+      playInfo.textContent = "Quiz chargé depuis l’URL. Réponds aux questions ci‑dessous.";
+      playInfo.style.borderColor = "rgba(148,163,184,0.8)";
+
+      playCard.style.display = "block";
+
+      loadPlayQuestion();
+    }
+
+    function loadPlayQuestion() {
+      const total = playQuiz.questions.length;
+      if (playIndex >= total) {
+        showPlayResult();
+        return;
+      }
+
+      playAnswered = false;
+      playResult.style.display = "none";
+      playFeedback.textContent = "";
+      playChoices.innerHTML = "";
+
+      const q = playQuiz.questions[playIndex];
+      playCurrentSpan.textContent = (playIndex + 1).toString();
+      playCounter.textContent = "Question " + (playIndex + 1) + " / " + total;
+      playQuestion.textContent = q.question;
+
+      const letters = ["A", "B", "C", "D"];
+      q.choices.forEach((choice, index) => {
+        const btn = document.createElement('button');
+        btn.className = "quiz-choice";
+        btn.innerHTML = `<span class="letter">${letters[index]}</span><span>${choice}</span>`;
+
+        btn.addEventListener('click', () => {
+          if (playAnswered) return;
+          playAnswered = true;
+          const isCorrect = index === q.correctIndex;
+          if (isCorrect) {
+            btn.classList.add('correct');
+            playFeedback.textContent = "Bonne réponse ✔";
+            playCorrect++;
+          } else {
+            btn.classList.add('wrong');
+            playFeedback.textContent = "Mauvaise réponse ✘";
+            Array.from(playChoices.children).forEach((child, idx) => {
+              if (idx === q.correctIndex) {
+                child.classList.add('correct');
+              }
+            });
+          }
+          const total = playQuiz.questions.length;
+          const score20 = Math.round((playCorrect / total) * 20);
+          playScoreSpan.textContent = score20.toString();
+        });
+
+        playChoices.appendChild(btn);
+      });
+    }
+
+    function showPlayResult() {
+      const total = playQuiz.questions.length;
+      const score20 = Math.round((playCorrect / total) * 20);
+      playResultScore.textContent = score20.toString();
+      let msg = "";
+      if (score20 === 20) msg = "Parfait ! Tu as tout bon.";
+      else if (score20 >= 16) msg = "Très bien, tu maîtrises presque tout.";
+      else if (score20 >= 10) msg = "Correct, mais tu peux encore progresser.";
+      else msg = "N’abandonne pas, tu peux retenter le quiz.";
+
+      playResultMessage.textContent = msg;
+      playResult.style.display = "block";
+    }
+
+    btnPlayNext.addEventListener('click', () => {
+      if (!playQuiz) return;
+      const total = playQuiz.questions.length;
+      if (playIndex < total) {
+        playIndex++;
+        if (playIndex < total) {
+          loadPlayQuestion();
+        } else {
+          showPlayResult();
+        }
+      }
+    });
+
+    btnPlayRestart.addEventListener('click', () => {
+      if (!playQuiz) return;
+      startPlay();
+    });
+
+    // Chargement automatique si ?data= présent
+    loadFromUrl();
+  </script>
+</body>
+</html>
