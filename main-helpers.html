@@ -1,764 +1,2374 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="dark">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Projet – Fiches & Projet</title>
-
-  <style>
-    /* ---------------- VARIABLES GENERALES ---------------- */
-    :root {
-      /* clair */
-      --light-bg: #f5f5f7;
-      --light-surface: rgba(255, 255, 255, 0.85);
-      --light-text: #111111;
-      --light-accent: #0d6efd;
-
-      /* sombre */
-      --dark-bg: #020617;
-      --dark-surface: rgba(15, 23, 42, 0.9);
-      --dark-text: #e5e7eb;
-      --dark-accent: #38bdf8;
-
-      /* bleu */
-      --blue-bg: #020617;
-      --blue-surface: rgba(15, 23, 42, 0.92);
-      --blue-text: #e0ecff;
-      --blue-accent: #6366f1;
-
-      /* paramètres animation arrière-plan (PERSONNALISABLES) */
-      --bg-color-1: #6366f1;
-      --bg-color-2: #22d3ee;
-      --bg-color-3: #f97316;
-      --bg-speed: 18s;
-      --bg-blur: 90px;
-    }
-
-    html[data-theme="light"] {
-      --bg: var(--light-bg);
-      --surface: var(--light-surface);
-      --text: var(--light-text);
-      --accent: var(--light-accent);
-    }
-
-    html[data-theme="dark"] {
-      --bg: var(--dark-bg);
-      --surface: var(--dark-surface);
-      --text: var(--dark-text);
-      --accent: var(--dark-accent);
-    }
-
-    html[data-theme="blue"] {
-      --bg: var(--blue-bg);
-      --surface: var(--blue-surface);
-      --text: var(--blue-text);
-      --accent: var(--blue-accent);
-    }
-
-    /* ---------------- GLOBAL ---------------- */
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
-      background: radial-gradient(circle at top, rgba(255, 255, 255, 0.06), transparent 55%), var(--bg);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 24px;
-      overflow: hidden;
-      position: relative;
-    }
-
-    /* ---------------- BACKGROUND ANIME ---------------- */
-    .bg-animated {
-      position: fixed;
-      inset: -40%;
-      z-index: -2;
-      overflow: hidden;
-      filter: blur(var(--bg-blur));
-      opacity: 0.9;
-    }
-
-    .bg-blob {
-      position: absolute;
-      width: 55vmax;
-      height: 55vmax;
-      border-radius: 999px;
-      background: var(--bg-color-1);
-      mix-blend-mode: screen;
-      animation: moveBlob var(--bg-speed) linear infinite;
-    }
-
-    .bg-blob:nth-child(2) {
-      background: var(--bg-color-2);
-      animation-delay: calc(var(--bg-speed) / -3);
-    }
-
-    .bg-blob:nth-child(3) {
-      background: var(--bg-color-3);
-      animation-delay: calc(var(--bg-speed) / -1.5);
-    }
-
-    @keyframes moveBlob {
-      0% {
-        transform: translate3d(-40%, -40%, 0) scale(1);
-      }
-      33% {
-        transform: translate3d(40%, -10%, 0) scale(1.1);
-      }
-      66% {
-        transform: translate3d(-10%, 40%, 0) scale(0.9);
-      }
-      100% {
-        transform: translate3d(-40%, -40%, 0) scale(1);
-      }
-    }
-
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.97));
-      z-index: -1;
-    }
-
-    /* ---------------- CONTENEUR PRINCIPAL ---------------- */
-    .page {
-      width: 100%;
-      max-width: 960px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(15, 23, 42, 0.9)), var(--surface);
-      border-radius: 22px;
-      padding: 24px 24px 18px;
-      box-shadow:
-        0 30px 80px rgba(15, 23, 42, 0.8),
-        0 0 0 1px rgba(255, 255, 255, 0.04);
-      backdrop-filter: blur(24px);
-      position: relative;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 18px;
-    }
-
-    .title-block h1 {
-      margin: 0;
-      font-size: 1.7rem;
-      letter-spacing: 0.04em;
-    }
-
-    .title-block p {
-      margin: 4px 0 0;
-      font-size: 0.9rem;
-      opacity: 0.8;
-    }
-
-    .controls {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 8px;
-      font-size: 0.85rem;
-    }
-
-    .field {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    label {
-      opacity: 0.8;
-    }
-
-    select,
-    input[type="range"] {
-      background: rgba(15, 23, 42, 0.75);
-      color: var(--text);
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      padding: 6px 12px;
-      font-size: 0.8rem;
-      outline: none;
-      appearance: none;
-      cursor: pointer;
-    }
-
-    input[type="range"] {
-      padding: 0;
-      width: 130px;
-    }
-
-    select:focus-visible,
-    input[type="range"]:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-
-    /* ---------------- ONGLETES PRINCIPAUX ---------------- */
-    .tabs {
-      display: flex;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.35);
-      margin-bottom: 12px;
-      gap: 6px;
-    }
-
-    .tab-btn {
-      position: relative;
-      padding: 10px 18px;
-      cursor: pointer;
-      background: transparent;
-      color: rgba(226, 232, 240, 0.75);
-      border: none;
-      font-size: 0.95rem;
-      font-weight: 500;
-      border-radius: 999px;
-      transition:
-        color 0.2s ease,
-        background 0.2s ease,
-        transform 0.12s ease,
-        box-shadow 0.12s ease;
-    }
-
-    .tab-btn::after {
-      content: "";
-      position: absolute;
-      left: 18%;
-      right: 18%;
-      bottom: -1px;
-      height: 2px;
-      background: transparent;
-      transition: background 0.18s ease;
-    }
-
-    .tab-btn:hover {
-      background: rgba(15, 23, 42, 0.8);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.7);
-    }
-
-    .tab-btn.active {
-      color: var(--accent);
-      background: rgba(15, 23, 42, 0.95);
-      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.85);
-    }
-
-    .tab-btn.active::after {
-      background: var(--accent);
-    }
-
-    /* ---------------- CONTENU ONGLETES + ANIM ---------------- */
-    .tabs-wrapper {
-      position: relative;
-      overflow: hidden;
-      min-height: 220px;
-    }
-
-    .tab-content {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      transform: translateX(24px);
-      pointer-events: none;
-      transition:
-        opacity 0.25s ease,
-        transform 0.25s ease;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .tab-content.active {
-      opacity: 1;
-      transform: translateX(0);
-      pointer-events: auto;
-    }
-
-    .tab-content.exit-left {
-      opacity: 0;
-      transform: translateX(-24px);
-    }
-
-    .tab-content.exit-right {
-      opacity: 0;
-      transform: translateX(24px);
-    }
-
-    .card {
-      background: rgba(15, 23, 42, 0.92);
-      border-radius: 18px;
-      padding: 18px 18px 16px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      box-shadow:
-        0 15px 40px rgba(15, 23, 42, 0.9),
-        inset 0 0 0 1px rgba(15, 23, 42, 0.85);
-      margin-bottom: 14px;
-    }
-
-    .card h2 {
-      margin-top: 0;
-      margin-bottom: 8px;
-      font-size: 1.2rem;
-    }
-
-    .card p {
-      margin: 0;
-      font-size: 0.95rem;
-      line-height: 1.6;
-      opacity: 0.88;
-    }
-
-    /* ---------------- BOUTON & FORM WRAPPER ---------------- */
-    .btn-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border-radius: 999px;
-      background: var(--accent);
-      color: #fff;
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 500;
-      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.45);
-      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-    }
-
-    .btn-link:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 15px 35px rgba(15, 23, 42, 0.6);
-      background: #0f6bff;
-    }
-
-    .form-wrapper {
-      margin-top: 14px;
-      overflow: hidden;
-      border-radius: 14px;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.85);
-    }
-
-    .form-wrapper iframe {
-      width: 100%;
-      border: 0;
-      background: #ffffff;
-      height: 480px;
-    }
-
-    /* ---------------- LISTE FICHES + FILTRES (si tu les remets plus tard) ---------------- */
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
-      margin-top: 10px;
-    }
-
-    .filters select {
-      background: rgba(15, 23, 42, 0.85);
-      color: var(--text);
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      padding: 6px 12px;
-      font-size: 0.8rem;
-      outline: none;
-    }
-
-    /* ---------------- SOUS-ONGLETS (PARTIE 1) ---------------- */
-    .sub-tabs {
-      display: flex;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.25);
-      margin-bottom: 10px;
-      gap: 6px;
-      margin-top: 6px;
-    }
-
-    .sub-tab-btn {
-      position: relative;
-      padding: 8px 14px;
-      cursor: pointer;
-      background: transparent;
-      color: rgba(226, 232, 240, 0.75);
-      border: none;
-      font-size: 0.85rem;
-      font-weight: 500;
-      border-radius: 999px;
-      transition:
-        color 0.2s ease,
-        background 0.2s ease,
-        transform 0.12s ease,
-        box-shadow 0.12s ease;
-    }
-
-    .sub-tab-btn::after {
-      content: "";
-      position: absolute;
-      left: 20%;
-      right: 20%;
-      bottom: -1px;
-      height: 2px;
-      background: transparent;
-      transition: background 0.18s ease;
-    }
-
-    .sub-tab-btn:hover {
-      background: rgba(15, 23, 42, 0.8);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.7);
-    }
-
-    .sub-tab-btn.active {
-      color: var(--accent);
-      background: rgba(15, 23, 42, 0.95);
-      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.85);
-    }
-
-    .sub-tab-btn.active::after {
-      background: var(--accent);
-    }
-
-    .sub-tabs-wrapper {
-      position: relative;
-      min-height: 150px;
-    }
-
-    .sub-tab-content {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      transform: translateX(16px);
-      pointer-events: none;
-      transition:
-        opacity 0.22s ease,
-        transform 0.22s ease;
-    }
-
-    .sub-tab-content.active {
-      opacity: 1;
-      transform: translateX(0);
-      pointer-events: auto;
-    }
-
-    /* ---------------- GALERIE DE FICHES (ICÔNES + LIGHTBOX) ---------------- */
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 12px;
-      margin-top: 10px;
-    }
-
-    .gallery-item {
-      position: relative;
-      border-radius: 12px;
-      overflow: hidden;
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .gallery-item:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 14px 35px rgba(15, 23, 42, 0.9);
-    }
-
-    .gallery-thumb {
-      width: 100%;
-      height: 90px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .gallery-caption {
-      padding: 6px 8px 8px;
-      font-size: 0.8rem;
-      text-align: center;
-      opacity: 0.9;
-    }
-
-    .lightbox {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.8);
-      z-index: 999;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .lightbox.open {
-      display: flex;
-    }
-
-    .lightbox-img {
-      max-width: 100%;
-      max-height: 100%;
-      border-radius: 12px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-    }
-
-    .lightbox-close {
-      position: fixed;
-      top: 16px;
-      right: 20px;
-      font-size: 2rem;
-      color: #fff;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    @media (max-width: 720px) {
-      body {
-        padding: 12px;
-      }
-      .page {
-        padding: 18px 16px 14px;
-      }
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .controls {
-        align-items: flex-start;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Fiches de révision – Première</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            /* Couleurs principales (par défaut : thème Sombre Néon) */
+            --color-bg: #0f172a;
+            --color-bg-alt: #020617;
+            --color-primary: #3b82f6;
+            --color-primary-soft: rgba(59, 130, 246, 0.12);
+            --color-accent: #22c55e;
+            --color-text: #e5e7eb;
+            --color-text-muted: #9ca3af;
+            --color-card-bg: #020617;
+            --color-border: rgba(148, 163, 184, 0.3);
+
+            /* Couleurs effet curseur / fond (PERSONNALISABLES) */
+            --cursor-main: #3b82f6;
+            --cursor-secondary: #22c55e;
+            --cursor-third: #a855f7;
+            --bg-grad-1: #1d4ed8;
+            --bg-grad-2: #22c55e;
+            --bg-grad-3: #a855f7;
+            --bg-grad-4: #06b6d4;
+
+            /* Effets */
+            --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.7);
+            --shadow-card: 0 14px 32px rgba(15, 23, 42, 0.9);
+            --radius-lg: 18px;
+            --radius-xl: 28px;
+
+            /* Typo par défaut */
+            --font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: radial-gradient(circle at top left, #1d283a 0, #020617 45%, #020617 100%);
+            color: var(--color-text);
+            min-height: 100vh;
+            line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .app-shell {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 1.5rem 1.25rem 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* NAVIGATION */
+        .nav {
+            position: sticky;
+            top: 0.75rem;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 999px;
+            background: radial-gradient(circle at top left, rgba(30,64,175,0.9), rgba(15,23,42,0.98));
+            box-shadow: var(--shadow-soft);
+            backdrop-filter: blur(22px);
+            border: 1px solid rgba(148,163,184,0.4);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .nav-logo {
+            width: 30px;
+            height: 30px;
+            border-radius: 14px;
+            background: conic-gradient(from 120deg, #3b82f6, #22c55e, #a855f7, #3b82f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0b1120;
+            font-weight: 800;
+            font-size: 0.9rem;
+            box-shadow: 0 0 25px rgba(56,189,248,0.7);
+        }
+
+        .nav-title-block {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-title {
+            font-size: 0.98rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #e5e7eb;
+        }
+
+        .nav-subtitle {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+        }
+
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn,
+        .nav-btn-link {
+            border-radius: 999px;
+            padding: 0.55rem 0.9rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            background: rgba(15,23,42,0.7);
+            color: #e5e7eb;
+            border: 1px solid rgba(148,163,184,0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: background 0.2s ease, transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+            text-decoration: none;
+        }
+
+        .nav-btn span.icon,
+        .nav-btn-link span.icon {
+            font-size: 0.9rem;
+        }
+
+        .nav-btn:hover,
+        .nav-btn-link:hover {
+            background: rgba(15,23,42,0.95);
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(15,23,42,0.9);
+            border-color: rgba(59,130,246,0.7);
+        }
+
+        .nav-btn-tab.active {
+            background: linear-gradient(135deg, #3b82f6, #22c55e);
+            color: #0b1120;
+            box-shadow: 0 14px 32px rgba(37,99,235,0.7);
+            border-color: transparent;
+        }
+
+        /* Section générique */
+        .section {
+            position: relative;
+            margin-bottom: 2rem;
+            padding: 1.8rem 1.5rem 1.8rem;
+            border-radius: var(--radius-xl);
+            background: radial-gradient(circle at top left, rgba(37,99,235,0.26), rgba(15,23,42,0.95));
+            box-shadow: var(--shadow-card);
+            border: 1px solid rgba(148,163,184,0.35);
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: "";
+            position: absolute;
+            inset: -40%;
+            background:
+                radial-gradient(circle at top left, rgba(59,130,246,0.22) 0, transparent 60%),
+                radial-gradient(circle at bottom right, rgba(34,197,94,0.18) 0, transparent 55%);
+            opacity: 0.55;
+            pointer-events: none;
+        }
+
+        .section-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.4rem;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+        }
+
+        .section-badge {
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            border: 1px solid rgba(148,163,184,0.7);
+            background: rgba(15,23,42,0.7);
+            color: var(--color-text-muted);
+        }
+
+        .section-subtitle {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+            max-width: 580px;
+        }
+
+        /* Panneau Paramètres (overlay) */
+        .settings-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 70;
+        }
+
+        .settings-overlay.active {
+            display: flex;
+        }
+
+        .settings-panel {
+            width: min(900px, 100% - 2rem);
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 24px;
+            background: radial-gradient(circle at top left, rgba(37,99,235,0.32), rgba(15,23,42,0.98));
+            box-shadow: 0 26px 70px rgba(15,23,42,0.95);
+            border: 1px solid rgba(148,163,184,0.6);
+            padding: 1.6rem 1.4rem 1.6rem;
+        }
+
+        .settings-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .settings-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .settings-close {
+            border-radius: 999px;
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(148,163,184,0.7);
+            background: rgba(15,23,42,0.9);
+            color: #e5e7eb;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.4fr);
+            gap: 1.2rem;
+        }
+
+        .settings-section {
+            border-radius: 18px;
+            background: rgba(15,23,42,0.92);
+            border: 1px solid rgba(148,163,184,0.5);
+            padding: 1rem 1.1rem;
+        }
+
+        .settings-section-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+
+        .settings-section-sub {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            margin-bottom: 0.7rem;
+        }
+
+        /* Panneau de personnalisation interne */
+        .custom-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+        .custom-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            align-items: center;
+        }
+
+        .custom-label {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+        }
+
+        .custom-select {
+            border-radius: 999px;
+            padding: 0.35rem 0.8rem;
+            border: 1px solid rgba(148,163,184,0.6);
+            background: #020617;
+            color: var(--color-text);
+            font-size: 0.9rem;
+            min-width: 160px;
+        }
+
+        /* Vue générale (dans Paramètres) */
+        .hero-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.1fr);
+            gap: 1.4rem;
+            align-items: center;
+        }
+
+        .hero-main-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            margin-bottom: 0.6rem;
+        }
+
+        .hero-highlight {
+            background: linear-gradient(120deg, #3b82f6, #22c55e, #a855f7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-text {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+            margin-bottom: 0.9rem;
+        }
+
+        .hero-list {
+            list-style: none;
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+        }
+
+        .hero-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .hero-list li span.icon {
+            color: var(--color-accent);
+            margin-top: 0.15rem;
+        }
+
+        .hero-side-card {
+            border-radius: var(--radius-lg);
+            background: linear-gradient(145deg, rgba(15,23,42,0.9), rgba(15,23,42,0.98));
+            border: 1px solid rgba(148,163,184,0.45);
+            padding: 0.85rem 0.9rem;
+        }
+
+        .hero-side-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+
+        .hero-tagline {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            font-size: 0.8rem;
+        }
+
+        .hero-stat-pill {
+            border-radius: 999px;
+            padding: 0.22rem 0.6rem;
+            border: 1px solid rgba(148,163,184,0.4);
+            background: rgba(15,23,42,0.9);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .hero-stat-pill span.icon {
+            font-size: 0.9rem;
+        }
+
+        /* Onglets (3 parties) */
+        .tabs-page {
+            margin-top: 1rem;
+        }
+
+        .tab-content-page {
+            display: none;
+        }
+
+        .tab-content-page.active {
+            display: block;
+            animation: tabfade 0.18s ease-out;
+        }
+
+        @keyframes tabfade {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .part1-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 2.3fr) minmax(0, 1fr);
+            gap: 1.4rem;
+        }
+
+        /* Filtres */
+        .filters {
+            margin-bottom: 1.1rem;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.6rem;
+        }
+
+        .filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .filter-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: var(--color-text-muted);
+        }
+
+        .filter-input {
+            border-radius: 999px;
+            border: 1px solid rgba(148,163,184,0.6);
+            padding: 0.4rem 0.7rem;
+            background: rgba(15,23,42,0.85);
+            color: var(--color-text);
+            font-size: 0.9rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 0.9rem;
+        }
+
+        .fiche-card {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(15,23,42,0.96);
+            border: 1px solid rgba(148,163,184,0.4);
+            cursor: pointer;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+            transform-style: preserve-3d;
+        }
+
+        /* Effet tilt par défaut (reset) */
+        .fiche-card-inner {
+            transition: transform 0.18s ease;
+            transform-style: preserve-3d;
+        }
+
+        .fiche-card:hover {
+            box-shadow: 0 18px 42px rgba(15,23,42,0.95);
+            border-color: rgba(59,130,246,0.8);
+            background: radial-gradient(circle at top left, rgba(37,99,235,0.35), rgba(15,23,42,0.96));
+        }
+
+        .fiche-image-wrapper {
+            position: relative;
+            overflow: hidden;
+            height: 140px;
+            background: radial-gradient(circle at top left, rgba(59,130,246,0.35), rgba(15,23,42,1));
+        }
+
+        .fiche-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .fiche-card:hover .fiche-image-wrapper img {
+            transform: scale(1.05);
+        }
+
+        .fiche-chip {
+            position: absolute;
+            left: 0.65rem;
+            bottom: 0.55rem;
+            padding: 0.16rem 0.55rem;
+            font-size: 0.7rem;
+            border-radius: 999px;
+            background: rgba(15,23,42,0.85);
+            color: var(--color-text);
+            border: 1px solid rgba(148,163,184,0.6);
+        }
+
+        .fiche-body {
+            padding: 0.55rem 0.75rem 0.7rem;
+        }
+
+        .fiche-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.15rem;
+        }
+
+        .fiche-meta {
+            font-size: 0.78rem;
+            color: var(--color-text-muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .fiche-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .fiche-tag {
+            font-size: 0.73rem;
+            padding: 0.12rem 0.45rem;
+            border-radius: 999px;
+            background: rgba(15,23,42,0.9);
+            border: 1px solid rgba(148,163,184,0.6);
+        }
+
+        /* Étoile sur la fiche */
+        .fiche-star-btn {
+            position: absolute;
+            top: 0.45rem;
+            right: 0.45rem;
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            border: 1px solid rgba(148,163,184,0.6);
+            background: rgba(15,23,42,0.9);
+            color: #facc15;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.95rem;
+            z-index: 2;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+
+        .fiche-star-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 24px rgba(15,23,42,0.9);
+            background: rgba(30,64,175,0.9);
+        }
+
+        .fiche-star-btn.starred {
+            background: #facc15;
+            color: #020617;
+            border-color: #facc15;
+        }
+
+        /* Classement */
+        .ranking-card {
+            border-radius: 18px;
+            background: rgba(15,23,42,0.98);
+            border: 1px solid rgba(148,163,184,0.45);
+            padding: 0.9rem 0.95rem 1.05rem;
+        }
+
+        .ranking-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+        }
+
+        .ranking-sub {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            margin-bottom: 0.6rem;
+        }
+
+        .ranking-list {
+            list-style: none;
+            counter-reset: rank-counter;
+        }
+
+        .ranking-item {
+            counter-increment: rank-counter;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            padding: 0.35rem 0.1rem;
+            border-bottom: 1px dashed rgba(55,65,81,0.7);
+        }
+
+        .ranking-item:last-child {
+            border-bottom: none;
+        }
+
+        .ranking-item-left {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .ranking-item-left::before {
+            content: counter(rank-counter) " ";
+            width: 1.45rem;
+            height: 1.45rem;
+            border-radius: 999px;
+            border: 1px solid rgba(148,163,184,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: var(--color-text-muted);
+        }
+
+        .ranking-name {
+            font-weight: 500;
+        }
+
+        .ranking-score {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+        }
+
+        /* PARTIE 2 */
+        .part2-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.7fr);
+            gap: 1.4rem;
+        }
+
+        .mail-panel {
+            border-radius: 18px;
+            background: rgba(15,23,42,0.96);
+            border: 1px solid rgba(148,163,184,0.55);
+            padding: 1rem;
+        }
+
+        .mail-title {
+            font-size: 0.98rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .mail-text {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+            margin-bottom: 0.7rem;
+        }
+
+        .mail-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            border-radius: 999px;
+            padding: 0.55rem 1rem;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: linear-gradient(135deg, #22c55e, #3b82f6);
+            color: #020617;
+            box-shadow: 0 14px 32px rgba(34,197,94,0.6);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .mail-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 40px rgba(34,197,94,0.75);
+        }
+
+        .mail-btn span.icon {
+            font-size: 1rem;
+        }
+
+        .mail-info {
+            border-radius: 18px;
+            background: rgba(15,23,42,0.94);
+            border: 1px solid rgba(148,163,184,0.5);
+            padding: 1rem 1.1rem;
+        }
+
+        .mail-info-block {
+            margin-bottom: 0.7rem;
+        }
+
+        .mail-info-block:last-child {
+            margin-bottom: 0;
+        }
+
+        .mail-info-title {
+            font-size: 0.94rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .mail-info-text {
+            font-size: 0.86rem;
+            color: var(--color-text-muted);
+        }
+
+        .mail-info-list {
+            margin-top: 0.3rem;
+            font-size: 0.86rem;
+            color: var(--color-text-muted);
+            padding-left: 1.1rem;
+        }
+
+        .mail-info-list li {
+            margin-bottom: 0.25rem;
+        }
+
+        /* PARTIE 3 – Dossiers favoris */
+        .part3-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr);
+            gap: 1.4rem;
+        }
+
+        .folder-panel {
+            border-radius: 18px;
+            background: rgba(15,23,42,0.96);
+            border: 1px solid rgba(148,163,184,0.55);
+            padding: 1rem 1.1rem;
+        }
+
+        .folder-grid {
+            margin-top: 0.7rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 0.7rem;
+        }
+
+        .folder-card {
+            position: relative;
+            border-radius: 14px;
+            padding: 0.7rem 0.7rem 0.6rem;
+            background: radial-gradient(circle at top left, rgba(59,130,246,0.25), rgba(15,23,42,0.95));
+            border: 1px solid rgba(148,163,184,0.6);
+            box-shadow: 0 12px 28px rgba(15,23,42,0.9);
+            cursor: pointer;
+            transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .folder-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(59,130,246,0.9);
+            box-shadow: 0 16px 40px rgba(15,23,42,0.95);
+            background: radial-gradient(circle at top left, rgba(59,130,246,0.35), rgba(15,23,42,0.98));
+        }
+
+        .folder-icon {
+            font-size: 1.4rem;
+        }
+
+        .folder-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .folder-count {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+        }
+
+        .folder-delete-btn {
+            position: absolute;
+            top: 0.4rem;
+            right: 0.4rem;
+            width: 22px;
+            height: 22px;
+            border-radius: 999px;
+            border: 1px solid rgba(248,113,113,0.7);
+            background: rgba(15,23,42,0.9);
+            color: #fecaca;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.15s ease;
+        }
+
+        .folder-delete-btn:hover {
+            background: rgba(248,113,113,0.15);
+            transform: scale(1.03);
+        }
+
+        .folder-form {
+            display: flex;
+            gap: 0.4rem;
+            margin-top: 0.6rem;
+        }
+
+        .folder-input {
+            flex: 1;
+            border-radius: 999px;
+            border: 1px solid rgba(148,163,184,0.6);
+            padding: 0.4rem 0.7rem;
+            background: rgba(15,23,42,0.9);
+            color: var(--color-text);
+            font-size: 0.9rem;
+        }
+
+        .folder-add-btn {
+            border-radius: 999px;
+            padding: 0.4rem 0.9rem;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background: linear-gradient(135deg, #3b82f6, #22c55e);
+            color: #020617;
+        }
+
+        .folder-fiches-container {
+            border-radius: 18px;
+            background: rgba(15,23,42,0.96);
+            border: 1px solid rgba(148,163,184,0.55);
+            padding: 1rem 1.1rem;
+        }
+
+        .folder-fiches-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.7rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .folder-fiches-title {
+            font-size: 0.92rem;
+            font-weight: 600;
+        }
+
+        .folder-fiches-list {
+            margin-top: 0.4rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 0.6rem;
+        }
+
+        .folder-fiche-card {
+            border-radius: 12px;
+            border: 1px solid rgba(148,163,184,0.5);
+            background: rgba(15,23,42,0.95);
+            cursor: pointer;
+            overflow: hidden;
+            transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .folder-fiche-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 32px rgba(15,23,42,0.95);
+            border-color: rgba(59,130,246,0.85);
+        }
+
+        .folder-fiche-image {
+            height: 100px;
+            overflow: hidden;
+            background: radial-gradient(circle at top left, rgba(59,130,246,0.35), rgba(15,23,42,1));
+        }
+
+        .folder-fiche-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .folder-fiche-card:hover .folder-fiche-image img {
+            transform: scale(1.05);
+        }
+
+        .folder-fiche-body {
+            padding: 0.45rem 0.55rem 0.5rem;
+        }
+
+        .folder-fiche-title {
+            font-size: 0.86rem;
+            font-weight: 600;
+            margin-bottom: 0.1rem;
+        }
+
+        .folder-fiche-meta {
+            font-size: 0.78rem;
+            color: var(--color-text-muted);
+        }
+
+        .folder-fiche-remove {
+            margin-top: 0.25rem;
+            border: none;
+            background: transparent;
+            color: #f97373;
+            cursor: pointer;
+            font-size: 0.78rem;
+            padding: 0;
+        }
+
+        /* LIGHTBOX PLEIN ÉCRAN */
+        .lightbox-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.96);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 80;
+        }
+
+        .lightbox-backdrop.active {
+            display: flex;
+        }
+
+        .lightbox-full {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: #020617;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox-full img {
+            max-width: 100vw;
+            max-height: 100vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            display: block;
+        }
+
+        .lightbox-close {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            border: 1px solid rgba(148,163,184,0.9);
+            background: rgba(15,23,42,0.95);
+            color: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 90;
+            font-size: 0.9rem;
+        }
+
+        /* CURSEUR & FOND : plusieurs effets */
+        .cursor-layer {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 40;
+        }
+
+        .cursor-base,
+        .cursor-ring,
+        .cursor-square,
+        .cursor-cross,
+        .cursor-dot {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.18s ease;
+        }
+
+        .cursor-base {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--cursor-main);
+        }
+
+        .cursor-ring {
+            width: 26px;
+            height: 26px;
+            border-radius: 999px;
+            border: 2px solid var(--cursor-secondary);
+        }
+
+        .cursor-square {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            border: 2px solid var(--cursor-secondary);
+        }
+
+        .cursor-cross {
+            width: 20px;
+            height: 20px;
+        }
+
+        .cursor-cross::before,
+        .cursor-cross::after {
+            content: "";
+            position: absolute;
+            background: var(--cursor-main);
+        }
+
+        .cursor-cross::before {
+            width: 100%;
+            height: 2px;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .cursor-cross::after {
+            height: 100%;
+            width: 2px;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .cursor-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: var(--cursor-third);
+        }
+
+        .cursor-glow {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 999px;
+            background: radial-gradient(circle, rgba(59,130,246,0.32), transparent 60%);
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.22s ease;
+            mix-blend-mode: screen;
+        }
+
+        .cursor-gradient-orb {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 999px;
+            background: radial-gradient(circle at 30% 30%, var(--cursor-main), transparent 60%);
+            opacity: 0.15;
+            filter: blur(24px);
+        }
+
+        .cursor-trail-dot {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: radial-gradient(circle, var(--cursor-main), transparent);
+            pointer-events: none;
+        }
+
+        .cursor-trail-square {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+            background: linear-gradient(135deg, var(--cursor-main), var(--cursor-secondary));
+            opacity: 0.7;
+        }
+
+        .cursor-pulse {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 999px;
+            border: 2px solid rgba(148,163,184,0.9);
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0;
+        }
+
+        .cursor-bg-gradient {
+            position: fixed;
+            inset: -40%;
+            background: linear-gradient(-45deg, var(--bg-grad-1), var(--bg-grad-2), var(--bg-grad-3), var(--bg-grad-4));
+            background-size: 400% 400%;
+            animation: gradientShift 16s ease infinite;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .cursor-bg-radial {
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 10% 20%, rgba(59,130,246,0.17), transparent 60%),
+                radial-gradient(circle at 90% 80%, rgba(34,197,94,0.15), transparent 55%),
+                radial-gradient(circle at 50% 50%, rgba(168,85,247,0.18), transparent 65%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .cursor-bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(148,163,184,0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148,163,184,0.08) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .cursor-bg-noise {
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2' numOctaves='2' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.24'/%3E%3C/svg%3E");
+            mix-blend-mode: soft-light;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* RESPONSIF */
+        @media (max-width: 900px) {
+            .hero-layout,
+            .part1-layout,
+            .part2-layout,
+            .part3-layout,
+            .settings-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .section {
+                padding: 1.4rem 1.1rem;
+            }
+
+            .nav {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.65rem;
+                border-radius: 18px;
+            }
+
+            .nav-buttons {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .filters {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .app-shell {
+                padding-inline: 0.9rem;
+            }
+
+            .section-title {
+                font-size: 1.25rem;
+            }
+
+            .hero-main-title {
+                font-size: 1.3rem;
+            }
+
+            .folder-fiches-list {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- BACKGROUND ANIME PERSONNALISABLE -->
-  <div class="bg-animated">
-    <div class="bg-blob"></div>
-    <div class="bg-blob"></div>
-    <div class="bg-blob"></div>
-  </div>
-  <div class="overlay"></div>
+<div class="cursor-bg-gradient" id="bg-gradient"></div>
+<div class="cursor-bg-radial" id="bg-radial"></div>
+<div class="cursor-bg-grid" id="bg-grid"></div>
+<div class="cursor-bg-noise" id="bg-noise"></div>
 
-  <div class="page">
-    <header>
-      <div class="title-block">
-        <h1>Projet en deux parties</h1>
-        <p>Partie 1 : Fiches de révision · Partie 2 : autre contenu de ton projet.</p>
-      </div>
+<div class="cursor-layer" id="cursor-layer"></div>
 
-      <div class="controls">
-        <div class="field">
-          <label for="theme">Thème :</label>
-          <select id="theme">
-            <option value="dark">Sombre</option>
-            <option value="light">Clair</option>
-            <option value="blue">Bleu</option>
-          </select>
+<div class="app-shell">
+    <!-- NAVIGATION -->
+    <header class="nav">
+        <div class="nav-left">
+            <div class="nav-logo">F</div>
+            <div class="nav-title-block">
+                <div class="nav-title">Fiches de révision – Première</div>
+                <div class="nav-subtitle">Choisis ta partie avec les boutons à gauche</div>
+            </div>
         </div>
-        <div class="field">
-          <label for="speed">Vitesse fond :</label>
-          <input id="speed" type="range" min="6" max="30" value="18" />
-        </div>
-      </div>
+        <nav class="nav-buttons">
+            <a class="nav-btn-link" href="https://ton-lien-accueil.com" target="_blank" rel="noopener noreferrer">
+                <span class="icon">🏠</span>
+                <span>Accueil</span>
+            </a>
+            <button class="nav-btn" id="settings-btn" type="button">
+                <span class="icon">⚙️</span>
+                <span>Paramètres</span>
+            </button>
+            <button class="nav-btn nav-btn-tab active" data-tab-page="part1-page">
+                <span class="icon">📚</span>
+                <span>Partie 1</span>
+            </button>
+            <button class="nav-btn nav-btn-tab" data-tab-page="part2-page">
+                <span class="icon">📨</span>
+                <span>Partie 2</span>
+            </button>
+            <button class="nav-btn nav-btn-tab" data-tab-page="part3-page">
+                <span class="icon">⭐</span>
+                <span>Partie 3</span>
+            </button>
+        </nav>
     </header>
 
-    <!-- Onglets principaux -->
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="partie1">Partie 1 – Fiches</button>
-      <button class="tab-btn" data-tab="partie2">Partie 2 – Projet</button>
-    </div>
-
-    <div class="tabs-wrapper">
-      <!-- ---------- PARTIE 1 : FICHES ---------- -->
-      <div class="tab-content active" id="partie1">
-        <!-- Sous-onglets de la partie 1 -->
-        <div class="sub-tabs">
-          <button class="sub-tab-btn active" data-subtab="sub-envoyer">Envoyer une fiche</button>
-          <button class="sub-tab-btn" data-subtab="sub-apercus">Aperçus de fiches</button>
-        </div>
-
-        <div class="sub-tabs-wrapper">
-          <!-- Sous-onglet 1 : formulaire -->
-          <div class="sub-tab-content active" id="sub-envoyer">
-            <div class="card">
-              <h2>Envoyer une fiche</h2>
-              <p>
-                Utilise ce formulaire pour envoyer une fiche : nom, classe, matière, chapitre, catégorie et lien ou fichier.
-              </p>
-
-              <p style="margin-top:12px;">
-                <a href="https://forms.fillout.com/t/7QwbDw4Hiyus"
-                   target="_blank" rel="noopener"
-                   class="btn-link">
-                  Ouvrir le formulaire dans un nouvel onglet
-                </a>
-              </p>
-
-              <div class="form-wrapper">
-                <iframe
-                  src="https://forms.fillout.com/t/7QwbDw4Hiyus"
-                  allowfullscreen>
-                </iframe>
-              </div>
+    <!-- PARTIE 1 -->
+    <section class="section tabs-page tab-content-page active" id="part1-page">
+        <div class="section-inner">
+            <div class="section-header">
+                <div>
+                    <div class="section-title">
+                        <span>Partie 1 – Fiches de révision</span>
+                        <span class="section-badge">Vitrine + filtres</span>
+                    </div>
+                    <p class="section-subtitle">
+                        Parcours les fiches disponibles, filtre par niveau, matière et chapitre, puis ouvre les fiches en grand pour consulter les détails importants.
+                    </p>
+                </div>
             </div>
-          </div>
 
-          <!-- Sous-onglet 2 : galerie de fiches -->
-          <div class="sub-tab-content" id="sub-apercus">
-            <div class="card">
-              <h2>Aperçus de fiches</h2>
-              <p>
-                Clique sur une icône pour afficher la fiche de révision en grand.
-              </p>
+            <div class="part1-layout">
+                <div>
+                    <div class="filters">
+                        <div class="filter-field">
+                            <label class="filter-label" for="filter-niveau">Niveau</label>
+                            <input id="filter-niveau" class="filter-input" placeholder="Ex : 1ère" type="text">
+                        </div>
+                        <div class="filter-field">
+                            <label class="filter-label" for="filter-matiere">Matière</label>
+                            <input id="filter-matiere" class="filter-input" placeholder="Ex : Mathématiques" type="text">
+                        </div>
+                        <div class="filter-field">
+                            <label class="filter-label" for="filter-chapitre">Chapitre</label>
+                            <input id="filter-chapitre" class="filter-input" placeholder="Ex : Dérivation" type="text">
+                        </div>
+                    </div>
 
-              <div class="gallery-grid">
-                <!-- Remplace les src par tes vraies images -->
-                <div class="gallery-item" data-full="https://via.placeholder.com/800x600?text=Fiche+1">
-                  <img class="gallery-thumb" src="https://via.placeholder.com/300x200?text=Fiche+1" alt="Fiche 1">
-                  <div class="gallery-caption">Fiche 1 – Limites</div>
+                    <div class="cards-grid" id="fiche-grid">
+                        <article class="fiche-card"
+                                 data-id="fiche-1"
+                                 data-niveau="1ère"
+                                 data-matiere="Mathématiques"
+                                 data-chapitre="Dérivation"
+                                 data-details="Fiche synthétique sur les dérivées usuelles, les règles de dérivation et l’interprétation graphique."
+                                 data-image="img-prjct/test.png">
+                            <div class="fiche-card-inner">
+                                <div class="fiche-image-wrapper">
+                                    <img src="img-prjct/test.png" alt="Fiche dérivation">
+                                    <span class="fiche-chip">exemple : 1ère · Maths</span>
+                                    <button class="fiche-star-btn" data-fiche-id="fiche-1" type="button">☆</button>
+                                </div>
+                                <div class="fiche-body">
+                                    <h3 class="fiche-title">exemple : Dérivation – bases essentielles</h3>
+                                    <p class="fiche-meta">exemple : Auteur : Thomas · Niveau 1ère</p>
+                                    <div class="fiche-tags">
+                                        <span class="fiche-tag">exemple : Fonctions</span>
+                                        <span class="fiche-tag">exemple : Dérivée</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                        <!-- Duplique cette carte en changeant data-id, data-image, etc. -->
+                    </div>
                 </div>
 
-                <div class="gallery-item" data-full="https://via.placeholder.com/800x600?text=Fiche+2">
-                  <img class="gallery-thumb" src="https://via.placeholder.com/300x200?text=Fiche+2" alt="Fiche 2">
-                  <div class="gallery-caption">Fiche 2 – Énergie</div>
-                </div>
-
-                <div class="gallery-item" data-full="https://via.placeholder.com/800x600?text=Fiche+3">
-                  <img class="gallery-thumb" src="https://via.placeholder.com/300x200?text=Fiche+3" alt="Fiche 3">
-                  <div class="gallery-caption">Fiche 3 – HTTP</div>
-                </div>
-              </div>
+                <aside class="ranking-card">
+                    <div class="ranking-title">Classement des contributeurs</div>
+                    <p class="ranking-sub">
+                        Liste mise à jour manuellement en fonction du nombre de fiches validées et ajoutées au site.
+                    </p>
+                    <ol class="ranking-list" id="ranking-list">
+                        <li class="ranking-item">
+                            <div class="ranking-item-left">
+                                <span class="ranking-name">personne</span>
+                            </div>
+                            <span class="ranking-score">0 fiches</span>
+                        </li>
+                        <li class="ranking-item">
+                            <div class="ranking-item-left">
+                                <span class="ranking-name">personne</span>
+                            </div>
+                            <span class="ranking-score">0 fiches</span>
+                        </li>
+                        <li class="ranking-item">
+                            <div class="ranking-item-left">
+                                <span class="ranking-name">personne</span>
+                            </div>
+                            <span class="ranking-score">0 fiches</span>
+                        </li>
+                    </ol>
+                </aside>
             </div>
-          </div>
         </div>
-      </div>
+    </section>
 
-      <!-- ---------- PARTIE 2 : CONTENU LIBRE ---------- -->
-      <div class="tab-content" id="partie2">
-        <div class="card">
-          <h2>Partie 2 – Projet</h2>
-          <p>
-            Tu peux utiliser cette partie pour un autre volet de ton projet : par exemple un espace
-            dédié aux projets de cybersécurité, aux TP, ou à la gestion de ton planning.
-          </p>
+    <!-- PARTIE 2 -->
+    <section class="section tabs-page tab-content-page" id="part2-page">
+        <div class="section-inner">
+            <div class="section-header">
+                <div>
+                    <div class="section-title">
+                        <span>Partie 2 – Proposer une fiche</span>
+                        <span class="section-badge">Envoi par mail</span>
+                    </div>
+                    <p class="section-subtitle">
+                        Utilise cet espace pour envoyer ta fiche par mail avec les bonnes informations afin qu’elle puisse être ajoutée au site.
+                    </p>
+                </div>
+            </div>
+
+            <div class="part2-layout">
+                <div class="mail-panel">
+                    <div class="mail-title">Envoyer une fiche par mail</div>
+                    <p class="mail-text">
+                        Le bouton ci-dessous ouvre ton logiciel de messagerie avec un mail pré-rempli. Tu pourras ensuite joindre ta fiche ou ajouter un lien.
+                    </p>
+                    <button class="mail-btn" id="mail-btn">
+                        <span class="icon">✉️</span>
+                        <span>Proposer une fiche</span>
+                    </button>
+                </div>
+
+                <div class="mail-info">
+                    <div class="mail-info-block">
+                        <div class="mail-info-title">Comment envoyer ton mail&nbsp;?</div>
+                        <p class="mail-info-text">
+                            1. Clique sur le bouton « Proposer une fiche ».  
+                            2. Ton application mail s’ouvre automatiquement avec un message déjà rédigé.  
+                            3. Complète les informations manquantes puis joins ta fiche (PDF, image ou lien).
+                        </p>
+                    </div>
+
+                    <div class="mail-info-block">
+                        <div class="mail-info-title">Informations à préciser</div>
+                        <ul class="mail-info-list">
+                            <li>Niveau de la fiche (ex : 1ère générale, 1ère spécialité Maths).</li>
+                            <li>Matière (Mathématiques, Physique-Chimie, Spécialité, etc.).</li>
+                            <li>Chapitre ou thème précis (ex : Dérivation, Ondes, Suites...).</li>
+                            <li>Fichier joint ou lien vers la fiche (cloud, drive, site personnel...).</li>
+                            <li>Ton pseudo si tu souhaites apparaître dans le classement des contributeurs.</li>
+                        </ul>
+                    </div>
+
+                    <div class="mail-info-block">
+                        <div class="mail-info-title">Règles à respecter</div>
+                        <ul class="mail-info-list">
+                            <li>Rester poli·e et respectueux·se dans le mail.</li>
+                            <li>Ne pas envoyer de contenu inapproprié ou insultant.</li>
+                            <li>Envoyer uniquement des fiches personnelles (pas de contenu protégé sans autorisation).</li>
+                            <li>Vérifier rapidement l’orthographe et la clarté de la fiche.</li>
+                            <li>Indiquer clairement si tu veux être cité dans le classement ou rester anonyme.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
+    </section>
+
+    <!-- PARTIE 3 – Dossiers favoris -->
+    <section class="section tabs-page tab-content-page" id="part3-page">
+        <div class="section-inner">
+            <div class="section-header">
+                <div>
+                    <div class="section-title">
+                        <span>Partie 3 – Dossiers favoris</span>
+                        <span class="section-badge">Organisation perso</span>
+                    </div>
+                    <p class="section-subtitle">
+                        Crée des dossiers (par thème, matière, chapitre, etc.) et retrouve les fiches que tu as mises en favori avec l’étoile dans la Partie 1.
+                    </p>
+                </div>
+            </div>
+
+            <div class="part3-layout">
+                <div class="folder-panel">
+                    <div class="mail-info-title">Créer un dossier</div>
+                    <p class="mail-info-text">
+                        Exemple : « Dérivées », « Physique – Ondes », « Fiches rapides », etc.
+                    </p>
+                    <form class="folder-form" id="folder-form">
+                        <input type="text" id="folder-name-input" class="folder-input" placeholder="Nom du dossier">
+                        <button type="submit" class="folder-add-btn">Ajouter</button>
+                    </form>
+
+                    <div class="mail-info-title" style="margin-top:0.9rem;">Mes dossiers</div>
+                    <div class="folder-grid" id="folder-grid">
+                        <!-- Dossiers dynamiques -->
+                    </div>
+                </div>
+
+                <div class="folder-fiches-container">
+                    <div class="folder-fiches-header">
+                        <div class="folder-fiches-title" id="folder-fiches-title">
+                            Aucune sélection
+                        </div>
+                    </div>
+                    <div class="folder-fiches-list" id="folder-fiches-list">
+                        <!-- Fiches d’un dossier -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- OVERLAY PARAMÈTRES -->
+<div class="settings-overlay" id="settings-overlay">
+    <div class="settings-panel">
+        <div class="settings-top">
+            <div class="settings-title">Paramètres du tableau de révision</div>
+            <button class="settings-close" id="settings-close" type="button">✕</button>
+        </div>
+        <div class="settings-grid">
+            <!-- Vue générale -->
+            <section class="settings-section">
+                <h2 class="settings-section-title">Vue générale</h2>
+                <p class="settings-section-sub">
+                    Rappel rapide de ce que tu peux faire avec les 3 parties et les dossiers.
+                </p>
+                <div class="hero-layout">
+                    <div>
+                        <h1 class="hero-main-title">
+                            <span class="hero-highlight">Fiches de révision – Première</span>
+                        </h1>
+                        <p class="hero-text">
+                            Organise tes fiches par dossiers, mets des favoris avec l’étoile et navigue entre les parties comme sur une vraie appli.
+                        </p>
+                        <ul class="hero-list">
+                            <li><span class="icon">📚</span><span>Partie 1 : vitrine de fiches avec filtres niveau / matière / chapitre.</span></li>
+                            <li><span class="icon">📨</span><span>Partie 2 : envoi de tes fiches par mail pour les ajouter au site.</span></li>
+                            <li><span class="icon">⭐</span><span>Partie 3 : dossiers de favoris, comme un explorateur de fichiers.</span></li>
+                        </ul>
+                    </div>
+                    <aside class="hero-side-card">
+                        <div class="hero-side-title">Espace de travail structuré</div>
+                        <p class="hero-tagline">
+                            L’objectif : tout avoir au même endroit pour réviser plus vite sans chercher tes fiches partout.
+                        </p>
+                        <div class="hero-stats">
+                            <span class="hero-stat-pill">
+                                <span class="icon">⚡</span><span>Recherche en direct</span>
+                            </span>
+                            <span class="hero-stat-pill">
+                                <span class="icon">🧠</span><span>Révisions ciblées</span>
+                            </span>
+                            <span class="hero-stat-pill">
+                                <span class="icon">🌐</span><span>Partage collaboratif</span>
+                            </span>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+
+            <!-- Personnalisation visuelle -->
+            <section class="settings-section">
+                <h2 class="settings-section-title">Personnalisation visuelle</h2>
+                <p class="settings-section-sub">
+                    Choisis la police, le thème de couleurs et l’effet de souris qui te motivent le plus à réviser.
+                </p>
+                <div class="custom-panel">
+                    <div class="custom-group">
+                        <span class="custom-label">Police</span>
+                        <select id="font-select" class="custom-select">
+                            <option value="system">Système</option>
+                            <option value="techno">Techno / futuriste</option>
+                            <option value="classic">Classique</option>
+                        </select>
+                    </div>
+
+                    <div class="custom-group">
+                        <span class="custom-label">Thème</span>
+                        <select id="theme-select" class="custom-select">
+                            <option value="dark-neon">Sombre (Néon bleu)</option>
+                            <option value="light">Clair</option>
+                            <option value="purple">Violet</option>
+                            <option value="green">Vert</option>
+                            <option value="red">Rouge</option>
+                        </select>
+                    </div>
+
+                    <div class="custom-group">
+                        <span class="custom-label">Effet souris / fond</span>
+                        <select id="cursor-style-select" class="custom-select">
+                            <option value="none">Aucun</option>
+                            <option value="glow">Halo lumineux</option>
+                            <option value="trail-circles">Traînée de cercles</option>
+                            <option value="trail-squares">Traînée de carrés</option>
+                            <option value="base-ring">Point + anneau</option>
+                            <option value="crosshair">Viseur</option>
+                            <option value="pulse">Pulsation</option>
+                            <option value="tiny-dots">Nuage de points</option>
+                            <option value="orb-follow">Orbe flou</option>
+                            <option value="bg-gradient">Fond dégradé animé</option>
+                            <option value="bg-radial">Fond radial doux</option>
+                            <option value="bg-grid">Grille holographique</option>
+                            <option value="bg-noise">Grain lumineux</option>
+                            <option value="combo-soft">Combo halo + radial</option>
+                            <option value="combo-intense">Combo gradient + orbe</option>
+                            <option value="combo-grid">Combo grille + pulses</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+        </div>
     </div>
-  </div>
+</div>
 
-  <!-- Lightbox pour afficher l'image de fiche en grand -->
-  <div class="lightbox" id="lightbox">
-    <span class="lightbox-close" id="lightbox-close">&times;</span>
-    <img class="lightbox-img" id="lightbox-img" src="" alt="Fiche en grand">
-  </div>
+<!-- LIGHTBOX PLEIN ÉCRAN -->
+<div class="lightbox-backdrop" id="lightbox">
+    <div class="lightbox-full">
+        <img id="lightbox-image" src="" alt="Fiche sélectionnée">
+        <button class="lightbox-close" id="lightbox-close" aria-label="Fermer la fiche">✕</button>
+    </div>
+</div>
 
-  <script>
-    // ---------- ONGLETES PRINCIPAUX + ANIMATION ----------
-    const tabButtons = document.querySelectorAll(".tab-btn");
-    const tabContents = document.querySelectorAll(".tab-content");
-    let activeTabId = "partie1";
+<script>
+    // ------------ Thèmes (couleurs) + sauvegarde ------------
+    (function () {
+        const themeSelect = document.getElementById("theme-select");
+        const THEME_KEY = "fiches_theme";
 
-    tabButtons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const targetId = btn.dataset.tab;
-        if (targetId === activeTabId) return;
+        const THEMES = {
+            "dark-neon": {
+                "--color-bg": "#0f172a",
+                "--color-bg-alt": "#020617",
+                "--color-primary": "#3b82f6",
+                "--color-primary-soft": "rgba(59,130,246,0.12)",
+                "--color-accent": "#22c55e",
+                "--color-text": "#e5e7eb",
+                "--color-text-muted": "#9ca3af",
+                "--color-card-bg": "#020617",
+                "--color-border": "rgba(148,163,184,0.3)",
+                "--bg-grad-1": "#1d4ed8",
+                "--bg-grad-2": "#22c55e",
+                "--bg-grad-3": "#a855f7",
+                "--bg-grad-4": "#06b6d4",
+                "--cursor-main": "#3b82f6",
+                "--cursor-secondary": "#22c55e",
+                "--cursor-third": "#a855f7"
+            },
+            "light": {
+                "--color-bg": "#f3f4f6",
+                "--color-bg-alt": "#ffffff",
+                "--color-primary": "#2563eb",
+                "--color-primary-soft": "rgba(37,99,235,0.08)",
+                "--color-accent": "#16a34a",
+                "--color-text": "#111827",
+                "--color-text-muted": "#6b7280",
+                "--color-card-bg": "#ffffff",
+                "--color-border": "rgba(148,163,184,0.5)",
+                "--bg-grad-1": "#93c5fd",
+                "--bg-grad-2": "#6ee7b7",
+                "--bg-grad-3": "#c4b5fd",
+                "--bg-grad-4": "#7dd3fc",
+                "--cursor-main": "#2563eb",
+                "--cursor-secondary": "#16a34a",
+                "--cursor-third": "#a855f7"
+            },
+            "purple": {
+                "--color-bg": "#171427",
+                "--color-bg-alt": "#110f1f",
+                "--color-primary": "#8b5cf6",
+                "--color-primary-soft": "rgba(139,92,246,0.15)",
+                "--color-accent": "#22c55e",
+                "--color-text": "#e5e7eb",
+                "--color-text-muted": "#a5b4fc",
+                "--color-card-bg": "#0b1020",
+                "--color-border": "rgba(129,140,248,0.5)",
+                "--bg-grad-1": "#4c1d95",
+                "--bg-grad-2": "#a855f7",
+                "--bg-grad-3": "#6366f1",
+                "--bg-grad-4": "#22c55e",
+                "--cursor-main": "#a855f7",
+                "--cursor-secondary": "#6366f1",
+                "--cursor-third": "#22c55e"
+            },
+            "green": {
+                "--color-bg": "#022c22",
+                "--color-bg-alt": "#041316",
+                "--color-primary": "#22c55e",
+                "--color-primary-soft": "rgba(34,197,94,0.18)",
+                "--color-accent": "#38bdf8",
+                "--color-text": "#e5e7eb",
+                "--color-text-muted": "#a7f3d0",
+                "--color-card-bg": "#020617",
+                "--color-border": "rgba(34,197,94,0.5)",
+                "--bg-grad-1": "#064e3b",
+                "--bg-grad-2": "#22c55e",
+                "--bg-grad-3": "#0ea5e9",
+                "--bg-grad-4": "#22c55e",
+                "--cursor-main": "#22c55e",
+                "--cursor-secondary": "#0ea5e9",
+                "--cursor-third": "#a7f3d0"
+            },
+            "red": {
+                "--color-bg": "#180608",
+                "--color-bg-alt": "#1f070a",
+                "--color-primary": "#ef4444",
+                "--color-primary-soft": "rgba(239,68,68,0.18)",
+                "--color-accent": "#f97316",
+                "--color-text": "#fee2e2",
+                "--color-text-muted": "#fecaca",
+                "--color-card-bg": "#020617",
+                "--color-border": "rgba(248,113,113,0.6)",
+                "--bg-grad-1": "#7f1d1d",
+                "--bg-grad-2": "#f97316",
+                "--bg-grad-3": "#ef4444",
+                "--bg-grad-4": "#f97316",
+                "--cursor-main": "#ef4444",
+                "--cursor-secondary": "#f97316",
+                "--cursor-third": "#fde68a"
+            }
+        };
 
-        const current = document.getElementById(activeTabId);
-        const next = document.getElementById(targetId);
-        const goingRight = targetId === "partie2";
+        function applyTheme(name) {
+            const theme = THEMES[name] || THEMES["dark-neon"];
+            Object.keys(theme).forEach(key => {
+                document.documentElement.style.setProperty(key, theme[key]);
+            });
+        }
 
-        tabButtons.forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
+        const savedTheme = localStorage.getItem(THEME_KEY) || "dark-neon";
+        applyTheme(savedTheme);
+        themeSelect.value = savedTheme;
 
-        tabContents.forEach((c) => {
-          c.classList.remove("active", "exit-left", "exit-right");
+        themeSelect.addEventListener("change", () => {
+            const value = themeSelect.value;
+            applyTheme(value);
+            localStorage.setItem(THEME_KEY, value);
+        });
+    })();
+
+    // ------------ Onglets Parties ------------
+    (function () {
+        const buttons = document.querySelectorAll(".nav-btn-tab");
+        const pages = {
+            "part1-page": document.getElementById("part1-page"),
+            "part2-page": document.getElementById("part2-page"),
+            "part3-page": document.getElementById("part3-page")
+        };
+        const PAGE_KEY = "fiches_last_page";
+
+        function showPage(id, smooth = false) {
+            Object.keys(pages).forEach(key => {
+                if (!pages[key]) return;
+                pages[key].classList.toggle("active", key === id);
+            });
+            buttons.forEach(btn => {
+                const key = btn.getAttribute("data-tab-page");
+                btn.classList.toggle("active", key === id);
+            });
+            localStorage.setItem(PAGE_KEY, id);
+            if (smooth && pages[id]) {
+                const rect = pages[id].getBoundingClientRect();
+                const offset = window.scrollY + rect.top - 90;
+                window.scrollTo({ top: offset, behavior: "smooth" });
+            }
+        }
+
+        buttons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const id = btn.getAttribute("data-tab-page");
+                if (!pages[id]) return;
+                showPage(id, true);
+            });
         });
 
-        current.classList.add(goingRight ? "exit-left" : "exit-right");
+        const last = localStorage.getItem(PAGE_KEY) || "part1-page";
+        showPage(last, false);
+    })();
 
-        setTimeout(() => {
-          current.classList.remove("exit-left", "exit-right", "active");
-          next.classList.add("active");
-        }, 160);
+    // ------------ Filtres fiches ------------
+    (function () {
+        const inputNiveau = document.getElementById("filter-niveau");
+        const inputMatiere = document.getElementById("filter-matiere");
+        const inputChapitre = document.getElementById("filter-chapitre");
+        const cards = Array.from(document.querySelectorAll(".fiche-card"));
 
-        activeTabId = targetId;
-      });
-    });
+        function normalise(str) {
+            return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
 
-    // ---------- SOUS-ONGLETES PARTIE 1 ----------
-    const subTabButtons = document.querySelectorAll(".sub-tab-btn");
-    const subTabContents = document.querySelectorAll(".sub-tab-content");
-    let activeSubId = "sub-envoyer";
+        function filterCards() {
+            const niv = normalise(inputNiveau.value.trim());
+            const mat = normalise(inputMatiere.value.trim());
+            const chap = normalise(inputChapitre.value.trim());
 
-    subTabButtons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const targetId = btn.dataset.subtab;
-        if (targetId === activeSubId) return;
+            cards.forEach(card => {
+                const cardNiv = normalise(card.dataset.niveau || "");
+                const cardMat = normalise(card.dataset.matiere || "");
+                const cardChap = normalise(card.dataset.chapitre || "");
 
-        subTabButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
+                const matchNiv = !niv || cardNiv.includes(niv);
+                const matchMat = !mat || cardMat.includes(mat);
+                const matchChap = !chap || cardChap.includes(chap);
 
-        subTabContents.forEach(c => c.classList.remove("active"));
-        document.getElementById(targetId).classList.add("active");
+                card.style.display = (matchNiv && matchMat && matchChap) ? "" : "none";
+            });
+        }
 
-        activeSubId = targetId;
-      });
-    });
+        [inputNiveau, inputMatiere, inputChapitre].forEach(input => {
+            if (input) input.addEventListener("input", filterCards);
+        });
+    })();
 
-    // ---------- THEME ----------
-    const themeSelect = document.getElementById("theme");
-    const htmlEl = document.documentElement;
+    // ------------ Lightbox plein écran ------------
+    (function () {
+        const cards = document.querySelectorAll(".fiche-card");
+        const lightbox = document.getElementById("lightbox");
+        const lbImage = document.getElementById("lightbox-image");
+        const lbClose = document.getElementById("lightbox-close");
 
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-      htmlEl.setAttribute("data-theme", savedTheme);
-      themeSelect.value = savedTheme;
-    }
+        function openLightboxFromSrc(src, alt) {
+            if (!src) return;
+            lbImage.src = src;
+            lbImage.alt = alt || "Fiche sélectionnée";
+            lightbox.classList.add("active");
+        }
 
-    themeSelect.addEventListener("change", () => {
-      const theme = themeSelect.value;
-      htmlEl.setAttribute("data-theme", theme);
-      localStorage.setItem("theme", theme);
-    });
+        function openLightbox(card) {
+            const img = card.querySelector("img");
+            if (!img) return;
+            openLightboxFromSrc(img.src, img.alt);
+        }
 
-    // ---------- PERSONNALISATION ANIMATION FOND ----------
-    const speedInput = document.getElementById("speed");
-    const rootStyle = document.documentElement.style;
+        function closeLightbox() {
+            lightbox.classList.remove("active");
+            lbImage.src = "";
+        }
 
-    function updateBgSpeed(val) {
-      rootStyle.setProperty("--bg-speed", `${val}s`);
-    }
+        cards.forEach(card => {
+            card.addEventListener("click", (e) => {
+                if ((e.target && e.target.classList.contains("fiche-star-btn")) ||
+                    (e.target && e.target.closest(".fiche-star-btn"))) {
+                    return;
+                }
+                openLightbox(card);
+            });
+        });
 
-    updateBgSpeed(speedInput.value);
+        lbClose.addEventListener("click", closeLightbox);
+        lightbox.addEventListener("click", (e) => {
+            if (e.target === lightbox) closeLightbox();
+        });
 
-    speedInput.addEventListener("input", (e) => {
-      updateBgSpeed(e.target.value);
-    });
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") closeLightbox();
+        });
 
-    // ---------- LIGHTBOX POUR FICHES ----------
-    const galleryItems = document.querySelectorAll(".gallery-item");
-    const lightbox = document.getElementById("lightbox");
-    const lightboxImg = document.getElementById("lightbox-img");
-    const lightboxClose = document.getElementById("lightbox-close");
+        window.openLightboxFromSrc = openLightboxFromSrc;
+    })();
 
-    galleryItems.forEach(item => {
-      item.addEventListener("click", () => {
-        const fullSrc = item.dataset.full;
-        lightboxImg.src = fullSrc;
-        lightbox.classList.add("open");
-      });
-    });
+    // ------------ Font (police) ------------
+    (function () {
+        const fontSelect = document.getElementById("font-select");
+        const FONT_KEY = "fiches_font";
 
-    lightboxClose.addEventListener("click", () => {
-      lightbox.classList.remove("open");
-      lightboxImg.src = "";
-    });
+        function applyFont(value) {
+            let family;
+            if (value === "techno") {
+                family = "'Segoe UI', system-ui, sans-serif";
+            } else if (value === "classic") {
+                family = "'Georgia', 'Times New Roman', serif";
+            } else {
+                family = "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+            }
+            document.documentElement.style.setProperty("--font-family", family);
+        }
 
-    lightbox.addEventListener("click", (e) => {
-      if (e.target === lightbox) {
-        lightbox.classList.remove("open");
-        lightboxImg.src = "";
-      }
-    });
-  </script>
+        const saved = localStorage.getItem(FONT_KEY) || "system";
+        applyFont(saved);
+        fontSelect.value = saved;
+
+        fontSelect.addEventListener("change", () => {
+            const value = fontSelect.value;
+            applyFont(value);
+            localStorage.setItem(FONT_KEY, value);
+        });
+    })();
+
+    // ------------ Effets curseur / fond ------------
+    (function () {
+        const cursorLayer = document.getElementById("cursor-layer");
+        const cursorStyleSelect = document.getElementById("cursor-style-select");
+
+        const base = document.createElement("div");
+        base.className = "cursor-base";
+        const ring = document.createElement("div");
+        ring.className = "cursor-ring";
+        const square = document.createElement("div");
+        square.className = "cursor-square";
+        const cross = document.createElement("div");
+        cross.className = "cursor-cross";
+        const dot = document.createElement("div");
+        dot.className = "cursor-dot";
+        const glow = document.createElement("div");
+        glow.className = "cursor-glow";
+        const orb = document.createElement("div");
+        orb.className = "cursor-gradient-orb";
+        const pulse = document.createElement("div");
+        pulse.className = "cursor-pulse";
+
+        cursorLayer.append(base, ring, square, cross, dot, glow, orb, pulse);
+
+        const bgGradient = document.getElementById("bg-gradient");
+        const bgRadial = document.getElementById("bg-radial");
+        const bgGrid = document.getElementById("bg-grid");
+        const bgNoise = document.getElementById("bg-noise");
+
+        let trailDots = [];
+        let trailSquares = [];
+        const maxTrailDots = 18;
+        const maxTrailSquares = 14;
+        let tinyDots = [];
+        const maxTinyDots = 24;
+        let currentMode = "none";
+        let lastPulseTime = 0;
+
+        function hideAll() {
+            [base, ring, square, cross, dot, glow, orb, pulse].forEach(el => {
+                el.style.opacity = 0;
+            });
+            [bgGradient, bgRadial, bgGrid, bgNoise].forEach(bg => {
+                bg.style.opacity = 0;
+            });
+            trailDots.forEach(d => d.remove());
+            trailSquares.forEach(s => s.remove());
+            tinyDots.forEach(d => d.remove());
+            trailDots = [];
+            trailSquares = [];
+            tinyDots = [];
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            hideAll();
+        }
+
+        function moveElement(el, x, y) {
+            el.style.left = x + "px";
+            el.style.top = y + "px";
+        }
+
+        document.addEventListener("mousemove", (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+
+            if (currentMode === "glow") {
+                glow.style.opacity = 1;
+                moveElement(glow, x, y);
+            } else if (currentMode === "trail-circles") {
+                const dotTrail = document.createElement("div");
+                dotTrail.className = "cursor-trail-dot";
+                moveElement(dotTrail, x, y);
+                cursorLayer.appendChild(dotTrail);
+                trailDots.push(dotTrail);
+                if (trailDots.length > maxTrailDots) {
+                    const oldest = trailDots.shift();
+                    if (oldest) oldest.remove();
+                }
+                setTimeout(() => {
+                    dotTrail.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+                    dotTrail.style.opacity = "0";
+                    dotTrail.style.transform = "scale(0.4)";
+                    setTimeout(() => dotTrail.remove(), 420);
+                }, 10);
+            } else if (currentMode === "trail-squares") {
+                const s = document.createElement("div");
+                s.className = "cursor-trail-square";
+                moveElement(s, x, y);
+                cursorLayer.appendChild(s);
+                trailSquares.push(s);
+                if (trailSquares.length > maxTrailSquares) {
+                    const oldest = trailSquares.shift();
+                    if (oldest) oldest.remove();
+                }
+                setTimeout(() => {
+                    s.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+                    s.style.opacity = "0";
+                    s.style.transform = "scale(0.4) rotate(18deg)";
+                    setTimeout(() => s.remove(), 420);
+                }, 10);
+            } else if (currentMode === "base-ring") {
+                base.style.opacity = 1;
+                ring.style.opacity = 1;
+                moveElement(base, x, y);
+                moveElement(ring, x, y);
+            } else if (currentMode === "crosshair") {
+                cross.style.opacity = 1;
+                dot.style.opacity = 1;
+                moveElement(cross, x, y);
+                moveElement(dot, x, y);
+            } else if (currentMode === "pulse") {
+                const now = performance.now();
+                dot.style.opacity = 1;
+                moveElement(dot, x, y);
+                if (now - lastPulseTime > 240) {
+                    lastPulseTime = now;
+                    pulse.style.opacity = 1;
+                    pulse.style.transition = "none";
+                    pulse.style.transform = "translate(-50%, -50%) scale(0.6)";
+                    moveElement(pulse, x, y);
+                    requestAnimationFrame(() => {
+                        pulse.style.transition = "transform 0.45s ease, opacity 0.45s ease";
+                        pulse.style.transform = "translate(-50%, -50%) scale(1.6)";
+                        pulse.style.opacity = "0";
+                    });
+                }
+            } else if (currentMode === "tiny-dots") {
+                for (let i = 0; i < 3; i++) {
+                    const td = document.createElement("div");
+                    td.className = "cursor-dot";
+                    const angle = (Math.random() * Math.PI * 2);
+                    const radius = 14 + Math.random() * 10;
+                    const dx = Math.cos(angle) * radius;
+                    const dy = Math.sin(angle) * radius;
+                    moveElement(td, x + dx, y + dy);
+                    cursorLayer.appendChild(td);
+                    tinyDots.push(td);
+                    if (tinyDots.length > maxTinyDots) {
+                        const oldest = tinyDots.shift();
+                        if (oldest) oldest.remove();
+                    }
+                    setTimeout(() => {
+                        td.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+                        td.style.opacity = "0";
+                        td.style.transform = "translate(-50%, -50%) scale(0.4)";
+                        setTimeout(() => td.remove(), 420);
+                    }, 20);
+                }
+            } else if (currentMode === "orb-follow") {
+                orb.style.opacity = 1;
+                moveElement(orb, x, y);
+            } else if (currentMode === "bg-gradient") {
+                bgGradient.style.opacity = 0.7;
+            } else if (currentMode === "bg-radial") {
+                bgRadial.style.opacity = 0.75;
+            } else if (currentMode === "bg-grid") {
+                bgGrid.style.opacity = 0.6;
+            } else if (currentMode === "bg-noise") {
+                bgNoise.style.opacity = 0.6;
+            } else if (currentMode === "combo-soft") {
+                glow.style.opacity = 1;
+                moveElement(glow, x, y);
+                bgRadial.style.opacity = 0.75;
+            } else if (currentMode === "combo-intense") {
+                orb.style.opacity = 1;
+                moveElement(orb, x, y);
+                bgGradient.style.opacity = 0.85;
+            } else if (currentMode === "combo-grid") {
+                dot.style.opacity = 1;
+                moveElement(dot, x, y);
+                bgGrid.style.opacity = 0.6;
+                if (Math.random() < 0.25) {
+                    const p = document.createElement("div");
+                    p.className = "cursor-pulse";
+                    moveElement(p, x, y);
+                    cursorLayer.appendChild(p);
+                    p.style.transition = "transform 0.45s ease, opacity 0.45s ease";
+                    requestAnimationFrame(() => {
+                        p.style.opacity = "0";
+                        p.style.transform = "translate(-50%, -50%) scale(1.8)";
+                    });
+                    setTimeout(() => p.remove(), 460);
+                }
+            }
+        });
+
+        cursorStyleSelect.addEventListener("change", () => {
+            setMode(cursorStyleSelect.value);
+        });
+
+        document.addEventListener("mouseleave", () => {
+            hideAll();
+        });
+    })();
+
+    // ------------ Bouton mail ------------
+    (function () {
+        const mailBtn = document.getElementById("mail-btn");
+
+        mailBtn.addEventListener("click", () => {
+            const email = "global.service.bot@proton.me";
+            const subject = encodeURIComponent("Proposition de fiche de révision");
+            const body = encodeURIComponent(
+                "Bonjour,\n\n" +
+                "Je m'appelle ...\n\n" +
+                "Ceci est une fiche de 1ère.\n" +
+                "Matière : ...\n" +
+                "Chapitre : ...\n\n" +
+                "J’aimerais que ma fiche soit ajoutée au site.\n" +
+                "Je souhaite apparaître dans le classement des contributeurs / rester anonyme (à préciser).\n\n" +
+                "Informations complémentaires :\n" +
+                "- Type de fiche (résumé, exercice corrigé, formulaire, etc.)\n" +
+                "- Format (PDF, image, lien, autre)\n\n" +
+                "Merci d’avance."
+            );
+            const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
+            window.location.href = mailtoLink;
+        });
+    })();
+
+    // ------------ Dossiers + étoiles + localStorage ------------
+    (function () {
+        const STORAGE_KEY = "fiches_dossiers_v2";
+        const starButtons = document.querySelectorAll(".fiche-star-btn");
+        const folderForm = document.getElementById("folder-form");
+        const folderNameInput = document.getElementById("folder-name-input");
+        const folderGrid = document.getElementById("folder-grid");
+        const folderFichesList = document.getElementById("folder-fiches-list");
+        const folderFichesTitle = document.getElementById("folder-fiches-title");
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return { folders: {}, starred: {} };
+                return JSON.parse(raw);
+            } catch {
+                return { folders: {}, starred: {} };
+            }
+        }
+
+        function saveState(state) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+        let state = loadState();
+
+        function ensureFicheMeta() {
+            const cards = document.querySelectorAll(".fiche-card");
+            cards.forEach(card => {
+                const id = card.dataset.id;
+                if (!id) return;
+                const title = (card.querySelector(".fiche-title") || {}).textContent || "";
+                const meta = (card.querySelector(".fiche-meta") || {}).textContent || "";
+                const img = card.dataset.image || (card.querySelector("img") || {}).src || "";
+                if (!state.starred[id]) {
+                    state.starred[id] = { starred: false, title, meta, image: img };
+                } else {
+                    state.starred[id].title = state.starred[id].title || title;
+                    state.starred[id].meta = state.starred[id].meta || meta;
+                    state.starred[id].image = state.starred[id].image || img;
+                }
+            });
+        }
+        ensureFicheMeta();
+        saveState(state);
+
+        let currentFolder = null;
+
+        function renderFolders() {
+            folderGrid.innerHTML = "";
+            const names = Object.keys(state.folders);
+
+            if (!names.length) {
+                const empty = document.createElement("div");
+                empty.className = "mail-info-text";
+                empty.textContent = "Aucun dossier pour l’instant. Ajoute-en un avec le formulaire ci-dessus.";
+                folderGrid.appendChild(empty);
+                currentFolder = null;
+                folderFichesTitle.textContent = "Aucune sélection";
+                folderFichesList.innerHTML = "";
+                return;
+            }
+
+            names.forEach(name => {
+                const ids = state.folders[name] || [];
+                const card = document.createElement("div");
+                card.className = "folder-card";
+                card.dataset.folderName = name;
+                card.innerHTML = `
+                    <div class="folder-icon">📁</div>
+                    <div class="folder-name">${name}</div>
+                    <div class="folder-count">${ids.length} fiche(s)</div>
+                    <button class="folder-delete-btn" data-folder-name="${name}" type="button">🗑</button>
+                `;
+                folderGrid.appendChild(card);
+            });
+        }
+
+        function renderFolderFiches(folderName) {
+            folderFichesList.innerHTML = "";
+            currentFolder = folderName || null;
+
+            if (!folderName || !state.folders[folderName]) {
+                folderFichesTitle.textContent = "Aucune sélection";
+                return;
+            }
+
+            folderFichesTitle.textContent = "Dossier : " + folderName;
+            const ids = state.folders[folderName];
+            if (!ids.length) {
+                const empty = document.createElement("div");
+                empty.className = "mail-info-text";
+                empty.textContent = "Aucune fiche dans ce dossier pour le moment.";
+                folderFichesList.appendChild(empty);
+                return;
+            }
+
+            ids.forEach(id => {
+                const data = state.starred[id] || {};
+                const title = data.title || id;
+                const meta = data.meta || "";
+                const img = data.image || "";
+
+                const card = document.createElement("div");
+                card.className = "folder-fiche-card";
+                card.dataset.ficheId = id;
+                card.innerHTML = `
+                    <div class="folder-fiche-image">
+                        ${img ? `<img src="${img}" alt="${title}">` : ""}
+                    </div>
+                    <div class="folder-fiche-body">
+                        <div class="folder-fiche-title">${title}</div>
+                        <div class="folder-fiche-meta">${meta}</div>
+                        <button class="folder-fiche-remove" data-fiche-id="${id}" data-folder-name="${folderName}" type="button">
+                            Retirer du dossier
+                        </button>
+                    </div>
+                `;
+                folderFichesList.appendChild(card);
+            });
+        }
+
+        folderGrid.addEventListener("click", (e) => {
+            const del = e.target.closest(".folder-delete-btn");
+            if (del) {
+                const name = del.dataset.folderName;
+                if (!name) return;
+                if (confirm("Supprimer le dossier \"" + name + "\" ? (Les fiches ne seront pas supprimées de la Partie 1)")) {
+                    delete state.folders[name];
+                    if (currentFolder === name) {
+                        currentFolder = null;
+                        folderFichesTitle.textContent = "Aucune sélection";
+                        folderFichesList.innerHTML = "";
+                    }
+                    saveState(state);
+                    renderFolders();
+                }
+                return;
+            }
+
+            const card = e.target.closest(".folder-card");
+            if (!card) return;
+            const name = card.dataset.folderName;
+            if (!name) return;
+            renderFolderFiches(name);
+        });
+
+        folderFichesList.addEventListener("click", (e) => {
+            const removeBtn = e.target.closest(".folder-fiche-remove");
+            if (removeBtn) {
+                const ficheId = removeBtn.dataset.ficheId;
+                const folderName = removeBtn.dataset.folderName;
+                if (!ficheId || !folderName) return;
+                const list = state.folders[folderName] || [];
+                state.folders[folderName] = list.filter(id => id !== ficheId);
+                saveState(state);
+                renderFolders();
+                renderFolderFiches(folderName);
+                return;
+            }
+
+            const ficheCard = e.target.closest(".folder-fiche-card");
+            if (ficheCard) {
+                const ficheId = ficheCard.dataset.ficheId;
+                const data = state.starred[ficheId] || {};
+                const img = data.image || "";
+                const title = data.title || "";
+                if (img && window.openLightboxFromSrc) {
+                    window.openLightboxFromSrc(img, title);
+                }
+            }
+        });
+
+        folderForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const name = (folderNameInput.value || "").trim();
+            if (!name) return;
+            if (!state.folders[name]) {
+                state.folders[name] = [];
+                saveState(state);
+                folderNameInput.value = "";
+                renderFolders();
+            }
+        });
+
+        function openFolderChoice(ficheId) {
+            const folderNames = Object.keys(state.folders);
+            if (!folderNames.length) {
+                alert("Crée d’abord un dossier dans la Partie 3 pour y ranger tes fiches.");
+                return;
+            }
+            const name = prompt("Dans quel dossier veux-tu mettre cette fiche ?\n\n" +
+                "Dossiers existants :\n- " + folderNames.join("\n- "));
+            if (!name) return;
+            if (!state.folders[name]) {
+                if (!confirm("Le dossier \"" + name + "\" n’existe pas. Le créer et y mettre la fiche ?")) return;
+                state.folders[name] = [];
+            }
+            if (!state.folders[name].includes(ficheId)) {
+                state.folders[name].push(ficheId);
+            }
+            saveState(state);
+            renderFolders();
+            if (!currentFolder) {
+                renderFolderFiches(name);
+            } else if (currentFolder === name) {
+                renderFolderFiches(name);
+            }
+        }
+
+        starButtons.forEach(btn => {
+            const ficheId = btn.dataset.ficheId;
+            if (!ficheId) return;
+
+            const card = btn.closest(".fiche-card");
+            const img = card ? (card.dataset.image || (card.querySelector("img") || {}).src || "") : "";
+            const title = card ? ((card.querySelector(".fiche-title") || {}).textContent || "") : "";
+            const meta = card ? ((card.querySelector(".fiche-meta") || {}).textContent || "") : "";
+
+            const record = state.starred[ficheId];
+            if (record && record.starred) {
+                btn.classList.add("starred");
+                btn.textContent = "★";
+            }
+
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+
+                const current = state.starred[ficheId] || { starred: false, title, meta, image: img };
+
+                if (!current.starred) {
+                    current.starred = true;
+                    current.title = title;
+                    current.meta = meta;
+                    current.image = img;
+                    state.starred[ficheId] = current;
+                    btn.classList.add("starred");
+                    btn.textContent = "★";
+                    saveState(state);
+                    openFolderChoice(ficheId);
+                } else {
+                    current.starred = false;
+                    state.starred[ficheId] = current;
+                    btn.classList.remove("starred");
+                    btn.textContent = "☆";
+                    Object.keys(state.folders).forEach(name => {
+                        state.folders[name] = (state.folders[name] || []).filter(id => id !== ficheId);
+                    });
+                    saveState(state);
+                    renderFolders();
+                    if (currentFolder) renderFolderFiches(currentFolder);
+                }
+            });
+        });
+
+        renderFolders();
+    })();
+
+    // ------------ Effet tilt 3D sur les fiches ------------
+    (function () {
+        const cards = document.querySelectorAll(".fiche-card");
+
+        cards.forEach(card => {
+            const inner = card.querySelector(".fiche-card-inner") || card;
+
+            card.addEventListener("mousemove", (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -8;
+                const rotateY = ((x - centerX) / centerX) * 8;
+                inner.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+            });
+
+            card.addEventListener("mouseleave", () => {
+                inner.style.transform = "rotateX(0deg) rotateY(0deg) scale(1)";
+            });
+        });
+    })();
+
+    // ------------ Overlay Paramètres ------------
+    (function () {
+        const settingsBtn = document.getElementById("settings-btn");
+        const settingsOverlay = document.getElementById("settings-overlay");
+        const settingsClose = document.getElementById("settings-close");
+
+        settingsBtn.addEventListener("click", () => {
+            settingsOverlay.classList.add("active");
+        });
+
+        settingsClose.addEventListener("click", () => {
+            settingsOverlay.classList.remove("active");
+        });
+
+        settingsOverlay.addEventListener("click", (e) => {
+            if (e.target === settingsOverlay) {
+                settingsOverlay.classList.remove("active");
+            }
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                settingsOverlay.classList.remove("active");
+            }
+        });
+    })();
+</script>
 </body>
 </html>
