@@ -70,17 +70,17 @@
             opacity: 0.9; z-index: 0;
         }
 
-        /* PROGRESS BAR SCROLL */
+        /* PROGRESS BAR SECTIONS */
         .progress-bar {
             position: fixed; top: 0; left: 0; height: 4px;
             background: linear-gradient(90deg, var(--sf-gold), var(--sf-blue));
             transform: scaleX(0); transform-origin: left;
-            transition: transform 0.1s; z-index: 1000;
+            transition: transform 0.15s; z-index: 1000;
         }
 
         /* NAVIGATION RADIALE */
         .nav-radial {
-            position: fixed; top: 24px; right: 24px; width: 72px; height: 72px;
+            position: fixed; top: 16px; right: 16px; width: 72px; height: 72px;
             background: var(--glass-bg); backdrop-filter: blur(20px);
             border: 2px solid var(--glass-border); border-radius: 50%; cursor: pointer; z-index: 1000;
             transition: all var(--transition-med);
@@ -167,10 +167,6 @@
             color: var(--sf-gold); background: rgba(250,208,90,0.15);
             transform: rotate(90deg) scale(1.05); border-color: var(--sf-gold);
         }
-
-        /* SCROLL CONTAINER */
-        .scroll-container { height: 1200vh; position: relative; }
-        .section-scroll { position: absolute; top: 0; height: 100vh; width: 100%; }
 
         /* SECTIONS */
         main { position: relative; width: 100%; height: 100vh; z-index: 1; }
@@ -272,94 +268,62 @@
             font-size: 0.9rem; letter-spacing: 0.14em; text-transform: uppercase;
             margin-top: 12px; color: var(--text-muted); font-weight: 500;
         }
+        .partie-image-img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
 
-        /* TIMELINE */
-        .section-title-center {
-            font-family: 'Playfair Display', serif; font-size: clamp(2.8rem, 8vw, 4.5rem);
-            text-align: center; margin-bottom: 25px; color: var(--text-dark);
-            text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;
+        /* BOUTONS "VER MÁS" */
+        .btn-toggle {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 10px 20px;
+            border-radius: 999px;
+            border: none;
+            background: linear-gradient(135deg, var(--sf-gold), var(--sf-blue));
+            color: white;
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 8px 25px var(--shadow-gold);
+            transition: transform 0.15s, box-shadow 0.15s;
         }
-        .section-subtitle {
-            text-align: center; color: var(--text-muted); margin-bottom: 50px; max-width: 700px;
-            margin-left: auto; margin-right: auto; font-size: 1.05rem;
-            letter-spacing: 0.08em; text-transform: uppercase; font-weight: 400;
+        .btn-toggle:active {
+            transform: translateY(2px);
+            box-shadow: 0 4px 14px var(--shadow-gold);
         }
-        .timeline {
-            display: flex; flex-direction: column; gap: 30px; max-width: 1000px; margin: 0 auto;
+        @media (max-width: 768px) {
+            .btn-toggle {
+                width: 100%;
+                text-align: center;
+            }
         }
-        .timeline-item {
-            display: flex; align-items: flex-start; gap: 30px; padding: 35px;
-            background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border);
-            border-radius: 24px; box-shadow: 0 20px 50px var(--shadow-light);
-            transition: all var(--transition-med); position: relative; perspective: 1000px;
+        .reveal-block {
+            margin-top: 10px;
+            font-size: 1.05rem;
+            line-height: 1.65;
+            color: var(--text-dark);
+            background: rgba(255,255,255,0.9);
+            border-radius: 18px;
+            padding: 14px 16px;
+            border: 1px solid rgba(250,208,90,0.4);
+            display: none;
         }
-        .timeline-item:hover { 
-            transform: translateY(-10px); box-shadow: 0 35px 70px var(--shadow-gold);
-            border-color: var(--sf-gold);
-        }
-        .timeline-item .timeline-inner {
-            transform-style: preserve-3d; transition: transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
-        }
-        .timeline-item:hover .timeline-inner {
-            transform: rotateY(10deg) rotateX(5deg) translateZ(20px);
-        }
-        @media (max-width: 1024px) {
-            .timeline-item { flex-direction: column; text-align: center; gap: 25px; padding: 30px 25px; }
-        }
-        .timeline-icon {
-            width: 75px; height: 75px; background: linear-gradient(135deg, var(--sf-gold), var(--sf-blue));
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem; flex-shrink: 0; box-shadow: 0 15px 40px var(--shadow-gold);
-        }
-        .timeline-date {
-            font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.16em;
-            color: var(--text-muted); margin-bottom: 10px; font-weight: 500;
-        }
-        .timeline-heading { font-size: 1.7rem; margin-bottom: 12px; color: var(--text-dark); font-weight: 600; }
-        .timeline-text { font-size: 1.15rem; line-height: 1.7; color: var(--text-dark); }
-
-        /* DATA VIZ POPULATION */
-        .pop-chart {
-            width: 100%; height: 300px; max-width: 400px;
-            perspective: 1000px; transform-style: preserve-3d;
-        }
-        .pop-chart path {
-            stroke: url(#popGrad); stroke-width: 4; fill: none;
-            stroke-dasharray: 500; stroke-dashoffset: 500; stroke-linecap: round;
+        .reveal-block.open {
+            display: block;
         }
 
         /* CONCLUSION */
-        .conclusion { text-align: center; padding: 60px 20px; }
-        .conclusion h2 {
-            font-family: 'Playfair Display', serif; font-size: clamp(3rem, 9vw, 5rem);
-            margin-bottom: 40px; background: linear-gradient(135deg, var(--sf-gold), var(--sf-blue));
-            -webkit-background-clip: text; background-clip: text; color: transparent;
-        }
-        .conclusion-card {
-            background: var(--glass-bg); backdrop-filter: blur(30px); border: 1px solid var(--glass-border);
-            border-radius: 30px; padding: 60px 45px; max-width: 850px; margin: 0 auto;
-            box-shadow: 0 30px 80px var(--shadow-light); position: relative; overflow: hidden;
-        }
-        @media (max-width: 1024px) { .conclusion-card { padding: 50px 35px; } }
-        .conclusion-text {
-            font-size: 1.45rem; line-height: 1.75; margin-bottom: 40px; color: var(--text-dark);
-        }
-        .conclusion-highlight {
-            background: linear-gradient(135deg, var(--sf-gold), var(--sf-blue));
-            -webkit-background-clip: text; background-clip: text; color: transparent; font-weight: 600;
-        }
-        .conclusion-meta {
-            font-size: 1rem; color: var(--text-muted); margin-bottom: 45px; font-style: italic;
-        }
         .cta-button {
             display: inline-block; background: linear-gradient(135deg, var(--sf-gold), var(--sf-blue));
-            color: white; padding: 20px 55px; border-radius: 50px; font-size: 1.15rem;
+            color: white; padding: 18px 40px; border-radius: 50px; font-size: 1.05rem;
             font-weight: 700; text-decoration: none; box-shadow: 0 20px 50px var(--shadow-gold);
             transition: all 0.25s ease-out; text-transform: uppercase; letter-spacing: 0.08em;
-            position: relative; overflow: hidden;
+            position: relative; overflow: hidden; border: none; cursor: pointer;
+            margin-top: 18px;
         }
         .cta-button:hover {
-            transform: translateY(-5px); box-shadow: 0 30px 70px var(--shadow-gold); filter: brightness(1.05);
+            transform: translateY(-3px); box-shadow: 0 30px 70px var(--shadow-gold); filter: brightness(1.05);
         }
 
         /* PARTICULES AVANCÉES */
@@ -395,15 +359,6 @@
             z-index: 10; font-weight: 500;
         }
         @media (max-width: 1024px) { .sf-coordinate { display: none; } }
-
-        /* DEBUG RAINBOW */
-        @keyframes debugRainbow {
-            0%, 100% { filter: hue-rotate(0deg); }
-            25% { filter: hue-rotate(90deg); }
-            50% { filter: hue-rotate(180deg); }
-            75% { filter: hue-rotate(270deg); }
-        }
-        .logo-rainbow { animation: debugRainbow 2s infinite; }
     </style>
 </head>
 <body>
@@ -426,13 +381,11 @@ function ok() {
         document.getElementById('mdp').value = '';
     }
 }
-// Entrée
 document.addEventListener('keydown', e => {
     if(e.key === 'Enter') ok();
 });
 document.getElementById('mdp').focus();
 </script>
-
 
     <!-- AMBIANCE -->
     <div class="noise-layer"></div>
@@ -463,76 +416,59 @@ document.getElementById('mdp').focus();
                 <div class="nav-item-title">Accueil</div>
                 <div class="nav-item-sub">Présentation</div>
             </div>
-            <span class="nav-item-index">01</span>
+            <span class="nav-item-index">00</span>
         </a>
         
+        <div class="nav-section-divider">Parties</div>
         <a href="#" class="nav-item" data-section="1">
-            <div class="nav-item-icon">👥</div>
-            <div class="nav-item-labels">
-                <div class="nav-item-title">Fondateurs</div>
-                <div class="nav-item-sub">Origines</div>
-            </div>
-            <span class="nav-item-index">02</span>
-        </a>
-        
-        <div class="nav-section-divider">Parties Groupe</div>
-        <a href="#" class="nav-item" data-section="2">
             <div class="nav-item-icon">📖</div>
             <div class="nav-item-labels">
                 <div class="nav-item-title">Partie 1</div>
                 <div class="nav-item-sub">Contexte</div>
             </div>
-            <span class="nav-item-index">03</span>
+            <span class="nav-item-index">01</span>
         </a>
-        <a href="#" class="nav-item" data-section="3">
+        <a href="#" class="nav-item" data-section="2">
             <div class="nav-item-icon">📊</div>
             <div class="nav-item-labels">
                 <div class="nav-item-title">Partie 2</div>
                 <div class="nav-item-sub">Données</div>
             </div>
-            <span class="nav-item-index">04</span>
+            <span class="nav-item-index">02</span>
         </a>
-        <a href="#" class="nav-item" data-section="4">
+        <a href="#" class="nav-item" data-section="3">
             <div class="nav-item-icon">🎭</div>
             <div class="nav-item-labels">
                 <div class="nav-item-title">Partie 3</div>
                 <div class="nav-item-sub">Culture</div>
             </div>
-            <span class="nav-item-index">05</span>
+            <span class="nav-item-index">03</span>
         </a>
-        <a href="#" class="nav-item" data-section="5">
+        <a href="#" class="nav-item" data-section="4">
             <div class="nav-item-icon">⚠️</div>
             <div class="nav-item-labels">
                 <div class="nav-item-title">Partie 4</div>
                 <div class="nav-item-sub">Défis</div>
             </div>
-            <span class="nav-item-index">06</span>
+            <span class="nav-item-index">04</span>
         </a>
-        <div class="nav-section-divider">Tes Parties</div>
-        <a href="#" class="nav-item" data-section="6">
+        <a href="#" class="nav-item" data-section="5">
             <div class="nav-item-icon">💻</div>
             <div class="nav-item-labels">
                 <div class="nav-item-title">Partie 5</div>
                 <div class="nav-item-sub">Ton contenu</div>
             </div>
-            <span class="nav-item-index">07</span>
+            <span class="nav-item-index">05</span>
         </a>
-        <a href="#" class="nav-item" data-section="7">
+        <a href="#" class="nav-item" data-section="6">
             <div class="nav-item-icon">📝</div>
             <div class="nav-item-labels">
                 <div class="nav-item-title">Partie 6</div>
                 <div class="nav-item-sub">Synthèse</div>
             </div>
-            <span class="nav-item-index">08</span>
+            <span class="nav-item-index">06</span>
         </a>
-        <a href="#" class="nav-item" data-section="8">
-            <div class="nav-item-icon">🎉</div>
-            <div class="nav-item-labels">
-                <div class="nav-item-title">Conclusion</div>
-                <div class="nav-item-sub">Finale</div>
-            </div>
-            <span class="nav-item-index">09</span>
-        </a>
+
     </nav>
 
     <!-- PARTICULES -->
@@ -552,7 +488,7 @@ document.getElementById('mdp').focus();
     </div>
 
     <main>
-        <!-- ACCUEIL -->
+        <!-- ACCUEIL (0) -->
         <section class="section active" data-section="0" data-mounted="true">
             <div class="section-inner">
                 <div class="hero-content">
@@ -577,42 +513,8 @@ document.getElementById('mdp').focus();
             </div>
         </section>
 
-        <!-- FONDATEURS -->
+        <!-- PARTIE 1 (1) -->
         <section class="section" data-section="1">
-            <div class="section-inner">
-                <h2 class="section-title-center">Los Fundadores</h2>
-                <p class="section-subtitle">De la misión española a la ruta hacia el oro</p>
-                <div class="timeline">
-                    <div class="timeline-item">
-                        <div class="timeline-icon">🏛️</div>
-                        <div class="timeline-inner">
-                            <div class="timeline-date">1776</div>
-                            <h3 class="timeline-heading">Misión Dolores</h3>
-                            <p class="timeline-text">Los españoles fundan la misión que se convertirá en el corazón de San Francisco. Yerba Buena emerge como puerto estratégico.</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-icon">⛏️</div>
-                        <div class="timeline-inner">
-                            <div class="timeline-date">1848</div>
-                            <h3 class="timeline-heading">Ruta hacia el Oro</h3>
-                            <p class="timeline-text">Descubrimiento del oro en Sutter's Mill. Explosión demográfica: ¡de 1000 a 25,000 habitantes en un año!</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-icon">📜</div>
-                        <div class="timeline-inner">
-                            <div class="timeline-date">1849</div>
-                            <h3 class="timeline-heading">Washington Bartlett</h3>
-                            <p class="timeline-text">Yerba Buena se convierte oficialmente en San Francisco. Nacimiento de la ciudad moderna.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- PARTIE 1 -->
-        <section class="section" data-section="2">
             <div class="section-inner">
                 <div class="partie-content">
                     <div class="partie-text">
@@ -620,25 +522,33 @@ document.getElementById('mdp').focus();
                             <span class="partie-chip-dot"></span>
                             <span>Parte 1</span>
                         </div>
-                        <h2 class="partie-title">Parte 1</h2>
+                        <h2 class="partie-title">cómo fue fundada la ciudad</h2>
                         <p class="partie-desc">
-                            ¡Aquí tu compañero! Zona perfecta para texto, análisis, citas importantes. 
-                            Contexto histórico detallado de la colonización española.
+                            Origen de la ciudad: presencia española, misión religiosa y cambio de nombre a San Francisco.
                         </p>
-                        <p class="partie-note">Ideal para frise cronológica o contexto español.</p>
+                        <button class="btn-toggle" data-target="#reveal-1">Ver más</button>
+                        <div class="reveal-block" id="reveal-1">
+                            - 1542–1767: ocupación de jesuitas españoles → evangelización.<br>
+                            - 1767: expulsión de los jesuitas por el rey Carlos III.<br>
+                            - Nombre San Francisco en memoria de San Francisco de Asís.<br>
+                            - 1776: los españoles crean la misión Dolores.<br>
+                            - 1821: California = México → “Yerba Buena”.<br>
+                            - 1846: California = territorio de EE.UU. → 30 de enero = San Francisco.<br>
+                            - 1915: acoge la Exposición Universal de Panamá-Pacífico.
+                        </div>
                     </div>
                     <div class="partie-image">
                         <div class="partie-image-inner">
-                            <div class="partie-image-emoji">📖</div>
-                            <div class="partie-image-label">Zone Texte</div>
+                            <img src="img/sfran.png" alt="Fondation de San Francisco" class="partie-image-img">
+                            <div class="partie-image-label">Origen</div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- PARTIE 2 - DATA VIZ -->
-        <section class="section" data-section="3">
+        <!-- PARTIE 2 (2) -->
+        <section class="section" data-section="2">
             <div class="section-inner">
                 <div class="partie-content">
                     <div class="partie-text">
@@ -646,39 +556,30 @@ document.getElementById('mdp').focus();
                             <span class="partie-chip-dot"></span>
                             <span>Parte 2</span>
                         </div>
-                        <h2 class="partie-title">Parte 2</h2>
+                        <h2 class="partie-title">qienes el creator de la ciudad</h2>
                         <p class="partie-desc">
-                            ¡Aquí tu compañero! Gráficos, tablas, evolución población/economía. 
-                            Datos reales desde 1849 hasta Silicon Valley.
+                            En realidad, la ciudad no tiene un único "fundador" oficial.
                         </p>
-                        <p class="partie-note">Comparación con ciudades españolas recomendada.</p>
+                        <button class="btn-toggle" data-target="#reveal-2">Ver más</button>
+                        <div class="reveal-block" id="reveal-2">
+                            - ahora, la ciudad de San Francisco no tiene un "fondator".<br>
+                            - la creacion de este ciudad :<br>
+                            =&gt; la mission Dolores (1776).<br>
+                            =&gt; el nombre de la ciudad =&gt; en memora a Francisco de Asis.
+                        </div>
                     </div>
                     <div class="partie-image">
-                        <svg class="pop-chart" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet">
-                            <defs>
-                                <linearGradient id="popGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" stop-color="var(--sf-gold)"/>
-                                    <stop offset="100%" stop-color="var(--sf-blue)"/>
-                                </linearGradient>
-                            </defs>
-                            <!-- Données: 1849:1000, 1900:350k, 1950:775k, 2020:873k -->
-                            <path class="pop-path" d="M20,280 L80,240 L160,180 L240,140 L320,120 L380,110" stroke="url(#popGrad)" stroke-width="4" fill="none" stroke-dasharray="500" stroke-dashoffset="500">
-                                <animate attributeName="stroke-dashoffset" from="500" to="0" dur="3s" fill="freeze" begin="indefinite"/>
-                            </path>
-                            <circle cx="20" cy="280" r="6" fill="var(--sf-gold)" opacity="0.8">
-                                <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite"/>
-                            </circle>
-                            <circle cx="380" cy="110" r="8" fill="var(--sf-blue)" opacity="0.8">
-                                <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite" begin="0.5s"/>
-                            </circle>
-                        </svg>
+                        <div class="partie-image-inner">
+                            <img src="img/fran.png" alt="Créateurs de la ville" class="partie-image-img">
+                            <div class="partie-image-label">Identidad</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- PARTIE 3 -->
-        <section class="section" data-section="4">
+        <!-- PARTIE 3 (3) -->
+        <section class="section" data-section="3">
             <div class="section-inner">
                 <div class="partie-content">
                     <div class="partie-text">
@@ -686,16 +587,35 @@ document.getElementById('mdp').focus();
                             <span class="partie-chip-dot"></span>
                             <span>Parte 3</span>
                         </div>
-                        <h2 class="partie-title">Parte 3</h2>
+                        <h2 class="partie-title">describir la ciudad</h2>
                         <p class="partie-desc">
-                            ¡Completar! Cultura, barrios Mission, Castro, influencia hispánica. 
-                            Tradiciones latinas vivas en el corazón de SF.
+                            San Francisco es una ciudad costera con una estructura urbana muy particular.
                         </p>
+                        <button class="btn-toggle" data-target="#reveal-3a">Ver más (ubicación)</button>
+                        <div class="reveal-block" id="reveal-3a">
+                            1. donde esta construida la ciudad ?<br>
+                            - en el ocean pacifico.<br>
+                            - en una peninsula.<br>
+                            - un espacio pequeño =&gt; una alta densidad.<br>
+                            - alto riesgo sismico =&gt; San Andraas.
+                        </div>
+                        <button class="btn-toggle" data-target="#reveal-3b">Ver más (planificación)</button>
+                        <div class="reveal-block" id="reveal-3b">
+                            2. planification urbana<br>
+                            - una cuadricula.<br>
+                            =&gt; calles empinadas.<br>
+                            =&gt; escaleras.<br>
+                            - una ciudad con barrios :<br>
+                            -- dowtown = economie.<br>
+                            -- DoMa = technologia.<br>
+                            -- mission District = centro historico.<br>
+                            - cada barrio es como una paquena ciudad.
+                        </div>
                         <p class="partie-note">Citas españolas o visuals culturales.</p>
                     </div>
                     <div class="partie-image">
                         <div class="partie-image-inner">
-                            <div class="partie-image-emoji">🎭</div>
+                            <img src="img/ciud.png" alt="Ville de San Francisco" class="partie-image-img">
                             <div class="partie-image-label">Cultura</div>
                         </div>
                     </div>
@@ -703,8 +623,8 @@ document.getElementById('mdp').focus();
             </div>
         </section>
 
-        <!-- PARTIE 4 -->
-        <section class="section" data-section="5">
+        <!-- PARTIE 4 (4) -->
+        <section class="section" data-section="4">
             <div class="section-inner">
                 <div class="partie-content">
                     <div class="partie-text">
@@ -712,25 +632,30 @@ document.getElementById('mdp').focus();
                             <span class="partie-chip-dot"></span>
                             <span>Parte 4</span>
                         </div>
-                        <h2 class="partie-title">Parte 4</h2>
+                        <h2 class="partie-title">decrir en que se baso economicamente en el passadeo</h2>
                         <p class="partie-desc">
-                            ¡Completar! Gentrificación, coste de vida, terremotos, desigualdades sociales. 
-                            Matizar la imagen de sueño americano.
+                            La fiebre del oro transformó la economía de San Francisco.
                         </p>
-                        <p class="partie-note">Nuance a l'image rêve américain.</p>
+                        <button class="btn-toggle" data-target="#reveal-4">Ver más</button>
+                        <div class="reveal-block" id="reveal-4">
+                            - 1848 El descubrimiento de oro en un valle de Coloma dio origen a la fiebre 
+                            del oro. Esta fiebre fue muy beneficiosa para San Francisco, que entró en un 
+                            período de crecimiento económico.
+                        </div>
+                        <p class="partie-note">Ideal pour frise chronologique.</p>
                     </div>
                     <div class="partie-image">
                         <div class="partie-image-inner">
-                            <div class="partie-image-emoji">⚠️</div>
-                            <div class="partie-image-label">Desafíos</div>
+                            <img src="img/rué.png" alt="Économie ancienne" class="partie-image-img">
+                            <div class="partie-image-label">Economía</div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- PARTIE 5 - TON CONTENU -->
-        <section class="section" data-section="6">
+        <!-- PARTIE 5 (5) -->
+        <section class="section" data-section="5">
             <div class="section-inner">
                 <div class="partie-content">
                     <div class="partie-text">
@@ -738,16 +663,21 @@ document.getElementById('mdp').focus();
                             <span class="partie-chip-dot"></span>
                             <span>Parte 5</span>
                         </div>
-                        <h2 class="partie-title">Parte 5 - ¡TÚ!</h2>
+                        <h2 class="partie-title">comentar y monstrar como es actualmente esa ciudad</h2>
                         <p class="partie-desc">
-                            ¡TU zona! Silicon Valley, tech, ciberseguridad, tu ángulo personal. 
-                            Perfecto para tus estudios futuros en programación.
+                            Hoy San Francisco es un gran polo tecnológico, financiero y cultural.
                         </p>
+                        <button class="btn-toggle" data-target="#reveal-5">Ver más</button>
+                        <div class="reveal-block" id="reveal-5">
+                            - Hoy en día, San Francisco se ha convertido en la sede de numerosas 
+                            empresas tecnológicas. Es uno de los mayores polos tecnológicos, 
+                            financieros y culturales de California, que compite con Los Ángeles.
+                        </div>
                         <p class="partie-note">Lien parfait avec cybersécu/whitehat.</p>
                     </div>
                     <div class="partie-image">
                         <div class="partie-image-inner">
-                            <div class="partie-image-emoji">💻</div>
+                            <img src="img/franc.png" alt="Ville actuelle" class="partie-image-img">
                             <div class="partie-image-label">Tu Contenido</div>
                         </div>
                     </div>
@@ -755,8 +685,8 @@ document.getElementById('mdp').focus();
             </div>
         </section>
 
-        <!-- PARTIE 6 -->
-        <section class="section" data-section="7">
+        <!-- PARTIE 6 (6) -->
+        <section class="section" data-section="6">
             <div class="section-inner">
                 <div class="partie-content">
                     <div class="partie-text">
@@ -764,38 +694,31 @@ document.getElementById('mdp').focus();
                             <span class="partie-chip-dot"></span>
                             <span>Parte 6</span>
                         </div>
-                        <h2 class="partie-title">Parte 6 - ¡TÚ!</h2>
+                        <h2 class="partie-title">conclusión</h2>
                         <p class="partie-desc">
-                            ¡TU síntesis! Comparación América latina, conclusión temática. 
-                            Tu español oral durante la presentación.
+                            En conclusión, San Francisco es una ciudad construida entre el océano Pacífico y las colinas, 
+                            con una historia muy rica: de la misión Dolores y la fiebre del oro hasta la revolución tecnológica. 
+                            Hoy combina cultura, diversidad e innovación, pero también enfrenta desafíos como el riesgo sísmico 
+                            y las desigualdades sociales.
                         </p>
-                        <p class="partie-note">Ton espagnol oral parfait ici.</p>
+                        <button class="btn-toggle" data-target="#reveal-6">Comparación América Latina</button>
+                        <div class="reveal-block" id="reveal-6">
+                            Comparada con muchas ciudades de América Latina, San Francisco tiene un nivel de vida muy alto 
+                            y una fuerte presencia de empresas tecnológicas. Sin embargo, comparten problemas urbanos como 
+                            la vivienda cara, el tráfico y la protección del patrimonio histórico.
+                        </div>
+                        <p class="partie-note">
+                            Tu español oral es clave aquí: puedes resumir, comparar y dar tu opinión personal.
+                        </p>
                     </div>
                     <div class="partie-image">
                         <div class="partie-image-inner">
                             <div class="partie-image-emoji">📝</div>
                             <div class="partie-image-label">Síntesis</div>
+                            <button class="cta-button" id="endPresentationBtn">
+                                Fin de la presentación
+                            </button>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- CONCLUSION -->
-        <section class="section" data-section="8">
-            <div class="section-inner">
-                <div class="conclusion">
-                    <h2>¡Conclusión!</h2>
-                    <div class="conclusion-card">
-                        <p class="conclusion-text">
-                            De Yerba Buena al <span class="conclusion-highlight">Silicon Valley</span>, 
-                            <strong>San Francisco</strong> encarna audacia y resiliencia. 
-                            Una ciudad que transforma sueños en realidad desde 1849.
-                        </p>
-                        <div class="conclusion-meta">
-                            ¿Te gustaría visitar San Francisco algún día?
-                        </div>
-                        <a href="#" class="cta-button">¡Explora San Francisco!</a>
                     </div>
                 </div>
             </div>
@@ -806,190 +729,141 @@ document.getElementById('mdp').focus();
     <canvas id="confettiCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:999;pointer-events:none;opacity:0;"></canvas>
 
     <script>
-        // ÉLÉMENTS
         const navToggle = document.getElementById('navToggle');
         const navMenu = document.getElementById('navMenu');
         const closeNav = document.getElementById('closeNav');
         const sections = document.querySelectorAll('.section');
         const navItems = document.querySelectorAll('.nav-item');
         const progressBar = document.querySelector('.progress-bar');
-        const ctaButton = document.querySelector('.cta-button');
         const confettiCanvas = document.getElementById('confettiCanvas');
         const ctx = confettiCanvas.getContext('2d');
+        const endPresentationBtn = document.getElementById('endPresentationBtn');
+        const toggleButtons = document.querySelectorAll('.btn-toggle');
 
-        // NAVIGATION FLUIDE
-        function setActiveSection(index) {
-            sections.forEach((s, i) => {
-                s.classList.toggle('active', i === index);
-                navItems[i].classList.toggle('active', i === index);
-            });
-            
-            if (!sections[index].dataset.mounted) {
-                sections[index].dataset.mounted = 'true';
-                // Animation data viz
-                const popPath = sections[index].querySelector('.pop-path');
-                if (popPath) popPath.beginElement();
-            }
+        function resizeCanvas() {
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
         }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
-        // ÉVÉNEMENTS NAV
         navToggle.addEventListener('click', () => {
             navMenu.classList.add('open');
             navToggle.classList.add('active');
         });
-
-        closeNav.addEventListener('click', (e) => {
-            e.stopPropagation();
+        closeNav.addEventListener('click', () => {
             navMenu.classList.remove('open');
             navToggle.classList.remove('active');
         });
 
-        navItems.forEach((item, index) => {
-            item.addEventListener('click', (e) => {
+        navItems.forEach(item => {
+            item.addEventListener('click', e => {
                 e.preventDefault();
+                const targetIndex = parseInt(item.getAttribute('data-section'), 10);
+                setActiveSection(targetIndex);
                 navMenu.classList.remove('open');
                 navToggle.classList.remove('active');
-                setActiveSection(index);
             });
         });
 
-        // CLIC EXTÉRIEUR
-        document.addEventListener('click', (e) => {
-            if (!navMenu.contains(e.target) && !navToggle.contains(e.target)) {
-                navMenu.classList.remove('open');
-                navToggle.classList.remove('active');
-            }
-        });
+        let currentIndex = 0;
 
-        // CLAVIER
-        document.addEventListener('keydown', (e) => {
-            const activeIndex = Array.from(sections).findIndex(s => s.classList.contains('active'));
-            let newIndex = activeIndex;
-
-            if (e.key === 'Escape') {
-                if (navMenu.classList.contains('open')) {
-                    navMenu.classList.remove('open');
-                    navToggle.classList.remove('active');
-                }
-                return;
-            }
-
-            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-                newIndex = Math.min(activeIndex + 1, sections.length - 1);
-            }
-            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-                newIndex = Math.max(activeIndex - 1, 0);
-            }
-
-            if (newIndex !== activeIndex) {
-                setActiveSection(newIndex);
-            }
-        });
-
-        // PROGRESS BAR + PARTICULES
-        window.addEventListener('scroll', () => {
-            const scrollPercent = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
-            progressBar.style.transform = `scaleX(${scrollPercent / 100})`;
-            
-            document.querySelectorAll('.floating').forEach((particle, i) => {
-                const speed = (i + 1) * 0.5;
-                particle.style.transform = `translateY(${window.scrollY * speed}px)`;
-            });
-        });
-
-        // PARALLAX SOURIS
-        const parallaxTargets = document.querySelectorAll('.hero-content, .partie-content, .conclusion-card');
-        let mouseX = 0, mouseY = 0;
-        document.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-            mouseY = (e.clientY / window.innerHeight) * 2 - 1;
-            const intensity = window.innerWidth > 768 ? 10 : 0;
-            parallaxTargets.forEach(el => {
-                el.style.transform = `translate3d(${mouseX * intensity}px, ${mouseY * intensity}px, 0)`;
-            });
-        });
-
-        // CONFETTI CONCLUSION
-        function launchConfetti() {
-            confettiCanvas.width = window.innerWidth;
-            confettiCanvas.height = window.innerHeight;
-            confettiCanvas.style.opacity = '1';
-            
-            const particles = [];
-            for (let i = 0; i < 100; i++) {
-                particles.push({
-                    x: Math.random() * confettiCanvas.width,
-                    y: -10,
-                    vx: (Math.random() - 0.5) * 10,
-                    vy: Math.random() * 5 + 5,
-                    color: `hsl(${Math.random() * 360}, 70%, 60%)`,
-                    size: Math.random() * 4 + 2,
-                    life: 100
-                });
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-                particles.forEach(p => {
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.vy += 0.1;
-                    p.life -= 1;
-                    
-                    if (p.life > 0) {
-                        ctx.fillStyle = p.color;
-                        ctx.fillRect(p.x, p.y, p.size, p.size);
-                    }
-                });
-                
-                if (particles.some(p => p.life > 0)) {
-                    requestAnimationFrame(animate);
-                } else {
-                    confettiCanvas.style.opacity = '0';
-                }
-            }
-            animate();
+        function updateProgressBar(index) {
+            const max = sections.length - 1;
+            const ratio = index / max;
+            progressBar.style.transform = `scaleX(${ratio})`;
         }
 
-        ctaButton.addEventListener('click', (e) => {
-            e.preventDefault();
+        function setActiveSection(index) {
+            if (index < 0 || index >= sections.length) return;
+            currentIndex = index;
+
+            sections.forEach((s, i) => {
+                s.classList.toggle('active', i === index);
+            });
+            navItems.forEach(n => {
+                const sec = parseInt(n.getAttribute('data-section'), 10);
+                n.classList.toggle('active', sec === index);
+            });
+
+            if (!sections[index].dataset.mounted) {
+                sections[index].dataset.mounted = 'true';
+            }
+            updateProgressBar(index);
+        }
+
+        toggleButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const selector = btn.getAttribute('data-target');
+                const block = document.querySelector(selector);
+                if (!block) return;
+                block.classList.toggle('open');
+            });
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowRight') {
+                setActiveSection(currentIndex + 1);
+            } else if (e.key === 'ArrowLeft') {
+                setActiveSection(currentIndex - 1);
+            } else if (e.key === 'Escape') {
+                navMenu.classList.remove('open');
+                navToggle.classList.remove('active');
+            }
+        });
+
+        let confettiPieces = [];
+        function createConfetti() {
+            confettiPieces = [];
+            for (let i = 0; i < 200; i++) {
+                confettiPieces.push({
+                    x: Math.random() * confettiCanvas.width,
+                    y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+                    r: Math.random() * 6 + 2,
+                    d: Math.random() * 0.5 + 0.5,
+                    color: `hsl(${Math.random()*360},100%,60%)`
+                });
+            }
+        }
+
+        let confettiAnimationFrame = null;
+        function drawConfetti() {
+            ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            confettiPieces.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, false);
+                ctx.fillStyle = p.color;
+                ctx.fill();
+            });
+            updateConfetti();
+            confettiAnimationFrame = requestAnimationFrame(drawConfetti);
+        }
+
+        function updateConfetti() {
+            confettiPieces.forEach(p => {
+                p.y += p.d * 7;
+                if (p.y > confettiCanvas.height) {
+                    p.y = -10;
+                    p.x = Math.random() * confettiCanvas.width;
+                }
+            });
+        }
+
+        function launchConfetti() {
+            confettiCanvas.style.opacity = 1;
+            createConfetti();
+            drawConfetti();
+            setTimeout(() => {
+                confettiCanvas.style.opacity = 0;
+                cancelAnimationFrame(confettiAnimationFrame);
+            }, 3000);
+        }
+
+        endPresentationBtn.addEventListener('click', () => {
             launchConfetti();
         });
 
-        // EASTER EGG DEBUG (3x click logo)
-        let clickCount = 0;
-        navToggle.addEventListener('click', () => {
-            clickCount++;
-            if (clickCount === 3) {
-                document.body.classList.toggle('logo-rainbow');
-                setTimeout(() => clickCount = 0, 3000);
-            }
-        });
-
-        // VOICE CONTROL (bonus cybersécu)
-        if ('webkitSpeechRecognition' in window) {
-            const recognition = new webkitSpeechRecognition();
-            recognition.continuous = true;
-            recognition.interimResults = false;
-            recognition.lang = 'fr-FR';
-
-            recognition.onresult = (event) => {
-                const command = event.results[0][0].transcript.toLowerCase();
-                console.log('Commande vocale:', command);
-                
-                if (command.includes('partie un') || command.includes('section un')) setActiveSection(2);
-                if (command.includes('tech') || command.includes('partie cinq')) setActiveSection(6);
-                if (command.includes('conclusion')) setActiveSection(8);
-            };
-
-            navToggle.addEventListener('dblclick', () => {
-                recognition.start();
-                console.log('🎤 Voice control activé - Dis: "partie un", "tech", "conclusion"');
-            });
-        }
-
-        // SMOOTH INIT
-        setTimeout(() => sections[0].style.animation = 'fadeUp 0.8s ease-out both', 100);
+        updateProgressBar(0);
     </script>
 </body>
 </html>
