@@ -5,6 +5,7 @@
   <title>KAYOU SMP - Serveur</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+
   <style>
     /* RESET */
     * {
@@ -12,6 +13,7 @@
       padding: 0;
       box-sizing: border-box;
     }
+
 
     :root {
       /* Palette Minecraft */
@@ -26,6 +28,7 @@
       --mc-red: #b02e26;
     }
 
+
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
       min-height: 100vh;
@@ -33,6 +36,7 @@
       color: var(--mc-white);
       overflow-x: hidden;
     }
+
 
     /* ===== ÉCRAN MOT DE PASSE (PLEIN ÉCRAN NOIR) ===== */
     #password-screen {
@@ -44,6 +48,7 @@
       justify-content: center;
       z-index: 9999;
     }
+
 
     .password-card {
       width: min(360px, 90vw);
@@ -60,6 +65,7 @@
       position: relative;
     }
 
+
     .password-card::before {
       content: "";
       position: absolute;
@@ -72,6 +78,7 @@
       opacity: 0.25;
     }
 
+
     .password-title {
       font-size: 1.1rem;
       letter-spacing: 0.15em;
@@ -80,11 +87,13 @@
       margin-bottom: 18px;
     }
 
+
     .password-sub {
       font-size: 0.9rem;
       margin-bottom: 14px;
       color: #b0b8c0;
     }
+
 
     .password-input {
       width: 100%;
@@ -98,10 +107,12 @@
       text-align: center;
     }
 
+
     .password-input:focus {
       border-color: #ffd83d;
       box-shadow: 0 0 12px #ffd83d;
     }
+
 
     .password-btn {
       margin-top: 14px;
@@ -116,10 +127,12 @@
       cursor: pointer;
     }
 
+
     .password-btn:hover {
       background: linear-gradient(180deg, #ffd83d, #f9801d);
       box-shadow: 0 0 16px #f9801d;
     }
+
 
     .password-error {
       margin-top: 10px;
@@ -128,9 +141,11 @@
       min-height: 1em;
     }
 
+
     .shake {
       animation: shake 0.25s linear;
     }
+
 
     @keyframes shake {
       0%   { transform: translateX(0); }
@@ -139,6 +154,7 @@
       75%  { transform: translateX(-4px); }
       100% { transform: translateX(0); }
     }
+
 
     /* ===== LOADER STYLE MINECRAFT ===== */
     #loader {
@@ -151,6 +167,7 @@
       align-items: center;
       z-index: 9000;
     }
+
 
     .loader-panel {
       position: relative;
@@ -166,6 +183,7 @@
       color: var(--mc-white);
     }
 
+
     .loader-title {
       font-size: 1rem;
       text-transform: uppercase;
@@ -174,11 +192,13 @@
       margin-bottom: 10px;
     }
 
+
     .loader-subtitle {
       font-size: 0.85rem;
       color: #b0b8c0;
       margin-bottom: 14px;
     }
+
 
     .loader-bar {
       position: relative;
@@ -189,6 +209,7 @@
       box-shadow: inset 0 0 6px #000000;
       margin-bottom: 10px;
     }
+
 
     .loader-fill {
       position: absolute;
@@ -201,11 +222,13 @@
       animation: mcLoad 2.4s ease-in-out infinite;
     }
 
+
     @keyframes mcLoad {
       0%   { width: 0%; }
       50%  { width: 80%; }
       100% { width: 100%; }
     }
+
 
     .loader-log {
       margin-top: 8px;
@@ -218,11 +241,13 @@
       overflow: hidden;
     }
 
+
     .loader-line {
       opacity: 0;
       transform: translateY(6px);
       animation: logLine 6s linear infinite;
     }
+
 
     .loader-line:nth-child(1) { animation-delay: 0.2s; }
     .loader-line:nth-child(2) { animation-delay: 1.1s; }
@@ -230,12 +255,14 @@
     .loader-line:nth-child(4) { animation-delay: 2.9s; }
     .loader-line:nth-child(5) { animation-delay: 3.8s; }
 
+
     @keyframes logLine {
       0%   { opacity: 0; transform: translateY(6px); }
       10%  { opacity: 1; transform: translateY(0); }
       70%  { opacity: 1; transform: translateY(0); }
       100% { opacity: 0; transform: translateY(-10px); }
     }
+
 
     /* ===== CONTENU PRINCIPAL ===== */
     #main-content {
@@ -246,12 +273,14 @@
       animation-delay: 0.2s;
     }
 
+
     @keyframes fadeIn {
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
+
 
     /* Header façon barre Minecraft */
     .top-banner {
@@ -274,6 +303,7 @@
       gap: 10px;
     }
 
+
     .top-banner::after {
       content: "";
       width: 180px;
@@ -282,11 +312,13 @@
       background: linear-gradient(90deg, #ffd83d, transparent);
     }
 
+
     .nav-bar {
       display: flex;
       gap: 18px;
       margin-top: 4px;
     }
+
 
     .nav-bar a {
       text-decoration: none;
@@ -307,6 +339,7 @@
         background 0.1s ease-out;
     }
 
+
     .nav-bar a:hover {
       transform: translateY(-2px);
       border-color: #80c71f;
@@ -316,11 +349,13 @@
         0 6px 0 #000000;
     }
 
+
     .page-padding {
       padding: 22px 6vw 80px 6vw;
       background:
         linear-gradient(180deg, #1d1c21 0, #1d1c21 40%, #111111 100%);
     }
+
 
     .intro-card {
       max-width: 900px;
@@ -343,6 +378,7 @@
       line-height: 1.6;
     }
 
+
     .intro-card h2 {
       font-size: 1.1rem;
       text-transform: uppercase;
@@ -351,14 +387,25 @@
       margin-bottom: 8px;
     }
 
+    .intro-card h3 {
+      margin-top: 10px;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #3ab3da;
+    }
+
+
     .intro-card p {
       margin-bottom: 6px;
     }
+
 
     .intro-highlight {
       color: #3ab3da;
       font-style: italic;
     }
+
 
     /* ===== SECTIONS DE PRÉSENTATION (IMAGES + TITRES) ===== */
     .sections-grid {
@@ -367,6 +414,13 @@
       display: flex;
       flex-direction: column;
       gap: 24px;
+    }
+
+    /* Carte cliquable */
+    .section-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
     }
 
     .section-block {
@@ -380,13 +434,32 @@
         0 0 0 3px #000000,
         0 10px 0 #000000;
       padding: 14px;
+      transition:
+        transform 0.1s ease-out,
+        box-shadow 0.1s ease-out,
+        border-color 0.1s ease-out,
+        background 0.1s ease-out;
+      cursor: pointer;
+      position: relative;
     }
+
+    .section-block:hover,
+    .section-block:focus-within {
+      transform: translateY(-3px);
+      border-color: #80c71f;
+      background: #23262b;
+      box-shadow:
+        0 0 0 3px #000000,
+        0 14px 0 #000000;
+    }
+
 
     @media (max-width: 800px) {
       .section-block {
         grid-template-columns: 1fr;
       }
     }
+
 
     .section-image {
       border: 2px solid #000000;
@@ -396,12 +469,14 @@
       min-height: 180px;
     }
 
+
     .section-content {
       display: flex;
       flex-direction: column;
       justify-content: center;
       gap: 6px;
     }
+
 
     .section-title {
       font-size: 1rem;
@@ -410,15 +485,18 @@
       color: #ffd83d;
     }
 
+
     .section-tagline {
       font-size: 0.9rem;
       color: #3ab3da;
     }
 
+
     .section-text {
       font-size: 0.9rem;
       color: #f9ffff;
     }
+
 
     /* FOOTER */
     .bottom-footer {
@@ -439,6 +517,7 @@
 </head>
 <body>
 
+
   <!-- ÉCRAN MOT DE PASSE -->
   <div id="password-screen">
     <div class="password-card" id="password-card">
@@ -455,6 +534,7 @@
       <div class="password-error" id="password-error"></div>
     </div>
   </div>
+
 
   <!-- Loader Minecraft -->
   <div id="loader">
@@ -474,6 +554,7 @@
     </div>
   </div>
 
+
   <!-- Contenu principal -->
   <div id="main-content">
     <div class="top-banner">
@@ -483,6 +564,7 @@
         <a href="img/map.png">Map</a>
       </nav>
     </div>
+
 
     <div class="page-padding">
       <div class="intro-card">
@@ -496,83 +578,139 @@
           éviter le grief et respecter les joueurs.
         </p>
         <p>
-          IP du serveur (Java & Bedrock) : serv-mc.aternos.me<br>
-          Port (Bedrock) : 32612
+          IP du serveur (Java &amp; Bedrock) : kayou-smp.aternos.me<br>
+          Port (Bedrock) : 37584
         </p>
         <p>
           Commandes utiles :<br>
           /sethome nomdelabase<br>
           /delhome nomdelabase<br>
-          /home nomdelabase
+          /home nomdelabase<br>
+          /tpa pseudo
         </p>
       </div>
 
-      <!-- SECTIONS DE PRÉSENTATION AVEC IMAGES + TITRES -->
+      <!-- CARTE INFOS PLUGINS (on garde) -->
+      <div class="intro-card">
+        <h2>Infos sur les plugins du serveur</h2>
+        <p>
+          KAYOU SMP utilise plusieurs plugins pour rendre le serveur plus fun et pratique :
+          un plugin de camouflage en PvP, un plugin de commandes utiles (homes, tpa, etc.)
+          et un plugin de crafts personnalisés.
+        </p>
+
+        <h3>EssentialsX : commandes utiles</h3>
+        <p>
+          EssentialsX ajoute les commandes de base pour un serveur survie :
+          /home, /sethome, /spawn, /tpa, etc., pour faciliter les déplacements
+          et la gestion de tes bases.
+        </p>
+
+        <h3>CustomCrafting : crafts personnalisés</h3>
+        <p>
+          CustomCrafting permet d'ajouter des recettes de craft personnalisées
+          pour la table de craft, le four, le fumoir, la forge et plus encore,
+          avec une interface en jeu (/cc). [web:51]
+        </p>
+      </div>
+
+
+      <!-- SECTIONS DE PRÉSENTATION AVEC IMAGES + TITRES (BULLES CLICABLES) -->
       <div class="sections-grid">
-        <!-- Section 1 : Spawn -->
-        <section class="section-block">
-          <div
-            class="section-image"
-            style="background-image:url('img/spawn.png');"
-          ></div>
-          <div class="section-content">
-            <div class="section-title">Le spawn du serveur</div>
-            <div class="section-tagline">Zone protégée et point de départ</div>
-            <p class="section-text">
-              Le spawn est la zone principale où les joueurs apparaissent, se retrouvent
-              et accèdent aux différentes directions du serveur.
-            </p>
-          </div>
-        </section>
 
-        <!-- Section 2 : Builds -->
-        <section class="section-block">
-          <div
-            class="section-image"
-            style="background-image:url('img/builds.png');"
-          ></div>
-          <div class="section-content">
-            <div class="section-title">Les builds de la communauté</div>
-            <div class="section-tagline">Des constructions à respecter</div>
-            <p class="section-text">
-              Le serveur met en avant les projets des joueurs : bases, villes, fermes,
-              monuments. Merci de ne pas les détruire et de les respecter.
-            </p>
-          </div>
-        </section>
+        <!-- Bulle 2 : EssentialsX -->
+        <a class="section-link" href="https://essentialsx.net/wiki/Home.html" target="_blank" rel="noopener">
+          <section class="section-block">
+            <div
+              class="section-image"
+              style="background-image:url('img/essentials.png');"
+            ></div>
+            <div class="section-content">
+              <div class="section-title">EssentialsX</div>
+              <div class="section-tagline">Commandes pour le confort de jeu</div>
+              <p class="section-text">
+                EssentialsX ajoute toutes les commandes pratiques pour ton quotidien :
+                /home, /sethome, /delhome pour gérer tes bases, /spawn pour revenir
+                au point de départ, /tpa pour rejoindre tes amis. 
+              </p>
+              <p class="section-text">
+                Sur KAYOU SMP, tout le monde a accès aux commandes utiles, ce qui
+                permet de se déplacer facilement sans casser la survie ni le côté
+                fair-play entre joueurs.
+              </p>
+            </div>
+          </section>
+        </a>
 
-        <!-- Section 3 : Aventures / Events -->
-        <section class="section-block">
-          <div
-            class="section-image"
-            style="background-image:url('img/events.png');"
-          ></div>
-          <div class="section-content">
-            <div class="section-title">Aventures et événements</div>
-            <div class="section-tagline">Exploration, défis et fun</div>
-            <p class="section-text">
-              Des événements et activités peuvent être organisés sur KAYOU SMP :
-              explorations, défis, projets collectifs et moments fun avec les autres joueurs.
-            </p>
-          </div>
-        </section>
+        <!-- Bulle 3 : CustomCrafting -->
+        <a class="section-link" href="https://modrinth.com/plugin/customcrafting" target="_blank" rel="noopener">
+          <section class="section-block">
+            <div
+              class="section-image"
+              style="background-image:url('img/customcrafting.png');"
+            ></div>
+            <div class="section-content">
+              <div class="section-title">CustomCrafting</div>
+              <div class="section-tagline">Crafts et items personnalisés</div>
+              <p class="section-text">
+                CustomCrafting permet au staff de créer des recettes sur mesure
+                directement en jeu : craft de nouveaux items, recettes avancées,
+                conditions spéciales, etc. [web:51]
+              </p>
+              <p class="section-text">
+                Sur KAYOU SMP, certains items spéciaux se débloquent via des crafts
+                personnalisés pour récompenser l'exploration et les projets des
+                joueurs, sans rendre le serveur trop facile.
+              </p>
+            </div>
+          </section>
+        </a>
       </div>
     </div>
+          <!-- CARTE DU MONDE -->
+      <div class="intro-card" style="margin-top: 40px;">
+        <h2>Carte du monde</h2>
+        <p>
+          Voici la carte interactive du serveur KAYOU SMP. Tu peux explorer le monde, 
+          voir les biomes, les structures et les points d'intérêt. Clique sur le lien 
+          pour ouvrir la carte complète. seed du monde 9061805400223247392 
+        </p>
+        <div style="margin-top: 20px; border: 3px solid #474f52; padding: 12px; background: #000000;">
+          <iframe 
+            src="https://mcseedmap.net/1.21.5-Java/map?seed=9061805400223247392" 
+            width="100%" 
+            height="500px" 
+            style="border: none; display: block;"
+            title="Carte KAYOU SMP">
+          </iframe>
+        </div>
+        <p style="margin-top: 12px; font-size: 0.9rem;">
+          <a href="https://mcseedmap.net/1.21.5-Java/map?seed=9061805400223247392" 
+             target="_blank" 
+             style="color: #3ab3da; text-decoration: underline;">
+            Ouvrir la carte en plein écran →
+          </a>
+        </p>
+      </div>
+
 
     <div class="bottom-footer">
       ©KAYOU SMP — Présentation créée par Thomas Lewis
     </div>
   </div>
 
+
   <script>
     // Vérification du mot de passe côté front (non sécurisé, juste pour le style)
     const PASSWORD = "thomas";
+
 
     const passwordScreen = document.getElementById('password-screen');
     const passwordInput  = document.getElementById('password-input');
     const passwordBtn    = document.getElementById('password-btn');
     const passwordError  = document.getElementById('password-error');
     const passwordCard   = document.getElementById('password-card');
+
 
     function checkPassword() {
       const value = passwordInput.value.trim();
@@ -582,6 +720,7 @@
         const loader = document.getElementById('loader');
         const main   = document.getElementById('main-content');
         loader.style.display = 'flex';
+
 
         // Après 2,5 s, cacher le loader et montrer le contenu
         setTimeout(() => {
@@ -595,7 +734,9 @@
       }
     }
 
+
     passwordBtn.addEventListener('click', checkPassword);
+
 
     passwordInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
