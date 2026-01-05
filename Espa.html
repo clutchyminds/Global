@@ -468,7 +468,15 @@ document.getElementById('mdp').focus();
             </div>
             <span class="nav-item-index">06</span>
         </a>
-
+        <!-- NOUVELLE PARTIE 7 -->
+        <a href="#" class="nav-item" data-section="7">
+            <div class="nav-item-icon">🚫</div>
+            <div class="nav-item-labels">
+                <div class="nav-item-title">Partie 7</div>
+                <div class="nav-item-sub">Surprise</div>
+            </div>
+            <span class="nav-item-index">07</span>
+        </a>
     </nav>
 
     <!-- PARTICULES -->
@@ -611,6 +619,14 @@ document.getElementById('mdp').focus();
                             -- mission District = centro historico.<br>
                             - cada barrio es como una paquena ciudad.
                         </div>
+                        <button class="btn-toggle" data-target="#reveal-3c">Ver más (arquitectura)</button>
+                        <!-- ID corrigé pour ne pas être en double -->
+                        <div class="reveal-block" id="reveal-3c">
+                            3. arquitectura :<br>
+                            - Varios tipos de arquitecturas:<br>
+                            =&gt; rascacielos en el distrito financiero<br>
+                            =&gt; casas unifamiliares (casas victorianas (con una imagen))
+                        </div>
                         <p class="partie-note">Citas españolas o visuals culturales.</p>
                     </div>
                     <div class="partie-image">
@@ -723,7 +739,57 @@ document.getElementById('mdp').focus();
                 </div>
             </div>
         </section>
+
+        <!-- PARTIE 7 (7) -->
+        <section class="section" data-section="7">
+            <div class="section-inner">
+                <div class="partie-content">
+                    <div class="partie-text" style="width:100%; text-align:center;">
+                        <div class="partie-chip">
+                            <span class="partie-chip-dot"></span>
+                            <span>Parte 7</span>
+                        </div>
+                        <h2 class="partie-title">⚠️ No hacer clic</h2>
+                        <p class="partie-desc">
+                            No hagas clic en el botón rojo del centro de la pantalla.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
+
+    <!-- GROS BOUTON ROUGE RICKROLL -->
+    <div id="rickroll-overlay" 
+        style="
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 998;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        ">
+        <button id="rickroll-btn"
+            style="
+                pointer-events: auto;
+                padding: 30px 60px;
+                font-size: 2rem;
+                font-weight: 800;
+                text-transform: uppercase;
+                border-radius: 999px;
+                border: 4px solid #7f0000;
+                background: #ff0000;
+                color: #ffffff;
+                cursor: pointer;
+                box-shadow: 0 0 40px rgba(255,0,0,0.8);
+            ">
+            Ne pas cliquer
+        </button>
+    </div>
+
 
     <!-- CANVAS CONFETTI -->
     <canvas id="confettiCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:999;pointer-events:none;opacity:0;"></canvas>
@@ -739,6 +805,9 @@ document.getElementById('mdp').focus();
         const ctx = confettiCanvas.getContext('2d');
         const endPresentationBtn = document.getElementById('endPresentationBtn');
         const toggleButtons = document.querySelectorAll('.btn-toggle');
+        const rickrollBtn = document.getElementById('rickroll-btn');
+        const rickrollOverlay = document.getElementById('rickroll-overlay');
+
 
         function resizeCanvas() {
             confettiCanvas.width = window.innerWidth;
@@ -775,22 +844,32 @@ document.getElementById('mdp').focus();
         }
 
         function setActiveSection(index) {
-            if (index < 0 || index >= sections.length) return;
-            currentIndex = index;
+        if (index < 0 || index >= sections.length) return;
+        currentIndex = index;
 
-            sections.forEach((s, i) => {
-                s.classList.toggle('active', i === index);
-            });
-            navItems.forEach(n => {
-                const sec = parseInt(n.getAttribute('data-section'), 10);
-                n.classList.toggle('active', sec === index);
-            });
+        sections.forEach((s, i) => {
+            s.classList.toggle('active', i === index);
+        });
+        navItems.forEach(n => {
+            const sec = parseInt(n.getAttribute('data-section'), 10);
+            n.classList.toggle('active', sec === index);
+        });
 
-            if (!sections[index].dataset.mounted) {
-                sections[index].dataset.mounted = 'true';
-            }
-            updateProgressBar(index);
+        if (!sections[index].dataset.mounted) {
+            sections[index].dataset.mounted = 'true';
         }
+        updateProgressBar(index);
+
+        // Bouton rouge visible uniquement en Partie 7 (data-section="7")
+        if (index === 7) {
+            rickrollOverlay.style.opacity = '1';
+            rickrollOverlay.style.pointerEvents = 'auto';
+        } else {
+            rickrollOverlay.style.opacity = '0';
+            rickrollOverlay.style.pointerEvents = 'none';
+        }
+        }
+
 
         toggleButtons.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -861,6 +940,11 @@ document.getElementById('mdp').focus();
 
         endPresentationBtn.addEventListener('click', () => {
             launchConfetti();
+        });
+
+        // Rickroll
+        rickrollBtn.addEventListener('click', () => {
+            window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
         });
 
         updateProgressBar(0);
