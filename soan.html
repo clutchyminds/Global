@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Soan • Chaîne YouTube</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Site officiel de la chaîne YouTube de Soan : vidéos, playlists, stats, planning, FAQ et contact pro.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-main: #20b16b;
+            --green-dark: #0e7f48;
+            --green-light: #e9f8f1;
+            --white: #ffffff;
+            --gray-light: #f4f5f7;
+            --gray-text: #5f6b7a;
+            --shadow-soft: 0 18px 45px rgba(15, 140, 90, 0.18);
+            --radius-lg: 18px;
+            --radius-full: 999px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: radial-gradient(circle at top left, #f3fff9 0, #f9fcff 55%, #f0fff7 100%);
+            color: #0b1f16;
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        /* NAVBAR */
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(16px);
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.92),
+                rgba(233, 248, 241, 0.96)
+            );
+            border-bottom: 1px solid rgba(32, 177, 107, 0.09);
+        }
+
+        .nav {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 20%, #ffffff, #16a95f);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 24px rgba(9, 115, 64, 0.45);
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-text span:first-child {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .brand-text span:last-child {
+            font-size: 0.78rem;
+            color: var(--gray-text);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            font-size: 0.9rem;
+        }
+
+        .nav-links a {
+            color: var(--gray-text);
+            padding: 6px 10px;
+            border-radius: 999px;
+            transition: all 0.18s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--green-dark);
+            background: rgba(32, 177, 107, 0.09);
+        }
+
+        .nav-cta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            border-radius: var(--radius-full);
+            padding: 8px 18px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.18s ease;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--green-main), var(--green-dark));
+            color: #ffffff;
+            box-shadow: 0 14px 32px rgba(16, 137, 84, 0.45);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 18px 38px rgba(13, 113, 69, 0.55);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(32, 177, 107, 0.5);
+            color: var(--green-dark);
+        }
+
+        .btn-outline:hover {
+            background: rgba(32, 177, 107, 0.07);
+        }
+
+        .nav-badge {
+            font-size: 0.7rem;
+            background: rgba(32, 177, 107, 0.12);
+            color: var(--green-dark);
+            padding: 3px 9px;
+            border-radius: 999px;
+        }
+
+        /* SECTIONS GLOBALES */
+
+        main {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 24px 20px 60px;
+        }
+
+        section {
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .section-title-block {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .section-kicker {
+            text-transform: uppercase;
+            letter-spacing: .16em;
+            font-size: 0.7rem;
+            color: var(--green-dark);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .section-subtitle {
+            font-size: 0.85rem;
+            color: var(--gray-text);
+        }
+
+        .pill {
+            border-radius: 999px;
+            padding: 5px 12px;
+            font-size: 0.75rem;
+            background: rgba(32, 177, 107, 0.07);
+            color: var(--green-dark);
+        }
+
+        /* HERO */
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        .hero-left {
+            background: linear-gradient(135deg, rgba(32, 177, 107, 0.07), rgba(255, 255, 255, 0.95));
+            border-radius: 22px;
+            padding: 22px 22px 20px;
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-badge-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-badge {
+            font-size: 0.78rem;
+            padding: 5px 12px;
+            border-radius: 999px;
+            border: 1px dashed rgba(32, 177, 107, 0.4);
+            background: rgba(255, 255, 255, 0.8);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff3b3b;
+            box-shadow: 0 0 0 6px rgba(255, 59, 59, 0.2);
+        }
+
+        .hero-title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .hero-title span {
+            background: linear-gradient(120deg, var(--green-dark), #30c97c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-text {
+            font-size: 0.94rem;
+            color: var(--gray-text);
+            margin-bottom: 16px;
+            max-width: 480px;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .hero-meta-row {
+            display: flex;
+            gap: 18px;
+            font-size: 0.75rem;
+            color: var(--gray-text);
+            flex-wrap: wrap;
+        }
+
+        .hero-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .meta-label {
+            font-size: 0.72rem;
+            padding: 4px 9px;
+            border-radius: 999px;
+            background: rgba(32, 177, 107, 0.08);
+            color: var(--green-dark);
+            font-weight: 500;
+        }
+
+        .hero-blob {
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.9), rgba(32, 177, 107, 0.5));
+            border-radius: 50%;
+            top: -80px;
+            right: -60px;
+            opacity: 0.5;
+            filter: blur(0);
+        }
+
+        .hero-right {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* CARTE DERNIÈRE VIDÉO */
+
+        .card-latest-video {
+            border-radius: 20px;
+            background: linear-gradient(145deg, #ffffff, #effdf7);
+            box-shadow: 0 10px 32px rgba(32, 177, 107, 0.22);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .latest-thumb {
+            position: relative;
+            background: radial-gradient(circle at center, #2ed47a, #0c7d46);
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+        }
+
+        .latest-thumb-inner {
+            width: 74%;
+            height: 66%;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.14), rgba(0,0,0,0.18));
+            border: 1px solid rgba(255,255,255,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .play-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.65);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+        }
+
+        .play-icon::before {
+            content: "";
+            display: block;
+            width: 0;
+            height: 0;
+            border-left: 14px solid #ffffff;
+            border-top: 9px solid transparent;
+            border-bottom: 9px solid transparent;
+            margin-left: 3px;
+        }
+
+        .latest-duration {
+            position: absolute;
+            bottom: 10px;
+            right: 12px;
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.75);
+        }
+
+        .latest-chip-row {
+            position: absolute;
+            top: 10px;
+            left: 12px;
+            display: flex;
+            gap: 6px;
+        }
+
+        .chip {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .card-body {
+            padding: 14px 16px 14px;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 0.98rem;
+            margin-bottom: 6px;
+        }
+
+        .card-text {
+            font-size: 0.8rem;
+            color: var(--gray-text);
+            margin-bottom: 10px;
+        }
+
+        .card-footer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--gray-text);
+        }
+
+        .pill-small {
+            border-radius: 999px;
+            padding: 3px 9px;
+            font-size: 0.72rem;
+            background: rgba(32, 177, 107, 0.09);
+            color: var(--green-dark);
+        }
+
+        /* SECTION PLAYLISTS */
+
+        .playlist-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0,1fr));
+            gap: 16px;
+        }
+
+        .playlist-card {
+            background: rgba(255,255,255,0.9);
+            border-radius: var(--radius-lg);
+            padding: 12px 12px 10px;
+            border: 1px solid rgba(32, 177, 107, 0.12);
+            box-shadow: 0 10px 24px rgba(8, 92, 52, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+        }
+
+        .playlist-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 32px rgba(13, 113, 69, 0.18);
+            border-color: rgba(32, 177, 107, 0.45);
+        }
+
+        .playlist-thumb {
+            height: 70px;
+            border-radius: 12px;
+            background: linear-gradient(120deg, #20b16b, #82f1b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 1.5rem;
+        }
+
+        .playlist-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--gray-text);
+        }
+
+        .playlist-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .playlist-desc {
+            font-size: 0.78rem;
+            color: var(--gray-text);
+        }
+
+        /* SECTION STATS */
+
+        .stats-card {
+            background: linear-gradient(135deg, #ffffff, #e9f8f1);
+            border-radius: 22px;
+            padding: 16px 18px 14px;
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+            gap: 18px;
+            align-items: center;
+            box-shadow: 0 14px 36px rgba(10, 100, 60, 0.18);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .stat-card {
+            border-radius: 14px;
+            padding: 10px 11px;
+            background: rgba(255,255,255,0.92);
+            border: 1px solid rgba(32, 177, 107, 0.12);
+        }
+
+        .stat-label {
+            font-size: 0.70rem;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            color: var(--gray-text);
+            margin-bottom: 3px;
+        }
+
+        .stat-value {
+            font-size: 1.02rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .stat-trend {
+            font-size: 0.75rem;
+            color: var(--green-dark);
+        }
+
+        .stat-trend.negative {
+            color: #d64545;
+        }
+
+        .stats-note {
+            font-size: 0.78rem;
+            color: var(--gray-text);
+        }
+
+        .stats-mini-chart {
+            height: 82px;
+            border-radius: 14px;
+            background: repeating-linear-gradient(
+                to right,
+                rgba(32, 177, 107, 0.12),
+                rgba(32, 177, 107, 0.12) 2px,
+                rgba(233, 248, 241, 0.95) 2px,
+                rgba(233, 248, 241, 0.95) 8px
+            );
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-line {
+            position: absolute;
+            inset: 16px 10px 16px 10px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, rgba(32, 177, 107, 0.2), rgba(32, 177, 107, 0.8));
+        }
+
+        .stats-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid var(--green-dark);
+            right: 26px;
+            bottom: 18px;
+            box-shadow: 0 6px 14px rgba(13, 113, 69, 0.45);
+        }
+
+        /* TIMELINE VIDÉOS RÉCENTES */
+
+        .timeline {
+            display: grid;
+            grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+            gap: 18px;
+        }
+
+        .timeline-list {
+            border-radius: 18px;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid rgba(32, 177, 107, 0.1);
+            padding: 12px 14px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            gap: 12px;
+            padding: 8px 4px;
+            align-items: center;
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.04);
+        }
+
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+
+        .timeline-bullet {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--green-main);
+            box-shadow: 0 0 0 6px rgba(32, 177, 107, 0.16);
+        }
+
+        .timeline-main {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .timeline-title {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .timeline-meta {
+            font-size: 0.74rem;
+            color: var(--gray-text);
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .timeline-chip {
+            padding: 2px 7px;
+            border-radius: 999px;
+            background: rgba(32, 177, 107, 0.08);
+            font-size: 0.7rem;
+            color: var(--green-dark);
+        }
+
+        .timeline-time {
+            font-size: 0.72rem;
+            color: var(--gray-text);
+        }
+
+        .timeline-side {
+            border-radius: 18px;
+            background: var(--green-light);
+            padding: 12px 14px;
+            font-size: 0.8rem;
+            color: var(--gray-text);
+        }
+
+        .timeline-side strong {
+            color: var(--green-dark);
+        }
+
+        /* PLANNING */
+
+        .planning-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .day-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 14px;
+            padding: 8px 10px;
+            border: 1px solid rgba(32, 177, 107, 0.12);
+            font-size: 0.78rem;
+        }
+
+        .day-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--green-dark);
+            margin-bottom: 3px;
+        }
+
+        .day-type {
+            color: var(--gray-text);
+        }
+
+        .day-tag {
+            margin-top: 4px;
+            font-size: 0.7rem;
+            padding: 3px 7px;
+            border-radius: 999px;
+            background: rgba(32, 177, 107, 0.07);
+            color: var(--green-dark);
+            display: inline-block;
+        }
+
+        /* À PROPOS + POURQUOI SUIVRE */
+
+        .twocol-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
+            gap: 18px;
+        }
+
+        .about-card,
+        .reasons-card {
+            background: rgba(255,255,255,0.96);
+            border-radius: 18px;
+            padding: 12px 14px;
+            border: 1px solid rgba(32, 177, 107, 0.1);
+            font-size: 0.82rem;
+            color: var(--gray-text);
+        }
+
+        .about-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .about-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--green-main), var(--green-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 20px rgba(10, 100, 60, 0.45);
+        }
+
+        .about-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .about-tagline {
+            font-size: 0.75rem;
+            color: var(--gray-text);
+        }
+
+        .reasons-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .reason-item {
+            padding: 8px 10px;
+            border-radius: 12px;
+            background: rgba(233, 248, 241, 0.9);
+            border: 1px solid rgba(32, 177, 107, 0.14);
+            font-size: 0.78rem;
+        }
+
+        .reason-title {
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-bottom: 3px;
+            color: var(--green-dark);
+        }
+
+        /* FAQ */
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap: 10px;
+        }
+
+        .faq-item {
+            background: rgba(255,255,255,0.96);
+            border-radius: 14px;
+            padding: 10px 12px;
+            border: 1px solid rgba(32, 177, 107, 0.12);
+            font-size: 0.8rem;
+            color: var(--gray-text);
+        }
+
+        .faq-q {
+            font-weight: 600;
+            font-size: 0.82rem;
+            margin-bottom: 4px;
+            color: var(--green-dark);
+        }
+
+        /* CONTACT */
+
+        .contact-card {
+            border-radius: 22px;
+            background: linear-gradient(135deg, #ffffff, #e9f8f1);
+            padding: 16px 18px 14px;
+            box-shadow: 0 16px 40px rgba(12, 100, 60, 0.24);
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+            gap: 16px;
+            align-items: center;
+        }
+
+        .contact-text {
+            font-size: 0.82rem;
+            color: var(--gray-text);
+            margin-bottom: 10px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--green-dark);
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid rgba(32, 177, 107, 0.3);
+            padding: 8px 10px;
+            font-size: 0.8rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            background: rgba(255,255,255,0.96);
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: var(--green-main);
+            box-shadow: 0 0 0 1px rgba(32, 177, 107, 0.25);
+        }
+
+        textarea {
+            min-height: 70px;
+            resize: vertical;
+        }
+
+        .contact-note {
+            font-size: 0.75rem;
+            color: var(--gray-text);
+        }
+
+        /* FOOTER */
+
+        footer {
+            border-top: 1px solid rgba(32, 177, 107, 0.1);
+            padding: 14px 20px 24px;
+            font-size: 0.75rem;
+            color: var(--gray-text);
+            background: rgba(255,255,255,0.96);
+        }
+
+        .footer-inner {
+            max-width: 1120px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 880px) {
+            .hero,
+            .stats-card,
+            .timeline,
+            .twocol-layout,
+            .contact-card {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .hero-right {
+                order: -1;
+            }
+
+            .playlist-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .planning-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .faq-grid {
+                grid-template-columns: minmax(0,1fr);
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .nav {
+                padding-inline: 16px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            main {
+                padding-inline: 16px;
+            }
+
+            .playlist-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .planning-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .timeline-list {
+                max-height: 220px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <header>
+        <div class="nav">
+            <div class="nav-left">
+                <div class="logo-circle">S</div>
+                <div class="brand-text">
+                    <span>Soan • YouTube</span>
+                    <span>Vidéos, tutos & contenu régulier</span>
+                </div>
+            </div>
+            <nav class="nav-links">
+                <a href="#hero">Accueil</a>
+                <a href="#videos">Vidéos</a>
+                <a href="#playlists">Playlists</a>
+                <a href="#stats">Stats</a>
+                <a href="#planning">Planning</a>
+                <a href="#faq">FAQ</a>
+                <a href="#contact">Contact</a>
+            </nav>
+            <div class="nav-cta">
+                <span class="nav-badge">Site officiel</span>
+                <!-- TODO: remplace le # par l'URL de la chaîne de Soan -->
+                <button class="btn btn-primary" onclick="window.open('#', '_blank')">
+                    S’abonner à la chaîne
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO -->
+        <section id="hero" class="hero">
+            <div class="hero-left">
+                <div class="hero-blob"></div>
+                <div class="hero-badge-row">
+                    <div class="hero-badge">
+                        <span class="live-dot"></span> Nouvelle vidéo chaque semaine
+                    </div>
+                    <div class="hero-badge">
+                        Chaîne gérée par Soan
+                    </div>
+                </div>
+                <h1 class="hero-title">
+                    Le hub officiel de la chaîne <span>Soan</span>
+                </h1>
+                <p class="hero-text">
+                    Retrouve toutes les vidéos, playlists, statistiques, dates de sortie et infos
+                    pro de la chaîne YouTube de Soan sur une seule page claire et professionnelle.
+                </p>
+                <div class="hero-actions">
+                    <!-- TODO: remplace le # par l'URL de la chaîne -->
+                    <button class="btn btn-primary" onclick="window.open('#', '_blank')">
+                        ▶ Ouvrir la chaîne YouTube
+                    </button>
+                    <!-- TODO: remplace le # par le lien d’une vidéo mise en avant -->
+                    <button class="btn btn-outline" onclick="window.open('#', '_blank')">
+                        ⭐ Voir la vidéo mise en avant
+                    </button>
+                </div>
+                <div class="hero-meta-row">
+                    <div class="hero-meta-item">
+                        <span class="meta-label">+1 vidéo / semaine</span>
+                        <span>Shorts, tutos, lives & plus</span>
+                    </div>
+                    <div class="hero-meta-item">
+                        <span class="meta-label">Contenu 100 % gratuit</span>
+                        <span>Accessible sur mobile & PC</span>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="hero-right">
+                <!-- DERNIÈRE VIDÉO -->
+                <article class="card-latest-video">
+                    <div class="latest-thumb">
+                        <div class="latest-thumb-inner">
+                            <div class="play-icon"></div>
+                            <span class="latest-duration">12:34</span>
+                            <div class="latest-chip-row">
+                                <span class="chip">Nouvelle vidéo</span>
+                                <span class="chip">Première</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h2 class="card-title">Dernière vidéo publiée</h2>
+                        <p class="card-text">
+                            Découvre le tout dernier épisode publié sur la chaîne de Soan :
+                            une vidéo pensée pour la communauté, avec des astuces, du fun et du rythme.
+                        </p>
+                        <div class="card-footer-row">
+                            <span class="pill-small">Mise en ligne récemment</span>
+                            <!-- TODO: remplace le # par le lien de la dernière vidéo -->
+                            <button class="btn btn-outline" onclick="window.open('#', '_blank')">Regarder</button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- RAPPEL ABONNEMENT -->
+                <div style="font-size:0.78rem;color:var(--gray-text);padding:6px 10px;border-radius:14px;background:rgba(233,248,241,0.9);border:1px dashed rgba(32,177,107,0.4);">
+                    💡 Astuce : ajoute ce site en favori pour suivre plus facilement les sorties de la chaîne de Soan.
+                </div>
+            </aside>
+        </section>
+
+        <!-- PLAYLISTS -->
+        <section id="playlists">
+            <div class="section-header">
+                <div class="section-title-block">
+                    <span class="section-kicker">Playlists</span>
+                    <h2 class="section-title">Playlists mises en avant</h2>
+                    <p class="section-subtitle">
+                        Les collections de vidéos essentielles pour comprendre l’univers de Soan.
+                    </p>
+                </div>
+                <span class="pill">Organisation des contenus par thèmes</span>
+            </div>
+
+            <div class="playlist-grid">
+                <!-- TODO: remplace les # par les liens des playlists -->
+                <a href="#" class="playlist-card" target="_blank">
+                    <div class="playlist-thumb">🎮</div>
+                    <div class="playlist-meta">
+                        <span class="playlist-title">Série principale</span>
+                        <span>15+ vidéos</span>
+                    </div>
+                    <p class="playlist-desc">
+                        La série centrale de la chaîne : les épisodes que tout le monde devrait voir en premier.
+                    </p>
+                </a>
+
+                <a href="#" class="playlist-card" target="_blank">
+                    <div class="playlist-thumb">⚙️</div>
+                    <div class="playlist-meta">
+                        <span class="playlist-title">Tutos & explications</span>
+                        <span>10+ vidéos</span>
+                    </div>
+                    <p class="playlist-desc">
+                        Des vidéos pédagogiques pour comprendre, progresser et apprendre à ton rythme.
+                    </p>
+                </a>
+
+                <a href="#" class="playlist-card" target="_blank">
+                    <div class="playlist-thumb">⚡</div>
+                    <div class="playlist-meta">
+                        <span class="playlist-title">Shorts & moments forts</span>
+                        <span>20+ vidéos</span>
+                    </div>
+                    <p class="playlist-desc">
+                        Les meilleurs extraits, clips courts et moments marquants de la chaîne de Soan.
+                    </p>
+                </a>
+            </div>
+        </section>
+
+        <!-- STATS -->
+        <section id="stats">
+            <div class="section-header">
+                <div class="section-title-block">
+                    <span class="section-kicker">Statistiques</span>
+                    <h2 class="section-title">Vue d’ensemble de la chaîne</h2>
+                    <p class="section-subtitle">
+                        Une vision claire des chiffres clés qui résument l’activité de la chaîne de Soan.
+                    </p>
+                </div>
+                <span class="pill">Données indicatives (YouTube Studio fait foi)</span>
+            </div>
+
+            <article class="stats-card">
+                <div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Abonnés</div>
+                            <div class="stat-value">X 000+</div>
+                            <div class="stat-trend">En progression constante</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Vues totales</div>
+                            <div class="stat-value">Y 000+</div>
+                            <div class="stat-trend">Objectif : prochain palier</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Vidéos publiées</div>
+                            <div class="stat-value">Z vidéos</div>
+                            <div class="stat-trend">Contenu varié & régulier</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Durée moyenne</div>
+                            <div class="stat-value">~ N min</div>
+                            <div class="stat-trend">Adapté au format de la chaîne</div>
+                        </div>
+                    </div>
+                    <p class="stats-note">
+                        Les chiffres détaillés et en temps réel sont disponibles dans YouTube Studio
+                        directement pour Soan (statistiques privées créateur).
+                    </p>
+                </div>
+
+                <div>
+                    <div class="stats-mini-chart">
+                        <div class="stats-line"></div>
+                        <div class="stats-dot"></div>
+                    </div>
+                    <p class="stats-note" style="margin-top:8px;">
+                        Cette visualisation simplifiée représente la progression de la chaîne dans le temps
+                        (abonnés, vues ou watch time). Elle donne une idée globale de la dynamique.
+                    </p>
+                </div>
+            </article>
+        </section>
+
+        <!-- VIDÉOS RÉCENTES + PLANNING -->
+        <section id="videos">
+            <div class="section-header">
+                <div class="section-title-block">
+                    <span class="section-kicker">Vidéos</span>
+                    <h2 class="section-title">Dernières vidéos & planning</h2>
+                    <p class="section-subtitle">
+                        Les sorties récentes et le rythme de publication de la chaîne de Soan.
+                    </p>
+                </div>
+                <span class="pill">Fil d’activité + planning hebdo</span>
+            </div>
+
+            <div class="timeline">
+                <!-- LISTE VIDÉOS RÉCENTES -->
+                <div class="timeline-list">
+                    <!-- TODO: remplace les titres, dates et types selon les vraies vidéos -->
+                    <div class="timeline-item">
+                        <div class="timeline-bullet"></div>
+                        <div class="timeline-main">
+                            <div class="timeline-title">Titre de la vidéo récente #1</div>
+                            <div class="timeline-meta">
+                                <span>Publiée il y a 2 jours</span>
+                                <span class="timeline-chip">Vidéo longue</span>
+                                <span class="timeline-chip">Épisode principal</span>
+                            </div>
+                        </div>
+                        <div class="timeline-time">12:34</div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-bullet"></div>
+                        <div class="timeline-main">
+                            <div class="timeline-title">Titre de la vidéo récente #2</div>
+                            <div class="timeline-meta">
+                                <span>Il y a 5 jours</span>
+                                <span class="timeline-chip">Short</span>
+                                <span class="timeline-chip">Highlight</span>
+                            </div>
+                        </div>
+                        <div class="timeline-time">0:45</div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-bullet"></div>
+                        <div class="timeline-main">
+                            <div class="timeline-title">Titre de la vidéo récente #3</div>
+                            <div class="timeline-meta">
+                                <span>Il y a 1 semaine</span>
+                                <span class="timeline-chip">Tuto</span>
+                                <span class="timeline-chip">Explications</span>
+                            </div>
+                        </div>
+                        <div class="timeline-time">8:03</div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-bullet"></div>
+                        <div class="timeline-main">
+                            <div class="timeline-title">Titre de la vidéo récente #4</div>
+                            <div class="timeline-meta">
+                                <span>Il y a 2 semaines</span>
+                                <span class="timeline-chip">FAQ</span>
+                                <span class="timeline-chip">Communauté</span>
+                            </div>
+                        </div>
+                        <div class="timeline-time">10:22</div>
+                    </div>
+                </div>
+
+                <!-- PLANNING -->
+                <div class="timeline-side" id="planning">
+                    <strong>Planning de publication</strong>
+                    <p style="margin-top:4px;margin-bottom:8px;">
+                        Exemple de rythme possible pour la chaîne (adaptable selon la réalité).
+                    </p>
+                    <div class="planning-grid">
+                        <div class="day-card">
+                            <div class="day-label">Lundi</div>
+                            <div class="day-type">Short / moment fort</div>
+                            <span class="day-tag">Format rapide</span>
+                        </div>
+                        <div class="day-card">
+                            <div class="day-label">Mercredi</div>
+                            <div class="day-type">Vidéo principale</div>
+                            <span class="day-tag">Épisode ou tuto</span>
+                        </div>
+                        <div class="day-card">
+                            <div class="day-label">Vendredi</div>
+                            <div class="day-type">Short / clip</div>
+                            <span class="day-tag">Focus, extrait</span>
+                        </div>
+                        <div class="day-card">
+                            <div class="day-label">Week-end</div>
+                            <div class="day-type">Éventuel live / bonus</div>
+                            <span class="day-tag">Selon disponibilité</span>
+                        </div>
+                    </div>
+                    <p style="font-size:0.75rem;margin-top:8px;">
+                        Le planning exact peut être mis à jour régulièrement pour rester aligné sur le rythme réel de la chaîne.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- À PROPOS + POURQUOI SUIVRE -->
+        <section id="about">
+            <div class="section-header">
+                <div class="section-title-block">
+                    <span class="section-kicker">Créateur</span>
+                    <h2 class="section-title">À propos de Soan & de la chaîne</h2>
+                    <p class="section-subtitle">
+                        Une brève présentation du créateur et de ce qui rend sa chaîne unique.
+                    </p>
+                </div>
+                <span class="pill">Infos pour nouveaux et habitués</span>
+            </div>
+
+            <div class="twocol-layout">
+                <article class="about-card">
+                    <div class="about-header">
+                        <div class="about-avatar">S</div>
+                        <div>
+                            <div class="about-name">Soan</div>
+                            <div class="about-tagline">Créateur de la chaîne & de ce contenu</div>
+                        </div>
+                    </div>
+                    <p>
+                        Soan est un créateur motivé qui publie du contenu régulier pour sa communauté :
+                        des vidéos travaillées, un ton authentique et une progression visible dans la qualité.
+                        Ce site sert de vitrine claire pour retrouver tout ce qui concerne la chaîne.
+                    </p>
+                </article>
+
+                <article class="reasons-card">
+                    <strong>Pourquoi suivre la chaîne de Soan ?</strong>
+                    <div class="reasons-grid">
+                        <div class="reason-item">
+                            <div class="reason-title">Contenu régulier</div>
+                            <p>Des vidéos publiées de manière structurée, avec un rythme qui permet de suivre facilement.</p>
+                        </div>
+                        <div class="reason-item">
+                            <div class="reason-title">Qualité & progression</div>
+                            <p>Une amélioration continue du montage, du son et de la manière d’expliquer ou divertir.</p>
+                        </div>
+                        <div class="reason-item">
+                            <div class="reason-title">Communauté impliquée</div>
+                            <p>Commentaires pris en compte, retours de la communauté et idées provenant des abonnés.</p>
+                        </div>
+                        <div class="reason-item">
+                            <div class="reason-title">Accès centralisé</div>
+                            <p>Une page unique pour les playlists, vidéos, stats, questions fréquentes et contact pro.</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq">
+            <div class="section-header">
+                <div class="section-title-block">
+                    <span class="section-kicker">FAQ</span>
+                    <h2 class="section-title">Questions fréquentes sur la chaîne</h2>
+                    <p class="section-subtitle">
+                        Quelques réponses rapides aux questions que les gens posent souvent à propos de la chaîne.
+                    </p>
+                </div>
+                <span class="pill">Infos pour nouveaux abonnés</span>
+            </div>
+
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <div class="faq-q">À quelle fréquence les vidéos sortent-elles ?</div>
+                    <p>
+                        L’objectif est d’avoir au minimum une nouvelle vidéo par semaine,
+                        avec des shorts ou contenus additionnels selon le temps disponible.
+                    </p>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">Est-ce que Soan accepte les idées de vidéos ?</div>
+                    <p>
+                        Oui, les suggestions de la communauté sont les bienvenues.
+                        Tu peux proposer des idées en commentaire sur YouTube ou via le formulaire de contact.
+                    </p>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">Comment être sûr de ne rien rater ?</div>
+                    <p>
+                        Le meilleur moyen est de s’abonner à la chaîne, d’activer la cloche
+                        et de garder ce site en favori pour consulter rapidement les infos principales.
+                    </p>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q">Est-ce qu’il y a des collaborations ou partenariats ?</div>
+                    <p>
+                        Des collaborations peuvent être envisagées. Pour tout projet sérieux,
+                        il est recommandé de passer par le formulaire de contact pro ci-dessous.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT PRO -->
+        <section id="contact">
+            <div class="section-header">
+                <div class="section-title-block">
+                    <span class="section-kicker">Contact</span>
+                    <h2 class="section-title">Contact professionnel & collaborations</h2>
+                    <p class="section-subtitle">
+                        Un point de contact simple pour les demandes sérieuses : collaborations, partenariats, projets.
+                    </p>
+                </div>
+                <span class="pill">Espace pro / collaborateurs</span>
+            </div>
+
+            <article class="contact-card">
+                <div>
+                    <p class="contact-text">
+                        Ce formulaire est destiné aux personnes ou structures qui souhaitent collaborer avec Soan
+                        (projets, partenariats, apparitions, etc.). Merci de fournir un maximum d’informations
+                        claires afin de faciliter le suivi.
+                    </p>
+                    <p class="contact-note">
+                        Pour les messages classiques (retours, questions sur les vidéos), le plus simple reste de passer
+                        par les commentaires directement sur YouTube.
+                    </p>
+                </div>
+                <div>
+                    <!-- TODO: remplace l’attribut action par une vraie adresse de traitement (Formspree, etc.) -->
+                    <form onsubmit="alert('Message envoyé (simulation). À connecter à un vrai service d\'email).'); return false;">
+                        <div>
+                            <label for="name">Nom / structure</label>
+                            <input type="text" id="name" placeholder="Ton nom ou celui de ton organisation" required>
+                        </div>
+                        <div>
+                            <label for="email">Adresse e-mail</label>
+                            <input type="email" id="email" placeholder="exemple@domaine.com" required>
+                        </div>
+                        <div>
+                            <label for="subject">Objet</label>
+                            <input type="text" id="subject" placeholder="Collaboration, partenariat, projet…" required>
+                        </div>
+                        <div>
+                            <label for="message">Message</label>
+                            <textarea id="message" placeholder="Présente ton projet, ton idée de collaboration ou ta demande."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            Envoyer la demande
+                        </button>
+                        <p class="contact-note">
+                            Aucune donnée n’est réellement envoyée avec cette démo. Il faudra connecter ce formulaire à un service
+                            d’envoi (par ex. Formspree, un backend perso ou un outil d’e-mailing).
+                        </p>
+                    </form>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <span>
+                © <span id="year"></span> Site officiel non-officiel pour la chaîne de Soan. Tous droits réservés.
+            </span>
+            <div class="footer-links">
+                <!-- TODO: remplace les # par les vrais liens si Soan a ces réseaux -->
+                <a href="#" style="color:var(--green-dark);">YouTube</a>
+                <a href="#">Instagram</a>
+                <a href="#">Autres réseaux</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mise à jour automatique de l'année dans le footer
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Scroll fluide pour les liens d’ancre
+        document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+            anchor.addEventListener('click', function (e) {
+                const targetId = this.getAttribute('href').substring(1);
+                const target = document.getElementById(targetId);
+                if (target) {
+                    e.preventDefault();
+                    window.scrollTo({
+                        top: target.offsetTop - 72,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
