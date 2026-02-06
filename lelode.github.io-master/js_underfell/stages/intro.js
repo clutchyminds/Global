@@ -1,1 +1,0 @@
-var stageCtrIntro = 0;
