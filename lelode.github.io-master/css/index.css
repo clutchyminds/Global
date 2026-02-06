@@ -1,0 +1,66 @@
+body {
+	background: #000;
+	font-family: "persuasionBRK";
+	overflow: hidden;
+	margin: 0;
+
+	/*make it unable to select elements*/
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+}
+
+#game_container {
+	background: #000;
+	color: #000;
+
+	font-family: "tbyt";
+	width: 100%;
+	max-width: 635px;
+	max-height: 480px;
+	
+	overflow:hidden;
+	position: absolute;
+	margin: auto;
+	align-self: center;
+
+	top: 0; right: 0; bottom: 0; left: 0;
+}
+
+#game {
+	width: 100%;
+	max-width: 635px;
+	
+	padding: 0;
+	margin: auto;
+	overflow: hidden;
+	position: absolute;
+
+	top:0 ; right: 0; bottom: 0; left: 0;
+}
+
+#loading {
+	font-size: 30px;
+	font-family: "tbytB";
+	text-align: center;
+	position: relative; 
+	vertical-align: middle;
+	line-height: 400px;
+	color: #000;
+}
+
+@font-face {
+	font-family: "persuasionBRK";
+	src: url("../font/persuasionBRK.ttf") format('truetype');
+}
+
+@font-face {
+	font-family: "tbytB";
+	src: url("../font/tbytB.ttf") format('truetype');
+}
+
+@font-face {
+	font-family: "tbyt";
+	src: url("../font/tbyt.ttf") format('truetype');
+}
