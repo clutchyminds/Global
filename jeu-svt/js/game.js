@@ -1,3 +1,8 @@
+/**
+ * JEU SVT : L'Odyssée du Photon
+ * Configuré pour dossier : jeu-svt
+ */
+
 const config = {
     type: Phaser.AUTO,
     width: 800,
@@ -5,7 +10,10 @@ const config = {
     parent: 'game-container',
     physics: {
         default: 'arcade',
-        arcade: { gravity: { y: 800 }, debug: false }
+        arcade: { 
+            gravity: { y: 800 }, 
+            debug: false 
+        }
     },
     scene: { preload: preload, create: create, update: update }
 };
@@ -15,59 +23,96 @@ let player, bosses, currentBossIndex = 0;
 let isQuizActive = false;
 
 function preload() {
-    // RACINES CORRIGÉES selon ta capture d'écran
+    // Chemins relatifs pointant vers ton arborescence GitHub
     this.load.image('tiles', './assets/backgrounds/tileset.png');
     this.load.tilemapTiledJSON('map', './assets/backgrounds/mappe.json');
-    this.load.spritesheet('player', './assets/sprites/player.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.image('player', './assets/sprites/player.png');
     this.load.image('boss', './assets/sprites/boss.png');
 }
 
 function create() {
+    // 1. CHARGEMENT DE LA MAP
     const map = this.make.tilemap({ key: 'map' });
-    const tileset = map.addTilesetImage('mon_tileset', 'tiles'); // Vérifie ce nom dans Tiled
     
-    // Remplacement par 'sol' (ou le nom exact dans ton JSON Tiled)
-    const groundLayer = map.createLayer('sol', tileset, 0, 0); 
-    groundLayer.setCollisionByProperty({ collides: true });
+    // IMPORTANT : 'mon_tileset' doit correspondre au nom du tileset DANS Tiled
+    const tileset = map.addTilesetImage('tileset', 'tiles'); 
 
-    player = this.physics.add.sprite(100, 450, 'player');
+    // Détection automatique du nom du calque pour éviter l'écran noir
+    const layerName = map.getTileLayerNames()[0]; 
+    const groundLayer = map.createLayer(layerName, tileset, 0, 0);
+
+    if (groundLayer) {
+        // Active les collisions pour les tuiles ayant la propriété "collides" dans Tiled
+        groundLayer.setCollisionByProperty({ collides: true });
+    } else {
+        console.error("Le calque de tuiles n'a pas été trouvé. Vérifie Tiled !");
+    }
+
+    // 2. LE JOUEUR (PHOTON)
+    // On le place un peu au dessus du sol (ajuste le 100, 100 si besoin)
+    player = this.physics.add.sprite(100, 100, 'player');
     player.setCollideWorldBounds(true);
-    this.physics.add.collider(player, groundLayer);
+    player.setScale(0.5); // Réduit la taille si ton image est grande
 
+    // Collision entre le joueur et le sol
+    if (groundLayer) this.physics.add.collider(player, groundLayer);
+
+    // 3. LA CAMÉRA
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-    this.cameras.main.startFollow(player);
+    this.cameras.main.startFollow(player, true, 0.1, 0.1);
 
+    // 4. LES BOSS
     bosses = this.physics.add.staticGroup();
-    // Placement des 3 boss (Coordonnées X à ajuster selon ta map)
-    bosses.create(800, 450, 'boss').setData('id', 0).setData('hp', 2);
-    bosses.create(1600, 450, 'boss').setData('id', 1).setData('hp', 3);
-    bosses.create(2400, 450, 'boss').setData('id', 2).setData('hp', 4);
+    
+    // Positionnement des 3 Boss (Ajuste les X selon la longueur de ta map)
+    // Boss 1 : La Feuille | Boss 2 : La Matière | Boss 3 : Le Mondial
+    let b1 = bosses.create(800, 450, 'boss').setData({id: 0, hp: 2}).setScale(0.2).refreshBody();
+    let b2 = bosses.create(1600, 450, 'boss').setData({id: 1, hp: 3}).setScale(0.2).refreshBody();
+    let b3 = bosses.create(2400, 450, 'boss').setData({id: 2, hp: 4}).setScale(0.2).refreshBody();
 
+    // Déclenchement du combat quand on touche un boss
     this.physics.add.overlap(player, bosses, startCombat, null, this);
 
-    // CONTRÔLES TACTILES (Gauche / Droite / Saut)
+    // 5. CONTRÔLES TACTILES (Optimisés Tablette)
     this.input.on('pointerdown', (pointer) => {
         if (isQuizActive) return;
-        if (pointer.y < 300) { // Sauter si on touche le haut
-            if (player.body.onFloor()) player.setVelocityY(-400);
-        } else if (pointer.x < 400) {
+
+        // Si on touche le haut de l'écran -> Saut
+        if (pointer.y < 250) {
+            if (player.body.blocked.down || player.body.touching.down) {
+                player.setVelocityY(-450);
+            }
+        } 
+        // Si on touche à gauche -> Marche à gauche
+        else if (pointer.x < 400) {
             player.setVelocityX(-200);
-        } else {
+        } 
+        // Si on touche à droite -> Marche à droite
+        else {
             player.setVelocityX(200);
         }
     });
-    this.input.on('pointerup', () => player.setVelocityX(0));
+
+    this.input.on('pointerup', () => {
+        player.setVelocityX(0);
+    });
 }
 
-function update() {}
+function update() {
+    // Si le quiz est ouvert, on fige le joueur
+    if (isQuizActive) {
+        player.setVelocity(0, 0);
+    }
+}
 
 function startCombat(player, boss) {
     let id = boss.getData('id');
+    
+    // On ne combat le boss que si c'est son tour
     if (id !== currentBossIndex || isQuizActive) return;
 
     isQuizActive = true;
-    player.setVelocity(0, 0);
-    this.physics.pause();
+    this.physics.pause(); // Stop la physique du jeu
     showQuiz(id, boss);
 }
 
@@ -76,45 +121,48 @@ function showQuiz(id, bossInstance) {
     const qText = document.getElementById('question-text');
     const optionsDiv = document.getElementById('options');
     
-    // Sélection aléatoire d'une question du pool du boss
-    let questionsPool = quizData[id].questions;
-    let randomQ = questionsPool[Math.floor(Math.random() * questionsPool.length)];
+    // Pioche une question au hasard pour ce boss
+    let pool = quizData[id].questions;
+    let q = pool[Math.floor(Math.random() * pool.length)];
     
     container.style.display = 'flex';
-    qText.innerHTML = `<small>${quizData[id].bossName}</small><br>${randomQ.q}`;
+    qText.innerHTML = `<strong style="color:#27ae60">${quizData[id].bossName}</strong><br><br>${q.q}`;
     optionsDiv.innerHTML = "";
 
-    randomQ.options.forEach((opt, index) => {
+    q.options.forEach((opt, index) => {
         let btn = document.createElement('button');
         btn.className = "option-btn";
         btn.innerText = opt;
         btn.onclick = () => {
-            if (index === randomQ.answer) {
-                let currentHp = bossInstance.getData('hp') - 1;
-                bossInstance.setData('hp', currentHp);
+            if (index === q.answer) {
+                // BONNE RÉPONSE
+                let hp = bossInstance.getData('hp') - 1;
+                bossInstance.setData('hp', hp);
                 
-                if (currentHp <= 0) {
-                    alert("BOSS VAINCU !");
+                if (hp <= 0) {
+                    alert("BRAVO ! Bilan maîtrisé.");
                     bossInstance.destroy();
                     currentBossIndex++;
-                    closeQuiz();
+                    finishCombat();
                 } else {
-                    alert(`Touché ! Encore ${currentHp} coup(s).`);
-                    showQuiz(id, bossInstance); // Prochaine question
+                    alert("Correct ! Le boss faiblit...");
+                    showQuiz(id, bossInstance); // Question suivante pour le même boss
                 }
             } else {
-                alert("Erreur ! Le boss contre-attaque (Recul)");
-                closeQuiz();
-                // Petit effet de recul
-                player.x -= 100; 
+                // MAUVAISE RÉPONSE
+                alert("Erreur scientifique ! Le boss vous repousse.");
+                finishCombat();
+                // Effet de recul
+                player.x -= 200;
             }
         };
         optionsDiv.appendChild(btn);
     });
 }
 
-function closeQuiz() {
-    document.getElementById('quiz-container').style.display = 'none';
+function finishCombat() {
+    const container = document.getElementById('quiz-container');
+    container.style.display = 'none';
     isQuizActive = false;
-    game.scene.scenes[0].physics.resume();
+    game.scene.scenes[0].physics.resume(); // Relance le jeu
 }
