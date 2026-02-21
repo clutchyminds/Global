@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SVT-Craft : Édition Ultime</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #2c3e50; font-family: 'Segoe UI', sans-serif; touch-action: none; }
+        canvas { display: block; background: #87CEEB; }
+        
+        /* --- UI ACCUEIL --- */
+        #ui-overlay {
+            position: absolute; inset: 0; z-index: 100;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: linear-gradient(135deg, #1abc9c, #3498db);
+            transition: transform 0.5s ease-in-out;
+        }
+        .ui-hidden { transform: translateY(-100%); }
+        .menu-btn {
+            background: rgba(255,255,255,0.2); border: 2px solid white; color: white;
+            padding: 15px 40px; margin: 10px; border-radius: 50px; cursor: pointer; 
+            font-weight: bold; font-size: 1.2em; backdrop-filter: blur(5px);
+        }
+
+        /* --- HUD --- */
+        .hud { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; pointer-events: none; z-index: 50; }
+        .stats-box { background: rgba(0,0,0,0.6); padding: 12px; border-radius: 10px; pointer-events: auto; color: white; font-weight: bold; }
+        #hp-display { color: #ff4757; font-size: 1.4em; }
+
+        /* --- CONTROLES MOBILES --- */
+        .controls { position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: space-between; padding: 0 30px; box-sizing: border-box; z-index: 60; pointer-events: none; }
+        .joy-base { width: 110px; height: 110px; background: rgba(255,255,255,0.1); border: 2px solid white; border-radius: 50%; position: relative; pointer-events: auto; }
+        #joy-stick { width: 45px; height: 45px; background: white; border-radius: 50%; position: absolute; left: 32.5px; top: 32.5px; pointer-events: none; }
+        #jump-btn { width: 85px; height: 85px; background: rgba(46, 204, 113, 0.5); border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; pointer-events: auto; color: white; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div id="ui-overlay">
+        <h1 style="color:white; text-align: center; font-size: 3em; text-shadow: 2px 2px 10px rgba(0,0,0,0.3);">SVT-CRAFT</h1>
+        <p style="color: white; margin-bottom: 20px; font-style: italic;">Simulateur d'écosystème infini</p>
+        <div class="menu-btn" onclick="startGame()">DÉMARRER</div>
+    </div>
+
+    <div class="hud">
+        <div class="stats-box">
+            <div id="hp-display">❤❤❤❤❤</div>
+            <div style="font-size: 0.8em; margin-top: 4px;">Exploration : <span id="dist-txt">0</span>m</div>
+        </div>
+        <button class="stats-box" style="border: 1px solid white; cursor: pointer;" onclick="location.reload()">MENU</button>
+    </div>
+
+    <div class="controls">
+        <div class="joy-base" id="joy-zone"><div id="joy-stick"></div></div>
+        <div id="jump-btn">SAUT</div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let gameActive = false;
+        const TILE_SIZE = 48;
+        const DETECT_RADIUS = 6 * TILE_SIZE;
+        
+        let worldData = {}; 
+        let mobs = [];
+        let player = { x: 200, y: 0, w: 26, h: 42, vx: 0, vy: 0, speed: 5, grounded: false, health: 5 };
+        let camera = { x: 0, y: 0 };
+
+        const img = { 
+            player: new Image(), herbe: new Image(), terre: new Image(), 
+            pierre: new Image(), mob: new Image() 
+        };
+        // Chargement des assets
+        img.player.src = 'assets/sprites/player.png';
+        img.herbe.src = 'assets/backgrounds/herbe.png';
+        img.terre.src = 'assets/backgrounds/terre.png';
+        img.pierre.src = 'assets/backgrounds/pierre.png';
+        img.mob.src = 'assets/backgrounds/mob.png';
+
+        // --- GÉNÉRATION PROCÉDURALE ---
+        function getColumn(x) {
+            if (worldData[x]) return worldData[x];
+            let col = [];
+            let ground = Math.floor(25 + Math.sin(x * 0.1) * 5 + Math.sin(x * 0.3) * 2);
+            for (let y = 0; y < 70; y++) {
+                if (y === ground) col[y] = 'herbe';
+                else if (y > ground && y < ground + 8) col[y] = 'terre';
+                else if (y >= ground + 8) col[y] = 'pierre';
+                else col[y] = null;
+            }
+            worldData[x] = col;
+            // Apparition mobs
+            if (Math.random() < 0.04 && Math.abs(x) > 10) {
+                mobs.push({
+                    x: x * TILE_SIZE, y: (ground - 1) * TILE_SIZE,
+                    w: 32, h: 32, vx: 0, vy: 0, isMob: true,
+                    timer: 0, dir: 1, grounded: false
+                });
+            }
+            return col;
+        }
+
+        // --- PHYSIQUE & AUTO-JUMP ---
+        function checkCollision(px, py, pw, ph) {
+            let x1 = Math.floor(px / TILE_SIZE), x2 = Math.floor((px + pw) / TILE_SIZE);
+            let y1 = Math.floor(py / TILE_SIZE), y2 = Math.floor((py + ph) / TILE_SIZE);
+            for (let x = x1; x <= x2; x++) {
+                let col = getColumn(x);
+                for (let y = y1; y <= y2; y++) {
+                    if (col[y]) return { x: x * TILE_SIZE, y: y * TILE_SIZE };
+                }
+            }
+            return null;
+        }
+
+        function applyPhysics(obj) {
+            obj.vy += 0.6; // Gravité
+            
+            // X + AUTO-JUMP
+            let nextX = obj.x + obj.vx;
+            let hX = checkCollision(nextX, obj.y, obj.w, obj.h);
+            
+            if (hX) {
+                // Test si on peut monter d'un bloc (Auto-jump)
+                let stepUp = checkCollision(nextX, obj.y - TILE_SIZE, obj.w, obj.h);
+                if (!stepUp) {
+                    obj.y -= TILE_SIZE;
+                    obj.x = nextX;
+                } else {
+                    if (obj.vx > 0) obj.x = hX.x - obj.w - 0.1;
+                    else if (obj.vx < 0) obj.x = hX.x + TILE_SIZE + 0.1;
+                    if (obj.isMob && obj.grounded) obj.vy = -8; 
+                }
+            } else {
+                obj.x = nextX;
+            }
+
+            // Y
+            obj.y += obj.vy;
+            obj.grounded = false;
+            let hY = checkCollision(obj.x, obj.y, obj.w, obj.h);
+            if (hY) {
+                if (obj.vy > 0) { 
+                    obj.y = hY.y - obj.h - 0.1; 
+                    if (obj.vy > 18 && !obj.isMob) { player.health--; updateUI(); }
+                    obj.vy = 0; obj.grounded = true; 
+                } else { 
+                    obj.y = hY.y + TILE_SIZE + 0.1; 
+                    obj.vy = 0; 
+                }
+            }
+        }
+
+        // --- IA MOBS ---
+        function updateMobs() {
+            mobs = mobs.filter(m => Math.abs(m.x - player.x) < 1500);
+            mobs.forEach(m => {
+                let dist = Math.hypot(player.x - m.x, player.y - m.y);
+                if (dist < DETECT_RADIUS) {
+                    m.vx = (player.x > m.x) ? 2.2 : -2.2;
+                } else {
+                    m.timer--;
+                    if (m.timer <= 0) {
+                        m.dir = Math.random() > 0.5 ? 1 : -1;
+                        m.timer = 60 + Math.random() * 100;
+                    }
+                    m.vx = m.dir * 0.8;
+                }
+                applyPhysics(m);
+            });
+        }
+
+        // --- CONTROLES ---
+        let joyTouchId = null;
+        const joyZone = document.getElementById('joy-zone');
+        const joyStick = document.getElementById('joy-stick');
+
+        joyZone.addEventListener('touchstart', e => { joyTouchId = e.changedTouches[0].identifier; });
+        window.addEventListener('touchmove', e => {
+            for(let t of e.changedTouches) {
+                if(t.identifier === joyTouchId) {
+                    let r = joyZone.getBoundingClientRect();
+                    let dx = t.clientX - (r.left + r.width/2);
+                    let move = Math.max(-35, Math.min(35, dx));
+                    joyStick.style.transform = `translateX(${move}px)`;
+                    player.vx = (move / 35) * player.speed;
+                }
+            }
+        });
+        window.addEventListener('touchend', e => {
+            for(let t of e.changedTouches) {
+                if(t.identifier === joyTouchId) { joyTouchId = null; player.vx = 0; joyStick.style.transform = `none`; }
+            }
+        });
+        document.getElementById('jump-btn').addEventListener('touchstart', () => { if(player.grounded) player.vy = -13; });
+
+        // --- RENDU & UI ---
+        function updateUI() {
+            document.getElementById('hp-display').innerText = "❤".repeat(Math.max(0, player.health));
+            if (player.health <= 0) { alert("Game Over !"); location.reload(); }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            ctx.translate(-Math.round(camera.x), -Math.round(camera.y));
+
+            let startX = Math.floor(camera.x / TILE_SIZE) - 1;
+            let endX = startX + Math.ceil(canvas.width / TILE_SIZE) + 2;
+            
+            for (let x = startX; x < endX; x++) {
+                let col = getColumn(x);
+                for (let y = 0; y < 70; y++) {
+                    if (col[y]) ctx.drawImage(img[col[y]], x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                }
+            }
+
+            mobs.forEach(m => ctx.drawImage(img.mob, m.x, m.y, m.w, m.h));
+            ctx.drawImage(img.player, player.x, player.y, player.w, player.h);
+
+            ctx.restore();
+
+            if (gameActive) {
+                applyPhysics(player);
+                updateMobs();
+                camera.x += (player.x - canvas.width / 2 - camera.x) * 0.1;
+                camera.y += (player.y - canvas.height / 2 - camera.y) * 0.1;
+                document.getElementById('dist-txt').innerText = Math.max(0, Math.floor(player.x / TILE_SIZE));
+                requestAnimationFrame(draw);
+            }
+        }
+
+        function startGame() { 
+            document.getElementById('ui-overlay').classList.add('ui-hidden'); 
+            gameActive = true; 
+            updateUI();
+            draw(); 
+        }
+
+        window.addEventListener('resize', () => { 
+            canvas.width = window.innerWidth; 
+            canvas.height = window.innerHeight; 
+        });
+        window.dispatchEvent(new Event('resize'));
+    </script>
+</body>
+</html>
