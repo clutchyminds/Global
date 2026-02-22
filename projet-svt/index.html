@@ -3,77 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SVT-CRAFT : Énergie & Biosphère</title>
+    <title>SVT-CRAFT : Le Flux d'Énergie</title>
     <style>
-        :root { --primary: #2ecc71; --dark: #2c3e50; --danger: #ff4757; --accent: #f1c40f; }
-        body { margin: 0; overflow: hidden; background: #1a1a1a; font-family: 'Segoe UI', sans-serif; touch-action: none; color: white; }
-        canvas { display: block; background: #87CEEB; }
-        
-        .overlay { position: absolute; inset: 0; z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.85); padding: 20px; text-align: center; }
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; touch-action: none; color: white; }
+        canvas { display: block; }
+
+        /* INTERFACES */
+        .overlay { position: absolute; inset: 0; z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.85); text-align: center; padding: 20px; }
         .hidden { display: none !important; }
         
-        .menu-btn { background: var(--primary); border: none; color: white; padding: 15px 30px; margin: 10px; border-radius: 30px; cursor: pointer; font-weight: bold; width: 250px; box-shadow: 0 4px #27ae60; transition: transform 0.1s; }
-        .menu-btn:active { transform: translateY(4px); box-shadow: none; }
+        .btn { background: #27ae60; border: none; border-bottom: 4px solid #1e8449; color: white; padding: 15px 30px; margin: 10px; cursor: pointer; font-weight: bold; width: 220px; font-size: 1.1em; border-radius: 5px; pointer-events: auto; }
+        .btn:active { transform: translateY(2px); border-bottom-width: 2px; }
+        .btn-blue { background: #2980b9; border-bottom-color: #1c5982; }
+
+        /* LE COURS DÉTAILLÉ */
+        #lesson-box { background: #2c3e50; border: 4px solid #2ecc71; border-radius: 15px; max-width: 600px; max-height: 80vh; overflow-y: auto; text-align: left; padding: 30px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        #lesson-box h2 { color: #2ecc71; text-align: center; margin-top: 0; text-transform: uppercase; }
+        .section-title { color: #f1c40f; font-weight: bold; margin-top: 15px; display: block; text-decoration: underline; }
+        .lesson-text { font-size: 0.95em; line-height: 1.5; color: #ecf0f1; }
         
-        /* STYLE DU QUIZ */
-        #ui-quiz h2 { font-size: 1.5em; margin-bottom: 20px; }
-        .q-option { background: rgba(255,255,255,0.15); padding: 15px; margin: 8px; border-radius: 12px; cursor: pointer; width: 85%; max-width: 400px; border: 2px solid rgba(255,255,255,0.1); }
-        .q-option:hover { background: var(--primary); border-color: white; }
-
-        /* MODAL COURS */
-        #lesson-content { background: var(--dark); border: 3px solid var(--primary); padding: 25px; border-radius: 20px; max-width: 500px; text-align: left; line-height: 1.6; }
-
-        /* HUD */
+        /* HUD & QUIZ */
         .hud { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; pointer-events: none; z-index: 50; }
-        .stats-panel { background: rgba(0,0,0,0.8); padding: 12px; border-radius: 12px; pointer-events: auto; border: 2px solid #444; min-width: 140px; }
-        .bio-container { width: 100%; height: 8px; background: #333; border-radius: 4px; margin-top: 5px; overflow: hidden; }
-        #bio-fill { width: 100%; height: 100%; background: var(--primary); transition: width 0.3s; }
+        .stats { background: rgba(0,0,0,0.8); padding: 12px; border: 2px solid #555; border-radius: 10px; }
+        .bar { width: 120px; height: 12px; background: #333; margin-top: 8px; border-radius: 6px; overflow: hidden; border: 1px solid #777; }
+        #bio-f { height: 100%; background: #2ecc71; width: 100%; transition: 0.3s; }
+        
+        #q-ops { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 600px; pointer-events: auto; }
+        .q-option { background: #34495e; padding: 15px; border: 2px solid #5d6d7e; cursor: pointer; border-radius: 10px; font-weight: bold; font-size: 0.9em; transition: 0.2s; color: white; }
+        .q-option:active { background: #2ecc71; transform: scale(0.95); }
 
-        /* CONTROLES */
+        /* CONTRÔLES MOBILE */
         .controls { position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: space-around; align-items: center; z-index: 60; pointer-events: none; }
-        .joy-base { width: 90px; height: 90px; background: rgba(255,255,255,0.1); border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; position: relative; pointer-events: auto; }
-        .joy-stick { width: 35px; height: 35px; background: white; border-radius: 50%; position: absolute; left: 27.5px; top: 27.5px; }
-        #jump-btn { width: 80px; height: 80px; background: rgba(46, 204, 113, 0.6); border: 3px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; pointer-events: auto; font-weight: bold; }
+        .joy { width: 90px; height: 90px; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.4); border-radius: 50%; position: relative; pointer-events: auto; }
+        .stick { width: 36px; height: 36px; background: #fff; border-radius: 50%; position: absolute; left: 27px; top: 27px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        #j-btn { width: 80px; height: 80px; background: rgba(46, 204, 113, 0.4); border: 3px solid #fff; border-radius: 50%; pointer-events: auto; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; text-shadow: 1px 1px 2px black; }
     </style>
 </head>
 <body>
 
     <div id="ui-start" class="overlay">
-        <h1 style="color: var(--primary); font-size: 3em; margin-bottom: 10px;">SVT-CRAFT</h1>
-        <button class="menu-btn" onclick="startGame()">JOUER</button>
-        <button class="menu-btn" style="background:#3498db; box-shadow: 0 4px #2980b9;" onclick="openLesson()">COURS</button>
+        <h1 style="font-size: 3em; color: #2ecc71; margin-bottom: 0;">SVT-CRAFT</h1>
+        <p style="margin-bottom: 30px; color: #bdc3c7;">Énergie & Biosphère</p>
+        <button class="btn" onclick="startGame()">COMMENCER</button>
+        <button class="btn btn-blue" onclick="toggleLesson(true)">LIRE LE COURS</button>
     </div>
 
     <div id="ui-lesson" class="overlay hidden">
-        <div id="lesson-content">
-            <h2 style="color:var(--primary); margin-top:0;">📚 Le Flux d'Énergie</h2>
-            <p>• <b>Photosynthèse :</b> Les plantes captent 1% de l'énergie solaire.</p>
-            <p>• <b>Amidon :</b> Molécule de stockage de l'énergie chimique.</p>
-            <p>• <b>Fossiles :</b> Le pétrole/charbon est de la biomasse solaire stockée depuis des millions d'années.</p>
-            <center><button class="menu-btn" onclick="closeLesson()">J'AI COMPRIS</button></center>
+        <div id="lesson-box">
+            <h2>Cours : Flux d'Énergie</h2>
+            <div class="lesson-text">
+                <span class="section-title">1. L'Entrée de l'Énergie</span>
+                La Terre reçoit une immense quantité d'énergie solaire. Cependant, les végétaux chlorophylliens n'utilisent qu'environ **1%** de cette puissance pour la **photosynthèse**. 
+                
+                <span class="section-title">2. La Photosynthèse</span>
+                Ce processus convertit l'énergie lumineuse en **énergie chimique**. Cette énergie est stockée sous forme d'**amidon**.
+                <span class="section-title">3. Le Stockage Fossile</span>
+                La biomasse enfouie peut se transformer, après des millions d'années, en **pétrole, gaz ou charbon**.
+            </div>
+            <center><button class="btn" style="margin-top:20px;" onclick="toggleLesson(false)">RETOUR</button></center>
         </div>
     </div>
 
     <div id="ui-quiz" class="overlay hidden">
-        <h2 id="q-text">Question ?</h2>
-        <div id="q-options" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
+        <h2 id="q-txt" style="color:#f1c40f; margin-bottom:20px;">Question de SVT</h2>
+        <div id="q-ops"></div>
+        <p style="margin-top:20px; font-size:0.8em; color:#bdc3c7;">Bonne réponse = +5 Munitions & +2 Vies</p>
     </div>
 
     <div class="hud">
-        <div class="stats-panel">
-            <div id="hp-ui" style="color:var(--danger); font-size:1.2em;">❤❤❤❤❤</div>
-            <div class="bio-container"><div id="bio-fill"></div></div>
+        <div class="stats">
+            <div id="hp" style="color:#e74c3c; font-size: 1.2em; letter-spacing: 3px;">❤❤❤❤❤</div>
+            <div class="bar"><div id="bio-f"></div></div>
         </div>
-        <div class="stats-panel" style="text-align:right;">
-            <div id="ammo-ui" style="color:var(--accent); font-weight:bold;">ONDES : 5/5</div>
-            <button id="reload-btn" style="margin-top:5px; background:var(--accent); border:none; border-radius:5px; padding:5px 10px; cursor:pointer; display:none;" onclick="startQuiz()">RECHARGER</button>
+        <div class="stats" style="text-align:right; pointer-events: auto;">
+            <div id="am" style="color:#f1c40f; font-weight:bold;">ONDES: 5/5</div>
+            <button id="rel" class="btn" style="width:auto; padding:5px 15px; display:none; font-size:0.8em; position:relative; z-index:200;" onclick="openQuiz()">RECHARGER (QUIZ)</button>
         </div>
     </div>
 
     <div class="controls">
-        <div class="joy-base" id="joy-move"><div class="joy-stick" id="stick-move"></div></div>
-        <div id="jump-btn">SAUT</div>
-        <div class="joy-base" id="joy-atk"><div class="joy-stick" id="stick-atk"></div></div>
+        <div class="joy" id="ctrl-m"><div class="stick" id="stk-m"></div></div>
+        <div id="j-btn">SAUT</div>
+        <div class="joy" id="ctrl-a"><div class="stick" id="stk-a"></div></div>
     </div>
 
     <canvas id="gameCanvas"></canvas>
@@ -81,184 +92,236 @@
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const TILE_SIZE = 48;
-        let gameActive = false;
+        const TILE = 48;
+        const GRAVITY = 0.8;
+        let active = false;
+        let spawnTimer = 0;
+        let animationFrameId;
 
-        const img = { 
+        const img = {
             player: new Image(), herbe: new Image(), terre: new Image(), 
-            pierre: new Image(), tile: new Image(), 
-            boss1: new Image(), boss2: new Image(), boss3: new Image() 
+            pierre: new Image(), tile: new Image(), mob: new Image(),
+            boss1: new Image(), boss2: new Image(), boss3: new Image(), bg: new Image()
         };
         img.player.src = 'assets/sprites/player.png';
         img.herbe.src = 'assets/backgrounds/herbe.png';
         img.terre.src = 'assets/backgrounds/terre.png';
         img.pierre.src = 'assets/backgrounds/pierre.png';
         img.tile.src = 'assets/backgrounds/tile.png';
+        img.mob.src = 'assets/backgrounds/mob.png';
         img.boss1.src = 'assets/sprites/boss1.png';
         img.boss2.src = 'assets/sprites/boss2.png';
         img.boss3.src = 'assets/sprites/boss3.png';
+        img.bg.src = 'assets/backgrounds/arrière-plan.png';
 
-        // Collision box réduite pour éviter les blocages (26px de large pour 48px de bloc)
-        let player = { x: 300, y: 100, w: 26, h: 44, vx: 0, vy: 0, hp: 5, ammo: 5, biomass: 100, grounded: false };
-        let projectiles = [], photons = [], mobs = [], world = {};
-        let camera = { x: 0, y: 0 }, atkDir = { x: 0, y: 0 };
+        let player = { x: 400, y: 100, w: 28, h: 42, vx: 0, vy: 0, hp: 5, maxHp: 5, biomass: 100, ammo: 5, grounded: false };
+        let world = {}, mobs = [], bullets = [], eBullets = [], photons = [];
+        let cam = { x: 0, y: 0 }, atkDir = { x: 0, y: 0 };
 
         const QUESTIONS = [
-            {q: "Où la plante stocke-t-elle son énergie ?", a: ["L'amidon", "Les racines de fer", "Le sel"], r: 0},
-            {q: "Quel % de l'énergie solaire est capté ?", a: ["1%", "50%", "90%"], r: 0},
-            {q: "Le pétrole provient de biomasse datant de...", a: ["Millions d'années", "L'an dernier", "1000 ans"], r: 0}
+            {q: "Quel % de l'énergie solaire est utilisé par les plantes ?", a: ["1%", "10%", "50%", "100%"], r: 0},
+            {q: "Où la plante stocke-t-elle l'énergie ?", a: ["Dans l'amidon", "Dans le sable", "Dans le fer", "Dans l'azote"], r: 0},
+            {q: "Le pétrole est une énergie solaire stockée depuis...", a: ["10 ans", "1000 ans", "Millions d'années", "1 siècle"], r: 2},
+            {q: "Quel gaz est capté lors de la photosynthèse ?", a: ["Oxygène", "CO2", "Azote", "Argon"], r: 1},
+            {q: "Quel pigment permet la photosynthèse ?", a: ["Mélanine", "Hémoglobine", "Chlorophylle", "Carotène"], r: 2},
+            {q: "La photosynthèse transforme l'énergie solaire en énergie...", a: ["Nucléaire", "Chimique", "Électrique", "Mécanique"], r: 1},
+            {q: "Le charbon provient de la transformation de...", a: ["Poissons", "Roches", "Forêts anciennes", "Dinosaures"], r: 2},
+            {q: "Comment appelle-t-on les plantes dans une chaîne ?", a: ["Consommateurs", "Producteurs primaires", "Décomposeurs", "Prédateurs"], r: 1},
+            {q: "Quelle partie de la cellule fait la photosynthèse ?", a: ["Le noyau", "Le chloroplaste", "La vacuole", "La paroi"], r: 1},
+            {q: "L'amidon est un sucre...", a: ["Simple", "Complexe", "Acide", "Salé"], r: 1},
+            {q: "Sans lumière, la plante...", a: ["Grandit plus vite", "Fait plus d'amidon", "Meurt de faim", "Change de couleur"], r: 2},
+            {q: "Le plancton marin peut devenir du...", a: ["Charbon", "Pétrole", "Gaz naturel", "Diamant"], r: 1},
+            {q: "L'énergie solaire non captée par les plantes est...", a: ["Détruite", "Réfléchie ou absorbée", "Gelée", "Stockée"], r: 1},
+            {q: "La biomasse fossile est une source d'énergie...", a: ["Infinie", "Non renouvelable", "Propre", "Instantanée"], r: 1},
+            {q: "La photosynthèse rejette quel gaz ?", a: ["CO2", "Dioxygène (O2)", "Méthane", "Vapeur d'eau"], r: 1}
         ];
 
         function getCol(x) {
-            if (world[x]) return world[x];
-            let col = [];
-            let ground = (x > 4 && x < 18) ? 20 : Math.floor(22 + Math.sin(x * 0.15) * 4);
+            if (world[x]) return world[x].data;
+            let colData = [];
+            let h = (x > 5 && x < 15) ? 20 : Math.floor(22 + Math.sin(x * 0.2) * 3);
             for (let y = 0; y < 80; y++) {
-                if (y === ground) col[y] = 'herbe';
-                else if (y > ground && y < ground + 6) col[y] = 'terre';
-                else if (y >= ground + 6) col[y] = (Math.random() < 0.1 && y > 60) ? 'tile' : 'pierre';
+                if (y === h) colData[y] = 'herbe';
+                else if (y > h && y < h + 6) colData[y] = 'terre';
+                else if (y >= h + 6) colData[y] = (Math.random() < 0.08 && y > 60) ? 'tile' : 'pierre';
             }
-            if (x > 25 && x % 40 === 0) mobs.push({ x: x*TILE_SIZE, y: (ground-2)*TILE_SIZE, w: 60, h: 60, hp: 3, type: 'boss'+(Math.floor(Math.random()*3)+1) });
-            return world[x] = col;
+            world[x] = { data: colData, height: h };
+            return colData;
         }
 
-        function checkCol(px, py, pw, ph) {
-            let x1 = Math.floor(px/TILE_SIZE), x2 = Math.floor((px+pw)/TILE_SIZE);
-            let y1 = Math.floor(py/TILE_SIZE), y2 = Math.floor((py+ph)/TILE_SIZE);
+        function handleSpawning() {
+            spawnTimer++;
+            if (spawnTimer > 150 && mobs.length < 4) {
+                spawnTimer = 0;
+                let side = Math.random() > 0.5 ? 1 : -1;
+                let spawnX = player.x + (side * 500);
+                let gridX = Math.floor(spawnX / TILE);
+                getCol(gridX);
+                let groundY = (world[gridX].height - 6) * TILE;
+                let isBoss = Math.random() < 0.2;
+                mobs.push({
+                    x: spawnX, y: groundY, vx: 0, vy: 0,
+                    w: isBoss ? 80 : 40, h: isBoss ? 80 : 40,
+                    hp: isBoss ? 15 : 3, maxHp: isBoss ? 15 : 3,
+                    type: isBoss ? 'boss' + (Math.floor(Math.random() * 3) + 1) : 'mob',
+                    isBoss: isBoss, dir: side * -1, timer: 0, state: 'patrol'
+                });
+            }
+        }
+
+        function applyPhysics(obj) {
+            obj.vy += GRAVITY;
+            let nx = obj.x + obj.vx;
+            if (!check(nx, obj.y + 2, obj.w, obj.h - 4)) obj.x = nx;
+            else { if (obj !== player) obj.dir *= -1; obj.vx = 0; }
+            let ny = obj.y + obj.vy;
+            let hit = check(obj.x, ny, obj.w, obj.h);
+            if (!hit) { obj.y = ny; obj.grounded = false; }
+            else { if (obj.vy > 0) { obj.y = hit.y - obj.h; obj.grounded = true; } obj.vy = 0; }
+        }
+
+        function check(px, py, pw, ph) {
+            let x1 = Math.floor(px/TILE), x2 = Math.floor((px+pw)/TILE);
+            let y1 = Math.floor(py/TILE), y2 = Math.floor((py+ph)/TILE);
             for (let x = x1; x <= x2; x++) {
                 let col = getCol(x);
-                for (let y = y1; y <= y2; y++) if (col[y]) return { x: x*TILE_SIZE, y: y*TILE_SIZE, type: col[y] };
+                for (let y = y1; y <= y2; y++) if (col[y]) return { x: x*TILE, y: y*TILE };
             }
             return null;
         }
 
-        function update() {
-            if (!gameActive) return;
-            player.vy += 0.8;
-
-            // X avec petite marge de tolérance pour ne pas coller aux murs
-            let nextX = player.x + player.vx;
-            if (!checkCol(nextX, player.y + 2, player.w, player.h - 4)) {
-                player.x = nextX;
-            }
-
-            // Y
-            let nextY = player.y + player.vy;
-            let hit = checkCol(player.x, nextY, player.w, player.h);
-            if (!hit) {
-                player.y = nextY;
-                player.grounded = false;
+        function updateIA(m) {
+            let dist = Math.hypot(m.x - player.x, m.y - player.y);
+            m.state = (dist < 400) ? 'attack' : 'patrol';
+            if (m.state === 'patrol') {
+                m.vx = m.dir * 2;
+                if (check(m.x + m.dir*20, m.y, m.w, m.h) && m.grounded) m.vy = -12;
             } else {
-                if (player.vy > 0) { player.y = hit.y - player.h; player.grounded = true; }
-                player.vy = 0;
-            }
-
-            player.biomass -= 0.03;
-            if (player.biomass <= 0) { player.hp -= 0.01; player.biomass = 0; }
-            
-            // Photons
-            if (Math.random() < 0.05) photons.push({ x: player.x + (Math.random()-0.5)*1000, y: camera.y-50, vy: 4 });
-            photons.forEach((p, i) => {
-                p.y += p.vy;
-                if (Math.hypot(p.x - (player.x+13), p.y - (player.y+22)) < 40) {
-                    player.biomass = Math.min(100, player.biomass + 10);
-                    photons.splice(i, 1);
+                m.dir = player.x > m.x ? 1 : -1;
+                m.vx = m.dir * (m.isBoss ? 3 : 2);
+                if (player.y < m.y - 30 && m.grounded && Math.random() < 0.05) m.vy = -14;
+                if (m.isBoss && m.timer-- <= 0) {
+                    let ang = Math.atan2((player.y+20)-(m.y+m.h/2), (player.x+15)-(m.x+m.w/2));
+                    eBullets.push({x: m.x+m.w/2, y: m.y+m.h/2, vx: Math.cos(ang)*7, vy: Math.sin(ang)*7});
+                    m.timer = 100;
                 }
-            });
+            }
+        }
 
+        function update() {
+            if (!active) return;
+            handleSpawning();
+            applyPhysics(player);
+            mobs.forEach((m, idx) => {
+                applyPhysics(m); updateIA(m);
+                bullets.forEach((b, bi) => {
+                    if (b.x > m.x && b.x < m.x+m.w && b.y > m.y && b.y < m.y+m.h) {
+                        m.hp--; bullets.splice(bi, 1); if(m.hp <= 0) mobs.splice(idx, 1);
+                    }
+                });
+                if (Math.hypot(m.x - player.x, m.y - player.y) < 40) player.hp -= 0.04;
+            });
+            bullets.forEach((b, i) => { b.x += b.vx; b.y += b.vy; b.l--; if(b.l<0) bullets.splice(i,1); });
+            eBullets.forEach((b, i) => { 
+                b.x += b.vx; b.y += b.vy;
+                if (Math.hypot(b.x - (player.x+15), b.y - (player.y+20)) < 25) { player.hp -= 0.5; eBullets.splice(i,1); }
+            });
+            player.biomass -= 0.04;
+            if (player.biomass <= 0) { player.biomass = 0; player.hp -= 0.01; }
+            if (Math.random() < 0.05) photons.push({x: player.x + (Math.random()-0.5)*900, y: cam.y-100, vy: 3.5});
+            photons.forEach((p, i) => { 
+                p.y += p.vy; if (Math.hypot(p.x - (player.x+15), p.y - (player.y+20)) < 45) { player.biomass = Math.min(100, player.biomass + 15); photons.splice(i,1); } 
+            });
+            if (player.hp <= 0) { active = false; alert("GAME OVER ! Relis bien le cours."); location.reload(); }
             updateHUD();
-            if (player.hp <= 0) location.reload();
         }
 
         function loop() {
+            if(!active) return;
             update();
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            camera.x += (player.x - canvas.width/2 - camera.x) * 0.1;
-            camera.y += (player.y - canvas.height/2 - camera.y) * 0.1;
-
-            ctx.save(); ctx.translate(-camera.x, -camera.y);
-            let sX = Math.floor(camera.x/TILE_SIZE)-2;
-            for(let x = sX; x < sX + 25; x++) {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            cam.x += (player.x - canvas.width/2 - cam.x) * 0.1;
+            cam.y += (player.y - canvas.height/2 - cam.y) * 0.1;
+            ctx.drawImage(img.bg, 0, 0, canvas.width, canvas.height);
+            ctx.save(); ctx.translate(-cam.x, -cam.y);
+            let sX = Math.floor(cam.x/TILE)-2;
+            for(let x=sX; x < sX+25; x++) {
                 let c = getCol(x);
-                for(let y=0; y<80; y++) if(c[y]) ctx.drawImage(img[c[y]], x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                for(let y=0; y<80; y++) if(c[y]) ctx.drawImage(img[c[y]], x*TILE, y*TILE, TILE, TILE);
             }
-
-            ctx.fillStyle = "yellow";
-            photons.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 7); ctx.fill(); });
-
-            mobs.forEach((m, i) => {
+            mobs.forEach(m => {
                 ctx.drawImage(img[m.type], m.x, m.y, m.w, m.h);
-                projectiles.forEach((p, pi) => {
-                    if (p.x > m.x && p.x < m.x+m.w && p.y > m.y && p.y < m.y+m.h) { m.hp--; projectiles.splice(pi, 1); if(m.hp<=0) mobs.splice(i,1); }
-                });
+                ctx.fillStyle = "black"; ctx.fillRect(m.x, m.y - 12, m.w, 5);
+                ctx.fillStyle = m.isBoss ? "#9b59b6" : "#e74c3c";
+                ctx.fillRect(m.x, m.y - 12, (m.hp/m.maxHp)*m.w, 5);
             });
-
-            projectiles.forEach((p, i) => {
-                p.x += p.vx; p.y += p.vy; p.life--;
-                ctx.strokeStyle = "white"; ctx.beginPath(); ctx.arc(p.x, p.y, 8, 0, 7); ctx.stroke();
-                if(p.life <= 0) projectiles.splice(i, 1);
-            });
-
+            bullets.forEach(b => { ctx.fillStyle="white"; ctx.beginPath(); ctx.arc(b.x, b.y, 6, 0, 7); ctx.fill(); });
+            eBullets.forEach(b => { ctx.fillStyle="#e74c3c"; ctx.fillRect(b.x-6, b.y-6, 12, 12); });
+            photons.forEach(p => { ctx.fillStyle="#f1c40f"; ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 7); ctx.fill(); });
             ctx.drawImage(img.player, player.x, player.y, player.w, player.h);
             ctx.restore();
-            if(gameActive) requestAnimationFrame(loop);
+            animationFrameId = requestAnimationFrame(loop);
         }
 
         function setupJoy(id, stickId, isMove) {
-            const base = document.getElementById(id), stick = document.getElementById(stickId);
-            base.addEventListener('touchmove', e => {
+            const b = document.getElementById(id), s = document.getElementById(stickId);
+            b.addEventListener('touchmove', e => {
                 e.preventDefault();
-                let r = base.getBoundingClientRect();
-                let dx = e.touches[0].clientX - (r.left + r.width/2), dy = e.touches[0].clientY - (r.top + r.height/2);
+                let rect = b.getBoundingClientRect();
+                let dx = e.touches[0].clientX - (rect.left + 45), dy = e.touches[0].clientY - (rect.top + 45);
                 let d = Math.min(30, Math.hypot(dx, dy)), a = Math.atan2(dy, dx);
-                stick.style.transform = `translate(${Math.cos(a)*d}px, ${Math.sin(a)*d}px)`;
-                if(isMove) player.vx = Math.cos(a)*(d/30)*7; else atkDir = {x: Math.cos(a)*(d/30), y: Math.sin(a)*(d/30)};
+                s.style.transform = `translate(${Math.cos(a)*d}px, ${Math.sin(a)*d}px)`;
+                if(isMove) player.vx = Math.cos(a)*(d/30)*7; else atkDir = {x: Math.cos(a), y: Math.sin(a)};
             });
-            base.addEventListener('touchend', () => { 
-                stick.style.transform = ''; 
-                if(!isMove && player.ammo > 0 && Math.hypot(atkDir.x, atkDir.y) > 0.2) {
-                    projectiles.push({ x: player.x+13, y: player.y+20, vx: atkDir.x*14, vy: atkDir.y*14, life: 40 });
+            b.addEventListener('touchend', () => {
+                s.style.transform = '';
+                if(!isMove && player.ammo > 0 && Math.hypot(atkDir.x, atkDir.y) > 0.1) {
+                    bullets.push({x: player.x+15, y: player.y+20, vx: atkDir.x*13, vy: atkDir.y*13, l: 45});
                     player.ammo--; updateHUD();
-                } else if (isMove) player.vx = 0;
+                } else if(isMove) player.vx = 0;
             });
         }
 
-        setupJoy('joy-move', 'stick-move', true);
-        setupJoy('joy-atk', 'stick-atk', false);
-
-        const doJump = (e) => {
-            e.preventDefault();
-            if(player.grounded) { player.vy = -17; player.grounded = false; }
-        };
-        document.getElementById('jump-btn').addEventListener('touchstart', doJump);
-        document.getElementById('jump-btn').addEventListener('mousedown', doJump);
-
-        function startQuiz() {
-            gameActive = false;
-            document.getElementById('ui-quiz').classList.remove('hidden');
-            let q = QUESTIONS[Math.floor(Math.random()*QUESTIONS.length)];
-            document.getElementById('q-text').innerText = q.q;
-            const box = document.getElementById('q-options'); box.innerHTML = '';
-            q.a.forEach((t, i) => {
-                let d = document.createElement('div'); d.className = 'q-option'; d.innerText = t;
-                d.onclick = () => { 
-                    if(i === q.r) { player.ammo = 5; player.biomass = 100; document.getElementById('ui-quiz').classList.add('hidden'); gameActive = true; loop(); }
-                    else alert("Révision nécessaire !");
-                };
-                box.appendChild(d);
-            });
-        }
+        setupJoy('ctrl-m', 'stk-m', true);
+        setupJoy('ctrl-a', 'stk-a', false);
+        document.getElementById('j-btn').ontouchstart = (e) => { e.preventDefault(); if(player.grounded) player.vy = -16.5; };
 
         function updateHUD() {
-            document.getElementById('hp-ui').innerText = "❤".repeat(Math.max(0, Math.ceil(player.hp)));
-            document.getElementById('ammo-ui').innerText = `ONDES : ${player.ammo}/5`;
-            document.getElementById('reload-btn').style.display = (player.ammo === 0) ? 'inline-block' : 'none';
-            document.getElementById('bio-fill').style.width = player.biomass + "%";
+            document.getElementById('hp').innerText = "❤".repeat(Math.max(0, Math.ceil(player.hp)));
+            document.getElementById('am').innerText = "ONDES: "+player.ammo+"/5";
+            document.getElementById('bio-f').style.width = player.biomass+"%";
+            document.getElementById('rel').style.display = (player.ammo <= 0 || player.hp < 2) ? "block" : "none";
         }
 
-        function openLesson() { document.getElementById('ui-lesson').classList.remove('hidden'); }
-        function closeLesson() { document.getElementById('ui-lesson').classList.add('hidden'); }
-        function startGame() { document.getElementById('ui-start').classList.add('hidden'); gameActive = true; loop(); }
+        function openQuiz() {
+            active = false; 
+            cancelAnimationFrame(animationFrameId); // Stop propre
+            document.getElementById('ui-quiz').classList.remove('hidden');
+            let qIndex = Math.floor(Math.random() * QUESTIONS.length);
+            let q = QUESTIONS[qIndex];
+            document.getElementById('q-txt').innerText = q.q;
+            let ops = document.getElementById('q-ops'); ops.innerHTML = '';
+            q.a.forEach((o, i) => {
+                let d = document.createElement('div'); d.className='q-option'; d.innerText=o;
+                d.onclick = (e) => { 
+                    e.stopPropagation();
+                    if(i === q.r) { 
+                        player.ammo = 5; 
+                        player.hp = Math.min(5, player.hp + 2);
+                        alert("BRAVO ! +5 Munitions et +2 Vie");
+                    } else { 
+                        alert("MAUVAIS CHOIX ! Pas de bonus."); 
+                    }
+                    document.getElementById('ui-quiz').classList.add('hidden');
+                    active = true; 
+                    loop(); 
+                };
+                ops.appendChild(d);
+            });
+        }
+
+        function toggleLesson(show) { document.getElementById('ui-lesson').classList.toggle('hidden', !show); }
+        function startGame() { document.getElementById('ui-start').classList.add('hidden'); active = true; loop(); }
         window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
         window.onresize();
     </script>
