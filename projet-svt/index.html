@@ -3,56 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SVT-Craft : Édition Ultime</title>
+    <title>SVT-CRAFT : Énergie & Biosphère</title>
     <style>
-        body { margin: 0; overflow: hidden; background: #2c3e50; font-family: 'Segoe UI', sans-serif; touch-action: none; }
+        :root { --primary: #2ecc71; --dark: #2c3e50; --danger: #ff4757; --accent: #f1c40f; }
+        body { margin: 0; overflow: hidden; background: #1a1a1a; font-family: 'Segoe UI', sans-serif; touch-action: none; color: white; }
         canvas { display: block; background: #87CEEB; }
         
-        /* --- UI ACCUEIL --- */
-        #ui-overlay {
-            position: absolute; inset: 0; z-index: 100;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: linear-gradient(135deg, #1abc9c, #3498db);
-            transition: transform 0.5s ease-in-out;
-        }
-        .ui-hidden { transform: translateY(-100%); }
-        .menu-btn {
-            background: rgba(255,255,255,0.2); border: 2px solid white; color: white;
-            padding: 15px 40px; margin: 10px; border-radius: 50px; cursor: pointer; 
-            font-weight: bold; font-size: 1.2em; backdrop-filter: blur(5px);
-        }
+        .overlay { position: absolute; inset: 0; z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.85); padding: 20px; text-align: center; }
+        .hidden { display: none !important; }
+        
+        .menu-btn { background: var(--primary); border: none; color: white; padding: 15px 30px; margin: 10px; border-radius: 30px; cursor: pointer; font-weight: bold; width: 250px; box-shadow: 0 4px #27ae60; transition: transform 0.1s; }
+        .menu-btn:active { transform: translateY(4px); box-shadow: none; }
+        
+        /* STYLE DU QUIZ */
+        #ui-quiz h2 { font-size: 1.5em; margin-bottom: 20px; }
+        .q-option { background: rgba(255,255,255,0.15); padding: 15px; margin: 8px; border-radius: 12px; cursor: pointer; width: 85%; max-width: 400px; border: 2px solid rgba(255,255,255,0.1); }
+        .q-option:hover { background: var(--primary); border-color: white; }
 
-        /* --- HUD --- */
-        .hud { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; pointer-events: none; z-index: 50; }
-        .stats-box { background: rgba(0,0,0,0.6); padding: 12px; border-radius: 10px; pointer-events: auto; color: white; font-weight: bold; }
-        #hp-display { color: #ff4757; font-size: 1.4em; }
+        /* MODAL COURS */
+        #lesson-content { background: var(--dark); border: 3px solid var(--primary); padding: 25px; border-radius: 20px; max-width: 500px; text-align: left; line-height: 1.6; }
 
-        /* --- CONTROLES MOBILES --- */
-        .controls { position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: space-between; padding: 0 30px; box-sizing: border-box; z-index: 60; pointer-events: none; }
-        .joy-base { width: 110px; height: 110px; background: rgba(255,255,255,0.1); border: 2px solid white; border-radius: 50%; position: relative; pointer-events: auto; }
-        #joy-stick { width: 45px; height: 45px; background: white; border-radius: 50%; position: absolute; left: 32.5px; top: 32.5px; pointer-events: none; }
-        #jump-btn { width: 85px; height: 85px; background: rgba(46, 204, 113, 0.5); border: 2px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; pointer-events: auto; color: white; font-weight: bold; }
+        /* HUD */
+        .hud { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; pointer-events: none; z-index: 50; }
+        .stats-panel { background: rgba(0,0,0,0.8); padding: 12px; border-radius: 12px; pointer-events: auto; border: 2px solid #444; min-width: 140px; }
+        .bio-container { width: 100%; height: 8px; background: #333; border-radius: 4px; margin-top: 5px; overflow: hidden; }
+        #bio-fill { width: 100%; height: 100%; background: var(--primary); transition: width 0.3s; }
+
+        /* CONTROLES */
+        .controls { position: absolute; bottom: 30px; width: 100%; display: flex; justify-content: space-around; align-items: center; z-index: 60; pointer-events: none; }
+        .joy-base { width: 90px; height: 90px; background: rgba(255,255,255,0.1); border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; position: relative; pointer-events: auto; }
+        .joy-stick { width: 35px; height: 35px; background: white; border-radius: 50%; position: absolute; left: 27.5px; top: 27.5px; }
+        #jump-btn { width: 80px; height: 80px; background: rgba(46, 204, 113, 0.6); border: 3px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; pointer-events: auto; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div id="ui-overlay">
-        <h1 style="color:white; text-align: center; font-size: 3em; text-shadow: 2px 2px 10px rgba(0,0,0,0.3);">SVT-CRAFT</h1>
-        <p style="color: white; margin-bottom: 20px; font-style: italic;">Simulateur d'écosystème infini</p>
-        <div class="menu-btn" onclick="startGame()">DÉMARRER</div>
+    <div id="ui-start" class="overlay">
+        <h1 style="color: var(--primary); font-size: 3em; margin-bottom: 10px;">SVT-CRAFT</h1>
+        <button class="menu-btn" onclick="startGame()">JOUER</button>
+        <button class="menu-btn" style="background:#3498db; box-shadow: 0 4px #2980b9;" onclick="openLesson()">COURS</button>
+    </div>
+
+    <div id="ui-lesson" class="overlay hidden">
+        <div id="lesson-content">
+            <h2 style="color:var(--primary); margin-top:0;">📚 Le Flux d'Énergie</h2>
+            <p>• <b>Photosynthèse :</b> Les plantes captent 1% de l'énergie solaire.</p>
+            <p>• <b>Amidon :</b> Molécule de stockage de l'énergie chimique.</p>
+            <p>• <b>Fossiles :</b> Le pétrole/charbon est de la biomasse solaire stockée depuis des millions d'années.</p>
+            <center><button class="menu-btn" onclick="closeLesson()">J'AI COMPRIS</button></center>
+        </div>
+    </div>
+
+    <div id="ui-quiz" class="overlay hidden">
+        <h2 id="q-text">Question ?</h2>
+        <div id="q-options" style="width: 100%; display: flex; flex-direction: column; align-items: center;"></div>
     </div>
 
     <div class="hud">
-        <div class="stats-box">
-            <div id="hp-display">❤❤❤❤❤</div>
-            <div style="font-size: 0.8em; margin-top: 4px;">Exploration : <span id="dist-txt">0</span>m</div>
+        <div class="stats-panel">
+            <div id="hp-ui" style="color:var(--danger); font-size:1.2em;">❤❤❤❤❤</div>
+            <div class="bio-container"><div id="bio-fill"></div></div>
         </div>
-        <button class="stats-box" style="border: 1px solid white; cursor: pointer;" onclick="location.reload()">MENU</button>
+        <div class="stats-panel" style="text-align:right;">
+            <div id="ammo-ui" style="color:var(--accent); font-weight:bold;">ONDES : 5/5</div>
+            <button id="reload-btn" style="margin-top:5px; background:var(--accent); border:none; border-radius:5px; padding:5px 10px; cursor:pointer; display:none;" onclick="startQuiz()">RECHARGER</button>
+        </div>
     </div>
 
     <div class="controls">
-        <div class="joy-base" id="joy-zone"><div id="joy-stick"></div></div>
+        <div class="joy-base" id="joy-move"><div class="joy-stick" id="stick-move"></div></div>
         <div id="jump-btn">SAUT</div>
+        <div class="joy-base" id="joy-atk"><div class="joy-stick" id="stick-atk"></div></div>
     </div>
 
     <canvas id="gameCanvas"></canvas>
@@ -60,191 +81,186 @@
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        let gameActive = false;
         const TILE_SIZE = 48;
-        const DETECT_RADIUS = 6 * TILE_SIZE;
-        
-        let worldData = {}; 
-        let mobs = [];
-        let player = { x: 200, y: 0, w: 26, h: 42, vx: 0, vy: 0, speed: 5, grounded: false, health: 5 };
-        let camera = { x: 0, y: 0 };
+        let gameActive = false;
 
         const img = { 
             player: new Image(), herbe: new Image(), terre: new Image(), 
-            pierre: new Image(), mob: new Image() 
+            pierre: new Image(), tile: new Image(), 
+            boss1: new Image(), boss2: new Image(), boss3: new Image() 
         };
-        // Chargement des assets
         img.player.src = 'assets/sprites/player.png';
         img.herbe.src = 'assets/backgrounds/herbe.png';
         img.terre.src = 'assets/backgrounds/terre.png';
         img.pierre.src = 'assets/backgrounds/pierre.png';
-        img.mob.src = 'assets/backgrounds/mob.png';
+        img.tile.src = 'assets/backgrounds/tile.png';
+        img.boss1.src = 'assets/sprites/boss1.png';
+        img.boss2.src = 'assets/sprites/boss2.png';
+        img.boss3.src = 'assets/sprites/boss3.png';
 
-        // --- GÉNÉRATION PROCÉDURALE ---
-        function getColumn(x) {
-            if (worldData[x]) return worldData[x];
+        // Collision box réduite pour éviter les blocages (26px de large pour 48px de bloc)
+        let player = { x: 300, y: 100, w: 26, h: 44, vx: 0, vy: 0, hp: 5, ammo: 5, biomass: 100, grounded: false };
+        let projectiles = [], photons = [], mobs = [], world = {};
+        let camera = { x: 0, y: 0 }, atkDir = { x: 0, y: 0 };
+
+        const QUESTIONS = [
+            {q: "Où la plante stocke-t-elle son énergie ?", a: ["L'amidon", "Les racines de fer", "Le sel"], r: 0},
+            {q: "Quel % de l'énergie solaire est capté ?", a: ["1%", "50%", "90%"], r: 0},
+            {q: "Le pétrole provient de biomasse datant de...", a: ["Millions d'années", "L'an dernier", "1000 ans"], r: 0}
+        ];
+
+        function getCol(x) {
+            if (world[x]) return world[x];
             let col = [];
-            let ground = Math.floor(25 + Math.sin(x * 0.1) * 5 + Math.sin(x * 0.3) * 2);
-            for (let y = 0; y < 70; y++) {
+            let ground = (x > 4 && x < 18) ? 20 : Math.floor(22 + Math.sin(x * 0.15) * 4);
+            for (let y = 0; y < 80; y++) {
                 if (y === ground) col[y] = 'herbe';
-                else if (y > ground && y < ground + 8) col[y] = 'terre';
-                else if (y >= ground + 8) col[y] = 'pierre';
-                else col[y] = null;
+                else if (y > ground && y < ground + 6) col[y] = 'terre';
+                else if (y >= ground + 6) col[y] = (Math.random() < 0.1 && y > 60) ? 'tile' : 'pierre';
             }
-            worldData[x] = col;
-            // Apparition mobs
-            if (Math.random() < 0.04 && Math.abs(x) > 10) {
-                mobs.push({
-                    x: x * TILE_SIZE, y: (ground - 1) * TILE_SIZE,
-                    w: 32, h: 32, vx: 0, vy: 0, isMob: true,
-                    timer: 0, dir: 1, grounded: false
-                });
-            }
-            return col;
+            if (x > 25 && x % 40 === 0) mobs.push({ x: x*TILE_SIZE, y: (ground-2)*TILE_SIZE, w: 60, h: 60, hp: 3, type: 'boss'+(Math.floor(Math.random()*3)+1) });
+            return world[x] = col;
         }
 
-        // --- PHYSIQUE & AUTO-JUMP ---
-        function checkCollision(px, py, pw, ph) {
-            let x1 = Math.floor(px / TILE_SIZE), x2 = Math.floor((px + pw) / TILE_SIZE);
-            let y1 = Math.floor(py / TILE_SIZE), y2 = Math.floor((py + ph) / TILE_SIZE);
+        function checkCol(px, py, pw, ph) {
+            let x1 = Math.floor(px/TILE_SIZE), x2 = Math.floor((px+pw)/TILE_SIZE);
+            let y1 = Math.floor(py/TILE_SIZE), y2 = Math.floor((py+ph)/TILE_SIZE);
             for (let x = x1; x <= x2; x++) {
-                let col = getColumn(x);
-                for (let y = y1; y <= y2; y++) {
-                    if (col[y]) return { x: x * TILE_SIZE, y: y * TILE_SIZE };
-                }
+                let col = getCol(x);
+                for (let y = y1; y <= y2; y++) if (col[y]) return { x: x*TILE_SIZE, y: y*TILE_SIZE, type: col[y] };
             }
             return null;
         }
 
-        function applyPhysics(obj) {
-            obj.vy += 0.6; // Gravité
-            
-            // X + AUTO-JUMP
-            let nextX = obj.x + obj.vx;
-            let hX = checkCollision(nextX, obj.y, obj.w, obj.h);
-            
-            if (hX) {
-                // Test si on peut monter d'un bloc (Auto-jump)
-                let stepUp = checkCollision(nextX, obj.y - TILE_SIZE, obj.w, obj.h);
-                if (!stepUp) {
-                    obj.y -= TILE_SIZE;
-                    obj.x = nextX;
-                } else {
-                    if (obj.vx > 0) obj.x = hX.x - obj.w - 0.1;
-                    else if (obj.vx < 0) obj.x = hX.x + TILE_SIZE + 0.1;
-                    if (obj.isMob && obj.grounded) obj.vy = -8; 
-                }
-            } else {
-                obj.x = nextX;
+        function update() {
+            if (!gameActive) return;
+            player.vy += 0.8;
+
+            // X avec petite marge de tolérance pour ne pas coller aux murs
+            let nextX = player.x + player.vx;
+            if (!checkCol(nextX, player.y + 2, player.w, player.h - 4)) {
+                player.x = nextX;
             }
 
             // Y
-            obj.y += obj.vy;
-            obj.grounded = false;
-            let hY = checkCollision(obj.x, obj.y, obj.w, obj.h);
-            if (hY) {
-                if (obj.vy > 0) { 
-                    obj.y = hY.y - obj.h - 0.1; 
-                    if (obj.vy > 18 && !obj.isMob) { player.health--; updateUI(); }
-                    obj.vy = 0; obj.grounded = true; 
-                } else { 
-                    obj.y = hY.y + TILE_SIZE + 0.1; 
-                    obj.vy = 0; 
-                }
+            let nextY = player.y + player.vy;
+            let hit = checkCol(player.x, nextY, player.w, player.h);
+            if (!hit) {
+                player.y = nextY;
+                player.grounded = false;
+            } else {
+                if (player.vy > 0) { player.y = hit.y - player.h; player.grounded = true; }
+                player.vy = 0;
             }
+
+            player.biomass -= 0.03;
+            if (player.biomass <= 0) { player.hp -= 0.01; player.biomass = 0; }
+            
+            // Photons
+            if (Math.random() < 0.05) photons.push({ x: player.x + (Math.random()-0.5)*1000, y: camera.y-50, vy: 4 });
+            photons.forEach((p, i) => {
+                p.y += p.vy;
+                if (Math.hypot(p.x - (player.x+13), p.y - (player.y+22)) < 40) {
+                    player.biomass = Math.min(100, player.biomass + 10);
+                    photons.splice(i, 1);
+                }
+            });
+
+            updateHUD();
+            if (player.hp <= 0) location.reload();
         }
 
-        // --- IA MOBS ---
-        function updateMobs() {
-            mobs = mobs.filter(m => Math.abs(m.x - player.x) < 1500);
-            mobs.forEach(m => {
-                let dist = Math.hypot(player.x - m.x, player.y - m.y);
-                if (dist < DETECT_RADIUS) {
-                    m.vx = (player.x > m.x) ? 2.2 : -2.2;
-                } else {
-                    m.timer--;
-                    if (m.timer <= 0) {
-                        m.dir = Math.random() > 0.5 ? 1 : -1;
-                        m.timer = 60 + Math.random() * 100;
-                    }
-                    m.vx = m.dir * 0.8;
-                }
-                applyPhysics(m);
+        function loop() {
+            update();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            camera.x += (player.x - canvas.width/2 - camera.x) * 0.1;
+            camera.y += (player.y - canvas.height/2 - camera.y) * 0.1;
+
+            ctx.save(); ctx.translate(-camera.x, -camera.y);
+            let sX = Math.floor(camera.x/TILE_SIZE)-2;
+            for(let x = sX; x < sX + 25; x++) {
+                let c = getCol(x);
+                for(let y=0; y<80; y++) if(c[y]) ctx.drawImage(img[c[y]], x*TILE_SIZE, y*TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            }
+
+            ctx.fillStyle = "yellow";
+            photons.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 7); ctx.fill(); });
+
+            mobs.forEach((m, i) => {
+                ctx.drawImage(img[m.type], m.x, m.y, m.w, m.h);
+                projectiles.forEach((p, pi) => {
+                    if (p.x > m.x && p.x < m.x+m.w && p.y > m.y && p.y < m.y+m.h) { m.hp--; projectiles.splice(pi, 1); if(m.hp<=0) mobs.splice(i,1); }
+                });
+            });
+
+            projectiles.forEach((p, i) => {
+                p.x += p.vx; p.y += p.vy; p.life--;
+                ctx.strokeStyle = "white"; ctx.beginPath(); ctx.arc(p.x, p.y, 8, 0, 7); ctx.stroke();
+                if(p.life <= 0) projectiles.splice(i, 1);
+            });
+
+            ctx.drawImage(img.player, player.x, player.y, player.w, player.h);
+            ctx.restore();
+            if(gameActive) requestAnimationFrame(loop);
+        }
+
+        function setupJoy(id, stickId, isMove) {
+            const base = document.getElementById(id), stick = document.getElementById(stickId);
+            base.addEventListener('touchmove', e => {
+                e.preventDefault();
+                let r = base.getBoundingClientRect();
+                let dx = e.touches[0].clientX - (r.left + r.width/2), dy = e.touches[0].clientY - (r.top + r.height/2);
+                let d = Math.min(30, Math.hypot(dx, dy)), a = Math.atan2(dy, dx);
+                stick.style.transform = `translate(${Math.cos(a)*d}px, ${Math.sin(a)*d}px)`;
+                if(isMove) player.vx = Math.cos(a)*(d/30)*7; else atkDir = {x: Math.cos(a)*(d/30), y: Math.sin(a)*(d/30)};
+            });
+            base.addEventListener('touchend', () => { 
+                stick.style.transform = ''; 
+                if(!isMove && player.ammo > 0 && Math.hypot(atkDir.x, atkDir.y) > 0.2) {
+                    projectiles.push({ x: player.x+13, y: player.y+20, vx: atkDir.x*14, vy: atkDir.y*14, life: 40 });
+                    player.ammo--; updateHUD();
+                } else if (isMove) player.vx = 0;
             });
         }
 
-        // --- CONTROLES ---
-        let joyTouchId = null;
-        const joyZone = document.getElementById('joy-zone');
-        const joyStick = document.getElementById('joy-stick');
+        setupJoy('joy-move', 'stick-move', true);
+        setupJoy('joy-atk', 'stick-atk', false);
 
-        joyZone.addEventListener('touchstart', e => { joyTouchId = e.changedTouches[0].identifier; });
-        window.addEventListener('touchmove', e => {
-            for(let t of e.changedTouches) {
-                if(t.identifier === joyTouchId) {
-                    let r = joyZone.getBoundingClientRect();
-                    let dx = t.clientX - (r.left + r.width/2);
-                    let move = Math.max(-35, Math.min(35, dx));
-                    joyStick.style.transform = `translateX(${move}px)`;
-                    player.vx = (move / 35) * player.speed;
-                }
-            }
-        });
-        window.addEventListener('touchend', e => {
-            for(let t of e.changedTouches) {
-                if(t.identifier === joyTouchId) { joyTouchId = null; player.vx = 0; joyStick.style.transform = `none`; }
-            }
-        });
-        document.getElementById('jump-btn').addEventListener('touchstart', () => { if(player.grounded) player.vy = -13; });
+        const doJump = (e) => {
+            e.preventDefault();
+            if(player.grounded) { player.vy = -17; player.grounded = false; }
+        };
+        document.getElementById('jump-btn').addEventListener('touchstart', doJump);
+        document.getElementById('jump-btn').addEventListener('mousedown', doJump);
 
-        // --- RENDU & UI ---
-        function updateUI() {
-            document.getElementById('hp-display').innerText = "❤".repeat(Math.max(0, player.health));
-            if (player.health <= 0) { alert("Game Over !"); location.reload(); }
+        function startQuiz() {
+            gameActive = false;
+            document.getElementById('ui-quiz').classList.remove('hidden');
+            let q = QUESTIONS[Math.floor(Math.random()*QUESTIONS.length)];
+            document.getElementById('q-text').innerText = q.q;
+            const box = document.getElementById('q-options'); box.innerHTML = '';
+            q.a.forEach((t, i) => {
+                let d = document.createElement('div'); d.className = 'q-option'; d.innerText = t;
+                d.onclick = () => { 
+                    if(i === q.r) { player.ammo = 5; player.biomass = 100; document.getElementById('ui-quiz').classList.add('hidden'); gameActive = true; loop(); }
+                    else alert("Révision nécessaire !");
+                };
+                box.appendChild(d);
+            });
         }
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.save();
-            ctx.translate(-Math.round(camera.x), -Math.round(camera.y));
-
-            let startX = Math.floor(camera.x / TILE_SIZE) - 1;
-            let endX = startX + Math.ceil(canvas.width / TILE_SIZE) + 2;
-            
-            for (let x = startX; x < endX; x++) {
-                let col = getColumn(x);
-                for (let y = 0; y < 70; y++) {
-                    if (col[y]) ctx.drawImage(img[col[y]], x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                }
-            }
-
-            mobs.forEach(m => ctx.drawImage(img.mob, m.x, m.y, m.w, m.h));
-            ctx.drawImage(img.player, player.x, player.y, player.w, player.h);
-
-            ctx.restore();
-
-            if (gameActive) {
-                applyPhysics(player);
-                updateMobs();
-                camera.x += (player.x - canvas.width / 2 - camera.x) * 0.1;
-                camera.y += (player.y - canvas.height / 2 - camera.y) * 0.1;
-                document.getElementById('dist-txt').innerText = Math.max(0, Math.floor(player.x / TILE_SIZE));
-                requestAnimationFrame(draw);
-            }
+        function updateHUD() {
+            document.getElementById('hp-ui').innerText = "❤".repeat(Math.max(0, Math.ceil(player.hp)));
+            document.getElementById('ammo-ui').innerText = `ONDES : ${player.ammo}/5`;
+            document.getElementById('reload-btn').style.display = (player.ammo === 0) ? 'inline-block' : 'none';
+            document.getElementById('bio-fill').style.width = player.biomass + "%";
         }
 
-        function startGame() { 
-            document.getElementById('ui-overlay').classList.add('ui-hidden'); 
-            gameActive = true; 
-            updateUI();
-            draw(); 
-        }
-
-        window.addEventListener('resize', () => { 
-            canvas.width = window.innerWidth; 
-            canvas.height = window.innerHeight; 
-        });
-        window.dispatchEvent(new Event('resize'));
+        function openLesson() { document.getElementById('ui-lesson').classList.remove('hidden'); }
+        function closeLesson() { document.getElementById('ui-lesson').classList.add('hidden'); }
+        function startGame() { document.getElementById('ui-start').classList.add('hidden'); gameActive = true; loop(); }
+        window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+        window.onresize();
     </script>
 </body>
 </html>
