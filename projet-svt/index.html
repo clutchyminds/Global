@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SVT-CRAFT : Le Flux d'Énergie</title>
+    <title>SVT-CRAFT : Énergie & Échelles</title>
     <style>
         body { margin: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; touch-action: none; color: white; }
         canvas { display: block; }
@@ -17,19 +17,19 @@
         .btn-blue { background: #2980b9; border-bottom-color: #1c5982; }
 
         /* LE COURS DÉTAILLÉ */
-        #lesson-box { background: #2c3e50; border: 4px solid #2ecc71; border-radius: 15px; max-width: 600px; max-height: 80vh; overflow-y: auto; text-align: left; padding: 30px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        #lesson-box { background: #2c3e50; border: 4px solid #2ecc71; border-radius: 15px; max-width: 700px; max-height: 85vh; overflow-y: auto; text-align: left; padding: 30px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
         #lesson-box h2 { color: #2ecc71; text-align: center; margin-top: 0; text-transform: uppercase; }
-        .section-title { color: #f1c40f; font-weight: bold; margin-top: 15px; display: block; text-decoration: underline; }
-        .lesson-text { font-size: 0.95em; line-height: 1.5; color: #ecf0f1; }
+        .section-title { color: #f1c40f; font-weight: bold; margin-top: 20px; display: block; text-decoration: underline; }
+        .lesson-text { font-size: 0.95em; line-height: 1.6; color: #ecf0f1; }
         
-        /* HUD & QUIZ */
+        /* NOTIFICATIONS */
+        #round-notif { position: absolute; top: 20%; width: 100%; text-align: center; font-size: 5em; color: #f1c40f; font-weight: bold; text-shadow: 4px 4px black; pointer-events: none; opacity: 0; transition: opacity 0.5s; z-index: 200; }
+
+        /* HUD */
         .hud { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; pointer-events: none; z-index: 50; }
         .stats { background: rgba(0,0,0,0.8); padding: 12px; border: 2px solid #555; border-radius: 10px; }
-        .bar { width: 120px; height: 12px; background: #333; margin-top: 8px; border-radius: 6px; overflow: hidden; border: 1px solid #777; }
-        #bio-f { height: 100%; background: #2ecc71; width: 100%; transition: 0.3s; }
-        
         #q-ops { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 600px; pointer-events: auto; }
-        .q-option { background: #34495e; padding: 15px; border: 2px solid #5d6d7e; cursor: pointer; border-radius: 10px; font-weight: bold; font-size: 0.9em; transition: 0.2s; color: white; }
+        .q-option { background: #34495e; padding: 15px; border: 2px solid #5d6d7e; cursor: pointer; border-radius: 10px; font-weight: bold; transition: 0.2s; color: white; }
         .q-option:active { background: #2ecc71; transform: scale(0.95); }
 
         /* CONTRÔLES MOBILE */
@@ -41,24 +41,31 @@
 </head>
 <body>
 
+    <div id="round-notif">ROUND 1</div>
+
     <div id="ui-start" class="overlay">
-        <h1 style="font-size: 3em; color: #2ecc71; margin-bottom: 0;">SVT-CRAFT</h1>
-        <p style="margin-bottom: 30px; color: #bdc3c7;">Énergie & Biosphère</p>
-        <button class="btn" onclick="startGame()">COMMENCER</button>
-        <button class="btn btn-blue" onclick="toggleLesson(true)">LIRE LE COURS</button>
+        <h1 style="font-size: 3.5em; color: #2ecc71; margin: 0;">SVT-CRAFT</h1>
+        <p style="color: #bdc3c7; margin-bottom: 20px;">Échelles de la Photosynthèse - Mode Survie</p>
+        <button class="btn" onclick="startGame()">DÉFENDRE LA BIOSPHÈRE</button>
+        <button class="btn btn-blue" onclick="toggleLesson(true)">RÉVISER LE COURS</button>
     </div>
 
     <div id="ui-lesson" class="overlay hidden">
         <div id="lesson-box">
-            <h2>Cours : Flux d'Énergie</h2>
+            <h2>Expertise : La Photosynthèse à toutes les échelles</h2>
             <div class="lesson-text">
-                <span class="section-title">1. L'Entrée de l'Énergie</span>
-                La Terre reçoit une immense quantité d'énergie solaire. Cependant, les végétaux chlorophylliens n'utilisent qu'environ **1%** de cette puissance pour la **photosynthèse**. 
+                <span class="section-title">1. L'Échelle Mondiale (Planétaire)</span>
+                À l'échelle de la planète, seule une infime fraction de l'énergie solaire est captée. Environ **0,1% de l'énergie solaire totale** est absorbée par les organismes chlorophylliens. Ce sont des **producteurs primaires** : ils utilisent cette énergie pour fabriquer leur **biomasse** en réalisant la photosynthèse.
+
+                <span class="section-title">2. L'Échelle de la Feuille</span>
+                Au niveau d'une feuille, seulement **1% de l'énergie lumineuse incidente** est utilisée pour la photosynthèse. Le reste est soit diffusé, soit absorbé (provoquant échauffement et évapotranspiration). Les cellules utilisent des **pigments photosynthétiques** dont le spectre d'absorption coïncide avec le spectre d'action photosynthétique.
+
                 
-                <span class="section-title">2. La Photosynthèse</span>
-                Ce processus convertit l'énergie lumineuse en **énergie chimique**. Cette énergie est stockée sous forme d'**amidon**.
-                <span class="section-title">3. Le Stockage Fossile</span>
-                La biomasse enfouie peut se transformer, après des millions d'années, en **pétrole, gaz ou charbon**.
+
+                <span class="section-title">3. Le devenir des produits</span>
+                La photosynthèse transforme la matière minérale en matière organique (stockée sous forme d'**amidon**). Cette énergie est ensuite :
+                * Utilisée par les **producteurs secondaires** (consommateurs) via le métabolisme (**respiration ou fermentation**).
+                * Stockée durant des millions d'années sous forme de **combustibles fossiles** (pétrole, gaz, charbon) s'ils échappent à la décomposition.
             </div>
             <center><button class="btn" style="margin-top:20px;" onclick="toggleLesson(false)">RETOUR</button></center>
         </div>
@@ -67,17 +74,17 @@
     <div id="ui-quiz" class="overlay hidden">
         <h2 id="q-txt" style="color:#f1c40f; margin-bottom:20px;">Question de SVT</h2>
         <div id="q-ops"></div>
-        <p style="margin-top:20px; font-size:0.8em; color:#bdc3c7;">Bonne réponse = +5 Munitions & +2 Vies</p>
     </div>
 
     <div class="hud">
         <div class="stats">
             <div id="hp" style="color:#e74c3c; font-size: 1.2em; letter-spacing: 3px;">❤❤❤❤❤</div>
-            <div class="bar"><div id="bio-f"></div></div>
+            <div id="score" style="color:#2ecc71; font-weight:bold; margin-top:5px;">SCORE: 0</div>
         </div>
         <div class="stats" style="text-align:right; pointer-events: auto;">
-            <div id="am" style="color:#f1c40f; font-weight:bold;">ONDES: 5/5</div>
-            <button id="rel" class="btn" style="width:auto; padding:5px 15px; display:none; font-size:0.8em; position:relative; z-index:200;" onclick="openQuiz()">RECHARGER (QUIZ)</button>
+            <div id="rnd-display" style="color:#f1c40f; font-weight:bold;">ROUND: 1</div>
+            <div id="am" style="color:#fff; font-weight:bold;">ONDES: 5/5</div>
+            <button id="rel" class="btn" style="width:auto; padding:5px 15px; display:none; font-size:0.8em;" onclick="openQuiz()">RÉVISER (RECHARGE)</button>
         </div>
     </div>
 
@@ -95,13 +102,19 @@
         const TILE = 48;
         const GRAVITY = 0.8;
         let active = false;
-        let spawnTimer = 0;
         let animationFrameId;
 
-        const img = {
+        // Variables de progression
+        let round = 1;
+        let score = 0;
+        let mobsSpawnedInRound = 0;
+        let spawnRate = 150;
+        let spawnTimer = 0;
+
+        const img = { 
             player: new Image(), herbe: new Image(), terre: new Image(), 
             pierre: new Image(), tile: new Image(), mob: new Image(),
-            boss1: new Image(), boss2: new Image(), boss3: new Image(), bg: new Image()
+            boss1: new Image(), boss2: new Image(), boss3: new Image(), bg: new Image() 
         };
         img.player.src = 'assets/sprites/player.png';
         img.herbe.src = 'assets/backgrounds/herbe.png';
@@ -115,58 +128,72 @@
         img.bg.src = 'assets/backgrounds/arrière-plan.png';
 
         let player = { x: 400, y: 100, w: 28, h: 42, vx: 0, vy: 0, hp: 5, maxHp: 5, biomass: 100, ammo: 5, grounded: false };
-        let world = {}, mobs = [], bullets = [], eBullets = [], photons = [];
+        let world = {}, mobs = [], bullets = [], photons = [];
         let cam = { x: 0, y: 0 }, atkDir = { x: 0, y: 0 };
 
         const QUESTIONS = [
-            {q: "Quel % de l'énergie solaire est utilisé par les plantes ?", a: ["1%", "10%", "50%", "100%"], r: 0},
-            {q: "Où la plante stocke-t-elle l'énergie ?", a: ["Dans l'amidon", "Dans le sable", "Dans le fer", "Dans l'azote"], r: 0},
-            {q: "Le pétrole est une énergie solaire stockée depuis...", a: ["10 ans", "1000 ans", "Millions d'années", "1 siècle"], r: 2},
-            {q: "Quel gaz est capté lors de la photosynthèse ?", a: ["Oxygène", "CO2", "Azote", "Argon"], r: 1},
-            {q: "Quel pigment permet la photosynthèse ?", a: ["Mélanine", "Hémoglobine", "Chlorophylle", "Carotène"], r: 2},
-            {q: "La photosynthèse transforme l'énergie solaire en énergie...", a: ["Nucléaire", "Chimique", "Électrique", "Mécanique"], r: 1},
-            {q: "Le charbon provient de la transformation de...", a: ["Poissons", "Roches", "Forêts anciennes", "Dinosaures"], r: 2},
-            {q: "Comment appelle-t-on les plantes dans une chaîne ?", a: ["Consommateurs", "Producteurs primaires", "Décomposeurs", "Prédateurs"], r: 1},
-            {q: "Quelle partie de la cellule fait la photosynthèse ?", a: ["Le noyau", "Le chloroplaste", "La vacuole", "La paroi"], r: 1},
-            {q: "L'amidon est un sucre...", a: ["Simple", "Complexe", "Acide", "Salé"], r: 1},
-            {q: "Sans lumière, la plante...", a: ["Grandit plus vite", "Fait plus d'amidon", "Meurt de faim", "Change de couleur"], r: 2},
-            {q: "Le plancton marin peut devenir du...", a: ["Charbon", "Pétrole", "Gaz naturel", "Diamant"], r: 1},
-            {q: "L'énergie solaire non captée par les plantes est...", a: ["Détruite", "Réfléchie ou absorbée", "Gelée", "Stockée"], r: 1},
-            {q: "La biomasse fossile est une source d'énergie...", a: ["Infinie", "Non renouvelable", "Propre", "Instantanée"], r: 1},
-            {q: "La photosynthèse rejette quel gaz ?", a: ["CO2", "Dioxygène (O2)", "Méthane", "Vapeur d'eau"], r: 1}
+            {q: "À l'échelle mondiale, quel % de l'énergie solaire est utilisé par les végétaux ?", a: ["0,1%", "1%", "10%", "50%"], r: 0},
+            {q: "À l'échelle de la feuille, quel % est utilisé pour la photosynthèse ?", a: ["0,1%", "1%", "10%", "99%"], r: 1},
+            {q: "Sous quelle forme les producteurs primaires stockent-ils l'énergie ?", a: ["Amidon", "Pétrole", "Chaleur", "Sels minéraux"], r: 0},
+            {q: "Le pétrole est une énergie solaire stockée depuis...", a: ["1000 ans", "Millions d'années", "10 ans", "Un siècle"], r: 1},
+            {q: "Quel processus libère l'énergie de la matière organique chez les animaux ?", a: ["Photosynthèse", "Respiration / Fermentation", "Évapotranspiration", "Fusion"], r: 1}
         ];
 
         function getCol(x) {
             if (world[x]) return world[x].data;
             let colData = [];
-            let h = (x > 5 && x < 15) ? 20 : Math.floor(22 + Math.sin(x * 0.2) * 3);
+            let h = Math.floor(22 + Math.sin(x * 0.2) * 3);
             for (let y = 0; y < 80; y++) {
                 if (y === h) colData[y] = 'herbe';
                 else if (y > h && y < h + 6) colData[y] = 'terre';
-                else if (y >= h + 6) colData[y] = (Math.random() < 0.08 && y > 60) ? 'tile' : 'pierre';
+                else if (y >= h + 6) colData[y] = 'pierre';
             }
             world[x] = { data: colData, height: h };
             return colData;
         }
 
+        function nextRound() {
+            round++;
+            mobsSpawnedInRound = 0;
+            spawnRate = Math.max(40, 150 - (round * 15));
+            const notif = document.getElementById('round-notif');
+            notif.innerText = "ROUND " + round;
+            notif.style.opacity = 1;
+            setTimeout(() => notif.style.opacity = 0, 2000);
+        }
+
         function handleSpawning() {
             spawnTimer++;
-            if (spawnTimer > 150 && mobs.length < 4) {
+            if (mobsSpawnedInRound >= 8 + round && mobs.length === 0) nextRound();
+
+            if (spawnTimer > spawnRate && mobsSpawnedInRound < 8 + round) {
                 spawnTimer = 0;
+                mobsSpawnedInRound++;
                 let side = Math.random() > 0.5 ? 1 : -1;
                 let spawnX = player.x + (side * 500);
                 let gridX = Math.floor(spawnX / TILE);
                 getCol(gridX);
                 let groundY = (world[gridX].height - 6) * TILE;
-                let isBoss = Math.random() < 0.2;
+                
+                let isBoss = Math.random() < (0.1 + (round * 0.05));
                 mobs.push({
                     x: spawnX, y: groundY, vx: 0, vy: 0,
                     w: isBoss ? 80 : 40, h: isBoss ? 80 : 40,
-                    hp: isBoss ? 15 : 3, maxHp: isBoss ? 15 : 3,
+                    hp: isBoss ? 2 : 1, maxHp: isBoss ? 2 : 1,
                     type: isBoss ? 'boss' + (Math.floor(Math.random() * 3) + 1) : 'mob',
-                    isBoss: isBoss, dir: side * -1, timer: 0, state: 'patrol'
+                    isBoss: isBoss, dir: side * -1, grounded: false
                 });
             }
+        }
+
+        function check(px, py, pw, ph) {
+            let x1 = Math.floor(px/TILE), x2 = Math.floor((px+pw)/TILE);
+            let y1 = Math.floor(py/TILE), y2 = Math.floor((py+ph)/TILE);
+            for (let x = x1; x <= x2; x++) {
+                let col = getCol(x);
+                for (let y = y1; y <= y2; y++) if (col[y]) return { x: x*TILE, y: y*TILE };
+            }
+            return null;
         }
 
         function applyPhysics(obj) {
@@ -180,85 +207,92 @@
             else { if (obj.vy > 0) { obj.y = hit.y - obj.h; obj.grounded = true; } obj.vy = 0; }
         }
 
-        function check(px, py, pw, ph) {
-            let x1 = Math.floor(px/TILE), x2 = Math.floor((px+pw)/TILE);
-            let y1 = Math.floor(py/TILE), y2 = Math.floor((py+ph)/TILE);
-            for (let x = x1; x <= x2; x++) {
-                let col = getCol(x);
-                for (let y = y1; y <= y2; y++) if (col[y]) return { x: x*TILE, y: y*TILE };
-            }
-            return null;
-        }
-
-        function updateIA(m) {
-            let dist = Math.hypot(m.x - player.x, m.y - player.y);
-            m.state = (dist < 400) ? 'attack' : 'patrol';
-            if (m.state === 'patrol') {
-                m.vx = m.dir * 2;
-                if (check(m.x + m.dir*20, m.y, m.w, m.h) && m.grounded) m.vy = -12;
-            } else {
-                m.dir = player.x > m.x ? 1 : -1;
-                m.vx = m.dir * (m.isBoss ? 3 : 2);
-                if (player.y < m.y - 30 && m.grounded && Math.random() < 0.05) m.vy = -14;
-                if (m.isBoss && m.timer-- <= 0) {
-                    let ang = Math.atan2((player.y+20)-(m.y+m.h/2), (player.x+15)-(m.x+m.w/2));
-                    eBullets.push({x: m.x+m.w/2, y: m.y+m.h/2, vx: Math.cos(ang)*7, vy: Math.sin(ang)*7});
-                    m.timer = 100;
-                }
-            }
-        }
-
         function update() {
             if (!active) return;
             handleSpawning();
             applyPhysics(player);
+            
             mobs.forEach((m, idx) => {
-                applyPhysics(m); updateIA(m);
+                applyPhysics(m);
+                m.vx = m.dir * (m.isBoss ? 2.5 : 2);
+                if (check(m.x + m.dir*20, m.y, m.w, m.h) && m.grounded) m.vy = -12;
+                
                 bullets.forEach((b, bi) => {
-                    if (b.x > m.x && b.x < m.x+m.w && b.y > m.y && b.y < m.y+m.h) {
-                        m.hp--; bullets.splice(bi, 1); if(m.hp <= 0) mobs.splice(idx, 1);
+                    // Hitbox améliorée pour projectiles larges
+                    if (Math.hypot(b.x - (m.x + m.w/2), b.y - (m.y + m.h/2)) < (m.w/2 + 15)) {
+                        m.hp--; bullets.splice(bi, 1); 
+                        if(m.hp <= 0) {
+                            score += m.isBoss ? 2 : 1;
+                            mobs.splice(idx, 1);
+                        }
                     }
                 });
-                if (Math.hypot(m.x - player.x, m.y - player.y) < 40) player.hp -= 0.04;
+                if (Math.hypot(m.x - player.x, m.y - player.y) < 40) player.hp -= 0.05;
             });
+
             bullets.forEach((b, i) => { b.x += b.vx; b.y += b.vy; b.l--; if(b.l<0) bullets.splice(i,1); });
-            eBullets.forEach((b, i) => { 
-                b.x += b.vx; b.y += b.vy;
-                if (Math.hypot(b.x - (player.x+15), b.y - (player.y+20)) < 25) { player.hp -= 0.5; eBullets.splice(i,1); }
-            });
-            player.biomass -= 0.04;
-            if (player.biomass <= 0) { player.biomass = 0; player.hp -= 0.01; }
-            if (Math.random() < 0.05) photons.push({x: player.x + (Math.random()-0.5)*900, y: cam.y-100, vy: 3.5});
+            
+            player.biomass -= 0.03;
+            if (Math.random() < 0.05) photons.push({x: player.x + (Math.random()-0.5)*800, y: cam.y-50, vy: 4});
             photons.forEach((p, i) => { 
-                p.y += p.vy; if (Math.hypot(p.x - (player.x+15), p.y - (player.y+20)) < 45) { player.biomass = Math.min(100, player.biomass + 15); photons.splice(i,1); } 
+                p.y += p.vy; 
+                if (Math.hypot(p.x - (player.x+15), p.y - (player.y+20)) < 40) { player.biomass = Math.min(100, player.biomass + 10); photons.splice(i,1); } 
             });
-            if (player.hp <= 0) { active = false; alert("GAME OVER ! Relis bien le cours."); location.reload(); }
+
+            if (player.hp <= 0) { active = false; alert("GAME OVER ! Score : " + score); location.reload(); }
             updateHUD();
         }
 
         function loop() {
             if(!active) return;
             update();
-            ctx.clearRect(0,0,canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             cam.x += (player.x - canvas.width/2 - cam.x) * 0.1;
             cam.y += (player.y - canvas.height/2 - cam.y) * 0.1;
             ctx.drawImage(img.bg, 0, 0, canvas.width, canvas.height);
-            ctx.save(); ctx.translate(-cam.x, -cam.y);
+            
+            ctx.save(); 
+            ctx.translate(-cam.x, -cam.y);
+
+            // 1. BANDE DE VISÉE GRISE
+            if (Math.hypot(atkDir.x, atkDir.y) > 0.1 && player.ammo > 0) {
+                ctx.beginPath();
+                ctx.strokeStyle = "rgba(128, 128, 128, 0.3)";
+                ctx.lineWidth = 12;
+                ctx.setLineDash([15, 10]);
+                ctx.moveTo(player.x + 15, player.y + 20);
+                ctx.lineTo(player.x + 15 + atkDir.x * 400, player.y + 20 + atkDir.y * 400);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            // 2. MONDE
             let sX = Math.floor(cam.x/TILE)-2;
             for(let x=sX; x < sX+25; x++) {
                 let c = getCol(x);
                 for(let y=0; y<80; y++) if(c[y]) ctx.drawImage(img[c[y]], x*TILE, y*TILE, TILE, TILE);
             }
+
+            // 3. PROJECTILES LARGES (3x)
+            bullets.forEach(b => {
+                let grad = ctx.createRadialGradient(b.x, b.y, 2, b.x, b.y, 18);
+                grad.addColorStop(0, "white");
+                grad.addColorStop(0.4, "rgba(52, 152, 219, 0.8)");
+                grad.addColorStop(1, "rgba(52, 152, 219, 0)");
+                ctx.fillStyle = grad;
+                ctx.beginPath(); ctx.arc(b.x, b.y, 18, 0, 7); ctx.fill();
+            });
+
             mobs.forEach(m => {
                 ctx.drawImage(img[m.type], m.x, m.y, m.w, m.h);
                 ctx.fillStyle = "black"; ctx.fillRect(m.x, m.y - 12, m.w, 5);
                 ctx.fillStyle = m.isBoss ? "#9b59b6" : "#e74c3c";
                 ctx.fillRect(m.x, m.y - 12, (m.hp/m.maxHp)*m.w, 5);
             });
-            bullets.forEach(b => { ctx.fillStyle="white"; ctx.beginPath(); ctx.arc(b.x, b.y, 6, 0, 7); ctx.fill(); });
-            eBullets.forEach(b => { ctx.fillStyle="#e74c3c"; ctx.fillRect(b.x-6, b.y-6, 12, 12); });
+
             photons.forEach(p => { ctx.fillStyle="#f1c40f"; ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 7); ctx.fill(); });
             ctx.drawImage(img.player, player.x, player.y, player.w, player.h);
+            
             ctx.restore();
             animationFrameId = requestAnimationFrame(loop);
         }
@@ -277,7 +311,7 @@
                 s.style.transform = '';
                 if(!isMove && player.ammo > 0 && Math.hypot(atkDir.x, atkDir.y) > 0.1) {
                     bullets.push({x: player.x+15, y: player.y+20, vx: atkDir.x*13, vy: atkDir.y*13, l: 45});
-                    player.ammo--; updateHUD();
+                    player.ammo--;
                 } else if(isMove) player.vx = 0;
             });
         }
@@ -289,32 +323,24 @@
         function updateHUD() {
             document.getElementById('hp').innerText = "❤".repeat(Math.max(0, Math.ceil(player.hp)));
             document.getElementById('am').innerText = "ONDES: "+player.ammo+"/5";
-            document.getElementById('bio-f').style.width = player.biomass+"%";
+            document.getElementById('score').innerText = "SCORE: " + score;
+            document.getElementById('rnd-display').innerText = "ROUND: " + round;
             document.getElementById('rel').style.display = (player.ammo <= 0 || player.hp < 2) ? "block" : "none";
         }
 
         function openQuiz() {
             active = false; 
-            cancelAnimationFrame(animationFrameId); // Stop propre
             document.getElementById('ui-quiz').classList.remove('hidden');
-            let qIndex = Math.floor(Math.random() * QUESTIONS.length);
-            let q = QUESTIONS[qIndex];
+            let q = QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)];
             document.getElementById('q-txt').innerText = q.q;
             let ops = document.getElementById('q-ops'); ops.innerHTML = '';
             q.a.forEach((o, i) => {
                 let d = document.createElement('div'); d.className='q-option'; d.innerText=o;
-                d.onclick = (e) => { 
-                    e.stopPropagation();
-                    if(i === q.r) { 
-                        player.ammo = 5; 
-                        player.hp = Math.min(5, player.hp + 2);
-                        alert("BRAVO ! +5 Munitions et +2 Vie");
-                    } else { 
-                        alert("MAUVAIS CHOIX ! Pas de bonus."); 
-                    }
+                d.onclick = () => { 
+                    if(i === q.r) { player.ammo = 5; player.hp = Math.min(5, player.hp + 2); alert("BRAVO !"); }
+                    else alert("ERREUR !");
                     document.getElementById('ui-quiz').classList.add('hidden');
-                    active = true; 
-                    loop(); 
+                    active = true; loop(); 
                 };
                 ops.appendChild(d);
             });
