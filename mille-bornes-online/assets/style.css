@@ -1,0 +1,87 @@
+:root {
+    --bg-color: #1a1a2e;
+    --table-color: #27ae60;
+    --accent-color: #f1c40f;
+}
+
+body {
+    margin: 0; font-family: 'Segoe UI', sans-serif;
+    background: radial-gradient(circle, #16213e 0%, #0f0c29 100%);
+    color: white; overflow: hidden; height: 100vh;
+}
+
+.hidden { display: none !important; }
+
+#lobby-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+#auth-box, #waiting-room {
+    background: rgba(255, 255, 255, 0.1); padding: 2rem; border-radius: 20px;
+    backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); text-align: center;
+}
+
+input { padding: 12px; border-radius: 8px; border: none; margin: 10px; font-size: 1rem; width: 200px; }
+button { padding: 12px 24px; border-radius: 8px; border: none; background: var(--accent-color); color: #1a1a2e; font-weight: bold; cursor: pointer; transition: 0.3s; }
+button:hover { transform: scale(1.05); }
+
+#display-room-code { font-size: 2.5rem; font-weight: bold; color: var(--accent-color); letter-spacing: 5px; margin: 10px 0; }
+
+#game-board { position: relative; width: 100vw; height: 100vh; }
+#table-center {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 400px; height: 220px; background: var(--table-color);
+    border: 8px solid #1e8449; border-radius: 110px;
+    display: flex; justify-content: space-around; align-items: center;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.4);
+}
+
+#deck-info, #last-discard { font-weight: bold; text-align: center; font-size: 0.8rem; }
+
+.player-slot { position: absolute; transform: translate(-50%, -50%); text-align: center; width: 120px; }
+.avatar { width: 60px; height: 60px; background: #34495e; border-radius: 50%; border: 3px solid white; margin: 0 auto; }
+.active-turn .avatar { border-color: var(--accent-color); box-shadow: 0 0 20px var(--accent-color); }
+
+#my-hand-container { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 15px 30px; border-radius: 20px 20px 0 0; }
+.card {
+    display: inline-block; width: 75px; height: 110px; background: white; color: black; margin: 5px;
+    border-radius: 8px; cursor: pointer; text-align: center; font-weight: bold; transition: 0.2s;
+    display: flex; align-items: center; justify-content: center; font-size: 0.9rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+.card:hover { transform: translateY(-15px); }
+
+/* Types de cartes */
+.card-borne { border: 4px solid #2ecc71; }
+.card-attaque { border: 4px solid #e74c3c; }
+.card-defense { border: 4px solid #3498db; }
+
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.modal-content { background: white; color: black; padding: 25px; border-radius: 15px; text-align: center; min-width: 250px;}
+#action-buttons button { display: block; width: 100%; margin: 10px 0; }
+.btn-cancel { background: #95a5a6; color: white; }
+
+/* Ajoute ces styles pour t'assurer que les cartes ne sont pas invisibles */
+.card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 120px;
+    background: #ffffff;
+    color: #333 !important; /* Texte noir sur carte blanche */
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 0.8rem;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: 3px solid transparent;
+}
+
+.card-borne { border-color: #2ecc71; }
+.card-attaque { border-color: #e74c3c; }
+.card-defense { border-color: #3498db; }
+
+.card:hover {
+    transform: translateY(-15px) scale(1.05);
+    z-index: 100;
+}

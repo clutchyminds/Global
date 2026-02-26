@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mille Bornes - Vibe</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div id="lobby-container">
+        <h1>Mille Bornes 🏎️</h1>
+        
+        <div id="auth-box">
+            <input type="text" id="player-name" placeholder="Ton pseudo...">
+            <div class="button-group">
+                <button id="create-btn">Créer un Salon</button>
+                <div class="separator">OU</div>
+                <div class="join-area">
+                    <input type="text" id="room-code-input" placeholder="Code (ex: AZ42)">
+                    <button id="join-btn">Rejoindre</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="waiting-room" class="hidden">
+            <div class="room-info">
+                <p>Partage ce code avec tes amis :</p>
+                <div id="display-room-code">----</div>
+            </div>
+            <h3>Joueurs connectés :</h3>
+            <ul id="player-list"></ul>
+            <button id="start-game-btn" class="hidden">Lancer la course !</button>
+        </div>
+    </div>
+
+    <div id="game-board" class="hidden">
+        <div id="table-center">
+            <div id="deck-info">PIoche</div>
+            <div id="last-discard">Défausse</div>
+        </div>
+        <div id="players-circle"></div>
+        
+        <div id="my-hand-container">
+            <div id="my-cards"></div>
+        </div>
+    </div>
+
+    <div id="action-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="modal-card-title">Carte</h3>
+            <div id="action-buttons"></div>
+            <button class="btn-cancel" onclick="closeModal()">Fermer</button>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
