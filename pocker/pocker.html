@@ -7,85 +7,157 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
-        :root { --bg: #0a2e1a; --accent: #ffcc00; --card-white: #ffffff; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--bg); color: white; height: 100vh; overflow: hidden; display: flex; }
-        
-        #game-container { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; background: radial-gradient(circle, #1a4a2e 0%, #0a2e1a 100%); }
-        
-        /* --- PLATEAU --- */
-        #table { flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #pot-info { background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 20px; font-weight: bold; color: var(--accent); margin-bottom: 20px; border: 1px solid var(--accent); }
-        #community-cards { display: flex; gap: 10px; min-height: 120px; }
-
-        /* --- CARTES --- */
-        .card { 
-            width: 70px; height: 100px; background: var(--card-white); color: #1a1a2e; 
-            border-radius: 8px; display: flex; align-items: center; justify-content: center; 
-            font-weight: 900; font-size: 1.5rem; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            position: relative; border: 1px solid #ddd;
+        :root { 
+            --bg: #071a10; 
+            --accent: #ffcc00; 
+            --red: #ff2e63;
+            --card-white: #ffffff;
         }
-        .card[data-suit="♥"], .card[data-suit="♦"] { color: #e94560; }
-        .card::before { content: attr(data-val) attr(data-suit); position: absolute; top: 5px; left: 5px; font-size: 0.7rem; }
-
-        /* --- JOUEUR --- */
-        #player-zone { position: absolute; bottom: 20px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        #my-hand { display: flex; gap: 15px; }
-        #my-chips { font-weight: bold; font-size: 1.2rem; color: var(--accent); text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-
-        .controls { display: flex; gap: 10px; margin-bottom: 10px; }
-        button { padding: 12px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; }
-        .btn-action { background: white; color: black; }
-        .btn-bet { background: var(--accent); color: black; }
-        button:disabled { opacity: 0.3; }
-
-        #lobby { position: fixed; inset: 0; background: #071a10; z-index: 1000; display: flex; align-items: center; justify-content: center; }
-        .box { background: rgba(255,255,255,0.05); padding: 40px; border-radius: 15px; text-align: center; width: 90%; max-width: 400px; }
-        input { padding: 12px; border-radius: 8px; border: none; width: 100%; margin-bottom: 10px; text-align: center; }
         
-        #chat-sidebar { width: 250px; background: rgba(0,0,0,0.8); display: flex; flex-direction: column; border-left: 1px solid rgba(255,255,255,0.1); }
-        #chat-msgs { flex: 1; overflow-y: auto; padding: 15px; font-size: 0.8rem; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            margin: 0; font-family: 'Poppins', sans-serif; 
+            background: var(--bg); color: white; 
+            display: flex; height: 100vh; overflow: hidden; 
+        }
+
+        .hidden { display: none !important; }
+
+        /* --- PLATEAU DE JEU --- */
+        #game-container { 
+            flex: 1; position: relative; display: flex; 
+            flex-direction: column; align-items: center; 
+            background: radial-gradient(circle at center, #144b2d 0%, #071a10 100%);
+        }
+
+        #table { 
+            flex: 1; width: 100%; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; padding-bottom: 180px;
+        }
+
+        #pot-display {
+            background: rgba(0,0,0,0.6); padding: 10px 25px; border-radius: 50px;
+            border: 2px solid var(--accent); color: var(--accent);
+            font-weight: 900; font-size: 1.2rem; margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.2);
+        }
+
+        #community-cards { 
+            display: flex; gap: 12px; min-height: 120px; 
+            perspective: 1000px;
+        }
+
+        /* --- STYLE DES CARTES (HÉRITÉ DU PRÉSIDENT) --- */
+        .card { 
+            width: 80px; height: 115px; 
+            background: var(--card-white);
+            color: #1a1a2e; border-radius: 12px; 
+            display: flex; align-items: center; justify-content: center; 
+            font-weight: 900; font-size: 1.8rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4); 
+            position: relative; border: 1px solid #ddd;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+        }
+
+        .card[data-suit="♥"], .card[data-suit="♦"] { color: var(--red); }
+
+        .card::before {
+            content: attr(data-val) attr(data-suit);
+            position: absolute; top: 8px; left: 8px;
+            font-size: 0.9rem; line-height: 1;
+        }
+
+        /* Effet de brillance */
+        .card::after {
+            content: ""; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            opacity: 0.5; pointer-events: none;
+        }
+
+        .card.on-table { transform: scale(0.95); }
+
+        /* --- ZONE JOUEUR --- */
+        #player-zone { 
+            position: absolute; bottom: 30px; width: 100%; 
+            display: flex; flex-direction: column; align-items: center; gap: 15px;
+        }
+
+        #my-hand { display: flex; gap: 20px; }
+
+        .controls { display: flex; gap: 10px; z-index: 100; }
+
+        button { 
+            padding: 14px 24px; border-radius: 50px; border: none; 
+            cursor: pointer; font-weight: 900; background: white; 
+            color: black; text-transform: uppercase; font-size: 0.8rem;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2); transition: 0.2s;
+        }
+        button:active { transform: translateY(2px); }
+        button.primary { background: var(--accent); }
+        button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* --- LOBBY & CHAT --- */
+        #lobby { position: fixed; inset: 0; background: var(--bg); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .box { background: rgba(255,255,255,0.03); padding: 40px; border-radius: 20px; text-align: center; width: 90%; max-width: 400px; border: 1px solid rgba(255,255,255,0.1); }
+        input { padding: 15px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.5); color: white; width: 100%; margin-bottom: 12px; text-align: center; outline: none; }
+        
+        #chat-sidebar { width: 300px; background: rgba(0,0,0,0.8); display: flex; flex-direction: column; border-left: 1px solid rgba(255,255,255,0.1); }
+        #chat-msgs { flex: 1; overflow-y: auto; padding: 15px; font-size: 0.85rem; }
+
+        @media (max-width: 850px) {
+            body { flex-direction: column; }
+            #chat-sidebar { width: 100%; height: 140px; }
+            .card { width: 65px; height: 95px; font-size: 1.4rem; }
+            #table { padding-bottom: 140px; }
+        }
     </style>
 </head>
 <body>
 
 <div id="lobby">
     <div class="box">
-        <h1 style="color:var(--accent)">POKER TEXAS</h1>
-        <input type="text" id="p-name" placeholder="Ton Pseudo">
-        <button onclick="createRoom()" style="width:100%; background:var(--accent); margin-bottom:10px;">Créer Table</button>
-        <div style="display:flex; gap:5px"><input type="text" id="r-code" placeholder="Code"><button onclick="joinRoom()">JOIN</button></div>
-        <div id="wait" class="hidden">
-            <p>CODE : <b id="display-code"></b></p>
-            <button id="btn-start" class="hidden" onclick="startGame()" style="background:#2ecc71">Lancer</button>
+        <h1 style="color:var(--accent); letter-spacing: 5px;">POKER DELUXE</h1>
+        <input type="text" id="p-name" placeholder="TON PSEUDO">
+        <button onclick="createRoom()" style="width:100%; margin-bottom:12px;" class="primary">CRÉER UNE TABLE</button>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="r-code" placeholder="CODE" style="margin-bottom:0">
+            <button onclick="joinRoom()">JOIN</button>
+        </div>
+        <div id="wait-zone" class="hidden">
+            <p style="margin-top:25px; opacity:0.5; font-size:0.7rem;">CODE TABLE</p>
+            <b id="display-code" style="font-size:2.5rem; letter-spacing:8px"></b>
+            <p id="player-count">Joueurs : 0</p>
+            <button id="btn-start" class="hidden" onclick="startGame()" style="background:#00f5d4; color: black; width:100%">DISTRIBUER</button>
         </div>
     </div>
 </div>
 
 <div id="game-container">
     <div id="table">
-        <div id="pot-info">POT: 0 🪙</div>
+        <div id="pot-display">POT: 0 🪙</div>
         <div id="community-cards"></div>
     </div>
 
     <div id="player-zone">
-        <div id="my-chips">Mes Jetons: 1000</div>
+        <div style="color:var(--accent); font-weight: bold;" id="my-chips">Mes Jetons: 1000</div>
         <div id="my-hand"></div>
         <div class="controls">
-            <button id="btn-fold" class="btn-action">Fold</button>
-            <button id="btn-call" class="btn-action">Check/Call</button>
-            <button id="btn-raise" class="btn-bet">Raise (50)</button>
+            <button onclick="fold()">Fold</button>
+            <button onclick="check()">Check/Call</button>
+            <button onclick="raise()" class="primary">Raise (50)</button>
         </div>
     </div>
 </div>
 
 <div id="chat-sidebar">
     <div id="chat-msgs"></div>
-    <input type="text" id="chat-in" placeholder="Chat..." style="border-radius:0; margin:0">
+    <input type="text" id="chat-in" placeholder="Message..." style="border-radius:0; border:none;">
 </div>
 
 <script>
-    // --- CONFIG FIREBASE ---
+    // --- FIREBASE CONFIG ---
     const config = {
         apiKey: "AIzaSyDadsPbXI4xMieRDWgZMOb3WzkP8f7aonc",
         authDomain: "mille-bornes-vibe.firebaseapp.com",
@@ -105,77 +177,112 @@
         if(!myName) return;
         roomID = Math.random().toString(36).substring(2,6).toUpperCase();
         isHost = true;
-        initRoom();
+        setupRoom();
     }
 
     function joinRoom() {
         myName = document.getElementById('p-name').value;
         roomID = document.getElementById('r-code').value.toUpperCase();
         if(!myName || !roomID) return;
-        initRoom();
+        setupRoom();
     }
 
-    function initRoom() {
+    function setupRoom() {
         const ref = db.ref('poker/' + roomID);
-        if(isHost) ref.set({ status: 'waiting', pot: 0, community: [], turn: "" });
+        if(isHost) ref.set({ status: 'waiting', host: myID, pot: 0, community: [] });
         ref.child('players/' + myID).set({ name: myName, chips: 1000, hand: [], state: 'active' });
-        
-        document.getElementById('wait').classList.remove('hidden');
+
+        document.getElementById('wait-zone').classList.remove('hidden');
         document.getElementById('display-code').innerText = roomID;
 
         ref.on('value', snap => {
             const data = snap.val();
-            if(data) updateUI(data);
+            if(data) updateGame(data);
         });
     }
 
     function startGame() {
+        if(!isHost) return;
+        
         const deck = [];
         suits.forEach(s => values.forEach(v => deck.push({v, s})));
         deck.sort(() => Math.random() - 0.5);
 
-        db.ref('poker/'+roomID+'/players').once('value', snap => {
+        db.ref('poker/' + roomID + '/players').once('value', snap => {
             const p = snap.val();
             const ids = Object.keys(p);
-            ids.forEach((id, i) => {
-                db.ref(`poker/${roomID}/players/${id}`).update({ hand: [deck.pop(), deck.pop()] });
+            const updates = {};
+            
+            ids.forEach(id => {
+                updates[`players/${id}/hand`] = [deck.pop(), deck.pop()];
             });
-            db.ref('poker/'+roomID).update({ status: 'playing', turn: ids[0], deck: deck });
+            
+            updates['status'] = 'playing';
+            updates['deck'] = deck;
+            updates['turn'] = ids[0];
+            db.ref('poker/' + roomID).update(updates);
         });
     }
 
-    function updateUI(data) {
-        if(data.status === 'playing') {
+    function updateGame(data) {
+        if(data.status === 'waiting') {
+            const count = Object.keys(data.players || {}).length;
+            document.getElementById('player-count').innerText = `Joueurs : ${count}`;
+            if(isHost && count >= 2) document.getElementById('btn-start').classList.remove('hidden');
+        } else {
             document.getElementById('lobby').classList.add('hidden');
-            document.getElementById('pot-info').innerText = `POT: ${data.pot} 🪙`;
-            
-            // Afficher ma main
-            const myHandDiv = document.getElementById('my-hand');
-            myHandDiv.innerHTML = "";
-            const myHand = data.players[myID].hand || [];
-            myHand.forEach(c => {
-                const el = document.createElement('div');
-                el.className = 'card';
-                el.dataset.val = c.v; el.dataset.suit = c.s;
-                el.innerText = c.v + c.s;
-                myHandDiv.appendChild(el);
+            document.getElementById('pot-display').innerText = `POT: ${data.pot} 🪙`;
+            document.getElementById('my-chips').innerText = `Mes Jetons: ${data.players[myID].chips}`;
+
+            // Rendu de ma main
+            const handDiv = document.getElementById('my-hand');
+            handDiv.innerHTML = "";
+            (data.players[myID].hand || []).forEach(c => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card';
+                cardEl.dataset.val = c.v;
+                cardEl.dataset.suit = c.s;
+                cardEl.innerText = c.v;
+                handDiv.appendChild(cardEl);
             });
 
-            // Cartes communes
+            // Rendu des cartes communes
             const commDiv = document.getElementById('community-cards');
             commDiv.innerHTML = "";
             (data.community || []).forEach(c => {
-                const el = document.createElement('div');
-                el.className = 'card';
-                el.innerText = c.v + c.s;
-                commDiv.appendChild(el);
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card on-table';
+                cardEl.dataset.val = c.v;
+                cardEl.dataset.suit = c.s;
+                cardEl.innerText = c.v;
+                commDiv.appendChild(cardEl);
             });
-
-            document.getElementById('my-chips').innerText = `Mes Jetons: ${data.players[myID].chips}`;
-        } else if(isHost && Object.keys(data.players || {}).length >= 2) {
-            document.getElementById('btn-start').classList.remove('hidden');
         }
     }
+
+    // --- ACTIONS DE JEU ---
+    function raise() {
+        db.ref('poker/'+roomID).once('value', snap => {
+            const data = snap.val();
+            const currentChips = data.players[myID].chips;
+            if(currentChips < 50) return;
+            
+            db.ref('poker/'+roomID).update({
+                pot: data.pot + 50
+            });
+            db.ref(`poker/${roomID}/players/${myID}`).update({
+                chips: currentChips - 50
+            });
+        });
+    }
+
+    // Chat
+    document.getElementById('chat-in').onkeydown = (e) => {
+        if(e.key === "Enter" && e.target.value) {
+            db.ref('poker/'+roomID+'/chat').push({ u: myName, t: e.target.value });
+            e.target.value = "";
+        }
+    };
 </script>
 </body>
 </html>
