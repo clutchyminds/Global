@@ -3,252 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixel War Firebase</title>
+    <title>Firebase Pixel War</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            min-height: 100vh;
             margin: 0;
             background-color: #f0f2f5;
             color: #333;
         }
-
-        #app-container {
+        .container {
             display: flex;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            width: 90%;
             max-width: 1200px;
-            width: 95%;
-            flex-wrap: wrap; /* Allows wrapping on smaller screens */
-        }
-
-        #game-area {
-            flex: 2;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border-right: 1px solid #eee;
-            min-width: 300px; /* Minimum width for game area */
-        }
-
-        #game-area h1 {
-            color: #4CAF50;
-            margin-bottom: 20px;
-            font-size: 2em;
-        }
-
-        #pixel-canvas {
-            border: 1px solid #ddd;
-            background-color: #f8f8f8;
-            cursor: crosshair;
-            touch-action: none; /* Prevent scrolling on canvas touch */
-            width: 100%; /* Make canvas responsive */
-            max-width: 500px; /* Max width for square canvas */
-            aspect-ratio: 1 / 1; /* Keep canvas square */
-        }
-
-        #controls {
             margin-top: 20px;
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            gap: 20px;
+            flex-wrap: wrap; /* Permet le retour à la ligne pour la responsivité */
         }
-
-        #controls div {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        #controls label {
-            font-weight: bold;
-            min-width: 60px;
-        }
-
-        #controls input[type="text"],
-        #controls input[type="color"] {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            flex-grow: 1;
-        }
-
-        #controls input[type="color"] {
-            width: 50px;
-            height: 38px; /* Match button height */
-            padding: 2px;
-        }
-
-        #controls button {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            background-color: #007bff;
-            color: white;
-            font-weight: bold;
-            transition: background-color 0.2s;
-            white-space: nowrap; /* Prevent button text from wrapping */
-        }
-
-        #controls button:hover:not(:disabled) {
-            background-color: #0056b3;
-        }
-
-        #controls button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-
-        #cooldown-timer {
-            margin-left: 10px;
-            font-weight: bold;
-            color: #dc3545;
-        }
-
-        #chat-area {
-            flex: 1;
+        #pixel-grid-container {
+            flex: 2; /* Prend plus d'espace */
+            min-width: 300px; /* Minimum width for responsiveness */
+            background-color: #fff;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            border-left: 1px solid #eee;
-            min-width: 280px; /* Minimum width for chat area */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
-        #chat-area h2 {
-            color: #28a745;
-            margin-bottom: 15px;
-            font-size: 1.8em;
+        #pixel-grid {
+            display: grid;
+            border: 1px solid #ccc;
+            background-color: #eee;
+            width: fit-content; /* S'adapte au contenu des pixels */
+            margin: 0 auto; /* Centre la grille */
         }
-
-        #messages-display {
-            flex-grow: 1;
+        .pixel {
+            width: 16px; /* Taille par défaut d'un pixel */
+            height: 16px;
+            background-color: #fff; /* Couleur par défaut */
             border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 10px;
-            overflow-y: auto;
-            background-color: #fdfdfd;
-            margin-bottom: 10px;
-            height: 300px; /* Fixed height for chat display */
+            cursor: pointer;
+            box-sizing: border-box; /* Inclure la bordure dans la taille */
+        }
+        .pixel.cooldown {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        #chat-container {
+            flex: 1; /* Prend moins d'espace que la grille */
+            min-width: 280px; /* Minimum width for responsiveness */
+            max-width: 400px; /* Maximum width for chat */
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
+            height: 500px; /* Hauteur fixe pour le chat */
         }
-
-        .chat-message {
-            margin-bottom: 5px;
-            line-height: 1.4;
+        #chat-messages {
+            flex-grow: 1;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            border-radius: 4px;
         }
-
-        .chat-message strong {
-            color: #007bff;
-        }
-
-        .chat-message .timestamp {
-            font-size: 0.75em;
-            color: #888;
-            margin-left: 5px;
-        }
-
         #chat-input-area {
             display: flex;
-            gap: 10px;
         }
-
-        #chat-input-area input {
+        #chat-message-input {
             flex-grow: 1;
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            margin-right: 5px;
         }
-
-        #chat-input-area button {
-            padding: 10px 15px;
+        #chat-send-button {
+            padding: 8px 12px;
+            background-color: #4CAF50;
+            color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            background-color: #28a745;
+        }
+        #chat-send-button:hover {
+            background-color: #45a049;
+        }
+
+        #nickname-setup, #color-picker-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+        input[type="text"], input[type="color"] {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
             color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #cooldown-message {
+            color: red;
+            margin-top: 10px;
             font-weight: bold;
-            transition: background-color 0.2s;
         }
 
-        #chat-input-area button:hover:not(:disabled) {
-            background-color: #218838;
-        }
-
-        #chat-input-area button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-
-        /* Responsive adjustments */
+        /* Styles pour la réactivité */
         @media (max-width: 768px) {
-            #app-container {
+            .container {
                 flex-direction: column;
-                width: 98%;
+                width: 95%;
             }
-
-            #game-area, #chat-area {
-                border-left: none;
-                border-right: none;
-                border-bottom: 1px solid #eee;
-                width: 100%;
+            #pixel-grid-container, #chat-container {
                 min-width: unset;
-                padding-bottom: 30px;
+                width: 100%;
+                margin-bottom: 20px;
             }
-
-            #chat-area {
-                border-bottom: none;
+            #chat-container {
+                height: 400px; /* Ajuste la hauteur du chat sur les petits écrans */
+            }
+            #pixel-grid {
+                width: 100%; /* La grille prend toute la largeur disponible */
+            }
+            .pixel {
+                width: calc(100% / var(--grid-cols)); /* Taille dynamique des pixels */
+                height: auto; /* Hauteur proportionnelle */
+                padding-bottom: calc(100% / var(--grid-cols)); /* Maintient l'aspect carré */
+                position: relative; /* Pour positionner le contenu si besoin */
+            }
+            .pixel::before {
+                content: '';
+                display: block;
+                padding-top: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <div id="app-container">
-        <div id="game-area">
-            <h1>Pixel War</h1>
-            <canvas id="pixel-canvas"></canvas>
-            <div id="controls">
-                <div>
-                    <label for="nickname-input">Pseudo:</label>
-                    <input type="text" id="nickname-input" placeholder="Choisissez votre pseudo">
-                    <button id="set-nickname-btn">Définir Pseudo</button>
-                </div>
-                <div>
-                    <label for="color-picker">Couleur:</label>
-                    <input type="color" id="color-picker" value="#FF0000">
-                    <button id="place-pixel-btn" disabled>Placer Pixel</button>
-                    <span id="cooldown-timer"></span>
-                </div>
+    <h1>Firebase Pixel War</h1>
+
+    <div id="nickname-setup">
+        <h2>Choisis ton pseudonyme</h2>
+        <input type="text" id="nickname-input" placeholder="Entre ton pseudo" maxlength="20">
+        <button id="save-nickname-button">Sauvegarder Pseudo</button>
+        <p>Ton pseudo actuel : <span id="current-nickname">Non défini</span></p>
+    </div>
+
+    <div id="color-picker-container">
+        <h2>Choisis ta couleur de pixel</h2>
+        <input type="color" id="pixel-color-picker" value="#FF0000">
+        <p id="cooldown-message" style="display: none;">Prochain pixel disponible dans <span id="cooldown-timer">10</span> secondes.</p>
+    </div>
+
+    <div class="container">
+        <div id="pixel-grid-container">
+            <h2>La Grille des Pixels</h2>
+            <div id="pixel-grid">
+                <!-- Les pixels seront générés ici par JavaScript -->
             </div>
         </div>
-        <div id="chat-area">
+
+        <div id="chat-container">
             <h2>Chat</h2>
-            <div id="messages-display">
-                <!-- Chat messages will be appended here -->
+            <div id="chat-messages">
+                <!-- Les messages du chat seront affichés ici -->
             </div>
             <div id="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Écrivez votre message..." disabled>
-                <button id="send-chat-btn" disabled>Envoyer</button>
+                <input type="text" id="chat-message-input" placeholder="Tape ton message..." maxlength="100">
+                <button id="chat-send-button">Envoyer</button>
             </div>
         </div>
     </div>
 
     <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getDatabase, ref, set, onValue, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        // Import des fonctions nécessaires du SDK Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-        // Your web app's Firebase configuration
+        // Ta configuration Firebase (fournie par l'utilisateur)
         const firebaseConfig = {
             apiKey: "AIzaSyC-7z8_LwTKHW4fLP3fOck5Cw0vFAVgpSo",
             authDomain: "pixel-war-deb21.firebaseapp.com",
@@ -259,178 +210,155 @@
             appId: "1:842565318576:web:0192fe3ff59c0a633dc875"
         };
 
-        // Initialize Firebase
+        // Initialisation de Firebase
         const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        const database = getDatabase(app);
 
-        // --- DOM Elements ---
+        // Références DOM
         const nicknameInput = document.getElementById('nickname-input');
-        const setNicknameBtn = document.getElementById('set-nickname-btn');
-        const colorPicker = document.getElementById('color-picker');
-        const placePixelBtn = document.getElementById('place-pixel-btn');
+        const saveNicknameButton = document.getElementById('save-nickname-button');
+        const currentNicknameSpan = document.getElementById('current-nickname');
+        const pixelColorPicker = document.getElementById('pixel-color-picker');
+        const pixelGrid = document.getElementById('pixel-grid');
+        const chatMessagesDiv = document.getElementById('chat-messages');
+        const chatMessageInput = document.getElementById('chat-message-input');
+        const chatSendButton = document.getElementById('chat-send-button');
+        const cooldownMessage = document.getElementById('cooldown-message');
         const cooldownTimerSpan = document.getElementById('cooldown-timer');
-        const pixelCanvas = document.getElementById('pixel-canvas');
-        const messagesDisplay = document.getElementById('messages-display');
-        const chatInput = document.getElementById('chat-input');
-        const sendChatBtn = document.getElementById('send-chat-btn');
 
-        const ctx = pixelCanvas.getContext('2d');
+        // Variables globales
+        let userNickname = localStorage.getItem('pixelWarNickname') || '';
+        let lastPixelTime = 0; // Timestamp du dernier pixel placé par cet utilisateur
+        const COOLDOWN_SECONDS = 10;
+        const GRID_SIZE = 30; // 30x30 pixels for the grid
 
-        // --- Game Variables ---
-        const PIXEL_GRID_SIZE = 50; // 50x50 logical pixels
-        const COOLDOWN_SECONDS = 10; // 10 seconds cooldown
-        let nickname = localStorage.getItem('pixelWarNickname');
-        let lastPixelTime = parseInt(localStorage.getItem('pixelWarLastPixelTime') || '0'); // Load last pixel time from local storage
-        let cooldownInterval = null;
-
-        // --- Canvas Setup ---
-        const updateCanvasDimensions = () => {
-            const canvasContainerWidth = pixelCanvas.parentElement.clientWidth;
-            // Maintain aspect ratio (square)
-            const size = Math.min(canvasContainerWidth, 500); // Max 500px, but responsive
-            pixelCanvas.width = size;
-            pixelCanvas.height = size;
-            drawGrid(); // Redraw grid on resize
-        };
-
-        window.addEventListener('resize', updateCanvasDimensions);
-        updateCanvasDimensions(); // Initial call
-
-        function drawGrid() {
-            ctx.clearRect(0, 0, pixelCanvas.width, pixelCanvas.height);
-            const pixelSize = pixelCanvas.width / PIXEL_GRID_SIZE; // Actual size of each pixel on canvas
-            ctx.strokeStyle = '#eee'; // Light grey grid lines
-            for (let x = 0; x <= PIXEL_GRID_SIZE; x++) {
-                ctx.beginPath();
-                ctx.moveTo(x * pixelSize, 0);
-                ctx.lineTo(x * pixelSize, pixelCanvas.height);
-                ctx.stroke();
-            }
-            for (let y = 0; y <= PIXEL_GRID_SIZE; y++) {
-                ctx.beginPath();
-                ctx.moveTo(0, y * pixelSize);
-                ctx.lineTo(pixelCanvas.width, y * pixelSize);
-                ctx.stroke();
-            }
-        }
-
-        function drawPixel(x, y, color) {
-            const pixelSize = pixelCanvas.width / PIXEL_GRID_SIZE;
-            ctx.fillStyle = color;
-            ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-            ctx.strokeStyle = '#ccc'; // Outline for visibility
-            ctx.strokeRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-        }
-
-        // --- Nickname Logic ---
-        if (nickname) {
-            nicknameInput.value = nickname;
-            nicknameInput.disabled = true;
-            setNicknameBtn.style.display = 'none';
-            enableGameControls(true);
-            checkCooldown(); // Check cooldown on load if nickname is set
-        } else {
-            enableGameControls(false);
-        }
-
-        setNicknameBtn.addEventListener('click', () => {
-            const chosenNickname = nicknameInput.value.trim();
-            if (chosenNickname) {
-                nickname = chosenNickname;
-                localStorage.setItem('pixelWarNickname', nickname);
-                nicknameInput.disabled = true;
-                setNicknameBtn.style.display = 'none';
-                enableGameControls(true);
-                checkCooldown(); // Re-check cooldown after setting nickname
-                alert(`Pseudo "${nickname}" défini !`);
+        // --- Fonctions de gestion du Pseudonyme ---
+        function updateNicknameDisplay() {
+            if (userNickname) {
+                currentNicknameSpan.textContent = userNickname;
+                nicknameInput.value = userNickname;
             } else {
-                alert("Veuillez entrer un pseudo.");
+                currentNicknameSpan.textContent = 'Non défini';
+            }
+        }
+
+        saveNicknameButton.addEventListener('click', () => {
+            const newNickname = nicknameInput.value.trim();
+            if (newNickname) {
+                userNickname = newNickname;
+                localStorage.setItem('pixelWarNickname', userNickname);
+                updateNicknameDisplay();
+                alert(`Ton pseudo a été sauvegardé : ${userNickname}`);
+            } else {
+                alert('Veuillez entrer un pseudo valide.');
             }
         });
 
-        function enableGameControls(enabled) {
-            placePixelBtn.disabled = !enabled;
-            chatInput.disabled = !enabled;
-            sendChatBtn.disabled = !enabled;
-        }
+        // Initialise l'affichage du pseudo au chargement
+        updateNicknameDisplay();
 
-        // --- Cooldown Logic ---
-        function checkCooldown() {
-            const now = Date.now();
-            const timeSinceLastPixel = now - lastPixelTime;
-            const remainingTime = COOLDOWN_SECONDS * 1000 - timeSinceLastPixel;
-
-            if (remainingTime > 0) {
-                placePixelBtn.disabled = true;
-                if (!cooldownInterval) {
-                    cooldownInterval = setInterval(() => {
-                        const newRemainingTime = COOLDOWN_SECONDS * 1000 - (Date.now() - lastPixelTime);
-                        if (newRemainingTime <= 0) {
-                            clearInterval(cooldownInterval);
-                            cooldownInterval = null;
-                            cooldownTimerSpan.textContent = '';
-                            placePixelBtn.disabled = !nickname; // Re-enable if nickname is set
-                        } else {
-                            cooldownTimerSpan.textContent = ` (${Math.ceil(newRemainingTime / 1000)}s)`;
-                        }
-                    }, 1000);
+        // --- Initialisation de la grille de pixels ---
+        function createPixelGrid() {
+            pixelGrid.style.gridTemplateColumns = `repeat(${GRID_SIZE}, 1fr)`;
+            pixelGrid.style.setProperty('--grid-cols', GRID_SIZE); // Pour CSS responsive
+            for (let y = 0; y < GRID_SIZE; y++) {
+                for (let x = 0; x < GRID_SIZE; x++) {
+                    const pixelDiv = document.createElement('div');
+                    pixelDiv.classList.add('pixel');
+                    pixelDiv.dataset.x = x;
+                    pixelDiv.dataset.y = y;
+                    pixelDiv.style.backgroundColor = '#fff'; // Couleur par défaut
+                    pixelDiv.addEventListener('click', placePixel);
+                    pixelGrid.appendChild(pixelDiv);
                 }
-                return false;
-            } else {
-                cooldownTimerSpan.textContent = '';
-                clearInterval(cooldownInterval);
-                cooldownInterval = null;
-                placePixelBtn.disabled = !nickname;
-                return true;
+            }Aucune réponse
+            // ... (suite du code JS précédent) ...
+
+            // ... continuer ici ...
+            startCooldown(); // Démarre le cooldown après avoir placé un pixel
+            } catch (error) {
+                console.error("Erreur lors du placement du pixel :", error);
+                alert("Impossible de placer le pixel. Veuillez réessayer.");
             }
         }
 
-        // --- Pixel Placement Event ---
-Aucune réponse
-                    user: nickname,
-                    text: messageText,
-                    timestamp: serverTimestamp()
-                }).then(() => {
-                    chatInput.value = ''; // Clear input after sending
-                }).catch(error => {
-                    console.error("Error sending message: ", error);
-                    alert("Erreur lors de l'envoi du message. Veuillez réessayer.");
+        let cooldownInterval;
+
+        function startCooldown() {
+            let timeLeft = COOLDOWN_SECONDS;
+            cooldownMessage.style.display = 'block';
+            cooldownTimerSpan.textContent = timeLeft;
+
+            if (cooldownInterval) {
+                clearInterval(cooldownInterval); // S'assurer qu'un seul intervalle est actif
+            }
+
+            cooldownInterval = setInterval(() => {
+                timeLeft--;
+                cooldownTimerSpan.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(cooldownInterval);
+                    cooldownMessage.style.display = 'none';
+                }
+            }, 1000);
+        }
+
+        // --- Gestion du Chat (Firebase Realtime Database) ---
+        const chatRef = ref(database, 'chat');
+
+        chatSendButton.addEventListener('click', sendMessage);
+        chatMessageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            if (!userNickname) {
+                alert('Veuillez d\'abord choisir un pseudonyme pour chatter !');
+                return;
+            }
+
+            const messageText = chatMessageInput.value.trim();
+            if (messageText) {
+                try {
+                    await push(chatRef, {
+                        user: userNickname,
+                        text: messageText,
+                        timestamp: serverTimestamp()
+                    });
+                    chatMessageInput.value = ''; // Efface l'input après envoi
+                } catch (error) {
+                    console.error("Erreur lors de l'envoi du message :", error);
+                    alert("Impossible d'envoyer le message. Veuillez réessayer.");
+                }
+            }
+        }
+
+        // Écoute les nouveaux messages dans le chat
+        onValue(chatRef, (snapshot) => {
+            chatMessagesDiv.innerHTML = ''; // Vide les messages existants pour les rafraîchir
+            const messagesData = snapshot.val();
+            if (messagesData) {
+                // Convertit l'objet en tableau et le trie par timestamp
+                const sortedMessages = Object.values(messagesData).sort((a, b) => a.timestamp - b.timestamp);
+
+                sortedMessages.forEach(msg => {
+                    const messageElement = document.createElement('p');
+                    const messageDate = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : 'N/A';
+                    messageElement.innerHTML = `<strong>${msg.user}</strong> <span style="color: #888; font-size: 0.8em;">(${messageDate})</span>: ${msg.text}`;
+                    chatMessagesDiv.appendChild(messageElement);
                 });
-            } else if (!nickname) {
-                alert("Veuillez d'abord définir un pseudo pour discuter.");
+                // Fait défiler le chat vers le bas pour afficher le dernier message
+                chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
             }
         });
 
-        chatInput.addEventListener('keypress', (event) => {
-            if (event.key === 'Enter') {
-                sendChatBtn.click(); // Trigger send button click on Enter key
-            }
-        });
+        // --- Initialisation au chargement ---
+        // Optionnel : Lancer un cooldown initial si l'utilisateur avait déjà placé un pixel juste avant de recharger la page.
+        // Pour cela, il faudrait stocker le `lastPixelTime` dans le localStorage et le récupérer ici.
+        // Mais pour l'exemple, nous nous en tenons à la logique simple.
 
-        // --- Listen for Chat Messages from Firebase ---
-        const messagesRef = ref(db, 'messages');
-        onValue(messagesRef, (snapshot) => {
-            messagesDisplay.innerHTML = ''; // Clear current messages
-            snapshot.forEach((childSnapshot) => {
-                const message = childSnapshot.val();
-                const messageElement = document.createElement('p');
-                messageElement.classList.add('chat-message');
-
-                let timestampText = '';
-                if (message.timestamp) {
-                    const date = new Date(message.timestamp);
-                    timestampText = ` <span class="timestamp">(${date.toLocaleTimeString()})</span>`;
-                }
-
-                messageElement.innerHTML = `<strong>${message.user}:</strong> ${message.text}${timestampText}`;
-                messagesDisplay.appendChild(messageElement);
-            });
-            // Scroll to the bottom of the chat
-            messagesDisplay.scrollTop = messagesDisplay.scrollHeight;
-        });
-
-        // Initial check for cooldown and nickname on page load
-        checkCooldown();
     </script>
 </body>
 </html>
