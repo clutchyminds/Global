@@ -13,17 +13,27 @@
             margin: 0;
             background-color: #f0f2f5;
             color: #333;
-            min-height: 100vh; /* S'assure que le body prend toute la hauteur */
+            min-height: 100vh;
         }
         h1 {
             color: #2c3e50;
             margin-top: 20px;
-            font-size: 2.5em; /* Taille de titre pour mobile aussi */
+            font-size: 2.5em;
         }
         h2 {
             color: #34495e;
             font-size: 1.5em;
             margin-bottom: 15px;
+        }
+        .section-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
         }
         .container {
             display: flex;
@@ -31,50 +41,53 @@
             max-width: 1200px;
             margin-top: 20px;
             gap: 20px;
-            flex-wrap: wrap; /* Permet le retour à la ligne pour la responsivité */
-            justify-content: center; /* Centre les blocs sur mobile */
+            flex-wrap: wrap;
+            justify-content: center;
         }
         #pixel-grid-container {
-            flex: 2; /* Prend plus d'espace */
-            min-width: 300px; /* Minimum width for responsiveness */
+            flex: 2;
+            min-width: 300px;
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            order: 1; /* Ordre sur desktop */
+            order: 1;
+            overflow-x: auto; /* Pour les grandes grilles sur mobile */
         }
         #pixel-grid {
             display: grid;
             border: 1px solid #ccc;
             background-color: #eee;
-            width: fit-content; /* S'adapte au contenu des pixels */
-            margin: 0 auto; /* Centre la grille */
+            width: fit-content;
+            margin: 0 auto;
+            /* La taille des colonnes sera définie par JS */
         }
         .pixel {
-            width: 16px; /* Taille par défaut d'un pixel */
-            height: 16px;
-            background-color: #fff; /* Couleur par défaut */
-            border: 1px solid #ddd;
+            width: 10px; /* Pixels plus petits pour une grille 100x100 */
+            height: 10px;
+            background-color: #fff;
+            border: 0.5px solid #ddd; /* Bordures plus fines */
             cursor: pointer;
-            box-sizing: border-box; /* Inclure la bordure dans la taille */
+            box-sizing: border-box;
         }
         .pixel.cooldown {
             cursor: not-allowed;
             opacity: 0.7;
         }
 
-        #chat-container {
-            flex: 1; /* Prend moins d'espace que la grille */
-            min-width: 280px; /* Minimum width for responsiveness */
-            max-width: 400px; /* Maximum width for chat */
+        #chat-container, #leaderboard-container {
+            flex: 1;
+            min-width: 280px;
+            max-width: 400px;
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
-            height: 500px; /* Hauteur fixe pour le chat */
-            order: 2; /* Ordre sur desktop */
+            height: 500px;
+            order: 2;
+            margin-bottom: 20px;
         }
         #chat-messages {
             flex-grow: 1;
@@ -84,11 +97,11 @@
             overflow-y: auto;
             background-color: #f9f9f9;
             border-radius: 4px;
-            word-wrap: break-word; /* Permet aux longs messages de se briser */
+            word-wrap: break-word;
         }
         #chat-input-area {
             display: flex;
-            margin-top: auto; /* Pousse l'input en bas du conteneur de chat */
+            margin-top: auto;
         }
         #chat-message-input {
             flex-grow: 1;
@@ -111,24 +124,15 @@
             background-color: #45a049;
         }
 
-        #nickname-setup, #color-picker-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            width: 90%;
-            max-width: 600px;
-            text-align: center;
-        }
-        input[type="text"], input[type="color"] {
+        input[type="text"], input[type="email"], input[type="password"], input[type="color"] {
             padding: 8px;
-            margin: 5px;
+            margin: 5px auto; /* Centrer l'input */
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 1em;
-            width: calc(100% - 20px); /* Ajuste la largeur pour prendre en compte le padding/margin */
+            width: calc(100% - 20px);
             max-width: 300px;
+            display: block; /* S'assurer qu'il prend toute la largeur disponible */
         }
         button {
             padding: 10px 15px;
@@ -149,8 +153,59 @@
             font-weight: bold;
             font-size: 1.1em;
         }
+        .hidden {
+            display: none !important;
+        }
+        .user-info {
+            margin-top: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        #leaderboard-list {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            flex-grow: 1;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        #leaderboard-list li {
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #leaderboard-list li:last-child {
+            border-bottom: none;
+        }
+        #leaderboard-list li .rank {
+            font-weight: bold;
+            margin-right: 10px;
+            color: #555;
+        }
+        #leaderboard-list li .player-name {
+            flex-grow: 1;
+            color: #333;
+        }
+        #leaderboard-list li .pixel-count {
+            font-weight: bold;
+            color: #007bff;
+            min-width: 50px;
+            text-align: right;
+        }
+        .leaderboard-current-user {
+            background-color: #e6f7ff; /* Légèrement en surbrillance pour l'utilisateur actuel */
+            border-radius: 4px;
+            margin: 5px 0;
+            padding: 8px;
+            font-weight: bold;
+            color: #0056b3;
+        }
 
-        /* Styles pour la réactivité */
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2em;
@@ -159,43 +214,32 @@
                 flex-direction: column;
                 width: 95%;
             }
-            #nickname-setup, #color-picker-container {
-                width: 95%; /* Prend plus de largeur sur mobile */
+            .section-card {
+                width: 95%;
             }
-            #pixel-grid-container, #chat-container {
+            #pixel-grid-container, #chat-container, #leaderboard-container {
                 min-width: unset;
                 width: 100%;
                 margin-bottom: 20px;
-                order: unset; /* Réinitialise l'ordre, suit l'ordre du DOM */
+                order: unset;
+                height: auto; /* Rendre la hauteur auto pour les conteneurs de chat/leaderboard */
             }
             #chat-container {
-                height: 350px; /* Ajuste la hauteur du chat sur les petits écrans */
+                height: 350px;
             }
             #pixel-grid {
-                width: 100%; /* La grille prend toute la largeur disponible */
-                /* Ajustement pour que les pixels restent carrés et remplissent l'espace */
-                /* Le padding-bottom est une technique pour maintenir le ratio d'aspect */
-                grid-template-columns: repeat(var(--grid-cols), 1fr);
-                padding-bottom: calc(100% / var(--grid-cols) * var(--grid-cols)); /* Assure que la hauteur est proportionnelle */
-                height: 0; /* Important pour que padding-bottom fonctionne */
-                overflow: hidden; /* Cache le contenu qui déborde si la hauteur est 0 */
+                overflow-x: scroll; /* Permet le défilement horizontal de la grille sur les petits écrans */
+                width: max-content; /* S'adapte au contenu pour permettre le scroll */
             }
             .pixel {
-                width: 100%; /* Chaque pixel prend la largeur de sa colonne */
-                padding-bottom: 100%; /* Maintient l'aspect carré */
-                height: 0; /* Important pour que padding-bottom fonctionne */
-                border: none; /* Enlève la bordure sur mobile pour un look plus compact */
-                box-sizing: border-box;
-                position: relative; /* Pour le positionnement du contenu si besoin */
+                border: none;
             }
-            /* Pour maintenir une distinction visuelle sans bordure, on peut alterner les couleurs de fond */
             .pixel:nth-child(even) {
                 background-color: #f8f8f8;
             }
             .pixel:nth-child(odd) {
                 background-color: #efefef;
             }
-            /* Conserve la couleur du pixel si elle est définie, en priorisant sur les couleurs alternées */
             .pixel[style*="background-color:"] {
                 background-color: var(--dynamic-bg-color, inherit) !important;
             }
@@ -204,29 +248,39 @@
 </head>
 <body>
     <h1>Firebase Pixel War</h1>
-
-    <div id="nickname-setup">
-        <h2>Choisis ton pseudonyme</h2>
-        <input type="text" id="nickname-input" placeholder="Entre ton pseudo" maxlength="20">
-        <button id="save-nickname-button">Sauvegarder Pseudo</button>
-        <p>Ton pseudo actuel : <span id="current-nickname">Non défini</span></p>
+    <div id="auth-section" class="section-card">
+        <h2>Connexion / Inscription</h2>
+        <input type="email" id="auth-email" placeholder="Email">
+        <input type="password" id="auth-password" placeholder="Mot de passe">
+        <button id="signup-button">S'inscrire</button>
+        <button id="login-button">Se connecter</button>
+        <button id="logout-button" class="hidden">Se déconnecter</button>
+        <p id="auth-message" style="color: red;"></p>
+        <div id="user-info" class="user-info hidden">
+            Connecté en tant que : <span id="current-user-email"></span> (<span id="current-user-nickname-display"></span>)
+        </div>
     </div>
-
-    <div id="color-picker-container">
+    <div id="game-controls" class="section-card hidden">
         <h2>Choisis ta couleur de pixel</h2>
         <input type="color" id="pixel-color-picker" value="#FF0000">
         <p id="cooldown-message" style="display: none;">Prochain pixel disponible dans <span id="cooldown-timer">10</span> secondes.</p>
+        <p>Pixels placés : <span id="pixels-placed-count">0</span></p>
     </div>
 
     <div class="container">
-        <div id="pixel-grid-container">
+        <div id="leaderboard-container" class="section-card">
+            <h2>Classement des Pixel Artistes</h2>
+            <ul id="leaderboard-list">
+                <li>Chargement...</li>
+            </ul>
+        </div>
+        <div id="pixel-grid-container" class="hidden">
             <h2>La Grille des Pixels</h2>
             <div id="pixel-grid">
                 <!-- Les pixels seront générés ici par JavaScript -->
             </div>
         </div>
-
-        <div id="chat-container">
+                <div id="chat-container" class="hidden">
             <h2>Chat</h2>
             <div id="chat-messages">
                 <!-- Les messages du chat seront affichés ici -->
@@ -239,9 +293,10 @@
     </div>
 
     <script type="module">
-        // Import des fonctions nécessaires du SDK Firebase
+            // Import des fonctions nécessaires du SDK Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+        import { getDatabase, ref, onValue, set, push, serverTimestamp, update, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
         // Ta configuration Firebase
         const firebaseConfig = {
@@ -256,53 +311,163 @@
 
         // Initialisation de Firebase
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const database = getDatabase(app);
 
         // --- ENGLOBE TOUT LE RESTE DE TON SCRIPT DANS CE BLOC POUR ASSURER QUE LE DOM EST CHARGÉ ---
         document.addEventListener('DOMContentLoaded', () => {
             // Références DOM
-            const nicknameInput = document.getElementById('nickname-input');
-            const saveNicknameButton = document.getElementById('save-nickname-button');
-            const currentNicknameSpan = document.getElementById('current-nickname');
+            const authSection = document.getElementById('auth-section');
+            const authEmailInput = document.getElementById('auth-email');
+            const authPasswordInput = document.getElementById('auth-password');
+            const signupButton = document.getElementById('signup-button');
+            const loginButton = document.getElementById('login-button');
+            const logoutButton = document.getElementById('logout-button');
+            const authMessage = document.getElementById('auth-message');
+            const userInfoDiv = document.getElementById('user-info');
+            const currentUserEmailSpan = document.getElementById('current-user-email');
+            const currentUserNicknameDisplaySpan = document.getElementById('current-user-nickname-display');
+
+            const gameControlsDiv = document.getElementById('game-controls');
             const pixelColorPicker = document.getElementById('pixel-color-picker');
+            const cooldownMessage = document.getElementById('cooldown-message');
+            const cooldownTimerSpan = document.getElementById('cooldown-timer');
+            const pixelsPlacedCountSpan = document.getElementById('pixels-placed-count');
+
+            const pixelGridContainer = document.getElementById('pixel-grid-container');
             const pixelGrid = document.getElementById('pixel-grid');
+
+            const chatContainer = document.getElementById('chat-container');
             const chatMessagesDiv = document.getElementById('chat-messages');
             const chatMessageInput = document.getElementById('chat-message-input');
             const chatSendButton = document.getElementById('chat-send-button');
-            const cooldownMessage = document.getElementById('cooldown-message');
-            const cooldownTimerSpan = document.getElementById('cooldown-timer');
+
+            const leaderboardContainer = document.getElementById('leaderboard-container');
+            const leaderboardList = document.getElementById('leaderboard-list');
 
             // Variables globales
-            let userNickname = localStorage.getItem('pixelWarNickname') || '';
-            // Récupère le dernier temps du localStorage, le convertit en nombre, ou 0 si non défini
-            let lastPixelTime = parseInt(localStorage.getItem('lastPixelTime')) || 0;
+            let currentUser = null; // L'objet utilisateur Firebase
+            let userNickname = 'Anonyme';
+            let userUid = null;
+            let lastPixelTime = 0; // Géré par Firebase pour chaque utilisateur
             const COOLDOWN_SECONDS = 10;
-            const GRID_SIZE = 30; // 30x30 pixels for the grid
-
-            // --- Fonctions de gestion du Pseudonyme ---
-            function updateNicknameDisplay() {
-                if (userNickname) {
-                    currentNicknameSpan.textContent = userNickname;
-                    nicknameInput.value = userNickname;
-                } else {
-                    currentNicknameSpan.textContent = 'Non défini';
+            const GRID_SIZE = 100; // 100x100 pixels for the grid
+                        // --- Fonctions d'Authentification ---
+            signupButton.addEventListener('click', async () => {
+                const email = authEmailInput.value;
+                const password = authPasswordInput.value;
+                if (!email || !password) {
+                    authMessage.textContent = 'Veuillez remplir tous les champs.';
+                    return;
                 }
-            }
-
-            saveNicknameButton.addEventListener('click', () => {
-                const newNickname = nicknameInput.value.trim();
-                if (newNickname) {
-                    userNickname = newNickname;
-                    localStorage.setItem('pixelWarNickname', userNickname);
-                    updateNicknameDisplay();
-                    alert(`Ton pseudo a été sauvegardé : ${userNickname}`);
-                } else {
-                    alert('Veuillez entrer un pseudo valide.');
+                try {
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    authMessage.textContent = `Compte créé avec succès pour ${userCredential.user.email}!`;
+                    // Demander un nickname après inscription
+                    const nickname = prompt("Choisissez un pseudonyme (20 caractères max):");
+                    if (nickname && nickname.trim().length > 0 && nickname.trim().length <= 20) {
+                        await set(ref(database, `users/${userCredential.user.uid}/nickname`), nickname.trim());
+                        await set(ref(database, `users/${userCredential.user.uid}/pixelsPlaced`), 0);
+                        userNickname = nickname.trim();
+                        currentUserNicknameDisplaySpan.textContent = userNickname;
+                    } else {
+                        alert("Pseudo invalide ou non fourni. Vous pouvez le définir plus tard.");
+                        await set(ref(database, `users/${userCredential.user.uid}/nickname`), "Nouveau Joueur");
+                        await set(ref(database, `users/${userCredential.user.uid}/pixelsPlaced`), 0);
+                        userNickname = "Nouveau Joueur";
+                        currentUserNicknameDisplaySpan.textContent = userNickname;
+                    }
+                } catch (error) {
+                    authMessage.textContent = `Erreur d'inscription: ${error.message}`;
+                    console.error("Error signing up:", error);
                 }
             });
 
-            // Initialise l'affichage du pseudo au chargement
-            updateNicknameDisplay();
+            loginButton.addEventListener('click', async () => {
+                const email = authEmailInput.value;
+                const password = authPasswordInput.value;
+                if (!email || !password) {
+                    authMessage.textContent = 'Veuillez remplir tous les champs.';
+                    return;
+                }
+                try {
+                    await signInWithEmailAndPassword(auth, email, password);
+                    authMessage.textContent = `Connexion réussie!`;
+                } catch (error) {
+                    authMessage.textContent = `Erreur de connexion: ${error.message}`;
+                    console.error("Error logging in:", error);
+                }
+            });
+
+            logoutButton.addEventListener('click', async () => {
+                try {
+                    await signOut(auth);
+                    authMessage.textContent = `Déconnexion réussie!`;
+                } catch (error) {
+                    authMessage.textContent = `Erreur de déconnexion: ${error.message}`;
+                    console.error("Error logging out:", error);
+                }
+            });
+                        // Gérer l'état d'authentification
+            onAuthStateChanged(auth, async (user) => {
+                currentUser = user;
+                if (user) {
+                    userUid = user.uid;
+                    currentUserEmailSpan.textContent = user.email;
+
+                    // Récupérer le nickname et le compteur de pixels
+                    onValue(ref(database, `users/${user.uid}`), (snapshot) => {
+                        const userData = snapshot.val();
+                        if (userData) {
+                            userNickname = userData.nickname || 'Nouveau Joueur';
+                            pixelsPlacedCountSpan.textContent = userData.pixelsPlaced || 0;
+                            lastPixelTime = userData.lastPixelTime || 0;
+                            currentUserNicknameDisplaySpan.textContent = userNickname;
+                            startCooldown(); // Démarrer le cooldown si nécessaire
+                        } else {
+                            // Si l'utilisateur n'a pas encore de données dans /users, les créer
+                            set(ref(database, `users/${user.uid}/nickname`), "Nouveau Joueur");
+                            set(ref(database, `users/${user.uid}/pixelsPlaced`), 0);
+                            set(ref(database, `users/${user.uid}/lastPixelTime`), 0);
+                            userNickname = "Nouveau Joueur";
+                            pixelsPlacedCountSpan.textContent = 0;
+                            lastPixelTime = 0;
+                            currentUserNicknameDisplaySpan.textContent = userNickname;
+                        }
+                    }, { onlyOnce: false }); // Écouter les changements pour le user data
+
+
+                    // Afficher les éléments du jeu, cacher l'auth
+                    authEmailInput.classList.add('hidden');
+                    authPasswordInput.classList.add('hidden');
+                    signupButton.classList.add('hidden');
+                    loginButton.classList.add('hidden');
+                    logoutButton.classList.remove('hidden');
+                    userInfoDiv.classList.remove('hidden');
+                    gameControlsDiv.classList.remove('hidden');
+                    pixelGridContainer.classList.remove('hidden');
+                    chatContainer.classList.remove('hidden');
+                } else {
+                    userUid = null;
+                    userNickname = 'Anonyme';
+                    currentUserNicknameDisplaySpan.textContent = userNickname;
+                    pixelsPlacedCountSpan.textContent = 0;
+                    lastPixelTime = 0;
+
+                    // Cacher les éléments du jeu, afficher l'auth
+                    authEmailInput.classList.remove('hidden');
+                    authPasswordInput.classList.remove('hidden');
+                    signupButton.classList.remove('hidden');
+                    loginButton.classList.remove('hidden');
+                    logoutButton.classList.add('hidden');
+                    userInfoDiv.classList.add('hidden');
+                    gameControlsDiv.classList.add('hidden');
+                    pixelGridContainer.classList.add('hidden');
+                    chatContainer.classList.add('hidden');
+                }
+                authMessage.textContent = ''; // Effacer le message d'auth
+            });
+
 
             // --- Initialisation de la grille de pixels ---
             function createPixelGrid() {
@@ -316,7 +481,7 @@
                         pixelDiv.classList.add('pixel');
                         pixelDiv.dataset.x = x;
                         pixelDiv.dataset.y = y;
-                        pixelDiv.style.backgroundColor = '#fff'; // Couleur par défaut
+                        pixelDiv.style.backgroundColor = '#fff'; // Couleur par default
                         pixelDiv.addEventListener('click', placePixel);
                         pixelGrid.appendChild(pixelDiv);
                     }
@@ -332,24 +497,48 @@
             onValue(pixelsRef, (snapshot) => {
                 const pixelsData = snapshot.val();
                 if (pixelsData) {
-                    Object.keys(pixelsData).forEach(key => {
-                        const [x, y] = key.split('_');
-                        const pixel = document.querySelector(`.pixel[data-x="${x}"][data-y="${y}"]`);
-                        if (pixel) {
-                            pixel.style.backgroundColor = pixelsData[key].color;
-                            // Optionnel: stocker qui a placé le pixel pour l'affichage au survol
-                            const pixelTimestamp = pixelsData[key].timestamp || Date.now(); // Fallback si timestamp manquant
-                            pixel.title = `${pixelsData[key].user || 'Anonyme'} at ${new Date(pixelTimestamp).toLocaleTimeString()}`;
+                    // Mettre à jour les pixels individuellement pour optimiser le DOM
+                    for (let y = 0; y < GRID_SIZE; y++) {
+                        for (let x = 0; x < GRID_SIZE; x++) {
+                            const key = `${x}_${y}`;
+                            const pixel = pixelGrid.querySelector(`.pixel[data-x="${x}"][data-y="${y}"]`);
+                            if (pixel) {
+                                if (pixelsData[key]) {
+                                    pixel.style.backgroundColor = pixelsData[key].color;
+                                    const timestamp = pixelsData[key].timestamp && typeof pixelsData[key].timestamp === 'object' ? pixelsData[key].timestamp.val : pixelsData[key].timestamp;
+                                    const dateString = timestamp ? new Date(timestamp).toLocaleTimeString() : 'N/A';
+                                    pixel.title = `${pixelsData[key].user || 'Anonyme'} at ${dateString}`;
+                                    pixel.style.setProperty('--dynamic-bg-color', pixelsData[key].color); // Pour CSS responsive
+                                } else {
+                                    // Si le pixel est supprimé ou n'existe pas, réinitialiser sa couleur
+                                    pixel.style.backgroundColor = '#fff';
+                                    pixel.title = '';
+                                    pixel.style.setProperty('--dynamic-bg-color', '#fff'); // Pour CSS responsive
+                                }
+                            }
                         }
-                    });
+                    }
+                } else {
+                    // Si aucune donnée de pixels, réinitialiser toute la grille
+                    for (let y = 0; y < GRID_SIZE; y++) {
+                        for (let x = 0; x < GRID_SIZE; x++) {
+                            const pixel = pixelGrid.querySelector(`.pixel[data-x="${x}"][data-y="${y}"]`);
+                            if (pixel) {
+                                pixel.style.backgroundColor = '#fff';
+                                pixel.title = '';
+                                pixel.style.setProperty('--dynamic-bg-color', '#fff');
+                            }
+                        }
+                    }
                 }
             });
+
 
             let cooldownInterval;
 
             async function placePixel(event) {
-                if (!userNickname) {
-                    alert('Veuillez d\'abord choisir un pseudonyme !');
+                if (!currentUser) {
+                    alert('Veuillez vous connecter pour placer un pixel !');
                     return;
                 }
 
@@ -367,11 +556,20 @@
                 try {
                     await set(ref(database, `pixels/${x}_${y}`), {
                         color: selectedColor,
-                        user: userNickname,
-                        timestamp: serverTimestamp() // Utilise le timestamp du serveur Firebase
+                        user: userNickname, // Utilise le nickname de l'utilisateur connecté
+                        timestamp: serverTimestamp(), // Utilise le timestamp du serveur Firebase
+                        uid: userUid // Stocke l'UID de l'utilisateur qui a posé le pixel
                     });
-                    lastPixelTime = currentTime; // Met à jour le temps du dernier pixel placé
-                    localStorage.setItem('lastPixelTime', currentTime.toString()); // Persiste dans localStorage
+
+                    // Met à jour le temps du dernier pixel et le compteur de pixels placés pour l'utilisateur
+                    await update(ref(database, `users/${userUid}`), {
+                        lastPixelTime: currentTime,
+                        pixelsPlaced: (parseInt(pixelsPlacedCountSpan.textContent) || 0) + 1
+                    });
+
+                    lastPixelTime = currentTime; // Met à jour la variable locale
+                    // pixelsPlacedCountSpan.textContent sera mis à jour via le onValue listener pour users
+
                     startCooldown(); // Démarre le cooldown après avoir placé un pixel
                 } catch (error) {
                     console.error("Erreur lors du placement du pixel :", error);
@@ -381,7 +579,8 @@
 
 
             function startCooldown() {
-                let timeLeft = COOLDOWN_SECONDS - Math.ceil((Date.now() - lastPixelTime) / 1000);
+                const now = Date.now();
+                let timeLeft = COOLDOWN_SECONDS - Math.ceil((now - lastPixelTime) / 1000);
 
                 if (timeLeft <= 0) { // Si le cooldown est déjà terminé
                     cooldownMessage.style.display = 'none';
@@ -405,14 +604,7 @@
                     }
                 }, 1000);
             }
-
-            // Vérifie le cooldown au chargement de la page
-            if (lastPixelTime !== 0 && (Date.now() - lastPixelTime) < COOLDOWN_SECONDS * 1000) {
-                startCooldown();
-            }
-
-
-            // --- Gestion du Chat (Firebase Realtime Database) ---
+                        // --- Gestion du Chat (Firebase Realtime Database) ---
             const chatRef = ref(database, 'chat');
 
             chatSendButton.addEventListener('click', sendMessage);
@@ -423,8 +615,8 @@
             });
 
             async function sendMessage() {
-                if (!userNickname) {
-                    alert('Veuillez d\'abord choisir un pseudonyme pour chatter !');
+                if (!currentUser) {
+                    alert('Veuillez vous connecter pour chatter !');
                     return;
                 }
 
@@ -432,9 +624,10 @@
                 if (messageText) {
                     try {
                         await push(chatRef, {
-                            user: userNickname,
+                            user: userNickname, // Utilise le nickname de l'utilisateur connecté
                             text: messageText,
-                            timestamp: serverTimestamp()
+                            timestamp: serverTimestamp(),
+                            uid: userUid // Ajoute l'UID de l'envoyeur
                         });
                         chatMessageInput.value = ''; // Efface l'input après envoi
                     } catch (error) {
@@ -454,7 +647,9 @@
 
                     sortedMessages.forEach(msg => {
                         const messageElement = document.createElement('p');
-                        const messageDate = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : 'N/A';
+                        // serverTimestamp peut renvoyer un objet { '.sv': 'timestamp' } ou le nombre directement
+                        const timestampValue = typeof msg.timestamp === 'object' ? msg.timestamp['.sv'] : msg.timestamp;
+                        const messageDate = timestampValue ? new Date(timestampValue).toLocaleTimeString() : 'N/A';
                         messageElement.innerHTML = `<strong>${msg.user}</strong> <span style="color: #888; font-size: 0.8em;">(${messageDate})</span>: ${msg.text}`;
                         chatMessagesDiv.appendChild(messageElement);
                     });
@@ -462,9 +657,43 @@
                     chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
                 }
             });
+
+
+            // --- Gestion du Classement (Leaderboard) ---
+            const usersRef = ref(database, 'users');
+            const topUsersQuery = query(usersRef, orderByChild('pixelsPlaced'), limitToLast(10));
+
+            onValue(topUsersQuery, (snapshot) => {
+                const usersData = snapshot.val();
+                leaderboardList.innerHTML = ''; // Efface l'ancienne liste
+
+                if (usersData) {
+                    // Convertit l'objet en tableau et le trie par pixelsPlaced (décroissant)
+                    let sortedUsers = Object.keys(usersData).map(uid => ({
+                        uid: uid,
+                        ...usersData[uid]
+                    })).sort((a, b) => b.pixelsPlaced - a.pixelsPlaced);
+
+                    // Affiche seulement les 10 premiers (limitToLast(10) donne les 10 plus grands)
+                    sortedUsers.forEach((user, index) => {
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `
+                            <span class="rank">${index + 1}.</span>
+                            <span class="player-name">${user.nickname || 'Anonyme'}</span>
+                            <span class="pixel-count">${user.pixelsPlaced || 0}</span>
+                        `;
+                        if (currentUser && user.uid === currentUser.uid) {
+                            listItem.classList.add('leaderboard-current-user');
+                        }
+                        leaderboardList.appendChild(listItem);
+                    });
+                } else {
+                    leaderboardList.innerHTML = '<li>Aucun joueur dans le classement pour le moment.</li>';
+                }
+            });
+
         }); // FIN DU document.addEventListener('DOMContentLoaded')
     </script>
 </body>
 </html>
 
-        
