@@ -13,6 +13,17 @@
             margin: 0;
             background-color: #f0f2f5;
             color: #333;
+            min-height: 100vh; /* S'assure que le body prend toute la hauteur */
+        }
+        h1 {
+            color: #2c3e50;
+            margin-top: 20px;
+            font-size: 2.5em; /* Taille de titre pour mobile aussi */
+        }
+        h2 {
+            color: #34495e;
+            font-size: 1.5em;
+            margin-bottom: 15px;
         }
         .container {
             display: flex;
@@ -21,6 +32,7 @@
             margin-top: 20px;
             gap: 20px;
             flex-wrap: wrap; /* Permet le retour à la ligne pour la responsivité */
+            justify-content: center; /* Centre les blocs sur mobile */
         }
         #pixel-grid-container {
             flex: 2; /* Prend plus d'espace */
@@ -29,6 +41,7 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            order: 1; /* Ordre sur desktop */
         }
         #pixel-grid {
             display: grid;
@@ -61,6 +74,7 @@
             display: flex;
             flex-direction: column;
             height: 500px; /* Hauteur fixe pour le chat */
+            order: 2; /* Ordre sur desktop */
         }
         #chat-messages {
             flex-grow: 1;
@@ -70,9 +84,11 @@
             overflow-y: auto;
             background-color: #f9f9f9;
             border-radius: 4px;
+            word-wrap: break-word; /* Permet aux longs messages de se briser */
         }
         #chat-input-area {
             display: flex;
+            margin-top: auto; /* Pousse l'input en bas du conteneur de chat */
         }
         #chat-message-input {
             flex-grow: 1;
@@ -80,6 +96,7 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             margin-right: 5px;
+            font-size: 1em;
         }
         #chat-send-button {
             padding: 8px 12px;
@@ -88,6 +105,7 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 1em;
         }
         #chat-send-button:hover {
             background-color: #45a049;
@@ -108,6 +126,9 @@
             margin: 5px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            font-size: 1em;
+            width: calc(100% - 20px); /* Ajuste la largeur pour prendre en compte le padding/margin */
+            max-width: 300px;
         }
         button {
             padding: 10px 15px;
@@ -117,6 +138,7 @@
             border-radius: 4px;
             cursor: pointer;
             margin-top: 10px;
+            font-size: 1em;
         }
         button:hover {
             background-color: #0056b3;
@@ -125,35 +147,57 @@
             color: red;
             margin-top: 10px;
             font-weight: bold;
+            font-size: 1.1em;
         }
 
         /* Styles pour la réactivité */
         @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
             .container {
                 flex-direction: column;
                 width: 95%;
+            }
+            #nickname-setup, #color-picker-container {
+                width: 95%; /* Prend plus de largeur sur mobile */
             }
             #pixel-grid-container, #chat-container {
                 min-width: unset;
                 width: 100%;
                 margin-bottom: 20px;
+                order: unset; /* Réinitialise l'ordre, suit l'ordre du DOM */
             }
             #chat-container {
-                height: 400px; /* Ajuste la hauteur du chat sur les petits écrans */
+                height: 350px; /* Ajuste la hauteur du chat sur les petits écrans */
             }
             #pixel-grid {
                 width: 100%; /* La grille prend toute la largeur disponible */
+                /* Ajustement pour que les pixels restent carrés et remplissent l'espace */
+                /* Le padding-bottom est une technique pour maintenir le ratio d'aspect */
+                grid-template-columns: repeat(var(--grid-cols), 1fr);
+                padding-bottom: calc(100% / var(--grid-cols) * var(--grid-cols)); /* Assure que la hauteur est proportionnelle */
+                height: 0; /* Important pour que padding-bottom fonctionne */
+                overflow: hidden; /* Cache le contenu qui déborde si la hauteur est 0 */
             }
             .pixel {
-                width: calc(100% / var(--grid-cols)); /* Taille dynamique des pixels */
-                height: auto; /* Hauteur proportionnelle */
-                padding-bottom: calc(100% / var(--grid-cols)); /* Maintient l'aspect carré */
-                position: relative; /* Pour positionner le contenu si besoin */
+                width: 100%; /* Chaque pixel prend la largeur de sa colonne */
+                padding-bottom: 100%; /* Maintient l'aspect carré */
+                height: 0; /* Important pour que padding-bottom fonctionne */
+                border: none; /* Enlève la bordure sur mobile pour un look plus compact */
+                box-sizing: border-box;
+                position: relative; /* Pour le positionnement du contenu si besoin */
             }
-            .pixel::before {
-                content: '';
-                display: block;
-                padding-top: 100%;
+            /* Pour maintenir une distinction visuelle sans bordure, on peut alterner les couleurs de fond */
+            .pixel:nth-child(even) {
+                background-color: #f8f8f8;
+            }
+            .pixel:nth-child(odd) {
+                background-color: #efefef;
+            }
+            /* Conserve la couleur du pixel si elle est définie, en priorisant sur les couleurs alternées */
+            .pixel[style*="background-color:"] {
+                background-color: var(--dynamic-bg-color, inherit) !important;
             }
         }
     </style>
@@ -199,7 +243,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
         import { getDatabase, ref, onValue, set, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-        // Ta configuration Firebase (fournie par l'utilisateur)
+        // Ta configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyC-7z8_LwTKHW4fLP3fOck5Cw0vFAVgpSo",
             authDomain: "pixel-war-deb21.firebaseapp.com",
@@ -214,151 +258,213 @@
         const app = initializeApp(firebaseConfig);
         const database = getDatabase(app);
 
-        // Références DOM
-        const nicknameInput = document.getElementById('nickname-input');
-        const saveNicknameButton = document.getElementById('save-nickname-button');
-        const currentNicknameSpan = document.getElementById('current-nickname');
-        const pixelColorPicker = document.getElementById('pixel-color-picker');
-        const pixelGrid = document.getElementById('pixel-grid');
-        const chatMessagesDiv = document.getElementById('chat-messages');
-        const chatMessageInput = document.getElementById('chat-message-input');
-        const chatSendButton = document.getElementById('chat-send-button');
-        const cooldownMessage = document.getElementById('cooldown-message');
-        const cooldownTimerSpan = document.getElementById('cooldown-timer');
+        // --- ENGLOBE TOUT LE RESTE DE TON SCRIPT DANS CE BLOC POUR ASSURER QUE LE DOM EST CHARGÉ ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Références DOM
+            const nicknameInput = document.getElementById('nickname-input');
+            const saveNicknameButton = document.getElementById('save-nickname-button');
+            const currentNicknameSpan = document.getElementById('current-nickname');
+            const pixelColorPicker = document.getElementById('pixel-color-picker');
+            const pixelGrid = document.getElementById('pixel-grid');
+            const chatMessagesDiv = document.getElementById('chat-messages');
+            const chatMessageInput = document.getElementById('chat-message-input');
+            const chatSendButton = document.getElementById('chat-send-button');
+            const cooldownMessage = document.getElementById('cooldown-message');
+            const cooldownTimerSpan = document.getElementById('cooldown-timer');
 
-        // Variables globales
-        let userNickname = localStorage.getItem('pixelWarNickname') || '';
-        let lastPixelTime = 0; // Timestamp du dernier pixel placé par cet utilisateur
-        const COOLDOWN_SECONDS = 10;
-        const GRID_SIZE = 30; // 30x30 pixels for the grid
+            // Variables globales
+            let userNickname = localStorage.getItem('pixelWarNickname') || '';
+            // Récupère le dernier temps du localStorage, le convertit en nombre, ou 0 si non défini
+            let lastPixelTime = parseInt(localStorage.getItem('lastPixelTime')) || 0;
+            const COOLDOWN_SECONDS = 10;
+            const GRID_SIZE = 30; // 30x30 pixels for the grid
 
-        // --- Fonctions de gestion du Pseudonyme ---
-        function updateNicknameDisplay() {
-            if (userNickname) {
-                currentNicknameSpan.textContent = userNickname;
-                nicknameInput.value = userNickname;
-            } else {
-                currentNicknameSpan.textContent = 'Non défini';
-            }
-        }
-
-        saveNicknameButton.addEventListener('click', () => {
-            const newNickname = nicknameInput.value.trim();
-            if (newNickname) {
-                userNickname = newNickname;
-                localStorage.setItem('pixelWarNickname', userNickname);
-                updateNicknameDisplay();
-                alert(`Ton pseudo a été sauvegardé : ${userNickname}`);
-            } else {
-                alert('Veuillez entrer un pseudo valide.');
-            }
-        });
-
-        // Initialise l'affichage du pseudo au chargement
-        updateNicknameDisplay();
-
-        // --- Initialisation de la grille de pixels ---
-        function createPixelGrid() {
-            pixelGrid.style.gridTemplateColumns = `repeat(${GRID_SIZE}, 1fr)`;
-            pixelGrid.style.setProperty('--grid-cols', GRID_SIZE); // Pour CSS responsive
-            for (let y = 0; y < GRID_SIZE; y++) {
-                for (let x = 0; x < GRID_SIZE; x++) {
-                    const pixelDiv = document.createElement('div');
-                    pixelDiv.classList.add('pixel');
-                    pixelDiv.dataset.x = x;
-                    pixelDiv.dataset.y = y;
-                    pixelDiv.style.backgroundColor = '#fff'; // Couleur par défaut
-                    pixelDiv.addEventListener('click', placePixel);
-                    pixelGrid.appendChild(pixelDiv);
+            // --- Fonctions de gestion du Pseudonyme ---
+            function updateNicknameDisplay() {
+                if (userNickname) {
+                    currentNicknameSpan.textContent = userNickname;
+                    nicknameInput.value = userNickname;
+                } else {
+                    currentNicknameSpan.textContent = 'Non défini';
                 }
-            }Aucune réponse
-            // ... (suite du code JS précédent) ...
-
-            // ... continuer ici ...
-            startCooldown(); // Démarre le cooldown après avoir placé un pixel
-            } catch (error) {
-                console.error("Erreur lors du placement du pixel :", error);
-                alert("Impossible de placer le pixel. Veuillez réessayer.");
-            }
-        }
-
-        let cooldownInterval;
-
-        function startCooldown() {
-            let timeLeft = COOLDOWN_SECONDS;
-            cooldownMessage.style.display = 'block';
-            cooldownTimerSpan.textContent = timeLeft;
-
-            if (cooldownInterval) {
-                clearInterval(cooldownInterval); // S'assurer qu'un seul intervalle est actif
             }
 
-            cooldownInterval = setInterval(() => {
-                timeLeft--;
-                cooldownTimerSpan.textContent = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(cooldownInterval);
-                    cooldownMessage.style.display = 'none';
+            saveNicknameButton.addEventListener('click', () => {
+                const newNickname = nicknameInput.value.trim();
+                if (newNickname) {
+                    userNickname = newNickname;
+                    localStorage.setItem('pixelWarNickname', userNickname);
+                    updateNicknameDisplay();
+                    alert(`Ton pseudo a été sauvegardé : ${userNickname}`);
+                } else {
+                    alert('Veuillez entrer un pseudo valide.');
                 }
-            }, 1000);
-        }
+            });
 
-        // --- Gestion du Chat (Firebase Realtime Database) ---
-        const chatRef = ref(database, 'chat');
+            // Initialise l'affichage du pseudo au chargement
+            updateNicknameDisplay();
 
-        chatSendButton.addEventListener('click', sendMessage);
-        chatMessageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                sendMessage();
+            // --- Initialisation de la grille de pixels ---
+            function createPixelGrid() {
+                pixelGrid.style.gridTemplateColumns = `repeat(${GRID_SIZE}, 1fr)`;
+                pixelGrid.style.setProperty('--grid-cols', GRID_SIZE); // Pour CSS responsive
+                pixelGrid.innerHTML = ''; // S'assure que la grille est vide avant de la créer
+
+                for (let y = 0; y < GRID_SIZE; y++) {
+                    for (let x = 0; x < GRID_SIZE; x++) {
+                        const pixelDiv = document.createElement('div');
+                        pixelDiv.classList.add('pixel');
+                        pixelDiv.dataset.x = x;
+                        pixelDiv.dataset.y = y;
+                        pixelDiv.style.backgroundColor = '#fff'; // Couleur par défaut
+                        pixelDiv.addEventListener('click', placePixel);
+                        pixelGrid.appendChild(pixelDiv);
+                    }
+                }
             }
-        });
 
-        async function sendMessage() {
-            if (!userNickname) {
-                alert('Veuillez d\'abord choisir un pseudonyme pour chatter !');
-                return;
-            }
+            createPixelGrid();
 
-            const messageText = chatMessageInput.value.trim();
-            if (messageText) {
-                try {
-                    await push(chatRef, {
-                        user: userNickname,
-                        text: messageText,
-                        timestamp: serverTimestamp()
+            // --- Gestion des Pixels (Firebase Realtime Database) ---
+            const pixelsRef = ref(database, 'pixels');
+
+            // Écoute les changements sur tous les pixels
+            onValue(pixelsRef, (snapshot) => {
+                const pixelsData = snapshot.val();
+                if (pixelsData) {
+                    Object.keys(pixelsData).forEach(key => {
+                        const [x, y] = key.split('_');
+                        const pixel = document.querySelector(`.pixel[data-x="${x}"][data-y="${y}"]`);
+                        if (pixel) {
+                            pixel.style.backgroundColor = pixelsData[key].color;
+                            // Optionnel: stocker qui a placé le pixel pour l'affichage au survol
+                            const pixelTimestamp = pixelsData[key].timestamp || Date.now(); // Fallback si timestamp manquant
+                            pixel.title = `${pixelsData[key].user || 'Anonyme'} at ${new Date(pixelTimestamp).toLocaleTimeString()}`;
+                        }
                     });
-                    chatMessageInput.value = ''; // Efface l'input après envoi
+                }
+            });
+
+            let cooldownInterval;
+
+            async function placePixel(event) {
+                if (!userNickname) {
+                    alert('Veuillez d\'abord choisir un pseudonyme !');
+                    return;
+                }
+
+                const currentTime = Date.now();
+                if (currentTime - lastPixelTime < COOLDOWN_SECONDS * 1000) {
+                    alert(`Veuillez attendre ${COOLDOWN_SECONDS} secondes entre chaque pixel.`);
+                    return;
+                }
+
+                const pixelDiv = event.target;
+                const x = pixelDiv.dataset.x;
+                const y = pixelDiv.dataset.y;
+                const selectedColor = pixelColorPicker.value;
+
+                try {
+                    await set(ref(database, `pixels/${x}_${y}`), {
+                        color: selectedColor,
+                        user: userNickname,
+                        timestamp: serverTimestamp() // Utilise le timestamp du serveur Firebase
+                    });
+                    lastPixelTime = currentTime; // Met à jour le temps du dernier pixel placé
+                    localStorage.setItem('lastPixelTime', currentTime.toString()); // Persiste dans localStorage
+                    startCooldown(); // Démarre le cooldown après avoir placé un pixel
                 } catch (error) {
-                    console.error("Erreur lors de l'envoi du message :", error);
-                    alert("Impossible d'envoyer le message. Veuillez réessayer.");
+                    console.error("Erreur lors du placement du pixel :", error);
+                    alert("Impossible de placer le pixel. Veuillez réessayer.");
                 }
             }
-        }
 
-        // Écoute les nouveaux messages dans le chat
-        onValue(chatRef, (snapshot) => {
-            chatMessagesDiv.innerHTML = ''; // Vide les messages existants pour les rafraîchir
-            const messagesData = snapshot.val();
-            if (messagesData) {
-                // Convertit l'objet en tableau et le trie par timestamp
-                const sortedMessages = Object.values(messagesData).sort((a, b) => a.timestamp - b.timestamp);
 
-                sortedMessages.forEach(msg => {
-                    const messageElement = document.createElement('p');
-                    const messageDate = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : 'N/A';
-                    messageElement.innerHTML = `<strong>${msg.user}</strong> <span style="color: #888; font-size: 0.8em;">(${messageDate})</span>: ${msg.text}`;
-                    chatMessagesDiv.appendChild(messageElement);
-                });
-                // Fait défiler le chat vers le bas pour afficher le dernier message
-                chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+            function startCooldown() {
+                let timeLeft = COOLDOWN_SECONDS - Math.ceil((Date.now() - lastPixelTime) / 1000);
+
+                if (timeLeft <= 0) { // Si le cooldown est déjà terminé
+                    cooldownMessage.style.display = 'none';
+                    if (cooldownInterval) clearInterval(cooldownInterval);
+                    return;
+                }
+
+                cooldownMessage.style.display = 'block';
+                cooldownTimerSpan.textContent = timeLeft;
+
+                if (cooldownInterval) {
+                    clearInterval(cooldownInterval); // S'assurer qu'un seul intervalle est actif
+                }
+
+                cooldownInterval = setInterval(() => {
+                    timeLeft--;
+                    cooldownTimerSpan.textContent = timeLeft;
+                    if (timeLeft <= 0) {
+                        clearInterval(cooldownInterval);
+                        cooldownMessage.style.display = 'none';
+                    }
+                }, 1000);
             }
-        });
 
-        // --- Initialisation au chargement ---
-        // Optionnel : Lancer un cooldown initial si l'utilisateur avait déjà placé un pixel juste avant de recharger la page.
-        // Pour cela, il faudrait stocker le `lastPixelTime` dans le localStorage et le récupérer ici.
-        // Mais pour l'exemple, nous nous en tenons à la logique simple.
+            // Vérifie le cooldown au chargement de la page
+            if (lastPixelTime !== 0 && (Date.now() - lastPixelTime) < COOLDOWN_SECONDS * 1000) {
+                startCooldown();
+            }
 
+
+            // --- Gestion du Chat (Firebase Realtime Database) ---
+            const chatRef = ref(database, 'chat');
+
+            chatSendButton.addEventListener('click', sendMessage);
+            chatMessageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+
+            async function sendMessage() {
+                if (!userNickname) {
+                    alert('Veuillez d\'abord choisir un pseudonyme pour chatter !');
+                    return;
+                }
+
+                const messageText = chatMessageInput.value.trim();
+                if (messageText) {
+                    try {
+                        await push(chatRef, {
+                            user: userNickname,
+                            text: messageText,
+                            timestamp: serverTimestamp()
+                        });
+                        chatMessageInput.value = ''; // Efface l'input après envoi
+                    } catch (error) {
+                        console.error("Erreur lors de l'envoi du message :", error);
+                        alert("Impossible d'envoyer le message. Veuillez réessayer.");
+                    }
+                }
+            }
+
+            // Écoute les nouveaux messages dans le chat
+            onValue(chatRef, (snapshot) => {
+                chatMessagesDiv.innerHTML = ''; // Vide les messages existants pour les rafraîchir
+                const messagesData = snapshot.val();
+                if (messagesData) {
+                    // Convertit l'objet en tableau et le trie par timestamp
+                    const sortedMessages = Object.values(messagesData).sort((a, b) => a.timestamp - b.timestamp);
+
+                    sortedMessages.forEach(msg => {
+                        const messageElement = document.createElement('p');
+                        const messageDate = msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : 'N/A';
+                        messageElement.innerHTML = `<strong>${msg.user}</strong> <span style="color: #888; font-size: 0.8em;">(${messageDate})</span>: ${msg.text}`;
+                        chatMessagesDiv.appendChild(messageElement);
+                    });
+                    // Fait défiler le chat vers le bas pour afficher le dernier message
+                    chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+                }
+            });
+        }); // FIN DU document.addEventListener('DOMContentLoaded')
     </script>
 </body>
 </html>
+
+        
