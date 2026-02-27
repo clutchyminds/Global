@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Poker Deluxe ♠️</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <style>
+        :root { --bg: #0a2e1a; --accent: #ffcc00; --card-white: #ffffff; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; font-family: 'Poppins', sans-serif; background: var(--bg); color: white; height: 100vh; overflow: hidden; display: flex; }
+        
+        #game-container { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; background: radial-gradient(circle, #1a4a2e 0%, #0a2e1a 100%); }
+        
+        /* --- PLATEAU --- */
+        #table { flex: 1; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #pot-info { background: rgba(0,0,0,0.5); padding: 10px 20px; border-radius: 20px; font-weight: bold; color: var(--accent); margin-bottom: 20px; border: 1px solid var(--accent); }
+        #community-cards { display: flex; gap: 10px; min-height: 120px; }
+
+        /* --- CARTES --- */
+        .card { 
+            width: 70px; height: 100px; background: var(--card-white); color: #1a1a2e; 
+            border-radius: 8px; display: flex; align-items: center; justify-content: center; 
+            font-weight: 900; font-size: 1.5rem; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative; border: 1px solid #ddd;
+        }
+        .card[data-suit="♥"], .card[data-suit="♦"] { color: #e94560; }
+        .card::before { content: attr(data-val) attr(data-suit); position: absolute; top: 5px; left: 5px; font-size: 0.7rem; }
+
+        /* --- JOUEUR --- */
+        #player-zone { position: absolute; bottom: 20px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        #my-hand { display: flex; gap: 15px; }
+        #my-chips { font-weight: bold; font-size: 1.2rem; color: var(--accent); text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+
+        .controls { display: flex; gap: 10px; margin-bottom: 10px; }
+        button { padding: 12px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; }
+        .btn-action { background: white; color: black; }
+        .btn-bet { background: var(--accent); color: black; }
+        button:disabled { opacity: 0.3; }
+
+        #lobby { position: fixed; inset: 0; background: #071a10; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .box { background: rgba(255,255,255,0.05); padding: 40px; border-radius: 15px; text-align: center; width: 90%; max-width: 400px; }
+        input { padding: 12px; border-radius: 8px; border: none; width: 100%; margin-bottom: 10px; text-align: center; }
+        
+        #chat-sidebar { width: 250px; background: rgba(0,0,0,0.8); display: flex; flex-direction: column; border-left: 1px solid rgba(255,255,255,0.1); }
+        #chat-msgs { flex: 1; overflow-y: auto; padding: 15px; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<div id="lobby">
+    <div class="box">
+        <h1 style="color:var(--accent)">POKER TEXAS</h1>
+        <input type="text" id="p-name" placeholder="Ton Pseudo">
+        <button onclick="createRoom()" style="width:100%; background:var(--accent); margin-bottom:10px;">Créer Table</button>
+        <div style="display:flex; gap:5px"><input type="text" id="r-code" placeholder="Code"><button onclick="joinRoom()">JOIN</button></div>
+        <div id="wait" class="hidden">
+            <p>CODE : <b id="display-code"></b></p>
+            <button id="btn-start" class="hidden" onclick="startGame()" style="background:#2ecc71">Lancer</button>
+        </div>
+    </div>
+</div>
+
+<div id="game-container">
+    <div id="table">
+        <div id="pot-info">POT: 0 🪙</div>
+        <div id="community-cards"></div>
+    </div>
+
+    <div id="player-zone">
+        <div id="my-chips">Mes Jetons: 1000</div>
+        <div id="my-hand"></div>
+        <div class="controls">
+            <button id="btn-fold" class="btn-action">Fold</button>
+            <button id="btn-call" class="btn-action">Check/Call</button>
+            <button id="btn-raise" class="btn-bet">Raise (50)</button>
+        </div>
+    </div>
+</div>
+
+<div id="chat-sidebar">
+    <div id="chat-msgs"></div>
+    <input type="text" id="chat-in" placeholder="Chat..." style="border-radius:0; margin:0">
+</div>
+
+<script>
+    // --- CONFIG FIREBASE ---
+    const config = {
+        apiKey: "AIzaSyDadsPbXI4xMieRDWgZMOb3WzkP8f7aonc",
+        authDomain: "mille-bornes-vibe.firebaseapp.com",
+        projectId: "mille-bornes-vibe",
+        databaseURL: "https://mille-bornes-vibe-default-rtdb.europe-west1.firebasedatabase.app"
+    };
+    firebase.initializeApp(config);
+    const db = firebase.database();
+
+    let myID = "P" + Math.floor(Math.random()*999);
+    let myName, roomID, isHost = false;
+    const suits = ["♠", "♣", "♥", "♦"];
+    const values = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
+
+    function createRoom() {
+        myName = document.getElementById('p-name').value;
+        if(!myName) return;
+        roomID = Math.random().toString(36).substring(2,6).toUpperCase();
+        isHost = true;
+        initRoom();
+    }
+
+    function joinRoom() {
+        myName = document.getElementById('p-name').value;
+        roomID = document.getElementById('r-code').value.toUpperCase();
+        if(!myName || !roomID) return;
+        initRoom();
+    }
+
+    function initRoom() {
+        const ref = db.ref('poker/' + roomID);
+        if(isHost) ref.set({ status: 'waiting', pot: 0, community: [], turn: "" });
+        ref.child('players/' + myID).set({ name: myName, chips: 1000, hand: [], state: 'active' });
+        
+        document.getElementById('wait').classList.remove('hidden');
+        document.getElementById('display-code').innerText = roomID;
+
+        ref.on('value', snap => {
+            const data = snap.val();
+            if(data) updateUI(data);
+        });
+    }
+
+    function startGame() {
+        const deck = [];
+        suits.forEach(s => values.forEach(v => deck.push({v, s})));
+        deck.sort(() => Math.random() - 0.5);
+
+        db.ref('poker/'+roomID+'/players').once('value', snap => {
+            const p = snap.val();
+            const ids = Object.keys(p);
+            ids.forEach((id, i) => {
+                db.ref(`poker/${roomID}/players/${id}`).update({ hand: [deck.pop(), deck.pop()] });
+            });
+            db.ref('poker/'+roomID).update({ status: 'playing', turn: ids[0], deck: deck });
+        });
+    }
+
+    function updateUI(data) {
+        if(data.status === 'playing') {
+            document.getElementById('lobby').classList.add('hidden');
+            document.getElementById('pot-info').innerText = `POT: ${data.pot} 🪙`;
+            
+            // Afficher ma main
+            const myHandDiv = document.getElementById('my-hand');
+            myHandDiv.innerHTML = "";
+            const myHand = data.players[myID].hand || [];
+            myHand.forEach(c => {
+                const el = document.createElement('div');
+                el.className = 'card';
+                el.dataset.val = c.v; el.dataset.suit = c.s;
+                el.innerText = c.v + c.s;
+                myHandDiv.appendChild(el);
+            });
+
+            // Cartes communes
+            const commDiv = document.getElementById('community-cards');
+            commDiv.innerHTML = "";
+            (data.community || []).forEach(c => {
+                const el = document.createElement('div');
+                el.className = 'card';
+                el.innerText = c.v + c.s;
+                commDiv.appendChild(el);
+            });
+
+            document.getElementById('my-chips').innerText = `Mes Jetons: ${data.players[myID].chips}`;
+        } else if(isHost && Object.keys(data.players || {}).length >= 2) {
+            document.getElementById('btn-start').classList.remove('hidden');
+        }
+    }
+</script>
+</body>
+</html>
