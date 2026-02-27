@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel War Firebase</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        #app-container {
+            display: flex;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-width: 1200px;
+            width: 95%;
+            flex-wrap: wrap; /* Allows wrapping on smaller screens */
+        }
+
+        #game-area {
+            flex: 2;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-right: 1px solid #eee;
+            min-width: 300px; /* Minimum width for game area */
+        }
+
+        #game-area h1 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        #pixel-canvas {
+            border: 1px solid #ddd;
+            background-color: #f8f8f8;
+            cursor: crosshair;
+            touch-action: none; /* Prevent scrolling on canvas touch */
+            width: 100%; /* Make canvas responsive */
+            max-width: 500px; /* Max width for square canvas */
+            aspect-ratio: 1 / 1; /* Keep canvas square */
+        }
+
+        #controls {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        #controls div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        #controls label {
+            font-weight: bold;
+            min-width: 60px;
+        }
+
+        #controls input[type="text"],
+        #controls input[type="color"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            flex-grow: 1;
+        }
+
+        #controls input[type="color"] {
+            width: 50px;
+            height: 38px; /* Match button height */
+            padding: 2px;
+        }
+
+        #controls button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            white-space: nowrap; /* Prevent button text from wrapping */
+        }
+
+        #controls button:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+
+        #controls button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        #cooldown-timer {
+            margin-left: 10px;
+            font-weight: bold;
+            color: #dc3545;
+        }
+
+        #chat-area {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #eee;
+            min-width: 280px; /* Minimum width for chat area */
+        }
+
+        #chat-area h2 {
+            color: #28a745;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        #messages-display {
+            flex-grow: 1;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            overflow-y: auto;
+            background-color: #fdfdfd;
+            margin-bottom: 10px;
+            height: 300px; /* Fixed height for chat display */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-message {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .chat-message strong {
+            color: #007bff;
+        }
+
+        .chat-message .timestamp {
+            font-size: 0.75em;
+            color: #888;
+            margin-left: 5px;
+        }
+
+        #chat-input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        #chat-input-area input {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #chat-input-area button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        #chat-input-area button:hover:not(:disabled) {
+            background-color: #218838;
+        }
+
+        #chat-input-area button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            #app-container {
+                flex-direction: column;
+                width: 98%;
+            }
+
+            #game-area, #chat-area {
+                border-left: none;
+                border-right: none;
+                border-bottom: 1px solid #eee;
+                width: 100%;
+                min-width: unset;
+                padding-bottom: 30px;
+            }
+
+            #chat-area {
+                border-bottom: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <div id="game-area">
+            <h1>Pixel War</h1>
+            <canvas id="pixel-canvas"></canvas>
+            <div id="controls">
+                <div>
+                    <label for="nickname-input">Pseudo:</label>
+                    <input type="text" id="nickname-input" placeholder="Choisissez votre pseudo">
+                    <button id="set-nickname-btn">Définir Pseudo</button>
+                </div>
+                <div>
+                    <label for="color-picker">Couleur:</label>
+                    <input type="color" id="color-picker" value="#FF0000">
+                    <button id="place-pixel-btn" disabled>Placer Pixel</button>
+                    <span id="cooldown-timer"></span>
+                </div>
+            </div>
+        </div>
+        <div id="chat-area">
+            <h2>Chat</h2>
+            <div id="messages-display">
+                <!-- Chat messages will be appended here -->
+            </div>
+            <div id="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Écrivez votre message..." disabled>
+                <button id="send-chat-btn" disabled>Envoyer</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, set, onValue, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-7z8_LwTKHW4fLP3fOck5Cw0vFAVgpSo",
+            authDomain: "pixel-war-deb21.firebaseapp.com",
+            databaseURL: "https://pixel-war-deb21-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "pixel-war-deb21",
+            storageBucket: "pixel-war-deb21.firebasestorage.app",
+            messagingSenderId: "842565318576",
+            appId: "1:842565318576:web:0192fe3ff59c0a633dc875"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // --- DOM Elements ---
+        const nicknameInput = document.getElementById('nickname-input');
+        const setNicknameBtn = document.getElementById('set-nickname-btn');
+        const colorPicker = document.getElementById('color-picker');
+        const placePixelBtn = document.getElementById('place-pixel-btn');
+        const cooldownTimerSpan = document.getElementById('cooldown-timer');
+        const pixelCanvas = document.getElementById('pixel-canvas');
+        const messagesDisplay = document.getElementById('messages-display');
+        const chatInput = document.getElementById('chat-input');
+        const sendChatBtn = document.getElementById('send-chat-btn');
+
+        const ctx = pixelCanvas.getContext('2d');
+
+        // --- Game Variables ---
+        const PIXEL_GRID_SIZE = 50; // 50x50 logical pixels
+        const COOLDOWN_SECONDS = 10; // 10 seconds cooldown
+        let nickname = localStorage.getItem('pixelWarNickname');
+        let lastPixelTime = parseInt(localStorage.getItem('pixelWarLastPixelTime') || '0'); // Load last pixel time from local storage
+        let cooldownInterval = null;
+
+        // --- Canvas Setup ---
+        const updateCanvasDimensions = () => {
+            const canvasContainerWidth = pixelCanvas.parentElement.clientWidth;
+            // Maintain aspect ratio (square)
+            const size = Math.min(canvasContainerWidth, 500); // Max 500px, but responsive
+            pixelCanvas.width = size;
+            pixelCanvas.height = size;
+            drawGrid(); // Redraw grid on resize
+        };
+
+        window.addEventListener('resize', updateCanvasDimensions);
+        updateCanvasDimensions(); // Initial call
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, pixelCanvas.width, pixelCanvas.height);
+            const pixelSize = pixelCanvas.width / PIXEL_GRID_SIZE; // Actual size of each pixel on canvas
+            ctx.strokeStyle = '#eee'; // Light grey grid lines
+            for (let x = 0; x <= PIXEL_GRID_SIZE; x++) {
+                ctx.beginPath();
+                ctx.moveTo(x * pixelSize, 0);
+                ctx.lineTo(x * pixelSize, pixelCanvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y <= PIXEL_GRID_SIZE; y++) {
+                ctx.beginPath();
+                ctx.moveTo(0, y * pixelSize);
+                ctx.lineTo(pixelCanvas.width, y * pixelSize);
+                ctx.stroke();
+            }
+        }
+
+        function drawPixel(x, y, color) {
+            const pixelSize = pixelCanvas.width / PIXEL_GRID_SIZE;
+            ctx.fillStyle = color;
+            ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+            ctx.strokeStyle = '#ccc'; // Outline for visibility
+            ctx.strokeRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+        }
+
+        // --- Nickname Logic ---
+        if (nickname) {
+            nicknameInput.value = nickname;
+            nicknameInput.disabled = true;
+            setNicknameBtn.style.display = 'none';
+            enableGameControls(true);
+            checkCooldown(); // Check cooldown on load if nickname is set
+        } else {
+            enableGameControls(false);
+        }
+
+        setNicknameBtn.addEventListener('click', () => {
+            const chosenNickname = nicknameInput.value.trim();
+            if (chosenNickname) {
+                nickname = chosenNickname;
+                localStorage.setItem('pixelWarNickname', nickname);
+                nicknameInput.disabled = true;
+                setNicknameBtn.style.display = 'none';
+                enableGameControls(true);
+                checkCooldown(); // Re-check cooldown after setting nickname
+                alert(`Pseudo "${nickname}" défini !`);
+            } else {
+                alert("Veuillez entrer un pseudo.");
+            }
+        });
+
+        function enableGameControls(enabled) {
+            placePixelBtn.disabled = !enabled;
+            chatInput.disabled = !enabled;
+            sendChatBtn.disabled = !enabled;
+        }
+
+        // --- Cooldown Logic ---
+        function checkCooldown() {
+            const now = Date.now();
+            const timeSinceLastPixel = now - lastPixelTime;
+            const remainingTime = COOLDOWN_SECONDS * 1000 - timeSinceLastPixel;
+
+            if (remainingTime > 0) {
+                placePixelBtn.disabled = true;
+                if (!cooldownInterval) {
+                    cooldownInterval = setInterval(() => {
+                        const newRemainingTime = COOLDOWN_SECONDS * 1000 - (Date.now() - lastPixelTime);
+                        if (newRemainingTime <= 0) {
+                            clearInterval(cooldownInterval);
+                            cooldownInterval = null;
+                            cooldownTimerSpan.textContent = '';
+                            placePixelBtn.disabled = !nickname; // Re-enable if nickname is set
+                        } else {
+                            cooldownTimerSpan.textContent = ` (${Math.ceil(newRemainingTime / 1000)}s)`;
+                        }
+                    }, 1000);
+                }
+                return false;
+            } else {
+                cooldownTimerSpan.textContent = '';
+                clearInterval(cooldownInterval);
+                cooldownInterval = null;
+                placePixelBtn.disabled = !nickname;
+                return true;
+            }
+        }
+
+        // --- Pixel Placement Event ---
+Aucune réponse
+                    user: nickname,
+                    text: messageText,
+                    timestamp: serverTimestamp()
+                }).then(() => {
+                    chatInput.value = ''; // Clear input after sending
+                }).catch(error => {
+                    console.error("Error sending message: ", error);
+                    alert("Erreur lors de l'envoi du message. Veuillez réessayer.");
+                });
+            } else if (!nickname) {
+                alert("Veuillez d'abord définir un pseudo pour discuter.");
+            }
+        });
+
+        chatInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendChatBtn.click(); // Trigger send button click on Enter key
+            }
+        });
+
+        // --- Listen for Chat Messages from Firebase ---
+        const messagesRef = ref(db, 'messages');
+        onValue(messagesRef, (snapshot) => {
+            messagesDisplay.innerHTML = ''; // Clear current messages
+            snapshot.forEach((childSnapshot) => {
+                const message = childSnapshot.val();
+                const messageElement = document.createElement('p');
+                messageElement.classList.add('chat-message');
+
+                let timestampText = '';
+                if (message.timestamp) {
+                    const date = new Date(message.timestamp);
+                    timestampText = ` <span class="timestamp">(${date.toLocaleTimeString()})</span>`;
+                }
+
+                messageElement.innerHTML = `<strong>${message.user}:</strong> ${message.text}${timestampText}`;
+                messagesDisplay.appendChild(messageElement);
+            });
+            // Scroll to the bottom of the chat
+            messagesDisplay.scrollTop = messagesDisplay.scrollHeight;
+        });
+
+        // Initial check for cooldown and nickname on page load
+        checkCooldown();
+    </script>
+</body>
+</html>
