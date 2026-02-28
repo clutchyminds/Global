@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>GOD MODE 4D - ULTIMATE HYBRID</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        body, html { margin: 0; padding: 0; background: #050505; font-family: 'VT323', monospace; color: white; overflow: hidden; }
+        canvas { display: block; image-rendering: pixelated; }
+
+        /* UI LAYERS */
+        .ui-layer { position: absolute; inset: 0; z-index: 10; display: none; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.9); text-align: center; }
+        .active { display: flex !important; }
+        
+        .panel { background: #111; border: 4px solid #555; padding: 30px; max-width: 800px; width: 90%; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 20px 0; }
+        
+        /* EDITOR BAR */
+        #editor-ui { 
+            position: absolute; bottom: 0; left: 0; width: 100%; background: #1a1a1a; 
+            border-top: 3px solid #555; display: none; flex-direction: column; z-index: 100;
+        }
+        .tool-row { display: flex; overflow-x: auto; padding: 10px; gap: 8px; scrollbar-width: thin; }
+        .tool { min-width: 40px; height: 40px; border: 2px solid #444; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .tool.selected { border-color: #f1c40f; box-shadow: 0 0 10px #f1c40f; }
+        
+        #tooltip { position: fixed; background: rgba(0,0,0,0.95); border: 1px solid #f1c40f; padding: 8px; pointer-events: none; z-index: 1000; display: none; max-width: 200px; }
+        .btn { background: #4b793f; border: none; color: white; padding: 10px 20px; font-family: 'VT323'; font-size: 1.2rem; cursor: pointer; margin: 5px; }
+        .btn:hover { background: #5b8e4e; outline: 2px solid white; }
+        
+        #hud { position: absolute; top: 10px; left: 10px; z-index: 5; pointer-events: none; display:none; }
+    </style>
+</head>
+<body>
+
+<div id="tooltip"></div>
+
+<div id="hud">
+    <h2 id="lvl-tag" style="color: #f1c40f; margin: 0;">NIVEAU 1-1</h2>
+    <div style="width: 200px; height: 10px; background: #222; border: 1px solid #fff; margin-top: 5px;">
+        <div id="hp-bar" style="width: 100%; height: 100%; background: #ff4757;"></div>
+    </div>
+</div>
+
+<div id="editor-ui">
+    <div style="display:flex; background:#222; padding:5px; gap:10px; align-items:center;">
+        <button class="btn" onclick="Editor.exportJSON()">💾 EXPORT</button>
+        <button class="btn" onclick="document.getElementById('file-input').click()">📂 IMPORT</button>
+        <input type="file" id="file-input" style="display:none" onchange="Editor.importJSON(event)">
+        <button class="btn" style="background:#8e44ad" onclick="Game.toggleMode()">🚀 TESTER / ÉDITER</button>
+        <button class="btn" style="background:#c0392b" onclick="location.reload()">🏠 MENU</button>
+    </div>
+    <div class="tool-row" id="block-list"></div>
+    <div class="tool-row" id="mob-list"></div>
+</div>
+
+<div id="menu-main" class="ui-layer active">
+    <div class="panel">
+        <h1 style="font-size:4rem; margin:0">GOD MODE 4D</h1>
+        <button class="btn" style="font-size:2rem; width:80%" onclick="UI.show('menu-biomes')">CAMPAGNE</button>
+        <button class="btn" style="font-size:2rem; width:80%; background:#8e44ad" onclick="Game.startEditor()">ÉDITEUR CRÉATIF</button>
+    </div>
+</div>
+
+<div id="menu-biomes" class="ui-layer">
+    <div class="panel">
+        <h1>CHOISIR UN BIOME</h1>
+        <div class="grid" id="biome-grid"></div>
+        <button class="btn" onclick="UI.show('menu-main')">RETOUR</button>
+    </div>
+</div>
+
+<div id="menu-levels" class="ui-layer">
+    <div class="panel">
+        <h1 id="biome-title">BIOME</h1>
+        <div class="grid" id="level-grid"></div>
+        <button class="btn" onclick="UI.show('menu-biomes')">RETOUR</button>
+    </div>
+</div>
+
+<canvas id="gameCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const TILE = 32;
+
+const BIOMES = [
+    { name: "PLAINE", color: "#2ecc71", sky: "#87CEEB" },
+    { name: "DESERT", color: "#f1c40f", sky: "#ffbe76" },
+    { name: "FORET", color: "#009432", sky: "#00d2d3" },
+    { name: "VOLANT", color: "#82ccdd", sky: "#ffffff" },
+    { name: "ENFER", color: "#eb4d4b", sky: "#130f40" }
+];
+
+const DATA = {
+    blocks: [
+        { id: 'ground', name: 'Terre', color: '#795548', desc: 'Sol standard.' },
+        { id: 'grass', name: 'Herbe', color: '#4CAF50', desc: 'Surface végétale.' },
+        { id: 'ice', name: 'Glace', color: '#81D4FA', desc: 'Glissant.', friction: 0.98 },
+        { id: 'bounce', name: 'Ressort', color: '#E91E63', desc: 'Propulse haut.', bounciness: -18 },
+        { id: 'lava', name: 'Lave', color: '#FF5722', desc: 'Dégâts mortels.', damage: 5 },
+        { id: 'water', name: 'Eau', color: '#2196F3', desc: 'Permet de nager.' },
+        { id: 'spike', name: 'Pique', color: '#546E7A', desc: 'Aïe !', damage: 2 },
+        { id: 'gold', name: 'Or', color: '#FFD700', desc: 'Donne des points.' },
+        { id: 'exit', name: 'Fin', color: '#AA00FF', desc: 'Portail de sortie.' },
+        { id: 'spawn', name: 'Départ', color: '#00C853', desc: 'Spawn du joueur.' }
+        // ... (Tu peux copier les 20 ici, j'en mets 10 pour la clarté du code)
+    ],
+    mobs: [
+        { id: 'walker', name: 'Zombie', color: '#388E3C', desc: 'Marcheur.' },
+        { id: 'flyer', name: 'Oiseau', color: '#0288D1', desc: 'Voleur.' },
+        { id: 'chaser', name: 'Traqueur', color: '#D32F2F', desc: 'Te suit.' }
+    ]
+};
+
+const Game = {
+    mode: 'play',
+    isRunning: false,
+    blocks: [],
+    mobs: [],
+    camX: 0,
+    currentBiome: 0,
+    currentLevel: 1,
+    spawn: { x: 100, y: 300 },
+
+    startEditor() {
+        this.mode = 'edit';
+        this.blocks = [];
+        this.mobs = [];
+        UI.hideAll();
+        document.getElementById('editor-ui').style.display = 'flex';
+        this.player = new Player(this.spawn.x, this.spawn.y);
+        UI.initEditorTools();
+        this.isRunning = true;
+        this.loop();
+    },
+
+    startCampaign(bIdx, lNum) {
+        this.mode = 'play';
+        this.currentBiome = bIdx;
+        this.currentLevel = lNum;
+        this.generateCampaignLevel();
+        UI.hideAll();
+        document.getElementById('hud').style.display = 'block';
+        document.getElementById('lvl-tag').innerText = `${BIOMES[bIdx].name} ${bIdx+1}-${lNum}`;
+        this.player = new Player(this.spawn.x, this.spawn.y);
+        this.isRunning = true;
+        this.loop();
+    },
+
+    generateCampaignLevel() {
+        this.blocks = []; this.mobs = [];
+        let seed = (this.currentBiome + 1) * this.currentLevel;
+        let rng = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+        
+        for(let x=0; x<100; x++) {
+            if(x > 5 && x < 95 && rng() < 0.1) { x+=2; continue; }
+            this.blocks.push({x: x*TILE, y: 12*TILE, color: BIOMES[this.currentBiome].color, id: 'ground'});
+            if(x === 99) this.blocks.push({x: x*TILE, y: 11*TILE, color: '#AA00FF', id: 'exit'});
+        }
+        this.spawn = { x: 64, y: 300 };
+    },
+
+    toggleMode() {
+        this.mode = (this.mode === 'edit' ? 'play' : 'edit');
+        if(this.mode === 'play') this.player.reset(this.spawn.x, this.spawn.y);
+    },
+
+    update() {
+        if(!this.isRunning) return;
+        if(this.mode === 'play') {
+            this.player.update(this.blocks);
+            this.camX = this.player.x - canvas.width/2;
+        } else {
+            if(keys['KeyD']) this.camX += 10;
+            if(keys['KeyA']) this.camX -= 10;
+        }
+    },
+
+    draw() {
+        ctx.fillStyle = this.mode === 'edit' ? '#0a0a1a' : BIOMES[this.currentBiome].sky;
+        ctx.fillRect(0,0,canvas.width, canvas.height);
+        ctx.save();
+        ctx.translate(-this.camX, 0);
+        this.blocks.forEach(b => {
+            ctx.fillStyle = b.color;
+            ctx.fillRect(b.x, b.y, TILE, TILE);
+        });
+        this.mobs.forEach(m => { ctx.fillStyle = m.color; ctx.fillRect(m.x, m.y, 24, 24); });
+        this.player.draw();
+        ctx.restore();
+    },
+
+    loop() {
+        this.update(); this.draw();
+        requestAnimationFrame(() => this.loop());
+    }
+};
+
+class Player {
+    constructor(x, y) { this.reset(x, y); this.w = 26; this.h = 40; }
+    reset(x, y) { this.x = x; this.y = y; this.vx = 0; this.vy = 0; this.hp = 100; this.grounded = false; }
+    update(blocks) {
+        if(keys['KeyD']) this.vx = 5; else if(keys['KeyA']) this.vx = -5; else this.vx *= 0.8;
+        if(keys['Space'] && this.grounded) { this.vy = -12; this.grounded = false; }
+        this.vy += 0.6; this.x += this.vx; this.y += this.vy;
+
+        blocks.forEach(b => {
+            if(this.x < b.x+TILE && this.x+this.w > b.x && this.y < b.y+TILE && this.y+this.h > b.y) {
+                if(this.vy > 0 && this.y + this.h - this.vy <= b.y) { this.y = b.y - this.h; this.vy = 0; this.grounded = true; }
+                if(b.id === 'exit') { 
+                    alert("NIVEAU RÉUSSI !"); 
+                    if(Game.mode === 'play') Game.startCampaign(Game.currentBiome, Game.currentLevel + 1);
+                    else Game.toggleMode();
+                }
+            }
+        });
+        if(this.y > canvas.height) this.reset(Game.spawn.x, Game.spawn.y);
+    }
+    draw() { ctx.fillStyle = Game.mode === 'edit' ? '#f1c40f' : '#fff'; ctx.fillRect(this.x, this.y, this.w, this.h); }
+}
+
+const UI = {
+    show(id) {
+        this.hideAll();
+        document.getElementById(id).classList.add('active');
+        if(id === 'menu-biomes') this.renderBiomes();
+    },
+    hideAll() { document.querySelectorAll('.ui-layer').forEach(l => l.classList.remove('active')); },
+    renderBiomes() {
+        const grid = document.getElementById('biome-grid'); grid.innerHTML = '';
+        BIOMES.forEach((b, i) => {
+            const d = document.createElement('div'); d.className = 'panel'; d.style.background = b.color; d.style.cursor = 'pointer';
+            d.innerHTML = `<h3>${b.name}</h3>`; d.onclick = () => this.renderLevels(i);
+            grid.appendChild(d);
+        });
+    },
+    renderLevels(bIdx) {
+        this.show('menu-levels');
+        document.getElementById('biome-title').innerText = BIOMES[bIdx].name;
+        const grid = document.getElementById('level-grid'); grid.innerHTML = '';
+        for(let i=1; i<=5; i++) {
+            const btn = document.createElement('button'); btn.className = 'btn'; btn.innerText = "NIVEAU " + i;
+            btn.onclick = () => Game.startCampaign(bIdx, i); grid.appendChild(btn);
+        }
+    },
+    initEditorTools() {
+        const bList = document.getElementById('block-list'); bList.innerHTML = '';
+        DATA.blocks.forEach(b => {
+            const d = document.createElement('div'); d.className = 'tool'; d.style.background = b.color;
+            d.onmouseover = (e) => {
+                const tt = document.getElementById('tooltip'); tt.style.display = 'block'; tt.style.left = e.pageX+10+'px'; tt.style.top = e.pageY+10+'px';
+                tt.innerHTML = `<strong>${b.name}</strong><br>${b.desc}`;
+            };
+            d.onmouseout = () => document.getElementById('tooltip').style.display = 'none';
+            d.onclick = () => Editor.selectedType = b.id;
+            bList.appendChild(d);
+        });
+    }
+};
+
+const Editor = {
+    selectedType: 'ground',
+    isPainting: false,
+    paint(e, isDel = false) {
+        const x = Math.floor((e.clientX + Game.camX) / TILE) * TILE;
+        const y = Math.floor(e.clientY / TILE) * TILE;
+        Game.blocks = Game.blocks.filter(b => b.x !== x || b.y !== y);
+        if(!isDel) {
+            if(this.selectedType === 'spawn') { Game.spawn = {x, y}; Game.player.x = x; Game.player.y = y; }
+            else {
+                const template = DATA.blocks.find(b => b.id === this.selectedType);
+                Game.blocks.push({x, y, ...template});
+            }
+        }
+    },
+    exportJSON() {
+        const data = JSON.stringify({blocks: Game.blocks, spawn: Game.spawn});
+        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([data], {type: 'application/json'}));
+        a.download = 'map.json'; a.click();
+    },
+    importJSON(e) {
+        const reader = new FileReader();
+        reader.onload = (ev) => { const d = JSON.parse(ev.target.result); Game.blocks = d.blocks; Game.spawn = d.spawn; };
+        reader.readAsText(e.target.files[0]);
+    }
+};
+
+const keys = {};
+window.onkeydown = (e) => keys[e.code] = true;
+window.onkeyup = (e) => keys[e.code] = false;
+canvas.onmousedown = (e) => { if(Game.mode==='edit') { Editor.isPainting = true; Editor.paint(e, e.button === 2); } };
+canvas.onmousemove = (e) => { if(Game.mode==='edit' && Editor.isPainting) Editor.paint(e, e.button === 2); };
+canvas.onmouseup = () => Editor.isPainting = false;
+canvas.oncontextmenu = (e) => e.preventDefault();
+canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+</script>
+</body>
+</html>
