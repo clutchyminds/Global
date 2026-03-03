@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BacFR AI - Tutor & Communauté</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQmFjRlIgQUkiLCJzaG9ydF9uYW1lIjoiQmFjRlIiLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwidGhlbWVfY29sb3IiOiIjMjU2M2ViIn0=">
+
+    <style>
+        /* ================= VARIABLES & THEMES ================= */
+        :root {
+            --bg-grad-start: #f0f4f8; --bg-grad-end: #ffffff;
+            --surface: #ffffff; --surface-hover: #f8fafc;
+            --text-main: #0f172a; --text-muted: #64748b;
+            --primary: #2563eb; --primary-hover: #1d4ed8;
+            --secondary: #ecfdf5; --secondary-text: #047857;
+            --border: #e2e8f0; --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --danger: #ef4444; --success: #10b981;
+            --radius: 12px; --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        [data-theme="dark"] {
+            --bg-grad-start: #0f172a; --bg-grad-end: #1e293b;
+            --surface: #1e293b; --surface-hover: #334155;
+            --text-main: #f8fafc; --text-muted: #94a3b8;
+            --primary: #3b82f6; --primary-hover: #60a5fa;
+            --secondary: #064e3b; --secondary-text: #34d399;
+            --border: #334155;
+        }
+
+        /* ================= BASE & RESET ================= */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: linear-gradient(135deg, var(--bg-grad-start), var(--bg-grad-end)); color: var(--text-main); min-height: 100vh; overflow-x: hidden; transition: var(--transition); }
+        h1, h2, h3 { font-weight: 800; color: var(--text-main); }
+        a { color: var(--primary); text-decoration: none; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text-main); margin-bottom: 15px; font-size: 1rem; transition: var(--transition); }
+        input:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2); }
+        button { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: var(--radius); font-weight: 600; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        button:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        button.outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        button.outline:hover { background: var(--primary); color: white; }
+        img { max-width: 100%; border-radius: var(--radius); }
+
+        /* ================= LAYOUT & NAVBAR ================= */
+        .navbar { position: fixed; top: 0; left: 0; right: 0; height: 70px; background: var(--surface); box-shadow: var(--shadow); display: flex; align-items: center; justify-content: space-between; padding: 0 5%; z-index: 100; border-bottom: 1px solid var(--border); }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links button { background: none; color: var(--text-muted); padding: 8px 12px; }
+        .nav-links button.active { color: var(--primary); border-bottom: 3px solid var(--primary); border-radius: 0; }
+        .nav-actions { display: flex; gap: 15px; align-items: center; }
+        .user-profile { display: none; align-items: center; gap: 10px; cursor: pointer; }
+        .user-profile img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+        
+        main { margin-top: 90px; padding: 20px 5%; max-width: 1200px; margin-left: auto; margin-right: auto; padding-bottom: 100px; }
+        .section { display: none; animation: fadeIn 0.4s ease forwards; }
+        .section.active { display: block; }
+
+        /* ================= COMPONENTS ================= */
+        .card { background: var(--surface); border-radius: var(--radius); padding: 25px; box-shadow: var(--shadow); margin-bottom: 20px; border: 1px solid var(--border); }
+        .badge { background: var(--secondary); color: var(--secondary-text); padding: 4px 8px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .result-box { margin-top: 20px; padding: 20px; background: var(--surface-hover); border-left: 4px solid var(--primary); border-radius: 0 var(--radius) var(--radius) 0; display: none; line-height: 1.6; }
+        .result-box.show { display: block; animation: slideUp 0.3s ease; }
+        
+        /* Markdown Styles */
+        .md-content h1, .md-content h2, .md-content h3 { margin-top: 1em; margin-bottom: 0.5em; }
+        .md-content p { margin-bottom: 1em; }
+        .md-content ul, .md-content ol { margin-left: 20px; margin-bottom: 1em; }
+        .md-content strong { color: var(--primary); }
+
+        /* Community Feed */
+        .post { border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 20px; }
+        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .post-header img { width: 35px; height: 35px; border-radius: 50%; }
+        .post-meta { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* Modals */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; animation: fadeIn 0.3s ease; }
+        .modal-content { background: var(--surface); padding: 30px; border-radius: var(--radius); width: 90%; max-width: 400px; position: relative; }
+        .close-modal { position: absolute; top: 15px; right: 15px; background: none; color: var(--text-muted); padding: 0; font-size: 1.5rem; }
+
+        /* Utilities & Animations */
+        .loader { width: 24px; height: 24px; border: 3px solid var(--surface); border-bottom-color: var(--primary); border-radius: 50%; display: inline-block; box-sizing: border-box; animation: rotation 1s linear infinite; display: none; }
+        .loader.active { display: inline-block; }
+        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Responsive Mobile First adjustments */
+        @media (max-width: 768px) {
+            .nav-links { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); height: 60px; justify-content: space-around; padding: 0; border-top: 1px solid var(--border); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+            .nav-links button { flex: 1; display: flex; flex-direction: column; font-size: 0.75rem; padding: 5px; border: none; }
+            .nav-links button.active { border-bottom: none; border-top: 3px solid var(--primary); background: var(--surface-hover); }
+            .hide-mobile { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">📘 BacFR AI</div>
+        <div class="nav-links">
+            <button class="tab-btn active" data-target="gen">Sujets</button>
+            <button class="tab-btn" data-target="corr">Correcteur</button>
+            <button class="tab-btn" data-target="cours">Cours</button>
+            <button class="tab-btn" data-target="com">Communauté</button>
+        </div>
+        <div class="nav-actions">
+            <button id="themeToggle" class="outline" style="padding: 8px;">🌙</button>
+            <button id="loginBtn" class="hide-mobile">Connexion</button>
+            <div id="userProfileBtn" class="user-profile">
+                <img id="navAvatar" src="https://ui-avatars.com/api/?name=User" alt="Avatar">
+                <span id="navPseudo" class="hide-mobile">User</span>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+
+
+        <section id="gen" class="section active">
+            <div class="card">
+                <h2>Générateur de Sujets IA</h2>
+                <p style="color:var(--text-muted); margin-bottom:20px;">Créez des sujets de révision sur mesure pour l'écrit du Bac Français.</p>
+                
+                <label>Type d'exercice :</label>
+                <select id="genType">
+                    <option value="commentaire">Commentaire de texte (génère un texte littéraire inédit)</option>
+                    <option value="dissertation">Dissertation (problématique + plan détaillé)</option>
+                </select>
+
+                <label>Thème / Objet d'étude :</label>
+                <select id="genTheme">
+                    <option value="La poésie du XIXe au XXIe siècle">La poésie du XIXe au XXIe siècle</option>
+                    <option value="La littérature d'idées (Rabelais, Olympe de Gouges...)">La littérature d'idées</option>
+                    <option value="Le roman et le récit">Le roman et le récit</option>
+                    <option value="Le théâtre du XVIIe au XXIe siècle">Le théâtre</option>
+                    <option value="custom">Autre (préciser ci-dessous)</option>
+                </select>
+                <input type="text" id="genCustom" placeholder="Ex: L'expression du pathétique, Le Romantisme..." style="display:none;">
+
+                <button id="btnGenerate" onclick="generateSubject()">
+                    <span class="loader" id="genLoader"></span> Générer avec l'IA ✨
+                </button>
+            </div>
+            <div id="genResult" class="result-box md-content"></div>
+        </section>
+
+        <section id="corr" class="section">
+            <div class="card">
+                <h2>Correcteur IA</h2>
+                <p style="color:var(--text-muted); margin-bottom:20px;">Faites évaluer votre travail. Notation sur 20 et conseils d'amélioration.</p>
+                
+                <label>1. Le Sujet (Texte ou Image) :</label>
+                <textarea id="corrSujetText" rows="3" placeholder="Collez le texte du sujet ici..."></textarea>
+                <input type="file" id="corrSujetImg" accept="image/*" onchange="handleOCR(this, 'corrSujetText', 'ocrLoader1')">
+                <span class="loader" id="ocrLoader1"></span> <small id="ocrStatus1"></small>
+
+                <label style="margin-top:15px; display:block;">2. Votre Réponse (Texte ou Image) :</label>
+                <textarea id="corrReponseText" rows="6" placeholder="Rédigez ou collez votre brouillon/copie ici..."></textarea>
+                <input type="file" id="corrReponseImg" accept="image/*" onchange="handleOCR(this, 'corrReponseText', 'ocrLoader2')">
+                <span class="loader" id="ocrLoader2"></span> <small id="ocrStatus2"></small>
+
+                <button id="btnCorrect" onclick="correctWork()" style="margin-top:20px; width:100%;">
+                    <span class="loader" id="corrLoader"></span> Analyser ma copie 📝
+                </button>
+            </div>
+            <div id="corrResult" class="result-box md-content"></div>
+        </section>
+
+        <section id="cours" class="section">
+            <div class="card">
+                <h2>Cours & Méthodologie 100/20</h2>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:15px; margin-top:20px;">
+                    <div class="card" style="border-color:var(--primary); cursor:pointer;" onclick="requestCourse('Méthodologie de l\'introduction et conclusion (Commentaire & Dissert)')">
+                        <h3>📚 Intro / Conclusion</h3>
+                        <p style="font-size:0.9rem; margin-top:10px;">Générer une fiche méthode infaillible.</p>
+                    </div>
+                    <div class="card" style="border-color:var(--primary); cursor:pointer;" onclick="requestCourse('Comment trouver des axes de lecture et construire un plan')">
+                        <h3>🗺️ Construire un Plan</h3>
+                        <p style="font-size:0.9rem; margin-top:10px;">Astuces pour ne plus faire de hors-sujet.</p>
+                    </div>
+                    <div class="card" style="border-color:var(--primary); cursor:pointer;" onclick="requestCourse('Figures de style essentielles pour le Bac Français')">
+                        <h3>🎭 Figures de Style</h3>
+                        <p style="font-size:0.9rem; margin-top:10px;">Fiche de révision avec exemples.</p>
+                    </div>
+                </div>
+                <div style="margin-top:20px;">
+                    <label>Cours personnalisé :</label>
+                    <div style="display:flex; gap:10px;">
+                        <input type="text" id="customCourseInput" placeholder="Ex: Le parcours 'Alchimie de la boue' de Baudelaire" style="margin:0; flex:1;">
+                        <button onclick="requestCourse(document.getElementById('customCourseInput').value)">Générer</button>
+                    </div>
+                </div>
+            </div>
+            <div id="courseResult" class="result-box md-content"></div>
+        </section>
+
+        <section id="com" class="section">
+            <div class="card auth-guard" style="display:none; text-align:center; padding:40px;">
+                <h3>🔒 Espace Membre</h3>
+                <p style="margin:15px 0;">Connectez-vous pour voir les fiches, poser des questions et partager avec les autres lycéens.</p>
+                <button onclick="openModal('authModal')">Se connecter / S'inscrire</button>
+            </div>
+            
+            <div class="auth-content">
+                <div class="card">
+                    <h3>Publier une fiche ou une question</h3>
+                    <textarea id="postContent" rows="3" placeholder="Partagez une astuce, une citation, ou posez une question..."></textarea>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <input type="file" id="postImage" accept="image/*" style="width:auto; margin:0; padding:5px;">
+                        <button onclick="publishPost()" id="btnPost"><span class="loader" id="postLoader"></span> Publier</button>
+                    </div>
+                </div>
+                <div id="feedContainer">
+                    <div style="text-align:center; padding:20px; color:var(--text-muted);">Chargement du flux...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('authModal')">&times;</button>
+            <h2 style="margin-bottom:20px;">Connexion</h2>
+            <input type="email" id="authEmail" placeholder="Email">
+            <input type="password" id="authPassword" placeholder="Mot de passe">
+            <button onclick="handleEmailAuth(true)" style="width:100%; margin-bottom:10px;">Se connecter</button>
+            <button onclick="handleEmailAuth(false)" class="outline" style="width:100%; margin-bottom:15px;">Créer un compte</button>
+            <div style="text-align:center; margin-bottom:15px; color:var(--text-muted);">OU</div>
+            <button onclick="handleGoogleAuth()" style="width:100%; background:#db4437; color:white;">Continuer avec Google</button>
+        </div>
+    </div>
+
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('profileModal')">&times;</button>
+            <h2 style="margin-bottom:20px;">Mon Profil</h2>
+            <div style="text-align:center; margin-bottom:20px;">
+                <img id="profAvatar" src="" style="width:80px; height:80px; border-radius:50%; margin-bottom:10px; border:2px solid var(--primary);">
+                <input type="file" id="profAvatarUpload" accept="image/*" style="font-size:0.8rem;">
+            </div>
+            <label>Pseudo</label>
+            <input type="text" id="profPseudo">
+            <button onclick="updateUserProfile()" style="width:100%; margin-bottom:10px;">Enregistrer les modifications</button>
+            <button onclick="logout()" class="outline" style="width:100%; border-color:var(--danger); color:var(--danger);">Déconnexion</button>
+        </div>
+    </div>
+
+    <script type="module">
+        // ================= FIREBASE CONFIGURATION =================
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-auth.js";
+        import { getDatabase, ref, push, onValue, set, query, orderByChild } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
+        import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDNZF8f1cohsXjVLDPa66i2i-NMDDc6JTA",
+            authDomain: "bac-fr-c0508.firebaseapp.com",
+            databaseURL: "https://bac-fr-c0508-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "bac-fr-c0508",
+            storageBucket: "bac-fr-c0508.firebasestorage.app",
+            messagingSenderId: "535225527959",
+            appId: "1:535225527959:web:6ab7b712e542a0d59683d2"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        const storage = getStorage(app);
+
+        // ================= STATE & GLOBALS =================
+        let currentUser = null;
+
+
+        // ================= UI & NAVIGATION =================
+        const tabs = document.querySelectorAll('.tab-btn');
+        const sections = document.querySelectorAll('.section');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.target).classList.add('active');
+                if(tab.dataset.target === 'com') loadFeed();
+            });
+        });
+
+        // Theme Toggle
+        const themeBtn = document.getElementById('themeToggle');
+        themeBtn.addEventListener('click', () => {
+            const html = document.documentElement;
+            const isDark = html.getAttribute('data-theme') === 'dark';
+            html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            themeBtn.innerText = isDark ? '🌙' : '☀️';
+        });
+
+        // Modals
+        window.openModal = (id) => document.getElementById(id).classList.add('active');
+        window.closeModal = (id) => document.getElementById(id).classList.remove('active');
+
+        // Dropdown toggle
+        document.getElementById('genTheme').addEventListener('change', (e) => {
+            document.getElementById('genCustom').style.display = e.target.value === 'custom' ? 'block' : 'none';
+        });
+
+        // ================= AUTHENTICATION =================
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            const loginBtn = document.getElementById('loginBtn');
+            const userProfileBtn = document.getElementById('userProfileBtn');
+            const authGuards = document.querySelectorAll('.auth-guard');
+            const authContents = document.querySelectorAll('.auth-content');
+
+            if (user) {
+                loginBtn.style.display = 'none';
+                userProfileBtn.style.display = 'flex';
+                document.getElementById('navAvatar').src = user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || 'U'}`;
+                document.getElementById('navPseudo').innerText = user.displayName || 'Utilisateur';
+                
+                // Set Profile Modal data
+                document.getElementById('profAvatar').src = user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName || 'U'}`;
+                document.getElementById('profPseudo').value = user.displayName || '';
+
+                authGuards.forEach(el => el.style.display = 'none');
+                authContents.forEach(el => el.style.display = 'block');
+                loadFeed();
+            } else {
+                loginBtn.style.display = 'block';
+                userProfileBtn.style.display = 'none';
+                authGuards.forEach(el => el.style.display = 'block');
+                authContents.forEach(el => el.style.display = 'none');
+            }
+        });
+
+        document.getElementById('loginBtn').addEventListener('click', () => openModal('authModal'));
+        document.getElementById('userProfileBtn').addEventListener('click', () => openModal('profileModal'));
+
+        window.handleEmailAuth = async (isLogin) => {
+            const email = document.getElementById('authEmail').value;
+            const pass = document.getElementById('authPassword').value;
+            try {
+                if (isLogin) {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                } else {
+                    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+                    // Set default pseudo
+                    await updateProfile(cred.user, { displayName: email.split('@')[0] });
+                }
+                closeModal('authModal');
+            } catch (error) { alert("Erreur d'authentification: " + error.message); }
+        };
+
+        window.handleGoogleAuth = async () => {
+            try {
+                await signInWithPopup(auth, new GoogleAuthProvider());
+                closeModal('authModal');
+            } catch (error) { alert("Erreur Google: " + error.message); }
+        };
+
+        window.logout = () => { signOut(auth); closeModal('profileModal'); };
+
+        window.updateUserProfile = async () => {
+            if(!currentUser) return;
+            const pseudo = document.getElementById('profPseudo').value;
+            const fileInput = document.getElementById('profAvatarUpload');
+            let photoURL = currentUser.photoURL;
+
+            try {
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    const storageRef = sRef(storage, `users/${currentUser.uid}/avatar`);
+                    await uploadBytes(storageRef, file);
+                    photoURL = await getDownloadURL(storageRef);
+                }
+                await updateProfile(currentUser, { displayName: pseudo, photoURL: photoURL });
+                
+                // Update in DB too
+                await set(ref(db, `users/${currentUser.uid}`), { pseudo, photoURL });
+                
+                alert("Profil mis à jour !");
+                closeModal('profileModal');
+                window.location.reload(); // Quick refresh UI
+            } catch(e) { alert("Erreur: " + e.message); }
+        };
+
+        // On définit la clé directement ici
+        const GROQ_KEY = "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";
+
+        async function callIA(prompt) {
+            try {
+                const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${GROQ_KEY}` // Utilise ta clé Groq
+                    },
+                    body: JSON.stringify({
+                        model: "llama-3.3-70b-versatile",
+                        messages: [
+                            { role: "system", content: "Tu es un professeur de français expert pour le Bac." },
+                            { role: "user", content: prompt }
+                        ],
+                        temperature: 0.7
+                    })
+                });
+
+                const data = await resp.json();
+                if (data.error) return "Erreur IA : " + data.error.message;
+        
+                return data.choices[0].message.content; // Format spécifique à Groq
+            } catch (e) {
+                return "Erreur de connexion : " + e.message;
+            }
+        }
+
+        // ================= FONCTIONNALITÉS =================
+
+        // 1. OCR (Tesseract)
+        window.handleOCR = async (inputElement, targetTextareaId, loaderId) => {
+            const file = inputElement.files[0];
+            if(!file) return;
+            const loader = document.getElementById(loaderId);
+            const status = document.getElementById(loaderId.replace('Loader', 'Status'));
+            loader.classList.add('active');
+            status.innerText = "Lecture de l'image en cours...";
+
+            try {
+                const worker = await Tesseract.createWorker('fra');
+                const ret = await worker.recognize(file);
+                document.getElementById(targetTextareaId).value = ret.data.text;
+                await worker.terminate();
+                status.innerText = "Lecture terminée !";
+            } catch(e) {
+                status.innerText = "Erreur de lecture.";
+            } finally {
+                loader.classList.remove('active');
+                setTimeout(() => status.innerText='', 3000);
+            }
+        };
+
+        // 2. Générateur de Sujets
+        window.generateSubject = async () => {
+            const type = document.getElementById('genType').value;
+            let theme = document.getElementById('genTheme').value;
+            if(theme === 'custom') theme = document.getElementById('genCustom').value;
+            if(!theme) return alert("Veuillez préciser le thème.");
+
+            const btn = document.getElementById('btnGenerate');
+            const loader = document.getElementById('genLoader');
+            const resultBox = document.getElementById('genResult');
+
+            btn.disabled = true; loader.classList.add('active'); resultBox.classList.remove('show');
+
+            const prompt = type === 'commentaire' 
+                ? `Génère un sujet de commentaire de texte pour le bac français (1ère) sur le thème: "${theme}". 
+                   Invente un extrait littéraire original et crédible de 400 à 600 mots dans le style de l'époque, suivi de la consigne classique: "Vous ferez le commentaire de ce texte...".`
+                : `Génère un sujet de dissertation complet pour le bac français (1ère) sur le thème: "${theme}". 
+                   Donne la citation/sujet, puis propose un plan détaillé (Problématique claire, 3 grandes parties, 2-3 sous-parties par partie avec des idées d'exemples d'auteurs classiques). Ne génère pas de texte d'invention.`;
+
+            try {
+                const result = await callIA(prompt);
+                resultBox.innerHTML = marked.parse(result);
+                resultBox.classList.add('show');
+            } catch (e) {
+                alert(e.message);
+            } finally {
+                btn.disabled = false; loader.classList.remove('active');
+            }
+        };
+
+        // 3. Correcteur IA
+        window.correctWork = async () => {
+            const sujet = document.getElementById('corrSujetText').value;
+            const reponse = document.getElementById('corrReponseText').value;
+            
+            if(!sujet || !reponse) return alert("Veuillez renseigner le sujet ET votre réponse.");
+
+            const btn = document.getElementById('btnCorrect');
+            const loader = document.getElementById('corrLoader');
+            const resultBox = document.getElementById('corrResult');
+
+            btn.disabled = true; loader.classList.add('active'); resultBox.classList.remove('show');
+
+            const prompt = `Corrige ce devoir de bac de français écrit (classe de 1ère).
+            SUJET : ${sujet}
+            COPIE DE L'ÉLÈVE : ${reponse}
+            
+            Tâche :
+            1. Donne une note sur 20 juste et objective (selon les critères officiels du bac).
+            2. Fais un commentaire global constructif.
+            3. Analyse la structure (intro, plan, conclusion).
+            4. Relève les fautes d'expression ou d'orthographe majeures.
+            5. Propose 3 conseils précis pour s'améliorer. Format en Markdown.`;
+
+            try {
+                const result = await callIA(prompt, "Tu es un correcteur du bac de français, bienveillant mais exigeant.");
+                resultBox.innerHTML = marked.parse(result);
+                resultBox.classList.add('show');
+            } catch (e) {
+                alert(e.message);
+            } finally {
+                btn.disabled = false; loader.classList.remove('active');
+            }
+        };
+
+        // 4. Générateur de Cours
+        window.requestCourse = async (topic) => {
+            if(!topic) return;
+            const resultBox = document.getElementById('courseResult');
+            resultBox.innerHTML = `<span class="loader active" style="border-bottom-color:var(--primary);"></span> Génération du cours sur : <i>${topic}</i>...`;
+            resultBox.classList.add('show');
+
+            const prompt = `Crée un cours synthétique, très structuré et pédagogique niveau Bac Français (1ère) sur le sujet suivant : "${topic}".
+            Utilise le gras pour les termes importants, fais des listes à puces, donne 2 ou 3 exemples littéraires précis. Le ton doit être encourageant.`;
+
+            try {
+                const result = await callIA(prompt);
+                resultBox.innerHTML = marked.parse(result);
+                window.scrollTo({ top: resultBox.offsetTop - 100, behavior: 'smooth' });
+            } catch(e) {
+                resultBox.innerHTML = `<span style="color:var(--danger)">Erreur: ${e.message}</span>`;
+            }
+        };
+
+        // 5. Communauté (Database)
+        window.publishPost = async () => {
+            if(!currentUser) return alert("Connectez-vous pour publier.");
+            const content = document.getElementById('postContent').value;
+            const fileInput = document.getElementById('postImage');
+            
+            if(!content && fileInput.files.length === 0) return alert("Le post est vide.");
+
+            const btn = document.getElementById('btnPost');
+            const loader = document.getElementById('postLoader');
+            btn.disabled = true; loader.classList.add('active');
+
+            try {
+                let imgUrl = null;
+                if (fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    if(file.size > 5000000) throw new Error("Image > 5MB");
+                    const storageRef = sRef(storage, `posts/${Date.now()}_${file.name}`);
+                    await uploadBytes(storageRef, file);
+                    imgUrl = await getDownloadURL(storageRef);
+                }
+
+                await push(ref(db, 'posts'), {
+                    uid: currentUser.uid,
+                    pseudo: currentUser.displayName || 'Anonyme',
+                    photoURL: currentUser.photoURL || `https://ui-avatars.com/api/?name=${currentUser.displayName || 'A'}`,
+                    content: content,
+                    imageURL: imgUrl,
+                    timestamp: Date.now()
+                });
+
+                document.getElementById('postContent').value = '';
+                fileInput.value = '';
+            } catch (e) {
+                alert(e.message);
+            } finally {
+                btn.disabled = false; loader.classList.remove('active');
+            }
+        };
+
+        function loadFeed() {
+            if(!currentUser) return;
+            const feedContainer = document.getElementById('feedContainer');
+            const postsQuery = query(ref(db, 'posts'), orderByChild('timestamp'));
+
+            onValue(postsQuery, (snapshot) => {
+                feedContainer.innerHTML = '';
+                const posts = [];
+                snapshot.forEach(child => { posts.unshift(child.val()); }); // LIFO
+                
+                if(posts.length === 0) {
+                    feedContainer.innerHTML = '<p style="text-align:center; color:var(--text-muted);">Soyez le premier à publier !</p>';
+                    return;
+                }
+
+                posts.forEach(post => {
+                    const date = new Date(post.timestamp).toLocaleString('fr-FR');
+                    // Echappement basique pour la sécurité HTML
+                    const safeContent = post.content ? post.content.replace(/</g, "&lt;").replace(/>/g, "&gt;") : '';
+                    
+                    let html = `
+                    <div class="card post">
+                        <div class="post-header">
+                            <img src="${post.photoURL}" alt="avatar">
+                            <div>
+                                <strong>${post.pseudo}</strong><br>
+                                <span class="post-meta">${date}</span>
+                            </div>
+                        </div>
+                        <p style="white-space: pre-wrap; margin-bottom:10px;">${safeContent}</p>
+                    `;
+                    
+                    if(post.imageURL) {
+                        html += `<img src="${post.imageURL}" alt="Image post" style="max-height:400px; object-fit:cover; margin-top:10px;">`;
+                    }
+                    html += `</div>`;
+                    feedContainer.insertAdjacentHTML('beforeend', html);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
